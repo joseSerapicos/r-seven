@@ -1,0 +1,13 @@
+.image-crop .image-container {
+    height: 384px;
+    overflow: hidden;
+}
+.image-crop .image {
+    max-height: 100%;
+    max-width: 100%;
+}
+.image-crop .image-preview {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}

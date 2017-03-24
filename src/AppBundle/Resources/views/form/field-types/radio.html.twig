@@ -1,0 +1,17 @@
+{% if (field is defined) and (formField is defined) %}
+
+    <div class="form-control-box"
+         [ngClass]="{'error': _formService.getErrors().{{field}} && (_formService.getErrors().{{field}}.length > 0)}"
+         (click)="_formService.setFormFieldValue('{{field}}', $event.target.value)">
+        {% for option in formField.children %}
+            {{ form_widget(option, {'attr': {
+                '[checked]': ("'" ~ option.vars.value ~ "' == _formService.getObject()." ~ field)
+            }}) }}
+        {% endfor %}
+    </div>
+    <input [(ngModel)]="_formService.getObject().{{field}}"
+           formControlName = {{field}}
+           {% if formField.vars.required %}required="required"{% endif %}
+           type="hidden">
+
+{% endif %}

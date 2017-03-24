@@ -1,0 +1,23 @@
+{% extends 'AppBundle:data-box:base.html.twig' %}
+{% block body_container %}
+    <div class="table-responsive">
+        <form><div class="gallery">
+            <div class="gallery-item"
+                 *ngFor="let obj of _dataService.getProviderAttr('objects'); let objIndex = index"
+                 title="{% verbatim %}{{obj['name']}}{% endverbatim %}">
+                <img src="{% verbatim %}{{getThumbnailPath(obj['path'])}}{% endverbatim %}"
+                     alt="{% verbatim %}{{obj['name']}}{% endverbatim %}"
+                     width="128"
+                     height="128">
+                <div class="ibox-tools no-user-select">
+                    <template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
+                        <a class="action -round fa"
+                           *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                           (click)="triggerAction($event, action, objIndex)"
+                           [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"></a>
+                    </template>
+                </div>
+            </div>
+        </div></form>
+    </div>
+{% endblock %}

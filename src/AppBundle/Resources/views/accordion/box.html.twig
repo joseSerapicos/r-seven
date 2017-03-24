@@ -1,0 +1,6 @@
+{% extends 'AppBundle::box.html.twig' %}
+{% block body %}
+    {% include 'AppBundle:accordion:default.html.twig' with {
+        '_containers': _containers
+    } %}
+{% endblock %}

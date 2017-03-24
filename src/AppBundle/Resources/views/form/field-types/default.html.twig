@@ -1,0 +1,7 @@
+{% if (field is defined) and (formField is defined) %}
+    {{ form_widget(formField, {'attr': {
+        '[(ngModel)]': ('_formService.getObject().' ~ field),
+        'formControlName': field,
+        '[class.error]': ('_formService.getErrors().' ~ field ~ ' && _formService.getErrors().' ~ field ~ '.length > 0')
+    }}) }}
+{% endif %}

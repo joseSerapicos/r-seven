@@ -1,0 +1,12 @@
+{% if (formField is defined) and (field is defined) %}
+    <input [(ngModel)]="_formService.getObject().{{field}}"
+           formControlName = {{field}}
+           class="form-control"
+           [class.error]="_formService.getErrors().{{field}} && (_formService.getErrors().{{field}}.length > 0)"
+           id="{{ formField.vars.id }}"
+           name="{{ formField.vars.full_name }}"
+           {% if formField.vars.required %}required="required"{% endif %}
+           maxlength="7"
+           type="color">
+    {% do formField.setRendered %}
+{% endif %}

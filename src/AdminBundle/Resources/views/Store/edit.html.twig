@@ -1,0 +1,69 @@
+{% extends 'AppBundle:form:form-popup.html.twig' %}
+
+{% block body %}
+    {% set form = (form is defined ? form : (_form is defined ? _form : null)) %}
+    {% set fields = (fields is defined ? fields : (_conf['fields'] is defined ? _conf['fields'] : null)) %}
+
+    {% if (form and fields) %}
+        {% for field in fields['form'] %}
+            {% if field == 'shareToType' %}
+                <div *ngIf="_formService.getObject().privacy == 'SHARED'"  class="form-group">
+                    {% include 'AppBundle:form:label.html.twig' with {
+                        'formField': form[field],
+                        'metadata': fields['metadata'][field]
+                    } %}
+                    <div class="col-sm-10">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                {% include 'AppBundle:form:input.html.twig' with {
+                                    'field': field,
+                                    'formField': form[field],
+                                    'metadata': fields['metadata'][field]
+                                } %}
+                            </div>
+                            <div *ngIf="_formService.getObject().{{field}} == 'STORE'"  class="col-sm-6">
+                                {% include 'AppBundle:form:input.html.twig' with {
+                                    'field': 'storeObj',
+                                    'formField': form['storeObj'],
+                                    'metadata': fields['metadata']['storeObj']
+                                } %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-sm-12 m-t-sm">Resources:</label>
+                            <div class="col-sm-12"><div class="form-control-box">
+                                <div class="row"><div class="col-sm-12">
+                                    {% include 'AppBundle:form:field.html.twig' with {
+                                        'field': 'shareBasicInfo',
+                                        'metadata': fields['metadata']['shareBasicInfo'],
+                                        'form': form
+                                    } %}
+                                </div></div>
+                                <div class="row"><div class="col-sm-12">
+                                    {% include 'AppBundle:form:field.html.twig' with {
+                                        'field': 'shareEntities',
+                                        'metadata': fields['metadata']['shareEntities'],
+                                        'form': form
+                                    } %}
+                                </div></div>
+                                <div class="row"><div class="col-sm-12">
+                                    {% include 'AppBundle:form:field.html.twig' with {
+                                        'field': 'shareCurrentAccounts',
+                                        'metadata': fields['metadata']['shareCurrentAccounts'],
+                                        'form': form
+                                    } %}
+                                </div></div>
+                            </div></div>
+                        </div>
+                    </div>
+                </div>
+            {% elseif (field not in ['storeObj', 'shareBasicInfo', 'shareEntities', 'shareCurrentAccounts']) %}
+                {% include 'AppBundle:form:field.html.twig' with {
+                    'field': field,
+                    'metadata': fields['metadata'][field],
+                    'form': form
+                } %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,32 @@
+{% set form = (form is defined ? form : (_form is defined ? _form : null)) %}
+
+{% if (form is not null) %}
+    {% if (form.cancel is defined)
+       or (form.reset is defined)
+       or (form.save is defined)
+       or (form.close is defined)
+    %}
+        {% set icons = {
+            'cancel': 'fa-times',
+            'reset': 'fa-ban',
+            'save': 'fa-check',
+            'close': 'fa-times',
+            'saveAndEnter': 'fa-sign-in',
+            'saveAndNew': 'fa-plus',
+            'saveAndClose': 'fa-times'
+        } %}
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                {% for field in ['cancel', 'reset', 'save', 'close', 'saveAndEnter', 'saveAndNew', 'saveAndClose']
+                    if form[field] is defined
+                %}
+                    {% include 'AppBundle:form:field-types/button.html.twig' with {
+                        'field': field,
+                        'formField': form[field],
+                        'icons': icons
+                    } %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+{% endif %}

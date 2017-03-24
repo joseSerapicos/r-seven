@@ -1,0 +1,47 @@
+@import "variables";
+
+.gallery {
+    text-align: center;
+}
+.gallery > .gallery-item {
+    position: relative;
+    display: inline-block;
+    margin: 8px;
+    vertical-align: top;
+    border: 1px solid #c4c4c4;
+}
+.gallery > .gallery-item.-video {
+    position: relative;
+    width: 180px;
+    height: 136px;
+    background-color: #676a6c;
+}
+.gallery > .gallery-item.-video > span {
+    width: 180px;
+    height: 136px;
+    display: table-cell;
+    vertical-align: middle;
+    overflow: hidden;
+    color: #ffffff;
+}
+.gallery > .gallery-item.-video > img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+.gallery > .gallery-item > .actions {
+    position: absolute;
+    top: -8px;
+    right: 2px;
+
+    > a:not(:last-child) {
+        border-right: 1px solid #e5e6e7;
+    }
+}

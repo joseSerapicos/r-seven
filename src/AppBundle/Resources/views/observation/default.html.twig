@@ -1,0 +1,36 @@
+{% extends 'AppBundle:data-box:base.html.twig' %}
+{% block body_container %}
+    <div class="row">
+        <div class="col-sm-6"
+             *ngFor="let obj of _dataService.getProviderAttr('objects'); let index = index">
+            <div class="panel"
+                 [class.panel-default]="obj['type'] == 'DEFAULT'"
+                 [class.panel-info]="obj['type'] == 'INFO'"
+                 [class.panel-warning]="obj['type'] == 'WARNING'"
+                 [class.panel-danger]="obj['type'] == 'DANGER'">
+                <div class="panel-heading">
+                    <i class="fa"
+                       [class.panel-default]="obj['type'] == 'DEFAULT'"
+                       [class.fa-info-circle]="obj['type'] == 'INFO'"
+                       [class.fa-warning]="obj['type'] == 'WARNING'"
+                       [class.panel-danger]="obj['type'] == 'DANGER'"></i>&nbsp;{% verbatim %}{{obj['name']}}{% endverbatim %}
+                </div>
+                <div class="panel-body">
+                    <p>{% verbatim %}{{obj['description']}}{% endverbatim %}</p>
+                </div>
+                <div class="panel-footer txt-align-r">
+                    <span class="txt-align-r actions no-user-select"
+                          (click)="triggerAction($event)">
+                        <template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
+                            <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                               [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
+                               class="fa"
+                               [attr.data-action]="action"
+                               [attr.data-value]="index"></a>
+                        </template>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

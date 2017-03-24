@@ -1,0 +1,29 @@
+{% extends 'AppBundle:wizard:popup.html.twig' %}
+
+{% block before_steps %}
+    {{ form_start(_form) }}
+{% endblock %}
+
+{% block steps %}
+    {% include 'AppBundle:wizard:start-static-container.html.twig' with {'key': 0} %}
+        {% include 'AppBundle:form:field.html.twig' with {
+            'field': _conf['extraData']['service']['appDependencyFieldKey'],
+            'metadata': _conf['fields']['metadata'][_conf['extraData']['service']['appDependencyFieldKey']],
+            'form': _form
+        } %}
+    {% include 'AppBundle:wizard:end-static-container.html.twig' %}
+
+    {% include 'AppBundle:wizard:start-static-container.html.twig' with {'key': 1} %}
+        {% for field in _conf['fields']['form'] if (field != _conf['extraData']['service']['appDependencyFieldKey']) %}
+            {% include 'AppBundle:form:field.html.twig' with {
+                'field': field,
+                'metadata': _conf['fields']['metadata'][field],
+                'form': _form
+            } %}
+        {% endfor %}
+    {% include 'AppBundle:wizard:end-static-container.html.twig' %}
+{% endblock %}
+
+{% block after_steps %}
+    {{ form_end(_form) }}
+{% endblock %}

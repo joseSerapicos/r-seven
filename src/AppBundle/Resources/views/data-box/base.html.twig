@@ -1,0 +1,30 @@
+{% extends 'AppBundle::box.html.twig' %}
+
+{% block before_container %}{% endblock %}
+
+{% block header_container %}
+    <div class="actions no-user-select">
+        <template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search></js_search></template>
+        <div (click)="triggerAction($event)">
+            <template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
+                <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                   [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
+                   class="-round fa"
+                   [attr.data-action]="action"></a>
+            </template>
+        </div>
+    </div>
+{% endblock %}
+
+{# _dataService.getProviderAttr('objects')[0] // used to work with objects (tree-view) and arrays simultaneously #}
+{% block body %}
+    <template [ngIf]="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">{% block body_container %}{% endblock %}</template>
+    <p class="text-center" *ngIf="!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">No results.</p>
+{% endblock %}
+
+{% block footer %}
+    <div class="ibox-footer"
+         *ngIf="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])"><js_searchPagination></js_searchPagination></div>
+{% endblock %}
+
+{% block after_container %}{% endblock %}

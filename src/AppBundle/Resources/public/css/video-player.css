@@ -1,0 +1,18 @@
+.video-player {
+    width: auto;
+    height: auto;
+}
+
+.video-player > video,
+.video-player > iframe {
+    height: 400px !important;
+    width: 100% !important;
+    max-height: 400px !important;
+}
+
+@media screen and (max-width: 991px) {
+    .video-player > video,
+    .video-player > iframe {
+        max-height: 300px !important;
+    }
+}

@@ -1,0 +1,161 @@
+@import "variables";
+
+// General
+.no-user-select {
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */
+}
+.hide-on-empty:empty {
+    display: none !important;
+}
+.position-relative {
+    position: relative;
+}
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.no-bullets {
+    list-style-type: none;
+}
+.no-overflow {
+    overflow: hidden;
+}
+.disabled {
+    background-color: #eee;
+    color: rgb(192, 192, 192);
+}
+
+// Vertical align
+.valign-div {
+    &-container {
+        position: relative;
+    }
+
+    &-component {
+        position: absolute;
+
+        &-middle {
+            top: 0;
+            bottom: 0;
+            margin: auto;
+        }
+
+        &-top {
+            top: 0;
+        }
+
+        &-bottom {
+            bottom: 0;
+        }
+    }
+}
+.valign-table {
+    &-container {
+        display: table;
+    }
+
+    &-component {
+        display: table-cell;
+
+        &-middle {
+            vertical-align: middle;
+        }
+
+        &-top {
+            vertical-align: top;
+        }
+
+        &-bottom {
+            vertical-align: bottom;
+        }
+    }
+}
+.valign {
+    &-middle {
+        vertical-align: middle;
+    }
+
+    &-top {
+        vertical-align: top;
+    }
+
+    &-bottom {
+        vertical-align: bottom;
+    }
+}
+
+// Display
+.dsp-inline-block { display: inline-block !important; }
+.dsp-table-cell { display: table-cell !important; }
+
+// Padding
+.pd-t-none { padding-top: 0; }
+.pd-r-none { padding-right: 0; }
+.pd-b-none { padding-bottom: 0; }
+.pd-l-none { padding-left: 0; }
+.pd-t-xs { padding-top: $xs; }
+.pd-r-xs { padding-right: $xs; }
+.pd-b-xs { padding-bottom: $xs; }
+.pd-l-xs { padding-left: $xs; }
+.pd-t-sm { padding-top: $sm; }
+.pd-r-sm { padding-right: $sm; }
+.pd-b-sm { padding-bottom: $sm; }
+.pd-l-sm { padding-left: $sm; }
+.pd-t-md { padding-top: $md; }
+.pd-r-md { padding-right: $md; }
+.pd-b-md { padding-bottom: $md; }
+.pd-l-md { padding-left: $md; }
+.pd-t-lg { padding-top: $lg; }
+.pd-r-lg { padding-right: $lg; }
+.pd-b-lg { padding-bottom: $lg; }
+.pd-l-lg { padding-left: $lg; }
+
+// Text align
+.txt-align-l { text-align: left; }
+.txt-align-r { text-align: right; }
+.txt-align-c { text-align: center; }
+
+// Dynamic border separator
+.dyn-border {
+
+    &-l { // Left separator (it's a responsive separator, border left transforms in border top)
+        border-left: 1px solid #e7eaec;
+        border-right: none;
+        border-top: none;
+        border-bottom: none;
+    }
+    &-r { // Right separator (it's a responsive separator, border right transforms in border bottom)
+        border-left: none;
+        border-right: 1px solid #e7eaec;
+        border-top: none;
+        border-bottom: none;
+    }
+}
+
+
+@media screen and (max-width: 991px) {
+    // Dynamic border separator
+    .dyn-border {
+        &-l {
+            border-left: none;
+            border-right: none;
+            border-top: 1px solid #e7eaec;
+            border-bottom: none;
+        }
+        &-r {
+            border-left: none;
+            border-right: none;
+            border-top: none;
+            border-bottom: 1px solid #e7eaec;
+        }
+    }
+}
+
+// line-height
+.lh-lg {
+    line-height: 22px; // For lines with buttons
+}

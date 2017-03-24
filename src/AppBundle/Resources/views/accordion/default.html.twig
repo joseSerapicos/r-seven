@@ -1,0 +1,11 @@
+{% if (_containers is defined) %}
+    <div class="accordion">
+        <div class="panel-group" id="accordion">
+            {% block panels %}
+                {% for key, value in _containers %}
+                    {% include 'AppBundle:accordion:lazy-load-container.html.twig' %}
+                {% endfor %}
+            {% endblock %}
+        </div>
+    </div>
+{% endif %}

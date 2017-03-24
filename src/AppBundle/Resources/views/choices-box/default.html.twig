@@ -1,0 +1,8 @@
+{% extends 'AppBundle:data-box:base.html.twig' %}
+{% block body_container %}
+    <div class="choices-box"><ul><li *ngFor="let obj of _dataService.getProviderAttr('objects'); let objIndex = index">
+        <span>{% verbatim %}{{obj['name']}}{% endverbatim %}</span><a class="action fa fa-times"
+                (click)="deleteAction($event, objIndex)"></a>
+    </li></ul></div>
+{% endblock %}
+{% block footer %}{% endblock %}

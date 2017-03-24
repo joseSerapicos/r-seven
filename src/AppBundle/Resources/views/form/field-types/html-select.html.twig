@@ -1,0 +1,23 @@
+{% if (field is defined) and (formField is defined) %}
+    <div class="html-select" [htmlSelect]="'{{field}}'">
+        <div class="form-control"
+             [class.error]="_formService.getErrors()['{{field}}'] && (_formService.getErrors()['{{field}}'].length > 0)">
+            <span class="control">
+                <span class="js_label"></span><a class="pull-right"><i class="fa fa-angle-down"></i></a>
+            </span>
+        </div>
+        <div class="choices js_choices">
+            <ul class="form-control-box">
+                {% for choice in formField.vars.choices %}
+                    <li data-value="{{choice.value}}">{{choice.label|raw}}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <input [(ngModel)]="_formService.getObject().{{field}}"
+           formControlName = {{field}}
+           name="{{formField.vars.full_name}}"
+           {% if formField.vars.required %}required="required"{% endif %}
+           type="hidden">
+    {% do formField.setRendered %}
+{% endif %}

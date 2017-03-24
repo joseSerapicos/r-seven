@@ -1,0 +1,23 @@
+{% extends 'AppBundle:data-box:base.html.twig' %}
+{% block body_container %}
+    <div class="table-responsive">
+        <div class="files">
+            <a class="files-item"
+               *ngFor="let obj of _dataService.getProviderAttr('objects'); let index = index"
+               href="{% verbatim %}{{getWebPath(obj['path'])}}{% endverbatim %}"
+               target="_blank"
+               title="{% verbatim %}{{obj['name']}}{% endverbatim %}"><span>{% verbatim %}{{obj['name']}}{% endverbatim %}</span>
+                <div class="txt-align-r actions no-user-select"
+                     (click)="triggerAction($event)">
+                    <template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
+                        <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                           [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
+                           class="fa"
+                           [attr.data-action]="action"
+                           [attr.data-value]="index"></a>
+                   </template>
+                </div>
+            </a>
+        </div>
+    </div>
+{% endblock %}

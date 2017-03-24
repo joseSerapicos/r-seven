@@ -1,0 +1,27 @@
+{% set size = (size is defined ? size : 12) %}
+{% set type = (type is defined ? type : 'default') %} {# <default, info, warning, danger> #}
+{% set head = (head is defined ? head : '') %}
+{% set body = (body is defined ? body : '') %}
+{% set icon = ((type == 'info')
+    ? 'info-circle'
+    : ((type == 'warning')
+        ? 'warning'
+        : ((type == 'danger')
+            ? 'ban'
+            : null
+        )
+    )
+) %}
+
+<div class="row">
+    <div class="col-sm-{{size}}">
+        <div class="panel panel-{{type}}">
+            <div class="panel-heading">
+                {% if (icon) %}<i class="fa fa-{{icon}}"></i>&nbsp;{% endif %}{% block head %}{{head}}{% endblock %}
+            </div>
+            <div class="panel-body">
+                {% block body %}<p>{{body}}</p>{% endblock %}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,21 @@
+<div class="modal-body">
+    <div class="form-wrapper gray-bg">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>{% block header_container %}{% endblock %}</h5>
+                        <div class="txt-align-r actions">
+                            <a class="-round fa fa-times"
+                               (click)="closeAction($event)"></a>
+                        </div>
+                    </div>
+                    {% block before_container %}{% endblock %}
+                    <div class="ibox-content">{% block body %}{% endblock %}</div>
+                    {% block footer %}<div class="ibox-footer hide-on-empty">{% block footer_container %}{% endblock %}</div>{% endblock %}
+                    {% block after_container %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,12 @@
+{% if (field is defined) and (formField is defined) %}
+
+    {% include 'AppBundle:form:field-types/default.html.twig' with {
+        'formField': formField,
+        'field': field
+    } %}
+    <input [(ngModel)]="_formService.getObject().{{field}}"
+           formControlName = {{field}}
+           {% if formField.vars.required %}required="required"{% endif %}
+           type="hidden">
+
+{% endif %}

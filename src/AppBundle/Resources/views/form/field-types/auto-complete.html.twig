@@ -1,0 +1,10 @@
+{% if (field is defined) and (formField is defined) %}
+    <input [(ngModel)]="_formService.getObject().{{field}}"
+           formControlName = {{field}}
+           name="{{formField.vars.full_name}}"
+           {% if formField.vars.required %}required="required"{% endif %}
+           type="hidden">
+    <js_autoComplete [field]="'{{field}}'"
+                     [selfReference]="_dataService.getFieldChoicesAttr('{{ field }}', 'selfReference')"></js_autoComplete>
+    {% do formField.setRendered %}
+{% endif %}

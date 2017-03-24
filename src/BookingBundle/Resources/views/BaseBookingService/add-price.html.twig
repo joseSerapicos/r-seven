@@ -1,0 +1,7 @@
+{% extends 'AppBundle:data-box:default.html.twig' %}
+
+{% block after_container %}
+    <template [ngIf]="_parentDataService.getObject()['isEnabledPrice'] && _parentDataService.getProviderAttr('localData') && _parentDataService.getProviderAttr('localData')['priceDebug']">
+        {% include 'BookingBundle:BaseBookingService:add-price-debug.html.twig' %}
+    </template>
+{% endblock %}

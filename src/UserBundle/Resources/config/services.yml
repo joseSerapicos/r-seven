@@ -1,0 +1,4 @@
+services:
+    user.service.repository:
+        class: UserBundle\Service\RepositoryService
+        arguments: ["@doctrine.orm.local_database_entity_manager"]

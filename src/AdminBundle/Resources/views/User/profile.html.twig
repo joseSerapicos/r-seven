@@ -1,0 +1,52 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block head_javascripts %}
+    {{ parent() }}
+
+    {% set parentId = (_conf['object']['entityObj']) %}
+
+    {% set entityAddressData = render(controller(
+        'EntitiesBundle:EntityAddress:dataChild',
+        {'parents': {'entity': parentId}}
+    )) %}
+
+    {% set entityPhoneData = render(controller(
+        'EntitiesBundle:EntityPhone:dataChild',
+        {'parents': {'entity': parentId}}
+    )) %}
+
+    {% set entityEmailData = render(controller(
+        'EntitiesBundle:EntityEmail:dataChild',
+        {'parents': {'entity': parentId}}
+    )) %}
+
+    {% set entityLinkData = render(controller(
+        'EntitiesBundle:EntityLink:dataChild',
+        {'parents': {'entity': parentId}}
+    )) %}
+    <script>
+        _app.dependency.entityAddress = {{ entityAddressData|raw }};
+        _app.dependency.entityPhone = {{ entityPhoneData|raw }};
+        _app.dependency.entityEmail = {{ entityEmailData|raw }};
+        _app.dependency.entityLink = {{ entityLinkData|raw }};
+    </script>
+{% endblock %}
+
+
+{% block before_container %}
+    <div id="js_main"></div>
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block body %}{% endblock %}
+
+{% block local_javascripts %}
+    {% javascripts output="assets/admin/user/profile/js/local.js"
+        '@AdminBundle/Resources/public/user/profile/webpack_generated/common.js'
+        '@AdminBundle/Resources/public/user/profile/webpack_generated/app.js'
+        '@AdminBundle/Resources/public/user/profile/webpack_generated/main.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

@@ -1,0 +1,13 @@
+@import "variables";
+
+.expander {
+    color: $fc_dark;
+
+    &:hover {
+        color: $fc_dark;
+    }
+
+    > i {
+        width: 8px;
+    }
+}

@@ -1,0 +1,28 @@
+{% set _containers = [{'label': 'Select source'}, {'label': 'Add video'}] %}
+{% set choices = [
+    {'id': 'file', 'name': 'File', 'icon': 'fa-film'},
+    {'id': 'youtube', 'name': 'Youtube', 'icon': 'fa-youtube-square'},
+    {'id': 'vimeo', 'name': 'Vimeo', 'icon': 'fa-vimeo-square'}
+] %}
+
+{% extends 'AppBundle:wizard:popup.html.twig' %}
+
+{% block first_step %}
+    {% include 'AppBundle:wizard:start-static-container.html.twig' %}
+        <div class="row m-t-md">
+            <div class="col-sm-12">
+                <div class="form-control-box"
+                     [ngClass]="{'error': errors.source && (errors.source.length > 0)}">
+                    <input [(ngModel)]="_source" name="source" type="hidden">
+                    {% for choice in choices %}
+                        <div class="radio"><label class="required"><input (click)="setSource($event, '{{choice.id}}')"
+                             name="fake[source]"
+                             type="radio"
+                             value="{{choice.id}}">&nbsp;<i [ngClass]="['fa', '{{choice.icon}}']"></i>&nbsp;{{choice.name}}</label></div>
+                    {% endfor %}
+                </div>
+                <label class="error" *ngFor="let error of errors.source">{% verbatim %}{{error}}{% endverbatim %}</label>
+            </div>
+        </div>
+    {% include 'AppBundle:wizard:end-static-container.html.twig' %}
+{% endblock %}

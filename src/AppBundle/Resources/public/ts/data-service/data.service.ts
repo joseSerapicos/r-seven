@@ -1,0 +1,1140 @@
+import {Injectable, Inject, EventEmitter} from '@angular/core';
+import {DomSanitizer} from '@angular/platform-browser';
+import {PostService} from '../post.service';
+import {DataServiceProvider, Search} from './data-service-provider';
+
+// Re-exports
+// This classes are in different file because import loops
+// (HelperServices uses DataServiceProvider and DataService uses HelperService)
+export {DataServiceProvider, Search};
+
+// OrderTypes
+export var OrderTypes = {
+    up: 'up',
+    down: 'down'
+};
+
+
+@Injectable()
+export class DataService {
+    // Current object (used by form)
+    protected _objectIndex: number = null; // Index of object in provider.objects (or in _objectsProvider if defined)
+    protected _object: any = null; // Raw object
+    protected _normalizedObject: any = null; // Object normalized to template
+
+    // Objects provider is the context to work/handle with object instead of provider.objects
+    // (used in TreeViewDataService, in this case the context is always provider.objects)
+    protected _objectsProvider: any = null;
+
+    protected _objectsIds: number[] = []; // Array of "ids" of objects in provider.objects.value to avoid duplications
+    protected _newObjectsIds: number[] = []; // Array of "ids" with new objects added by the user
+
+    protected _onObjectChangeEmitter: EventEmitter<any>; // When the object change
+    protected _onObjectsChangeEmitter: EventEmitter<any>; // When the list of objects change
+
+    protected _candidateSearch: Search; // Candidate to new search with modified parameters
+
+
+    constructor(
+        protected _postService: PostService,
+        @Inject('HelperService') protected _helperService: any,
+        @Inject('DataServiceProvider') protected _provider: DataServiceProvider,
+        private _sanitizer: DomSanitizer
+    ) {
+        if (this._provider['pin']) {
+            this.pinProvider();
+        }
+
+        this._onObjectChangeEmitter = new EventEmitter();
+        this._onObjectsChangeEmitter = new EventEmitter();
+
+        this.setObjects(this._provider.objects || []);
+
+        // Initialize the search
+        this.initSearch();
+    }
+
+    /**
+     * Pin provider, turning provider on an exclusive copy for this service.
+     * It's useful when you have multiple DataServices in the same injector, so you can have multiple
+     * problems if you share the same DataServiceProvider between them.
+     * @returns {DataService}
+     */
+    protected pinProvider(): DataService
+    {
+        this._provider = this._helperService.cloneObject(this._provider, true);
+        return this;
+    }
+
+    /**
+     * Get object
+     * @returns any
+     */
+    public getObject(): any
+    {
+        return this._object;
+    }
+
+    /**
+     * Get object index
+     * @returns any
+     */
+    public getObjectIndex(): any
+    {
+        return this._objectIndex;
+    }
+
+    /**
+     * Get selected object (object normalized to view)
+     * @returns {any}
+     */
+    public getNormalizedObject(): any
+    {
+        return this._normalizedObject;
+    }
+
+    /**
+     * Get new objects
+     * @returns {any}
+     */
+    public getNewObjects(): any
+    {
+        return this._newObjectsIds;
+    }
+
+    /**
+     * Get selected object emitter to tell all subscribers about changes
+     * @returns {EventEmitter<any>}
+     */
+    public getOnObjectChangeEmitter() {
+        return this._onObjectChangeEmitter;
+    }
+
+    /**
+     * Get on objects change emitter to tell all subscribers about changes
+     * @returns {EventEmitter<any>}
+     */
+    public getOnObjectsChangeEmitter() {
+        return this._onObjectsChangeEmitter;
+    }
+
+    /**
+     * Get route
+     * @param route
+     * @returns {null}
+     */
+    public getRoute(route: string)
+    {
+        if (route in this._provider.route) {
+            return this._provider.route[route]['url'];
+        }
+        return null;
+    }
+
+    /**
+     * Set route
+     * @param route
+     * @param url
+     * @returns {DataService}
+     */
+    public setRoute(route: string, url: string): DataService
+    {
+        if (route in this._provider.route) {
+            this._provider.route[route]['url'] = url;
+        }
+        return this;
+    }
+
+    /**
+     * Refresh selected object
+     * @returns {DataService}
+     */
+    public refreshObject(): DataService
+    {
+        let id = (this._object ? this._object['id'] : null);
+
+        if (id) {
+            let that = this,
+                route = (this._provider.route['get']['url'] + '/' + id);
+
+            this.post(route, this.getRequestData(null, false, false)).then(
+                data => {
+                    let obj = (data.object || null);
+                    // Refresh object
+                    if (obj) {
+                        that.setObject(data.object, that._objectIndex);
+                    }
+                },
+                errors => { console.log(errors); }
+            );
+        }
+
+        return this;
+    }
+
+    /**
+     * Select object
+     * @param index
+     * @returns {Promise}
+     */
+    public selectObject(index: any): Promise<any>
+    {
+        let that = this;
+
+        return new Promise(function(resolve, reject) {
+            // Set only if object is different
+            if(index != that._objectIndex) {
+                let objectsProvider = (that._objectsProvider || that._provider.objects);
+
+                that._postService.post(
+                    that._provider.route['get']['url'] + '/' + objectsProvider[index]['id'],
+                    that.getRequestData(null, false, false)
+                ).then(
+                    data => {
+                        that._objectIndex = index; // The index of original object that was selected
+                        that.setLocalObject(data.object);
+                        // Now object has all of fields with the values, is not limited to the search selected field,
+                        // so we need normalize the object, because now it can has new values.
+                        that.setNormalizedObject();
+                        return resolve(true);
+                    },
+                    errors => { reject(false); });
+            } else {
+                return resolve(true);
+            }
+        });
+    }
+
+    /**
+     * Set object (when the object is changed out of the objects array from _provider,
+     * can be an external order)
+     * @param object
+     * @param index
+     * @returns any
+     */
+    public setObject(object: any, index: any = null): any
+    {
+        // Normalize object to template
+        this._normalizedObject = this._helperService.cloneObject(object, true);
+        this.normalizeObjectsToTemplate([this._normalizedObject]);
+
+        if (object && object['id']) { // Ignore new objects (no id defined)
+            let objectsProvider = (this._objectsProvider || this._provider.objects);
+
+            // Refresh objects array
+            if ((index != null) && objectsProvider[index]) {
+                // Update existent object
+                this._objectIndex = index;
+                objectsProvider[index] = this._normalizedObject;
+                this._normalizedObject['_isEdited'] = true; // Flag to use in template
+            } else {
+                // Add new object at first of array (to best user experience)
+                this._objectIndex = 0; // Update index to the new index
+                this.pushToObjects([this._normalizedObject], true);
+                this._newObjectsIds.push(object['id']); // New object added
+                this._normalizedObject['_isNew'] = true; // Flag to use in template
+            }
+        } else {
+            this._objectIndex = null;
+        }
+
+        this.setLocalObject(object);
+
+        return this;
+    }
+
+    /**
+     * Set normalized object (can be called out of the service).
+     * Used by "auto-complete".
+     * @param object
+     * @returns any
+     */
+    public setNormalizedObject(object: any = null): any
+    {
+        let objectsProvider = (this._objectsProvider || this._provider.objects);
+        object = (object || this._object);
+
+        if (object) {
+            // Normalize object to template
+            this._normalizedObject = this._helperService.cloneObject(object, true);
+            this.normalizeObjectsToTemplate([this._normalizedObject]);
+
+            // Update normalized object in objects provider
+            if ((this._objectIndex != null) && objectsProvider[this._objectIndex]) {
+                objectsProvider[this._objectIndex] = this._normalizedObject;
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * Set local object (when the object is changed based in the objects array from _provider,
+     * always is an internal order)
+     * @param object
+     * @returns {DataService}
+     */
+    protected setLocalObject(object: any): DataService
+    {
+        this._object = object;
+        this._onObjectChangeEmitter.emit(this._object);
+        return this;
+    }
+
+    /**
+     * Search initialization
+     * @returns {DataService}
+     */
+    protected initSearch(): DataService
+    {
+        this._candidateSearch = this._helperService.cloneObject(this._provider['search'], true);
+        return this;
+    }
+
+    /**
+     * Set search
+     * @param value
+     * @param attribute
+     * @returns {DataService}
+     */
+    public setSearch(value: any, attribute: string = null): DataService
+    {
+        if (attribute && (attribute in this._provider.search)) {
+            this._provider.search[attribute] = value;
+        } else if (attribute) {
+            return this; // Unknown attribute
+        } else {
+            this._provider.search = value;
+        }
+
+        // Reinitialize the search
+        this.initSearch();
+        
+        return this;
+    }
+
+    /**
+     * Get search
+     * @param attribute
+     * @returns any
+     */
+    public getSearch(attribute: string = null): any
+    {
+        if (attribute && (attribute in this._provider.search)) {
+            return this._provider.search[attribute];
+        } else if (attribute) {
+            return null; // Unknown attribute
+        }
+        return this._provider.search;
+    }
+
+    /**
+     * Get fields
+     * @param attribute
+     * @returns any
+     */
+    public getFields(attribute: string = null): any
+    {
+        if (attribute && (attribute in this._provider.fields)) {
+            return this._provider.fields[attribute];
+        } else if (attribute) {
+            return null; // Unknown attribute
+        }
+        return this._provider.fields;
+    }
+
+    /**
+     * Set objects
+     * @param objects
+     * @param isMerge (if true merge objects, otherwise replace them)
+     * @returns any
+     */
+    public setObjects(objects: any, isMerge: boolean = false): any
+    {
+        objects = (objects || []);
+
+        this.normalizeObjectsToTemplate(objects);
+
+        // Merge objects
+        if (isMerge) {
+            this.pushToObjects(objects);
+        } else { // Replace objects
+            this.resetObjects();
+            this.pushToObjects(objects);
+            this.newObject().then( // Reset object, index and all information of object can be changed
+                data => {},
+                errors => { console.log(errors); }
+            );
+        }
+
+        // Emmit changes
+        this._onObjectsChangeEmitter.emit(objects);
+
+        return this;
+    }
+
+    /**
+     * Reset objects
+     * @returns {DataService}
+     */
+    protected resetObjects() {
+        this._provider.objects = [];
+        this._objectsIds = [];
+        this._newObjectsIds = [];
+        return this;
+    }
+
+    /**
+     * Push to objects
+     * @param objects
+     * @param isFirst (determines if objects should be at first)
+     * @returns any
+     */
+    protected pushToObjects(objects: any, isFirst: boolean = false): any
+    {
+        let //hasChanges = false, // To control the changes emitter
+            objectsProvider = (this._objectsProvider || this._provider.objects);
+
+        for (let obj of objects) {
+            if (!this._helperService.inArray(parseInt(obj['id']), this._objectsIds)) {
+                if (isFirst) {
+                    objectsProvider.unshift(obj);
+                } else {
+                    objectsProvider.push(obj);
+                }
+                this._objectsIds.push(parseInt(obj['id']));
+                //hasChanges = true;
+            }
+        }
+
+        // Emmit changes
+        /*if (hasChanges) {
+            this._onObjectsChangeEmitter.emit(objects);
+        }*/
+
+        return this;
+    }
+
+    /**
+     * Pull from objects
+     * @param index
+     * @returns any
+     */
+    protected pullFromObjects(index: any): any
+    {
+        let objectsProvider = (this._objectsProvider || this._provider.objects),
+            objId = parseInt(objectsProvider[index]['id']);
+
+        objectsProvider.splice(index, 1);
+
+        if ((index = this._helperService.arraySearch(objId, this._objectsIds)) != null) {
+            this._objectsIds.splice(index, 1);
+        }
+        if ((index = this._helperService.arraySearch(objId, this._newObjectsIds)) != null) {
+            this._newObjectsIds.splice(index, 1);
+        }
+
+        return this;
+    }
+
+    /**
+     * Get field choice
+     * @param field
+     * @param key (key of field choice)
+     * @returns {*|null}
+     */
+    public getFieldChoice(field: string, key = null)
+    {
+        // Return a specific field choice by key
+        if (key in this._provider.fieldsChoices[field]['value']) {
+            return this._provider.fieldsChoices[field]['value'][key];
+        }
+        return null
+    }
+
+    /**
+     * Get field choices attribute
+     * @param field
+     * @param attribute
+     * @returns {any}
+     */
+    public getFieldChoicesAttr(field: string, attribute: string)
+    {
+        // Return a specific attribute of field choices
+        if (this._provider.fieldsChoices[field] && (attribute in this._provider.fieldsChoices[field])) {
+            return this._provider.fieldsChoices[field][attribute];
+        }
+        return null
+    }
+
+    /**
+     * Get field choices
+     * @param field
+     * @returns {*|null}
+     */
+    public getFieldChoices(field: string)
+    {
+        return this._provider.fieldsChoices[field]['value'] || null;
+    }
+
+    /**
+     * Set fields choices.
+     * @param fieldsChoices
+     * @returns {DataService}
+     */
+    public setFieldsChoices(fieldsChoices): DataService
+    {
+        this._provider.fieldsChoices = fieldsChoices;
+        return this;
+    }
+
+    /**
+     * Merge provider attribute
+     * @param attribute
+     * @param value
+     * @returns {DataService}
+     */
+    public mergeProviderAttr(attribute: string, value: any): DataService
+    {
+        if (attribute in this._provider) {
+            this._provider[attribute] =
+                this._helperService.mergeObjects(this._provider[attribute], value);
+        }
+        return this;
+    }
+
+    /**
+     * Set provider attribute
+     * @param attribute
+     * @param value
+     * @returns {DataService}
+     */
+    public setProviderAttr(attribute: string, value: any): DataService
+    {
+        if (attribute in this._provider) {
+            this._provider[attribute] = value;
+        }
+        return this;
+    }
+
+    /**
+     * Get provider attribute
+     * @param attribute
+     * @returns {any|null}
+     */
+    public getProviderAttr(attribute: string): any
+    {
+        return this._provider[attribute] || null;
+    }
+
+    /**
+     * Get provider extra data attribute
+     * @param attribute
+     * @returns {any|null}
+     */
+    public getProviderExtraDataAttr(attribute: string): any
+    {
+        return (
+            (this._provider['extraData'] && this._provider['extraData'][attribute])
+                ? this._provider['extraData'][attribute]
+                : null
+        );
+    }
+
+    /**
+     * Get candidate search
+     * @returns any
+     */
+    public getCandidateSearch(): any
+    {
+        return (this._candidateSearch || null);
+    }
+
+    /**
+     * Get candidate search attribute
+     * @param attribute
+     * @returns any
+     */
+    public getCandidateSearchAttr(attribute: string): any
+    {
+        return this._candidateSearch[attribute] || null;
+    }
+
+    /**
+     * Reset extra fields
+     * @returns {DataService}
+     */
+    protected resetExtraFields(): DataService
+    {
+        if (this.getProviderExtraDataAttr('fields')) {
+            for (let field in this.getProviderExtraDataAttr('fields')) {
+                this._provider.extraData.fields[field] = null;
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Normalize objects to show in template
+     * Detect fields that needs to be rendered to view/template
+     * @param objects
+     * @param fields
+     * @returns any
+     */
+    protected normalizeObjectsToTemplate(objects: any = null, fields: any[] = null): any
+    {
+        objects = (objects || this._provider.objects);
+        fields = (fields || this._provider.fields['view']);
+
+        if(objects && fields) {
+            for (let field of fields) {
+                let fieldMetadata = this._provider.fields['metadata'][field];
+                if (fieldMetadata['skipNormalizer']) { continue; }
+
+                switch (fieldMetadata['type']) {
+                    case 'boolean':
+                    case 'code':
+                    case 'percentage':
+                    case 'monetary':
+                    case 'icon':
+                    case 'link':
+                    case 'img':
+                    case 'avatar':
+                    case 'status':
+                        for (let obj of objects) {
+                            if (typeof obj[field] != 'undefined') { // Can be undefined, if the search doest have the field selected
+                                obj[field] = this.renderField(field, obj);
+                            }
+                        }
+                        break;
+                }
+
+                // For "enum" type (key is the label, pattern of Symfony ChoiceType)
+                if (this._provider.fieldsChoices
+                    && this._provider.fieldsChoices[field]
+                    && this._provider.fieldsChoices[field]['value']
+                ) {
+                    let enumObj = this._provider.fieldsChoices[field]['value'];
+                    for (let obj of objects) {
+                        for (let enumKey in enumObj) {
+                            if (enumObj[enumKey] == obj[field]) {
+                                obj[field] = enumKey;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Render field
+     * @param field
+     * @param object
+     * @returns {string}
+     */
+    public renderField(field: string, object: any): any
+    {
+        // Get field metadata
+        let fieldMetadata = (this._provider.fields['metadata'][field] || null),
+            value = object[field];
+
+        // Render field to the view/template
+        if(fieldMetadata) {
+            switch (fieldMetadata['type']) {
+                case 'boolean':
+                    if (this._helperService.castToBoolean(value)) {
+                        return ('<i class="fa fa-check"></i>');
+                    } else {
+                        return ('<i class="fa fa-ban"></i>');
+                    }
+                case 'code':
+                    if (object['storeObj']
+                        && this._helperService.getGlobalVar('stores')
+                        && this._helperService.getGlobalVar('stores')[object['storeObj']]
+                    ) {
+                        return this._sanitizer.bypassSecurityTrustHtml( // Used to allow the style attr
+                            '<span class="store" style="background-color: '
+                            + this._helperService.getGlobalVar('stores')[object['storeObj']]['color']
+                            + '">' + value + '</span>'
+                        );
+                    }
+                    return (value);
+                case 'percentage':
+                    return (value + '%');
+                case 'monetary':
+                    return (value + '€');
+                case 'icon':
+                    return ('<i class="fa ' + value + '"></i>');
+                case 'link':
+                    return ('<a href="' + value + '" target="_blank">' + value + '</a>');
+                case 'img':
+                case 'avatar':
+                    let extraClass = ((fieldMetadata['type'] == 'avatar') ? 'img-circle' : 'thumbnail');
+                    return (value
+                        ? ('<img alt="'+fieldMetadata['label']+'" class="'+extraClass+'" src="'
+                            + (this._helperService.getUploadWebPath(value) || value)
+                            + '">')
+                        : null);
+                case 'status':
+                    let statusMap = {'NO': 'danger', 'PARTIAL': 'warning', 'YES': 'primary'};
+                    return ('<span class="status -' + (statusMap[value] || 'danger') + '"></span>');
+            }
+        }
+
+        return value;
+    }
+
+    /**
+     * New object (call this function to create a new object)
+     * @param index
+     * @returns {Promise}
+     */
+    public newObject(index: any = null): Promise<any> {
+        let that = this;
+
+        return new Promise(function(resolve, reject) {
+            let newObj = {};
+            if (index != null) {
+                let objectsProvider = (that._objectsProvider || that._provider.objects);
+
+                return that._postService.post(
+                    that._provider.route['get']['url'] + '/' + objectsProvider[index]['id'],
+                    that.getRequestData()
+                ).then(
+                    data => {
+                        for (let field of that._provider.fields['form']) {
+                            newObj[field] = ((that._provider.fields['metadata'][field]['acl'] === 'read')
+                                    ? (that._provider.fields['metadata'][field]['default'] || null)
+                                    : (data.object[field] || null)
+                            );
+                            // "fieldInView" (for auto-complete, html-select, etc.)
+                            if (that._provider.fields['metadata'][field]['fieldInView'] && newObj[field]) {
+                                let fieldInView = that._provider.fields['metadata'][field]['fieldInView'];
+                                newObj[fieldInView] = data.object[fieldInView];
+                            }
+                        }
+                        that.setObject(newObj);
+                        that.resetExtraFields();
+                        return resolve(true);
+                    },
+                    errors => { console.log(errors); return reject(false); }
+                );
+            } else {
+                for (let field of that._provider.fields['form']) {
+                    newObj[field] = (that._provider.fields['metadata'][field]['default'] || null);
+                }
+                that.setObject(newObj);
+                that.resetExtraFields();
+                return resolve(true);
+            }
+        });
+    }
+
+    /**
+     * Save object.
+     * @param data
+     * @param id
+     * @param route (specific route to save)
+     * @returns {Promise}
+     */
+    public save(data: any, id = null, route = null): Promise<any>
+    {
+        let that = this;
+
+        return new Promise(function(resolve, reject) {
+            // Set route (if id is provided, use 'edit', else use 'add')
+            if (!route) {
+                route = (id
+                        ? that._provider.route['edit']['url']
+                        : (that._provider.route['add']
+                            ? that._provider.route['add']['url']
+                            : that._provider.route['edit']['url']
+                    )
+                );
+            }
+            if (id) { route += ('/' + id); }
+
+            that.post(route, that.getRequestData(data)).then(
+                data => {
+                    // Refresh all objects
+                    if (data.objects) {
+                        that.setObjects(data.objects);
+                    }
+
+                    // Refresh fields choices
+                    if (data.fieldsChoices) {
+                        that.setFieldsChoices(data.fieldsChoices);
+                    }
+
+                    // Local data (Do not override, merge data)
+                    if (data['localData']) {
+                        that._provider.localData =
+                            that._helperService.mergeObjects(that._provider.localData, data['localData']);
+                    }
+
+                    let obj = (data.object || null);
+                    // Refresh object
+                    if (obj) {
+                        that.setObject(data.object, that._objectIndex);
+                    }
+
+                    return resolve(obj);
+                },
+                errors => {
+                    // Local data (Do not override, merge data). Exception in errors list used in some cases.
+                    if (errors['localData']) {
+                        that._provider.localData =
+                            that._helperService.mergeObjects(that._provider.localData, errors['localData']);
+                        delete errors['localData']; // It's no more necessary
+                    }
+
+                    // Refresh object
+                    if (errors['object']) {
+                        that.setObject(errors['object'], that._objectIndex);
+                        delete errors['object']; // It's no more necessary
+                    }
+
+                    return reject(errors);
+                }
+            );
+        });
+    }
+
+    /**
+     * Search objects
+     * @returns {DataService}
+     */
+    public search(): DataService
+    {
+        // Only search if parameters have changed
+        if (this._helperService.isEqualObject(this._provider['search'], this._candidateSearch)) {
+            return this;
+        }
+
+        // Update search
+        this._provider['search'] = this._helperService.cloneObject(this._candidateSearch, true);
+        // Refresh objects
+        return this.refresh();
+    }
+
+    /**
+     * Refresh list of objects
+     * @returns {DataService}
+     */
+    public refresh(): DataService
+    {
+        let that = this;
+
+        // Reset pagination for new search
+        this.resetPagination();
+
+        this.post(
+            this._provider.route['get']['url'],
+            this.getRequestData(null, false)
+        ).then(
+            data => {
+                // Update list of objects
+                that.setObjects(data.objects || null);
+                that.setFieldsChoices(data.fieldsChoices || null);
+            },
+            errors => { console.log(errors); }
+        );
+
+        return this;
+    }
+
+    /**
+     * Get more objects (pagination)
+     * @returns {DataService}
+     */
+    public getMoreObjects(): DataService
+    {
+        let that = this;
+
+        this.post(
+            this._provider.route['get']['url'],
+            this.getRequestData()
+        ).then(
+            data => {
+                // Update list of objects
+                that.setObjects(data.objects || [], true);
+            },
+            errors => { console.log(errors); }
+        );
+
+        return this;
+    }
+
+    /**
+     * Get choices of entity based on search configuration (for select, auto-complete, etc.)
+     * @returns {DataService}
+     */
+    public choices(): DataService
+    {
+        let that = this,
+            noReset = true;
+
+        // Only search if parameters have changed
+        if (!this._helperService.isEqualObject(this._provider['search'], this._candidateSearch)) {
+            // Update search
+            this._provider['search'] = this._helperService.cloneObject(this._candidateSearch, true);
+            // Reset pagination for new search
+            this.resetPagination();
+            // To reset objects
+            noReset = false;
+        }
+
+        this.post(
+            this._provider.route['choices']['url'],
+            this.getRequestData(null, noReset)
+        ).then(
+            data => {
+                // Update list of objects
+                that.setObjects(data.objects || [], noReset);
+            },
+            errors => { console.log(errors); }
+        );
+
+        return this;
+    }
+
+    /**
+     * Delete object.
+     * @param index
+     * @returns {Promise}
+     */
+    public delete(index: any): Promise<any>
+    {
+        let that = this,
+            objectsProvider = (this._objectsProvider || this._provider.objects);
+
+        return new Promise(function(resolve, reject) {
+            that.post(
+                that._provider.route['delete']['url'] + '/' + objectsProvider[index]['id'],
+                that.getRequestData()
+            ).then(
+                data => {
+                    // Refresh all objects
+                    if (data.objects) {
+                        that.setObjects(data.objects);
+                    }
+
+                    // Refresh fields choices
+                    if (data.fieldsChoices) {
+                        that.setFieldsChoices(data.fieldsChoices);
+                    }
+
+                    // Refresh objects array
+                    that.pullFromObjects(index);
+
+                    that.newObject().then(
+                        data => {},
+                        errors => { console.log(errors); }
+                    );
+
+                    return resolve(true);
+                },
+                errors => { console.log(errors); return resolve(false); }
+            );
+        });
+    }
+
+    /**
+     * Order object (change priority value).
+     * @param index
+     * @param type
+     * @returns any
+     */
+    public order(index: any, type: string): any
+    {
+        let that = this,
+            objectsProvider = (this._objectsProvider || this._provider.objects);
+
+        if (OrderTypes[type] // Validate order type
+            // If priority is already in the max value (0), then 'up' doesn't make sense.
+            && ((objectsProvider[index]['priority'] > 0) || (OrderTypes[type] == 'down'))
+        ) {
+            this.post(
+                (this._provider.route['order']['url'] + '/' + objectsProvider[index]['id'] + '/' + OrderTypes[type]),
+                that.getRequestData()
+            ).then(
+                data => {
+                    // Refresh all objects
+                    if (data.objects) {
+                        that.setObjects(data.objects);
+                    }
+
+                    // Refresh fields choices
+                    if (data.fieldsChoices) {
+                        that.setFieldsChoices(data.fieldsChoices);
+                    }
+
+                    let obj = (data.object || null);
+                    // Refresh object
+                    if (obj) {
+                        that.setObject(obj, index);
+
+                        // If objects are not returned, then order objects by "priority" value
+                        if (!data.objects) {
+                            that._helperService.orderObjects(that._provider.objects, 'priority');
+                        }
+                    }
+                },
+                errors => {
+                    console.log(errors);
+                }
+            );
+        }
+
+        return this;
+    }
+
+    /**
+     * Delete objects from array by index.
+     * @param data
+     * @returns {DataService}
+     */
+    public deleteArray(data: any): DataService
+    {
+        let that = this;
+        let objects = this._provider.objects;
+        let idArr = [],
+            indexArr = [];
+
+        if (objects && data && (data.length > 0)) {
+            for (let obj of data) {
+                if (objects[obj.value]) {
+                    idArr.push(objects[obj.value]['id']);
+                    indexArr.push(obj.value);
+                }
+            }
+        }
+
+        this.post(
+            this._provider.route['delete']['url'],
+            this.getRequestData({id: idArr})
+        ).then(
+            data => {
+                // Refresh fields choices
+                if (data.fieldsChoices) {
+                    that.setFieldsChoices(data.fieldsChoices);
+                }
+
+                // Refresh objects array
+                // Correction for index (each time you remove an index, all indices needs to be corrected)
+                let indexCorrection = 0;
+                for (let index of indexArr) {
+                    that.pullFromObjects(index - indexCorrection);
+                    indexCorrection++;
+                }
+            },
+            errors => { console.log(errors); }
+        );
+
+        return this;
+    }
+
+    /**
+     * Detail object.
+     * @param index
+     */
+    public detail(index: any = null): void
+    {
+        return this.redirect('detail', index);
+    }
+
+    /**
+     * Redirect page.
+     * @param route
+     * @param index
+     */
+    public redirect(route: string, index: any = null): void
+    {
+        index = ((index == null) ? this._objectIndex : index);
+        let objectsProvider = (this._objectsProvider || this._provider.objects);
+
+        location.href = (this._provider.route[route]['url'] + '/' + objectsProvider[index]['id']);
+        return;
+    }
+
+    /**
+     * Post to server.
+     * @param url
+     * @param data
+     * @returns {Promise}
+     */
+    public post(url: string, data: any = null): Promise<any>
+    {
+        let that = this;
+
+        return new Promise(function(resolve, reject) {
+            return that._postService.post(
+                url,
+                data
+            ).then(
+                data => {
+                    // Update search
+                    if (data['search'] && (typeof data['search']['hasMore'] != 'undefined')) {
+                        // Equals search in provider and candidate search to avoid return false
+                        // in comparisons doing unnecessary searches.
+                        that._candidateSearch.hasMore = that._provider.search.hasMore
+                            = that._helperService.castToBoolean(data['search']['hasMore']);
+                        that._candidateSearch.offset = that._provider.search.offset
+                            = (data['search']['offset'] || 0);
+                    }
+
+                    return resolve(data);
+                },
+                errors => { return reject(errors); }
+            );
+        });
+    }
+
+    /**
+     * Get data to request
+     * @param data
+     * @param updatePagination (determines if pagination should be updated before return request data)
+     * @param hasSearch (determines if search is sent)
+     * @returns {any}
+     */
+    public getRequestData(data: any = null, updatePagination: boolean = true, hasSearch: boolean = true): any
+    {
+        // Update pagination
+        if (updatePagination) {
+            this.updatePagination();
+        }
+
+        if (!data || (typeof data == 'object')) {
+            return {
+                csrfToken: this._helperService.getGlobalVar('csrfToken'),
+                search: (hasSearch ? this._provider['search'] : null),
+                data: data
+            }
+        }
+
+        // If data is provided it's assume that is a serialized form
+        return (data + '&search=' + JSON.stringify(this._provider['search']));
+    }
+
+    /**
+     * Reset pagination offset
+     * @returns {DataService}
+     */
+    protected resetPagination(): DataService
+    {
+        this._provider.search.offset = 0;
+        return this;
+    }
+
+    /**
+     * Reset pagination offset
+     * @returns {DataService}
+     */
+    protected updatePagination(): DataService
+    {
+        this._provider.search.offset = (this._provider.objects.length - this._newObjectsIds.length);
+        return this;
+    }
+}

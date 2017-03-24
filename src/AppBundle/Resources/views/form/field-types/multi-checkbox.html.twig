@@ -1,0 +1,15 @@
+{% if (field is defined) and (formField is defined) %}
+
+    <div [multiCheckbox]="'{{field}}'"
+         class="form-control-box"
+         [ngClass]="{'error': _formService.getErrors().{{field}} && (_formService.getErrors().{{field}}.length > 0)}">
+        {% for option in formField.children %}
+            {{ form_widget(option) }}
+        {% endfor %}
+    </div>
+    <input [(ngModel)]="_formService.getObject().{{field}}"
+           formControlName = {{field}}
+           {% if formField.vars.required %}required="required"{% endif %}
+           type="hidden">
+
+{% endif %}

@@ -1,0 +1,42 @@
+user:
+    resource: "@UserBundle/Controller/"
+    type:     annotation
+
+booking:
+    resource: "@BookingBundle/Controller/"
+    type:     annotation
+
+accounting:
+    resource: "@AccountingBundle/Controller/"
+    type:     annotation
+
+services:
+    resource: "@ServicesBundle/Controller/"
+    type:     annotation
+
+sysadmin:
+    resource: "@SysadminBundle/Controller/"
+    type:     annotation
+
+admin:
+    resource: "@AdminBundle/Controller/"
+    type:     annotation
+
+login:
+    resource: "@LoginBundle/Controller/"
+    type:     annotation
+
+home:
+    resource: "@HomeBundle/Controller/"
+    type:     annotation
+
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
+
+entities:
+    resource: "@EntitiesBundle/Controller/"
+    type:     annotation
+
+_liip_imagine:
+    resource: "@LiipImagineBundle/Resources/config/routing.xml"

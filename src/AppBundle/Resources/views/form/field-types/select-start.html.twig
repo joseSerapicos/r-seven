@@ -1,0 +1,9 @@
+{% if (field is defined) and (formField is defined) %}
+    <select [(ngModel)]="_formService.getObject().{{field}}"
+            formControlName = {{field}}
+            class="form-control"
+            [class.error]="_formService.getErrors().{{field}} && (_formService.getErrors().{{field}}.length > 0)"
+            id="{{ formField.vars.id }}"
+            name="{{ formField.vars.full_name }}"
+            {% if formField.vars.required %}required="required"{% endif %}>
+{% endif %}

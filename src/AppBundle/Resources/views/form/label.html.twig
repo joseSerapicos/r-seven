@@ -1,0 +1,7 @@
+{% if (formField and metadata) %}
+    {% if metadata['type'] == 'boolean' %}
+        <label class="col-sm-2 control-label">{{ metadata['label'] }}</label>
+    {% else %}
+        {{ form_label(formField, metadata['label']) }}
+    {% endif %}
+{% endif %}

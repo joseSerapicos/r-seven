@@ -1,0 +1,6 @@
+{% extends 'AppBundle::base-popup.html.twig' %}
+{% block before_container %}{% endblock %}
+{% block header_container %}Form&nbsp;{% verbatim %}{{getProviderAttr('label')}}{% endverbatim %}<small>&nbsp;({% verbatim %}{{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}}{% endverbatim %})</small>{% endblock %}
+{% block body %}{% endblock %}
+{% block footer_container %}{% endblock %}
+{% block after_container %}{% endblock %}

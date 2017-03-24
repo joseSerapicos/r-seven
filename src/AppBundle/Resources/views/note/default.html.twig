@@ -1,0 +1,25 @@
+{% extends 'AppBundle:data-box:base.html.twig' %}
+{% block body_container %}
+    <div class="row">
+        <ul class="notes">
+            <li class="col-sm-6 col-md-4"
+                *ngFor="let obj of _dataService.getProviderAttr('objects'); let index = index">
+                <div>
+                    <small>{% verbatim %}{{obj['insertTime']}}{% endverbatim %}</small>
+                    <h4>{% verbatim %}{{obj['name']}}{% endverbatim %}</h4>
+                    <p>{% verbatim %}{{obj['description']}}{% endverbatim %}</p>
+                    <span class="txt-align-r actions no-user-select"
+                          (click)="triggerAction($event)">
+                        <template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
+                            <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                               [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
+                               class="fa"
+                               [attr.data-action]="action"
+                               [attr.data-value]="index"></a>
+                        </template>
+                    </span>
+                </div>
+            </li>
+        </ul>
+    </div>
+{% endblock %}

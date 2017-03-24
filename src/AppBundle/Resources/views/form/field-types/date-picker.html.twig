@@ -1,0 +1,18 @@
+{% if (formField is defined) and (field is defined) %}
+
+    <div class="input-group js_dataPicker"
+         [datePicker]="'{{field}}'"
+         #dpk_{{field}}="" [control]="dpk_{{field}}">
+        <input [(ngModel)]="_formService.getObject().{{field}}"
+               formControlName = {{field}}
+               name="{{formField.vars.full_name}}"
+               {% if formField.vars.required %}required="required"{% endif %}
+               class="form-control"
+               [class.error]="_formService.getErrors()['{{field}}'] && (_formService.getErrors()['{{field}}'].length > 0)"
+               placeholder="yyyy-mm-dd"
+               ngbDatepicker #dpk_{{field}}="ngbDatepicker">
+        <a class="input-group-addon action dsp-table-cell fa fa-calendar"></a>
+    </div>
+    {% do formField.setRendered %}
+
+{% endif %}

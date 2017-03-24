@@ -1,0 +1,15 @@
+# Configuration files
+/app/config/parameters.yml
+/app/config/config.yml
+
+# Cache
+/var
+
+# Tests
+/tests
+
+# Uploads
+/web/upload/
+
+# Fake files
+/github-mockup-fake-repository

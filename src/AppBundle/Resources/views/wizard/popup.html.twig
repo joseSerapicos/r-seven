@@ -1,0 +1,58 @@
+{% extends 'AppBundle:data-box:base-popup.html.twig' %}
+
+{% block body %}{% if (_containers is defined) %}
+    <div class="wizard">
+        <ul class="wizard-nav">
+            {% for key, value in _containers %}
+                <li class="wizard-step"
+                    [class.step-active]="{{key}} == _wizardManagerService.getIndex()">
+                    <span class="step-number">{{key + 1}}</span>
+                    <span class="step-text">{{value['label']}}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% block before_steps %}{% endblock %}
+
+    {% block steps %}
+        {# Override this block if you want to define static steps. #}
+        {% for key, value in _containers %}
+            {% if (key == 0) %}
+                {% block first_step %}
+                    {# Override this block if you don't want a form in first step.
+                       You can replace this step to another one static container or lazy load container. #}
+                    {% include 'AppBundle:wizard:start-static-container.html.twig' %}
+                        {% include 'AppBundle:form:form.html.twig' with {
+                            'form': _form,
+                            'fields': (_conf['fields'] is defined ? _conf['fields'] : null)
+                        } %}
+                    {% include 'AppBundle:wizard:end-static-container.html.twig' %}
+                {% endblock %}
+            {% else %}
+                {% include 'AppBundle:wizard:lazy-load-container.html.twig' %}
+            {% endif %}
+        {% endfor %}
+    {% endblock %}
+
+    {% block after_steps %}{% endblock %}
+
+{% endif %}{% endblock %}
+
+{% block footer_container %}
+    <div class="form-horizontal">
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                <button class="btn-default btn" type="button" (click)="_wizardManagerService.cancelAction($event)">Cancel</button>
+                <button class="btn-primary btn" type="button" (click)="_wizardManagerService.prevAction($event)"
+                        *ngIf="0 < _wizardManagerService.getIndex()">Prev</button>
+                <button class="btn-primary btn" type="button" (click)="_wizardManagerService.nextAction($event)"
+                        *ngIf="{{(_containers|length) - 1}} > _wizardManagerService.getIndex()">Next</button>
+                {% block buttons %}
+                    <button class="btn-primary btn" type="button" (click)="_wizardManagerService.finishAction($event)"
+                            *ngIf="{{(_containers|length) - 1}} == _wizardManagerService.getIndex()">Finish</button>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

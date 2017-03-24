@@ -1,0 +1,18 @@
+{% if (field is defined) and (formField is defined) and (selfReference is defined) %}
+    {% include 'AppBundle:form:field-types/select-start.html.twig' with {
+        'formField': formField,
+        'field': field
+    } %}
+        <option value=""></option>
+        {% if selfReference %}
+            <template ngFor let-choice [ngForOf]="_dataService.getFieldChoices('{{ field }}')">
+                <option *ngIf="!choice['ascendantNodes'][_formService.getObject()['id']]"
+                        value="{% verbatim %}{{choice['id']}}{% endverbatim %}">{% verbatim %}{{choice['name']}}{% endverbatim %}</option>
+            </template>
+        {% else %}
+            <option *ngFor="let choice of _dataService.getFieldChoices('{{ field }}')"
+                    value="{% verbatim %}{{choice['id']}}{% endverbatim %}">{% verbatim %}{{choice['name']}}{% endverbatim %}</option>
+        {% endif %}
+    </select>
+    {% do formField.setRendered %}
+{% endif %}

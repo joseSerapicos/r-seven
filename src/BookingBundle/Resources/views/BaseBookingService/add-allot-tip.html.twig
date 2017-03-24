@@ -1,0 +1,12 @@
+{% set size = 12 %}
+{% set type = 'default' %}
+
+{% extends 'AppBundle:tip:default.html.twig' %}
+
+{% block head %}Allot allocation{% endblock %}
+
+{% block body %}
+    <ul class="no-bullets"><li class="p-xxs" *ngFor="let allot of _dataService.getProviderAttr('localData')['allot'];">
+        <span class="status -{% verbatim %}{{ _statusMap[allot['status']] || 'danger' }}{% endverbatim %}"></span>&nbsp;{% verbatim %}{{allot['date']}}{% endverbatim %}
+    </li></ul>
+{% endblock %}

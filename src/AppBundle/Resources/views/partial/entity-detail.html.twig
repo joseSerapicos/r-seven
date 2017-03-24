@@ -1,0 +1,45 @@
+{% if ( (object is defined) and (fields is defined) ) %}
+    <div class="row">
+        <div class="col-sm-9">
+            <h2>{{ (object['code'] is defined) ? object['code'] : object['id'] }}{{ (object['name'] is defined) ? ('&nbsp;&nbsp;&commat;&nbsp;&nbsp;' ~ object['name'])|raw : '' }}</h2>
+            <div class="row m-l-xs">
+                {% for field in fields['view']
+                   if ((field not in ['id', 'code', 'name', 'isEnabled', 'insertTime', 'insertUser'])
+                       and (object[field] is defined)
+                       and object[field]
+                   )
+                %}
+                    {% set fieldMetadata = fields['metadata'][field]  %}
+                    <div class="col-sm-6">
+                        {% if fieldMetadata['type'] == 'number' %}
+                            <p><strong>{{ fieldMetadata['label'] }}</strong>:&nbsp;{{ object[field] }}</p>
+                        {% elseif fieldMetadata['type'] == 'boolean' %}
+                            <p>{{ (object[field]
+                                ? '<i class="fa fa-check"></i>'
+                                : '<i class="fa fa-ban"></i>')|raw }}&nbsp;<strong>{{ fieldMetadata['label'] }}</strong></p>
+                        {% elseif fieldMetadata['type'] == 'icon' %}
+                            <p><strong>{{ fieldMetadata['label'] }}</strong>:&nbsp;<i class="fa {{ object[field] }}"></i></p>
+                        {% elseif fieldMetadata['type'] in ['avatar', 'img'] %}
+                            {% set url = (('/upload/' in object[field])
+                                ? ('/upload/' ~ (object[field]|split('/upload/', 2))[1])
+                                : object[field]) %}
+                            {% set extraClass = ((fieldMetadata['type'] == 'avatar') ? 'img-circle' : 'thumbnail') %}
+                            <p>{{ ('<img alt="' ~ fieldMetadata['label'] ~ '" class="' ~ extraClass ~ '" src="' ~ url ~ '">')|raw }}</p>
+                        {% else %}
+                            <p><strong>{{ fieldMetadata['label'] }}</strong><br/>{{ object[field] }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="well m-b-sm m-t-md">
+                <p>{{ (object['isEnabled']
+                    ? '<i class="fa fa-check"></i>'
+                    : '<i class="fa fa-ban"></i>')|raw }}&nbsp;<strong>{{ fields['metadata']['isEnabled']['label'] }}</strong></p>
+                <p><strong>{{ fields['metadata']['insertTime']['label'] }}</strong><br/>{{ object['insertTime'] }}</p>
+                <p><strong>{{ fields['metadata']['insertUser']['label'] }}</strong><br/>{{ object['insertUser'] }}</p>
+            </div>
+        </div>
+    </div>
+{% endif %}

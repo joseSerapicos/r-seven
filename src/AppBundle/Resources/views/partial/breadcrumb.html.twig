@@ -1,0 +1,15 @@
+{% if _breadcrumb %}
+<div class="row border-bottom white-bg main-head-breadcrumb">
+    <div class="col-lg-12">
+        <ol class="breadcrumb">
+            {% for value in _breadcrumb %}
+                {% if loop.last %}
+                    <li class="active"><strong>{{ value['label'] }}</strong></li>
+                {% else %}
+                    <li><a href="{{ value['url'] }}">{{ value['label'] }}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+{% endif %}

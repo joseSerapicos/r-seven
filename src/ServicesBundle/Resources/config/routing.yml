@@ -1,0 +1,3 @@
+services:
+    resource: "@ServicesBundle/Controller/"
+    type:     annotation

@@ -1,0 +1,25 @@
+{
+  "name": "weboffice",
+  "description": "weboffice rp",
+  "main": "index.js",
+  "authors": [
+    "jose.serapicos"
+  ],
+  "license": "UNLICENSED",
+  "moduleType": [
+    "node"
+  ],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "font-awesome": "fontawesome#^4.5.0"
+  }
+}

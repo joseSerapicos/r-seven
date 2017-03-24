@@ -1,0 +1,26 @@
+services:
+    app.service.twig_extension:
+        class: AppBundle\Service\TwigExtensionService
+        tags:
+            - { name: twig.extension }
+
+    app.service.twig:
+        class: AppBundle\Service\TwigService
+        arguments: ["@service_container"]
+        tags:
+            - { name: twig.extension }
+
+    app.service.database:
+        class: AppBundle\Service\DatabaseService
+        arguments: ["@service_container"]
+
+    app.service.app:
+        class: AppBundle\Service\AppService
+        arguments: ["@service_container"]
+
+    app.service.code_generator:
+        class: AppBundle\Service\CodeGeneratorService
+        arguments: ["@session", "@doctrine.orm.local_database_entity_manager"]
+
+    app.service.price:
+        class: AppBundle\Service\PriceService

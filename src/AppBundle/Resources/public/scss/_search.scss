@@ -1,0 +1,72 @@
+@import "variables";
+
+.search {
+    &-criteria,
+    &-order-by {
+        position: absolute;
+        width: 100%;
+        z-index: 999;
+
+        .controller {
+            display: table;
+            white-space: nowrap;
+            margin-bottom: 3px;
+
+            > * {
+                display: table-cell;
+                vertical-align: middle;
+            }
+
+            > .select {
+
+                > select,
+                > input {
+                    display: inline-block;
+                    width: auto;
+                }
+            }
+
+            > .actions {
+                width: 100%;
+                padding-left: 8px;
+            }
+        }
+    }
+
+    &-fields {
+        > select {
+            border: 0 none;
+            margin: 0;
+            padding: 0;
+        }
+    }
+
+    &-pagination {
+        color: $link_color_primary;
+        font-weight: bold;
+        overflow: hidden;
+
+        > a,
+        > span {
+            display: block;
+            text-align: center;
+        }
+
+        > a {
+            color: $link_color_primary;
+            cursor: pointer;
+            font-size: 46px;
+            line-height: 32px;
+            position: relative;
+            top: -14px;
+
+            &:hover {
+                color: $link-hover_color;
+            }
+
+            &:active {
+                color: $link-active_color;
+            }
+        }
+    }
+}

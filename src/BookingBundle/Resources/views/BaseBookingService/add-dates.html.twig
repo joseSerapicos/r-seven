@@ -1,0 +1,30 @@
+{% extends 'AppBundle:form:form.html.twig' %}
+
+{% block fields %}
+    {% set form = (form is defined ? form : (_form is defined ? _form : null)) %}
+    {% set fields = (fields is defined ? fields : (_conf['fields'] is defined ? _conf['fields'] : null)) %}
+
+    {% if (form and fields) %}
+        {% for field in fields['form'] %}
+            {% if field == 'isAutoAvailability' %}
+                <template [ngIf]="_formService.getObject()['isEnabledAvailability']">
+                    {% include 'AppBundle:form:field.html.twig' with {
+                        'field': field,
+                        'metadata': fields['metadata'][field],
+                        'form': form
+                    } %}
+                </template>
+            {% else %}
+                {% include 'AppBundle:form:field.html.twig' with {
+                    'field': field,
+                    'metadata': fields['metadata'][field],
+                    'form': form
+                } %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <template [ngIf]="_formService.getObject()['isEnabledAvailability'] && _dataService.getProviderAttr('localData') && _dataService.getProviderAttr('localData')['availability']">
+        <div [hidden]="!_formService.getObject()['isAutoAvailability']">{% include 'BookingBundle:BaseBookingService:add-dates-tip.html.twig' %}</div>
+    </template>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% block before_container %}{% endblock %}
+
+<div class="ibox">
+    {% block header %}
+        <div class="ibox-title" *ngIf="!getProviderExtraDataAttr('hasMergeHeader')">
+            <h5>
+                <template [ngIf]="getProviderAttr('controls')['expander']"><js_expander
+                    [isExpanded]="_isExpanded || null"
+                    [label]="getProviderAttr('label')"
+                    (onChange)="expanderAction($event)"></js_expander></template>
+                <template [ngIf]="!getProviderAttr('controls')['expander']">
+                    <span [innerHTML]="getProviderAttr('label')"></span>
+                </template>
+            </h5>
+            <div *ngIf="_isExpanded"
+                 class="txt-align-r hide-on-empty">{% block header_container %}{% endblock %}</div>
+        </div>
+    {% endblock %}
+
+    <div [hidden]="!(_isExpanded)" class="ibox-content hide-on-empty">{% block body %}{% endblock %}</div>
+    {% block footer %}<div [hidden]="_isExpanded" class="ibox-footer hide-on-empty">{% block footer_container %}{% endblock %}</div>{% endblock %}
+
+</div>
+
+{% block after_container %}{% endblock %}

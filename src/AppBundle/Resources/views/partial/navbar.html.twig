@@ -1,0 +1,42 @@
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav">
+            <li class="nav-header">
+                <div class="dropdown profile-element">
+                    <span><img alt="Avatar" class="img-circle" src="{{app.session.get('_app.user')['avatar']}}"/></span>
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#"><span class="clear">
+                        <span class="block m-t-xs"><strong class="font-bold">{{app.session.get('_app.user')['name']}}</strong></span>
+                        <span class="text-muted text-xs block">{% include 'AppBundle:partial:store-name.html.twig' %}</span>
+                    </span></a>
+                    <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                        {% if app.session.get('_app.stores')|length > 1 %}
+                            {% include 'AppBundle:partial:stores-list.html.twig' %}
+                            <li class="divider"></li>
+                        {% endif %}
+                        <li><a href="{{ path('_login__default__logout') }}">Logout</a></li>
+                    </ul>
+                </div>
+                <div class="logo-element"><img
+                    alt="Avatar" class="img-circle" src="{{app.session.get('_app.user')['avatar']}}"/></div>
+            </li>
+        </ul>
+        {# Modules #}
+        {% set modules = app.session.get('_app.modules') %}
+        {% set selectedModule = _conf['selectedMenu']['module'] %}
+        {% set selectedMenu = _conf['selectedMenu']['menu'] %}
+        {% set store = app.session.get('_app.store') %}
+        {% if (store) %}
+            {% set modules = modules|merge(app.session.get('_app.stores')[store]['modules']) %}
+        {% endif %}
+        {# /Modules #}
+        <ul class="nav metismenu" id="js_navbar">
+            {% for module in modules %}
+                {% if (module['menus']|length > 1) %}
+                    {% include 'AppBundle:partial:navbar-multi-menu-module.html.twig' %}
+                {% else %}
+                    {% include 'AppBundle:partial:navbar-single-menu-module.html.twig' %}
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+</nav>

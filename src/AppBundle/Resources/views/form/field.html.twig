@@ -1,0 +1,37 @@
+{% set form = (form is defined ? form : (_form is defined ? _form : null)) %}
+{% set field = (field is defined ? field : null) %}
+{% set metadata = (metadata is defined ? metadata : null) %}
+
+{% set formField = ((metadata['parent'] is defined and metadata['parent'] is not null)
+    ? form[metadata['parent']][field]
+    : ((form[field] is defined)
+        ? form[field]
+        : null
+    )
+) %}
+
+{% if (form and field and metadata and formField) %}
+    {% if (metadata['type'] in ['hidden', 'fake']) %}
+        {% include 'AppBundle:form:input.html.twig' with {
+            'field': field,
+            'formField': formField,
+            'metadata': metadata
+        } %}
+    {% else %}
+        <div class="form-group" {% if (metadata['acl'] == 'read') %}*ngIf="_formService.getObject().{{field}}"{% endif %}>
+
+            {% include 'AppBundle:form:label.html.twig' with {
+                'formField': formField,
+                'metadata': metadata
+            } %}
+
+            <div class="col-sm-10">
+                {% include 'AppBundle:form:input.html.twig' with {
+                    'field': field,
+                    'formField': formField,
+                    'metadata': metadata
+                } %}
+            </div>
+        </div>
+    {% endif %}
+{% endif %}

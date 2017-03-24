@@ -1,0 +1,26 @@
+{% extends 'AppBundle:data-box:base.html.twig' %}
+{% block body_container %}
+    <div class="table-responsive">
+        <div class="gallery" (click)="runSlide($event)">
+            <a class="gallery-item js_gallery-item"
+               *ngFor="let obj of _dataService.getProviderAttr('objects'); let index = index"
+               href="{% verbatim %}{{getWebPath(obj['path'])}}{% endverbatim %}"
+               title="{% verbatim %}{{obj['name']}}{% endverbatim %}">
+                <img src="{% verbatim %}{{getThumbnailPath(obj['path'])}}{% endverbatim %}"
+                     alt="{% verbatim %}{{obj['name']}}{% endverbatim %}"
+                     width="128"
+                     height="128">
+                <div class="actions no-user-select horizontal-group-box"
+                     (click)="triggerAction($event)">
+                    <template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
+                        <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                           [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
+                           class="fa"
+                           [attr.data-action]="action"
+                           [attr.data-value]="index"></a>
+                    </template>
+                </div>
+            </a>
+        </div>
+    </div>
+{% endblock %}

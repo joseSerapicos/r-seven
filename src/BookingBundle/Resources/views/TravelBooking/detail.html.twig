@@ -1,0 +1,40 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets filter="scssphp" output="assets/booking/travel-booking/detail/css/all.css"
+        '@AppBundle/Resources/public/scss/select-box.scss'
+        '@dropzone_css'
+        '@AppBundle/Resources/public/css/wizard.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block head_javascripts %}
+    {{ parent() }}
+
+    {% set bookingPaxData = render(controller(
+        'BookingBundle:TravelBookingPax:dataChild',
+        {'parents': {'booking': _conf['object']['id']}}
+    )) %}
+    <script>
+        _app.dependency.bookingPax = {{ bookingPaxData|raw }};
+    </script>
+{% endblock %}
+
+{% block before_container %}
+    <div id="js_main"></div>
+{% endblock %}
+
+{% block header %}{% endblock %}
+{% block body %}{% endblock %}
+
+{% block local_javascripts %}
+    {% javascripts output="assets/booking/travel-booking/detail/js/local.js"
+        '@BookingBundle/Resources/public/base-booking/detail/webpack_generated/common.js'
+        '@BookingBundle/Resources/public/base-booking/detail/webpack_generated/app.js'
+        '@BookingBundle/Resources/public/base-booking/detail/webpack_generated/main.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

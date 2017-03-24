@@ -1,0 +1,34 @@
+{% extends 'AppBundle:tree-view:form.html.twig' %}
+
+{% block body %}
+<div class="row">
+    <div class="col-md-4 pd-t-sm dyn-border-r">
+        <div class="row">
+            {% for field in _conf['fields']['form'] %}
+                <div class="col-md-12">
+                    {% include 'AppBundle:form:field.html.twig' with {
+                        'field': field,
+                        'metadata': _conf['fields']['metadata'][field],
+                        'form': _form
+                    } %}
+                </div>
+            {% endfor %}
+            <div class="col-md-12 text-right"><button class="btn btn-primary m-b"
+                      type="button"
+                      (click)="loadAction($event)"
+                      *ngIf="_formService.getForm().valid"><i class="fa fa-search"></i>&nbsp;Search</button></div>
+        </div>
+    </div>
+    <div class="col-md-8 pd-t-sm">
+        {{ parent() }}
+        <template [ngIf]="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">
+            <div class="hr-line-solid"></div>
+            {% include 'AppBundle:form:buttons.html.twig' with {
+                'form': _form
+            } %}
+        </template>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

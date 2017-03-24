@@ -1,0 +1,52 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets filter="scssphp" output="assets/app/image/css/all.css"
+        '@dropzone_css'
+        '@cropper_css'
+        '@AppBundle/Resources/public/scss/_gallery.scss'
+        '@AppBundle/Resources/public/css/image-crop.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+
+    <link rel="stylesheet" href="{{ asset('assets/vendor/blueimp-gallery/css/blueimp-gallery.min.css') }}" />
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block body_container %}
+    <div class="js_image"></div>
+{% endblock %}
+
+{% block after_container %}
+    <div id="blueimp-gallery" class="blueimp-gallery">
+        <div class="slides"></div>
+        <h3 class="title"></h3>
+        <a class="prev">‹</a>
+        <a class="next">›</a>
+        <a class="close">×</a>
+        <a class="play-pause"></a>
+        <ol class="indicator"></ol>
+    </div>
+{% endblock %}
+
+{% block vendor_javascripts %}
+    {{ parent() }}
+
+    {% javascripts output="assets/app/image/js/vendor.js"
+        '@cropper_js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block local_javascripts %}
+    {% javascripts output="assets/app/image/js/local.js"
+        '@AppBundle/Resources/public/image/webpack_generated/common.js'
+        '@AppBundle/Resources/public/image/webpack_generated/app.js'
+        '@AppBundle/Resources/public/image/webpack_generated/main.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

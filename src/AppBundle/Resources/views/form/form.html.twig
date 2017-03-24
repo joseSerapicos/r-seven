@@ -1,0 +1,21 @@
+{% set form = (form is defined ? form : (_form is defined ? _form : null)) %}
+{% set fields = (fields is defined ? fields : (_conf['fields'] is defined ? _conf['fields'] : null)) %}
+
+{% include 'AppBundle:form:start.html.twig' with {
+    'form': form
+} %}
+
+{% block fields %}
+    {% include 'AppBundle:form:fields.html.twig' with {
+        'form': form,
+        'fields': fields
+    } %}
+{% endblock %}
+
+{% include 'AppBundle:form:buttons.html.twig' with {
+    'form': form
+} %}
+
+{% include 'AppBundle:form:end.html.twig' with {
+    'form': form
+} %}

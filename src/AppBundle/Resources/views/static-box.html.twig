@@ -1,0 +1,14 @@
+{% set title = ((title is defined) ? title : '') %}
+
+
+{% block before_container %}{% endblock %}
+
+<div class="ibox">
+    <div class="ibox-title hide-on-empty">{% block header %}<h5>{{title}}</h5>{% endblock %}</div>
+
+    <div class="ibox-content hide-on-empty">{% block body %}{% endblock %}</div>
+
+    {% block footer %}<div class="ibox-footer hide-on-empty">{% block footer_container %}{% endblock %}</div>{% endblock %}
+</div>
+
+{% block after_container %}{% endblock %}

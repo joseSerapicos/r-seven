@@ -1,0 +1,12 @@
+{% if (field is defined) and (formField is defined) %}
+    {% set icon = ((icons is defined and icons[field] is defined ) ? icons[field] : null) %}
+    <button {% if formField.vars.attr is defined %}
+                {% for attr, value in formField.vars.attr %}
+                    {{ attr }}="{{ value }}"
+                {% endfor %}
+            {% endif %}
+            id="{{ formField.vars.id }}"
+            name="{{ formField.vars.full_name }}"
+            type="button">{% if icon %}<i class="fa {{icon}}"></i>&nbsp;{% endif %}{{formField.vars.label}}</button>
+    {% do formField.setRendered %}
+{% endif %}

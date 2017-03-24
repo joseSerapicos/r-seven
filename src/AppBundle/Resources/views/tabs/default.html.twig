@@ -1,0 +1,22 @@
+{% if (_containers is defined) %}
+    <div class="row m-b-md animated fadeInRight"><div class="col-lg-12 m-b-xs"><div class="tabs-container">
+        <ul class="nav nav-tabs">
+            {% for key, value in _containers %}
+                <li (click)="_navManagerService.navToAction({{key}})"
+                    [class.active]="{{key}} == _navManagerService.getIndex()"><a
+                            [attr.data-index]="{{key}}" data-toggle="tab" href="#tab{{key}}">{{value['label']}}</a></li>
+            {% endfor %}
+        </ul>
+        <div class="tab-content">
+            {% for key, value in _containers %}
+                <div id="tab{{key}}"
+                     class="tab-pane"
+                     [class.active]="{{key}} == _navManagerService.getIndex()">
+                    <div class="panel-body js_lazyLoadContainer_{{key}}">
+                        <template #js_lazyLoadContainer></template>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div></div></div>
+{% endif %}

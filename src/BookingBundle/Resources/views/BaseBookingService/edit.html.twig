@@ -1,0 +1,129 @@
+{% extends 'AppBundle:form:form-popup.html.twig' %}
+
+{% block body %}
+    {% set form = (form is defined ? form : (_form is defined ? _form : null)) %}
+    {% set fields = (fields is defined ? fields : (_conf['fields'] is defined ? _conf['fields'] : null)) %}
+
+    <section>
+    {% if (form and fields) %}
+        {% for field in fields['form'] %}
+            {% if field == 'confirmationStatus' %}
+                <div class="form-group">
+                    {% include 'AppBundle:form:label.html.twig' with {
+                        'formField': form[field],
+                        'metadata': fields['metadata'][field]
+                    } %}
+                    <div class="col-sm-10"
+                         *ngIf="_formService.getObject()['isAutoAllot']">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                            'field': field,
+                            'formField': form[field],
+                            'metadata': fields['metadata'][field]
+                        } %}
+                    </div>
+                    <div class="col-sm-10"
+                         *ngIf="!_formService.getObject()['isAutoAllot']">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                            'field': 'confirmationStatusManual',
+                            'formField': form['confirmationStatusManual'],
+                            'metadata': fields['metadata']['confirmationStatusManual']
+                        } %}
+                    </div>
+                </div>
+            {% elseif field == 'startDate' %}
+                <div class="form-group">
+                    {% include 'AppBundle:form:label.html.twig' with {
+                        'formField': form[field],
+                        'metadata': fields['metadata'][field]
+                    } %}
+                    <div class="col-sm-10"
+                         *ngIf="_formService.getObject()['isAutoAvailability'] || _formService.getObject()['isAutoAllot']">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                            'field': field,
+                            'formField': form[field],
+                            'metadata': fields['metadata'][field]
+                        } %}
+                    </div>
+                    <div class="col-sm-10"
+                         *ngIf="!_formService.getObject()['isAutoAvailability'] && !_formService.getObject()['isAutoAllot']">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                            'field': 'startDateManual',
+                            'formField': form['startDateManual'],
+                            'metadata': fields['metadata']['startDateManual']
+                        } %}
+                    </div>
+                </div>
+            {% elseif field == 'endDate' %}
+                <div class="form-group">
+                    {% include 'AppBundle:form:label.html.twig' with {
+                        'formField': form[field],
+                        'metadata': fields['metadata'][field]
+                    } %}
+                    <div class="col-sm-10"
+                         *ngIf="_formService.getObject()['isAutoAvailability'] || _formService.getObject()['isAutoAllot']">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                            'field': field,
+                            'formField': form[field],
+                            'metadata': fields['metadata'][field]
+                        } %}
+                    </div>
+                    <div class="col-sm-10"
+                         *ngIf="!_formService.getObject()['isAutoAvailability'] && !_formService.getObject()['isAutoAllot']">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                            'field': 'endDateManual',
+                            'formField': form['endDateManual'],
+                            'metadata': fields['metadata']['endDateManual']
+                        } %}
+                    </div>
+                </div>
+            {% elseif field == 'quantity' %}
+                <div class="form-group">
+                    {% include 'AppBundle:form:label.html.twig' with {
+                        'formField': form[field],
+                        'metadata': fields['metadata'][field]
+                    } %}
+                    <div class="col-sm-10"
+                         *ngIf="_formService.getObject()['isAutoAllot']">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                            'field': field,
+                            'formField': form[field],
+                            'metadata': fields['metadata'][field]
+                        } %}
+                    </div>
+                    <div class="col-sm-10"
+                         *ngIf="!_formService.getObject()['isAutoAllot']">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                            'field': 'quantityManual',
+                            'formField': form['quantityManual'],
+                            'metadata': fields['metadata']['quantityManual']
+                        } %}
+                    </div>
+                </div>
+            {% elseif field == 'placeObj' %}
+                <template [ngIf]="_formService.getObject()['type'] == 'TRAVEL'">
+                    {% include 'AppBundle:form:field.html.twig' with {
+                        'field': field,
+                        'metadata': fields['metadata'][field],
+                        'form': form
+                    } %}
+                    {% include 'AppBundle:form:field.html.twig' with {
+                        'field': 'placeToObj',
+                        'metadata': fields['metadata']['placeToObj'],
+                        'form': form
+                    } %}
+                </template>
+            {% elseif (field not in ['confirmationStatusManual',
+                'startDateManual', 'endDateManual', 'quantityManual', 'placeToObj'
+            ]) %}
+                {% include 'AppBundle:form:field.html.twig' with {
+                    'field': field,
+                    'metadata': fields['metadata'][field],
+                    'form': form
+                } %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    </section>
+
+    <section><template #js_lazyLoadContainer></template></section>
+{% endblock %}

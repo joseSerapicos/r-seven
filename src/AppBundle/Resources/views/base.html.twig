@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>
+        {% block title %}
+            WebOffice
+            {% if _conf['menu'] is defined %}
+                {{ ' | ' ~ app.session.get('_app.modules')[_conf['module']].getAttr('name') }}
+                {% if (app.session.get('_app.modules')[_conf['module']].getAttr('moduleMenuObjs'))|length > 1 %}
+                    {{ ' | ' ~ app.session.get('_app.modules')[_conf['module']].getAttr('moduleMenuObjs')[_conf['menu']].getAttr('name') }}
+                {% endif %}
+            {% endif %}
+        {% endblock %}
+    </title>
+
+
+    {% stylesheets filter="scssphp" output="assets/app/base/css/all.css"
+        '@bootstrap3_css'
+        '@toastr_css'
+        '@AppBundle/Resources/public/scss/base.scss'
+
+
+        '@AppBundle/Resources/public/scripts/plugins/gritter/jquery.gritter.css'
+        '@AppBundle/Resources/public/styles/animate.css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+    {% block stylesheets %}{% endblock %}
+
+    {% image '@AppBundle/Resources/public/images/favicon.ico' output='favicon.ico' %}
+        <link rel="icon" type="image/x-icon" href="{{ asset_url }}" />
+    {% endimage %}
+
+    {% set flashMessages = app.session.flashbag.all() %}
+    {% block head_javascripts %}
+        <script>
+            // Retrieving dependency defined from dependency views
+            var _dependency = (_app && _app.dependency) ? _app.dependency : {};
+            var _app = {
+                'isDebug': Boolean({{app.debug}}),
+                'csrfToken': '{{csrf_token('request-data')}}',
+                'stores': {{ app.session.get('_app.view.stores')|json_encode|raw }},
+                'route': '{{ url('_app__default__index') }}',
+                'flashMessages': {{ flashMessages['messages'] is defined ? flashMessages['messages']|json_encode|raw : 'null' }},
+                'conf': {{ _conf is defined ? _conf|json_encode|raw : 'null' }},
+                'templates': {},
+                'dependency': _dependency
+            };
+        </script>
+    {% endblock %}
+</head>
+
+<body>
+    <div id="wrapper">
+        {% include 'AppBundle:partial:navbar.html.twig' %}
+
+        <div id="page-wrapper" class="gray-bg">
+            {% include 'AppBundle:partial:top-navbar.html.twig' %}
+
+            {% block breadcrumb %}
+                {% include 'AppBundle:partial:breadcrumb.html.twig'
+                    with { '_breadcrumb': app.session.get('_app.breadcrumb')}
+                %}
+            {% endblock %}
+
+            {% block before_container %}{% endblock %}
+
+            {% block header %}
+                <div class="row page-heading border-bottom white-bg main-head-container"><div
+                            class="col-lg-12">{% block header_container %}{% endblock %}</div></div>
+            {% endblock %}
+
+            {% block body %}
+                <div class="row wrapper-content main-body-container"><div
+                            class="col-lg-12">{% block body_container %}{% endblock %}</div></div>
+            {% endblock %}
+
+            {% include 'AppBundle:partial:footer.html.twig' %}
+        </div>
+
+        {# include 'AppBundle:partial:small-chat.html.twig' #}
+        {# include 'AppBundle:partial:right-sidebar.html.twig' #}
+    </div>
+
+    {% block after_container %}{% endblock %}
+
+    <div class="js_app"></div>
+
+    {% block vendor_javascripts %}
+        {% javascripts output="assets/app/base/js/angular.js"
+            '@shim'
+            '@reflect'
+            '@zone'
+        %}
+            <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        {# '@AppBundle/Resources/public/scripts/plugins/jquery-ui/jquery-ui.min.js' ???? #}
+        {% javascripts output="assets/app/base/js/vendor.js"
+            '@jquery'
+            '@bootstrap3'
+            '@metismenu'
+
+            '@AppBundle/Resources/public/scripts/plugins/slimscroll/jquery.slimscroll.min.js'
+
+            '@AppBundle/Resources/public/scripts/plugins/pace/pace.min.js'
+
+            '@AppBundle/Resources/public/js/app/app.js'
+        %}
+            <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% endblock %}
+
+    {% block local_javascripts %}
+        {% javascripts output="assets/app/base/js/local.js"
+            '@AppBundle/Resources/public/app/webpack_generated/common.js'
+            '@AppBundle/Resources/public/app/webpack_generated/main.js'
+        %}
+            <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,73 @@
+/* @TODO Harmonize layout with bootstrap sass and public/styles/style.css
+https://github.com/twbs/bootstrap-sass#d-npm--nodejs
+@gray-darker:  lighten(#000, 13.5%); // #222
+@gray-dark:    lighten(#000, 20%);   // #333
+@gray:         lighten(#000, 33.5%); // #555
+@gray-light:   lighten(#000, 46.7%); // #777
+@gray-lighter: lighten(#000, 93.5%); // #eee
+@brand-primary: darken(#428bca, 6.5%); // #337ab7
+@brand-success: #5cb85c;
+@brand-info:    #5bc0de;
+@brand-warning: #f0ad4e;
+@brand-danger:  #d9534f;
+*/
+
+
+/* Color */
+// Links/Actions
+$link_color_primary: #999c9e;
+$link_color_secondary: #fff;
+$link_color_secondary: #fff;
+$link-hover_color: #1ab394;
+$link-active_color: #18a689;
+// Border
+$border_color_primary: #cbd5dd;
+/* /Color */
+
+
+
+
+
+
+
+
+
+
+
+
+/* Font size */
+$fs_sm: 11px; // small
+$fs_md: 13px; // medium
+
+/* Color */
+$c_dark-hover: #293846;
+$c_dark: #2f4050;
+$c_dark-gray: #676a6c;
+$c_gray: #dfdfdf;
+$c_light-gray: #f3f3f4;
+$c_white: #fff;
+
+/* Font color */
+$fc_dark-hover: $c_dark-hover;
+$fc_dark: $c_dark;
+$fc_dark-gray: $c_dark-gray;
+$fc_gray: $c_gray;
+$fc_light-gray: $c_light-gray;
+$fc_white: $c_white;
+
+/* Background */
+$bgc_dark-hover: $c_dark-hover;
+$bgc_dark: $c_dark;
+$bgc_dark-gray: $c_dark-gray;
+$bgc_gray: $c_gray;
+$bgc_light-gray: $c_light-gray;
+$bgc_white: $c_white;
+
+/* Border color */
+$bc_gray: #e7eaec;
+
+/* Sizes */
+$xs: 10px;
+$sm: 15px;
+$md: 20px;
+$lg: 25px;

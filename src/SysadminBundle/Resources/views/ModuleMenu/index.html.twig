@@ -1,0 +1,18 @@
+<div class="js_dataBox"></div>
+<script>
+    // _tmApp (dependency)
+    var _tmpApp = {
+        conf: {{ _conf is defined ? _conf|json_encode|raw : 'null' }},
+        flashMessages: {{ flashMessages['messages'] is defined ? flashMessages['messages']|json_encode|raw : 'null' }},
+        templates: {}
+    };
+
+    // Replace _app with _tmpApp (dependency)
+    if(_app) {
+        _app['conf'] = _tmpApp['conf'];
+        _app['flashMessages'] = _tmpApp['flashMessages'];
+        _app['templates'] = _tmpApp['templates'];
+    } else {
+        var _app = _tmpApp;
+    }
+</script>

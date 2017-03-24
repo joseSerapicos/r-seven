@@ -1,0 +1,10 @@
+{% if app.session.get('_app.stores') is iterable %}
+    {{app.session.get('_app.stores')[app.session.get('_app.store')]['name']}}&nbsp;<b class="caret"></b>
+{% else %}
+    <a href="#"
+       data-toggle="popover"
+       data-placement="bottom"
+       data-html="true"
+       data-content='<span class="lh-lg">Starts by creating your store <a href="{{ path('_admin__store__index') }}" class="label">Stores</a>, then <a href="{{ path('_app__default__index') }}" class="label">Refresh</a> application.</span>'
+       class="badge badge-danger">No store available!</a>
+{% endif %}

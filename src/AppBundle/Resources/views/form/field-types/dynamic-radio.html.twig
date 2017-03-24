@@ -1,0 +1,21 @@
+{% if (field is defined) and (formField is defined) %}
+    <div class="form-control-box"
+         [ngClass]="{'error': _formService.getErrors().{{field}} && (_formService.getErrors().{{field}}.length > 0)}"
+         (click)="_formService.setFormFieldValue('{{field}}', $event.target.value)">
+        <div class="radio"
+             *ngFor="let choice of _dataService.getFieldChoices('{{ field }}')">
+            <label {% if formField.vars.required %}class="required"{% endif %}><input
+                type="radio"
+                value="{% verbatim %}{{choice['id']}}{% endverbatim %}"
+                [checked]="_formService.getObject().{{field}} == choice['id']">&nbsp;<span [innerHTML]="choice['name']"></span></label>
+            <div class="tip-box"
+                 *ngIf="(_formService.getObject().{{field}} == choice['id']) && (choice['description'])"><small>{% verbatim %}{{choice['description']}}{% endverbatim %}</small></div>
+        </div>
+        <input [(ngModel)]="_formService.getObject().{{field}}"
+               formControlName="{{field}}"
+               name="{{formField.vars.full_name}}"
+               {% if formField.vars.required %}required="required"{% endif %}
+               type="hidden">
+    </div>
+    {% do formField.setRendered %}
+{% endif %}

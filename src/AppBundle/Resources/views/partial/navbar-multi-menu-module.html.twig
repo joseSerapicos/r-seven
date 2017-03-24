@@ -1,0 +1,10 @@
+<li{% if (module['id'] == selectedModule) %} class="active"{% endif %}>
+    <a href="#" aria-expanded="{{ module['id'] == selectedModule }}"><i
+                class="fa {{ module['icon'] }}"></i><span class="nav-label">{{ module['name'] }}</span><span class="fa arrow"></span></a>
+    <ul class="nav nav-second-level" aria-expanded="{{ module['id'] == selectedModule }}">
+        {% for menu in module['menus'] %}
+            <li{% if (menu['id'] == selectedMenu) %} class="active"{% endif %}>
+                <a href="{{ menu['url'] }}">{{ menu['name'] }}</a></li>
+        {% endfor %}
+    </ul>
+</li>

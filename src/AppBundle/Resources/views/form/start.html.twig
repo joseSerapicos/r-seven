@@ -1,0 +1,5 @@
+{% set form = (form is defined ? form : (_form is defined ? _form : null)) %}
+
+{% if (form is not null) %}
+    {{ form_start(form) }}
+{% endif %}

@@ -1,0 +1,30 @@
+{% extends 'AppBundle:data-box:base.html.twig' %}
+
+{% block before_container %}
+    {% include 'AppBundle:form:start.html.twig' with {'form': _form} %}
+{% endblock %}
+
+{% block body_container %}
+    <ul class="tree-view">
+        <js_treeViewNode [nodes]="getNodes(0)"
+                         [nodesIndex]="0"
+                         [parentComponent]="_parentComponent"></js_treeViewNode>
+    </ul>
+{% endblock %}
+
+{% block footer %}{% if (_form.reset is defined) or (_form.save is defined) %}
+    <div class="ibox-footer"><div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2">
+            {% if _form.reset is defined %}
+                {{ form_widget(_form.reset) }}
+            {% endif %}
+            {% if _form.save is defined %}
+                {{ form_widget(_form.save) }}
+            {% endif %}
+        </div>
+    </div></div>
+{% endif %}{% endblock %}
+
+{% block after_container %}
+    {% include 'AppBundle:form:end.html.twig' with {'form': _form} %}
+{% endblock %}

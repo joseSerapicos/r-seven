@@ -1,0 +1,47 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets filter="scssphp" output="assets/admin/user-group-acl/detail/css/all.css"
+        '@AppBundle/Resources/public/tree-view/scss/styles.scss'
+        '@AppBundle/Resources/public/scss/select-box.scss'
+        '@AppBundle/Resources/public/scss/choices-box.scss'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block head_javascripts %}
+    {{ parent() }}
+    {% set userGroupAclMenuData = render(controller(
+        'AdminBundle:UserGroupAclMenu:dataChild',
+        {'parents': {'userGroupAcl': _conf['object']['id']}}
+    )) %}
+
+    {% set userGroupAclUserData = render(controller(
+        'AdminBundle:UserGroupAclUser:dataChild',
+        {'parents': {'userGroupAcl': _conf['object']['id']}}
+    )) %}
+    <script>
+        _app.dependency.userGroupAclMenu = {{ userGroupAclMenuData|raw }};
+        _app.dependency.userGroupAclUser = {{ userGroupAclUserData|raw }};
+    </script>
+{% endblock %}
+
+{% block header_container %}
+    {% include 'AppBundle:partial:entity-detail.html.twig' with {
+        'object': _conf['object'],
+        'fields': _conf['fields']
+    } %}
+{% endblock %}
+
+{% block body_container %}<div id="js_main"></div>{% endblock %}
+
+{% block local_javascripts %}
+    {% javascripts output="assets/admin/user-group-acl/detail/js/local.js"
+        '@AdminBundle/Resources/public/user-group-acl/detail/webpack_generated/common.js'
+        '@AdminBundle/Resources/public/user-group-acl/detail/webpack_generated/app.js'
+        '@AdminBundle/Resources/public/user-group-acl/detail/webpack_generated/main.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

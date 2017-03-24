@@ -1,0 +1,12 @@
+{% set size = 12 %}
+{% set type = 'default' %}
+
+{% extends 'AppBundle:tip:default.html.twig' %}
+
+{% block head %}Availability Data Ranges{% endblock %}
+
+{% block body %}
+    <ul class="no-bullets"><li class="p-xxs" *ngFor="let dataRange of _dataService.getProviderAttr('localData')['availability'];">
+        <strong>From</strong>&nbsp;{% verbatim %}{{dataRange['startDate']}}{% endverbatim %}&nbsp;<strong>To</strong>&nbsp;{% verbatim %}{{dataRange['endDate']}}{% endverbatim %}
+    </li></ul>
+{% endblock %}

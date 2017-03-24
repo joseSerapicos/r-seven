@@ -1,0 +1,26 @@
+{% extends 'AppBundle:data-box:base-popup.html.twig' %}
+
+{% block before_container %}
+    {% include 'AppBundle:form:start.html.twig' with {
+        'form': _form
+    } %}
+{% endblock %}
+
+{% block body %}
+    {% include 'AppBundle:form:fields.html.twig' with {
+        'form': _form,
+        'fields': (_conf['fields'] is defined ? _conf['fields'] : null)
+    } %}
+{% endblock %}
+
+{% block footer_container %}
+    {% include 'AppBundle:form:buttons.html.twig' with {
+        'form': _form
+    } %}
+{% endblock %}
+
+{% block after_container %}
+    {% include 'AppBundle:form:end.html.twig' with {
+        'form': _form
+    } %}
+{% endblock %}
