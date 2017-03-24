@@ -1,0 +1,2 @@
+[13-Mar-2014 15:40:29] PHP Fatal error:  Class 'myPdf' not found in /home/mygest/public_html/mygest/lib/tfpdf_table/examples/table/code-example3.php on line 6
+[13-Mar-2014 15:41:11] PHP Fatal error:  Class 'Pdf_Table' not found in /home/mygest/public_html/mygest/lib/tfpdf_table/examples/table/code-example1.php on line 3
