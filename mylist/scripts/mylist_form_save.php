@@ -1,4 +1,4 @@
-<?php require_once (dirname(__FILE__)."/../../../top_all.php"); 
+<?php require_once (dirname(__FILE__)."/../../top_all.php"); 
 
 //MyList
 include_once (DIR_ROOT . "mylist/classes/mylist.master.class.php");
@@ -15,12 +15,17 @@ if(!empty($_POST['serialize_post']))
 	parse_str($_POST['serialize_post'], $post);
 	$post = cleanSlashesArray($post);
 	
-	echo "<pre>";print_r($post);echo "</pre>";
 	// Variaveis
 	$id = $post['id'];
 	
 	// Validacao de variaveis
-	// if(empty($id)) $errors['id'] = "Id cannot be empty!";
+	
+	foreach($post as $pkey => $pvalue){
+		if(empty($pvalue) && $pkey != "mylist_id"){
+			$errors[$pkey] = "Error";
+		}
+	}
+	
 	
 	// Save
 	if(count($errors)==0)

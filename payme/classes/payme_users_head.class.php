@@ -203,7 +203,7 @@ class payme_users_head {
 		return (false);
 	}
 	
-		// Guarda a informacao na base de dados //
+	// Guarda a informacao na base de dados //
 	public function save($var_db) {
 		$this->error = false;
 		

@@ -45,9 +45,9 @@ class myclick_users_detail {
 	}
 	
 	// 0 Args //
-	public function __construct1($var_id) {
+	public function __construct0() {
 
-		$this->id = $var_id;
+		//$this->id = $var_id;
  		//$this->load($system_db,$user_db);
 		
 		$this->error = false;
@@ -110,8 +110,38 @@ class myclick_users_detail {
 	// //////////////
 	
 	// Carrega a informacao a partir da base de dados //
+	public function load($user_db) {
+		$this->error = false;
+		$sql = ("SELECT 
+					myclick_users_detail.fk_myclick_users_head,
+					myclick_users_detail.fk_mygest_myclick_detail,
+					myclick_users_detail.value,
+					myclick_users_detail.insert_time,
+					myclick_users_detail.insert_user
+				FROM 
+					myclick_users_detail
+				WHERE
+					myclick_users_detail.id = ".$this->id."
+				");
+		$rs = $user_db->execute ( $sql );
+		if ($row = $user_db->get_row ( $rs )) {
+			$this->id = $row->id;
+			$this->fk_myclick_users_head = $row->fk_myclick_users_head;
+			$this->fk_mygest_myclick_detail = $row->fk_mygest_myclick_detail;
+			$this->value = $row->value;
+			$this->insert_time = $row->insert_time;
+			$this->insert_user = $row->insert_user;
+			
+			return (true);
+		}
+		
+		// Error
+		$this->error = $user_db->get_error ();
+		return (false);
+	}
 	
-	public function load($system_db,$user_db) {
+	// Carrega a informacao a partir da base de dados //
+	public function load_spec($system_db,$user_db) {
 		$this->error = false;
 		$sql = ("SELECT 
 					myclick_users_detail.fk_myclick_users_head,

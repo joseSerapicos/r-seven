@@ -74,3 +74,23 @@ div.clear
 	border-right-color:#F00 !important;
 }
 /* /Tooltip override */
+
+
+/* Accordion with buttons */
+.optionButtonAccordion {
+	float:right;
+	margin-right:6px;
+	position:relative;
+	top:-6px;
+}
+.accordionTitle {
+	float:left;	
+}
+/* /Accordion */
+
+
+/* Accordion: Overflow */
+.panel-body {
+	overflow:auto;
+}
+/* /Accordion: Overflow */

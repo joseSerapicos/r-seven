@@ -46,16 +46,36 @@ class mylist_difusion_list {
 	}
 	
 	// 0 Args //
-	public function __construct2($user_db,$var_id) {
+	public function __construct0() {
 		
-		$this->id = $var_id;
-		$this->load($user_db);
+		$this->enabled = "1";
 		
 	}
 	
 	// ////////////////
 	// Set methods //
 	// //////////////
+	public function set_id($value){
+		$this->id = $value;
+	}
+	public function set_email($value){
+		$this->email = $value;
+	}
+	public function set_reference_1($value){
+		$this->reference_1 = $value;
+	}
+	public function set_reference_2($value){
+		$this->reference_2 = $value;
+	}
+	public function set_insert_time($value){
+		$this->insert_time = $value;
+	}
+	public function set_insert_user($value){
+		$this->insert_user = $value;
+	}
+	public function set_enabled($value){
+		$this->enabled = $value;
+	}
 	
 	// ////////////////
 	// Get methods //
@@ -89,24 +109,25 @@ class mylist_difusion_list {
 	// //////////////
 	
 	// Carrega a informacao a partir da base de dados //
-	private function load($user_db) {
+	public function load($user_db,$difusion_list_id) {
 		$this->error = false;
 		$sql = ("SELECT 
-					-- mylist_difusion_list.id,
+					mylist_difusion_list.id,
 					mylist_difusion_list.email,
 					mylist_difusion_list.reference_1,
 					mylist_difusion_list.reference_2,
 					mylist_difusion_list.insert_time,
 					mylist_difusion_list.insert_user,
-					mylist_difusion_list.enabled
+					mylist_difusion_list.enabled 
 				FROM 
-					mylist_difusion_list
-				WHERE
-					mylist_difusion_list.id = ".$this->id."
+					mylist_difusion_list 
+				WHERE 
+					mylist_difusion_list.id = '".$difusion_list_id."' 
+					AND mylist_difusion_list.enabled = '".$this->enabled."'
 				");
 		$rs = $user_db->execute ( $sql );
 		if ($row = $user_db->get_row ( $rs )) {
-			//$this->id = $row->id;
+			$this->id 			= $row->id;
 			$this->email 		= $row->email;
 			$this->reference_1 	= $row->reference_1;
 			$this->reference_2 	= $row->reference_2;
@@ -122,6 +143,62 @@ class mylist_difusion_list {
 		return (false);
 	}
 
+	// Guarda a informacao na base de dados //
+	public function save($var_db) {
+		$this->error = false;
+	
+		if(empty($this->id)) {
+			$sql = ("INSERT INTO 
+						mylist_difusion_list 
+							(mylist_difusion_list.email,
+							mylist_difusion_list.reference_1,
+							mylist_difusion_list.reference_2,
+							mylist_difusion_list.insert_time,
+							mylist_difusion_list.insert_user,
+							mylist_difusion_list.enabled
+							) 
+					VALUES 
+						('".addslashes($this->email)."',
+						'".addslashes($this->reference_1)."',
+						'".addslashes($this->reference_2)."',
+						CURRENT_TIMESTAMP(),
+						'".addslashes($this->insert_user)."',
+						'".addslashes($this->enabled)."'
+						)");
+		}else{
+	
+			$sql = ("UPDATE 
+						mylist_difusion_list 
+					SET 
+						mylist_difusion_list.email = '".addslashes($this->email)."',
+						mylist_difusion_list.reference_1 = '".addslashes($this->reference_1)."',
+						mylist_difusion_list.reference_2 = '".addslashes($this->reference_2)."',
+						mylist_difusion_list.enabled = '".addslashes($this->enabled)."'  
+					WHERE 
+						mylist_difusion_list.id = '".addslashes($this->id)."'");
+		}
+		$rs = $var_db->execute($sql);
+		return (true);
+	}
+	
+	// Elimina registo da base de dados //
+	public function delete($var_db) {
+
+		$this->error = false;
+	
+		$sql = ("DELETE FROM 
+					mylist_difusion_list 
+				WHERE 
+					mylist_difusion_list.id = '".addslashes($this->id)."'");
+		$rs = $var_db->execute($sql);
+			
+		// Error
+		$this->error = $var_db->get_error();
+		if($this->error) return(false);
+		
+		return (true);
+	}
+	
 	// Destructor //
 	public function __destruct() {
 	}

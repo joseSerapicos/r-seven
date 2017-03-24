@@ -15,6 +15,7 @@ class myclick_users_head {
 	private $id;
 	private $fk_stores;
 	private $fk_mygest_myclick_head;
+	private $description;
 	private $version;
 	private $enabled;
 	
@@ -188,8 +189,9 @@ class myclick_users_head {
 		$rs = $user_db->execute ( $sql );
 		
 		while($row = $user_db->get_row ( $rs )) {
-			$obj_user_detail = new myclick_users_detail($row->id);
-			$obj_user_detail->load($system_db,$user_db);
+			$obj_user_detail = new myclick_users_detail();
+			$obj_user_detail->set_id($row->id);
+			$obj_user_detail->load_spec($system_db,$user_db);
 			
 			$this->users_detail[] = $obj_user_detail; 
 		}
@@ -199,7 +201,7 @@ class myclick_users_head {
 		return (false);
 	}
 	
-		// Guarda a informacao na base de dados //
+	// Guarda a informacao na base de dados //
 	public function save($var_db) {
 		$this->error = false;
 	
@@ -235,25 +237,23 @@ class myclick_users_head {
 					WHERE 
 						myclick_users_head.id = '".addslashes($this->id)."'");
 		}
-		//$rs = $var_db->execute($sql);
+		$rs = $var_db->execute($sql);
 		return (true);
 	}
 	
 	// Elimina registo da base de dados //
-	public function delete($system_db) {
-				
+	public function delete($var_db) {
+
 		$this->error = false;
 	
-		$sql = ("DELETE FROM
-					myclick_users_head
-				WHERE
-					myclick_users_head.id = ".addslashes( $this->id ));
-		$rs = $system_db->execute($sql);
-		
-		
-	
+		$sql = ("DELETE FROM 
+					myclick_users_head 
+				WHERE 
+					myclick_users_head.id = '".addslashes($this->id)."'");
+		$rs = $var_db->execute($sql);
+			
 		// Error
-		$this->error = $system_db->get_error();
+		$this->error = $var_db->get_error();
 		if($this->error) return(false);
 		
 		return (true);

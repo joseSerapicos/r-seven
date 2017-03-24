@@ -253,12 +253,6 @@ faz com que entre em conflito -->
 	{
 		callScript("<?= PATH_ROOT ?>master/scripts/reset_menu.php", "function", "refreshAll", false);
 	}
-	
-	// Faz refresh da pagina para carregar de acordo com nova store ou menu
-	function refreshAll(var_data)
-	{
-		location.reload();
-	}
 	</script>
     
     <script>

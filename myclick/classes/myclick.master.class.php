@@ -202,12 +202,9 @@ class myclick {
 		unset($post['myclick_head_id']);
 		unset($post['description']);
 		
-		echo "<pre>";print_r($_SESSION);echo "</pre>";
-		
 		/*get system head*/
 		$myclick_head = new myclick_head();
 		$myclick_head->load($system_db,$myclick_head_id);
-		
 		/*save Head*/
 		$myclick_users_head_obj = new myclick_users_head();
 		
@@ -239,8 +236,7 @@ class myclick {
 			}
 		}
 		
-		/*Insert @ myclick_users_detail*/
-		
+		/*View detail from system_db*/
 		$sql_md = ("SELECT 
 						id 
 					FROM 
@@ -248,25 +244,51 @@ class myclick {
 					WHERE 
 						`fk_myclick_head` = '".$myclick_head->get_id()."'
 				");
-		$rs_detail = $client_db->execute ( $sql_md );
-		print $sql_md;
-		die();
-		$myclick_detail = new myclick_detail();			
-		$myclick_detail->load($system_db,$myclick_detail_id);
-		/*
-		foreach ($post as $pkey => $pvalue){
-			
-			/*Detect from system detail/
-			
-			echo "<pre>";print_r($myclick_detail);echo "</pre>";
-			
-			
-		}*/
-		//echo "<pre>";print_r($post);echo "</pre>";
+
+		$rs_detail = $system_db->execute ( $sql_md );
 		
-		
-		
-		
+		while($row = $system_db->get_row ( $rs_detail )) {
+			
+			$myclick_detail = new myclick_detail();
+			$myclick_detail->set_id($row->id);	
+			$myclick_detail->load($system_db);		
+			
+			if($myclick_detail->get_type() == 'fixed'){ //if fixed get from myclick_detail
+				$set_value = $myclick_detail->get_value();
+			}else{
+				$set_value = $post[$myclick_detail->get_field_name()];
+			}
+			
+			if(empty($myclick_users_head_id)){  //if type edit get id from name
+				$sql_uhi = ("SELECT 
+						id 
+					FROM 
+						`myclick_users_detail` 
+					WHERE 
+						`fk_myclick_users_head` = '".$myclick_users_head_id."'
+						AND `fk_mygest_myclick_detail` = '".$myclick_detail->get_id()."'
+				");
+				$rs_uhi = $client_db->execute ( $sql_uhi );
+				
+				if ($row = $client_db->get_row ( $rs_uhi )) {
+					$uhi_id = $row->id;
+				}else{ 
+					$this->error = "Error: Get id @ myclick_users_detail";	
+					return (false);
+				}
+			}
+			/*Insert @ myclick_users_detail*/
+			$myclick_users_detail = new myclick_users_detail();
+			if(!empty($uhi_id)){
+				$myclick_users_detail->set_id($uhi_id);
+			}
+			$myclick_users_detail->set_fk_myclick_users_head($myclick_users_head_id);
+			$myclick_users_detail->set_fk_mygest_myclick_detail($myclick_detail->get_id());
+			$myclick_users_detail->set_value($set_value);
+			$myclick_users_detail->save($client_db);
+			
+		}
+				
 	}
 	// Destructor //
 	public function __destruct() {

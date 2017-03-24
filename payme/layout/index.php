@@ -1,5 +1,11 @@
 <?php
-require_once (dirname ( __FILE__ ) . "/../../top.php"); // Carregamento do top                                                    
+require_once (dirname ( __FILE__ ) . "/../../top.php"); // Carregamento do top
+
+$headerButtons['add'] = array();
+$headerButtons['add']['enabled'] = true;
+$headerButtons['add']['addMultiAddHeader'] = true;
+
+ 
 /*PayMe!*/
 
 include_once (DIR_ROOT . "payme/classes/payme.master.class.php");
@@ -59,9 +65,9 @@ $payme_users_head = $payme->get_payme_users_head();
                                               
                                               
 										      <!-- /btn-group --></td>
-                                               <td> <button class="btn btn-default icon-edit" title="Edit" />
+                                               <td> <button class="btn btn-default icon-edit Edit multiAddHeader" data-toggle="modal" data-backdrop="static" id="" name="" data-target="#addActionSelector" data-myScriptGetForm="<?= (PATH_ROOT."payme/layout/payme_form_add.php") ?>" data-myScriptPostForm="<?= (PATH_ROOT."payme/scripts/payme_form_save.php") ?>" data-myId="edit:<?=$puser->get_id();?>"></button>
                                               <button class="btn btn-default icon-envelope sendEmail"  myId="" />
-                                              <button class="btn btn-default icon-remove deleteSingle"  myId="" /></td>
+                                              <button class="btn btn-default optionButton icon-remove deleteSingleHeader" data-myId="<?= $puser->get_id() ?>" data-myScriptPostForm="<?= (PATH_ROOT."payme/scripts/payme_form_delete.php") ?>"  /></td>
 									      </tr>
 										  <?php }  ?>
 								  </table>

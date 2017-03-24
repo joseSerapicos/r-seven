@@ -7,80 +7,72 @@ include_once (DIR_ROOT . "payme/classes/payme.master.class.php");
 
 $post = json_decode(str_replace("\\", "", $_POST['json_post']));
 
-//$payme_head_id = $post->id;
+//echo "<pre>";print_r($post);echo "</pre>";
+
+$page_post = explode(":",$post->id);
+
+print $page_edit 	= $page_post[0];
+print $payme_id 	= $page_post[1];
+
 
 /*Formulários*/
 $payme = new payme();
-$payme->payme_type($masterMainDb,$masterSystemDb);
+$payme->payme_edit($masterMainDb,$masterSystemDb);
+$field = $payme->get_field();
+echo "<pre>";print_r($field);echo "</pre>"; 
+//$payme_files = $payme->get_payme_type();
 
-$payme_files = $payme->get_payme_type();
-//echo "<pre>";print_r($payme_files);echo "</pre>";
+switch ($page_edit){
+	case "edit":
+		
+	break;
+	default: //add
 
-/*
-$post = json_decode(str_replace("\\", "", $_POST['json_post']));
-
-$myclick_head_id = $post->id;
-*/
-
-
-/*
-/*Configuracoes existentes no sistema principal
-$myclick = new myclick();
-$myclick->set_myclick_head_id($myclick_head_id);
-$myclick->set_showDetail(true);
-$myclick->load_list($masterMainDb,$masterSystemDb); //abrir objecto
-$get_myclick_head_list = $myclick->get_myclick_head_list(); //abre a head_list
-
-$selected_myclick = $get_myclick_head_list[0]->get_mygest_myclick_detail();//detalhe do objecto apenas com os campos necessarios
-
-*/
+}
 
 ?>
 
 <form action="/" id="validation-form" role="form" class="form-horizontal col-md-7" novalidate="novalidate">
 <fieldset>
-	<!-- Email-->
-    <div class="form-group">
-    <label for="name" class="col-lg-4">Email</label>
+	<?php foreach($field as $fkey => $fvalue){ ?>
+      <div class="form-group">
+    <label for="name" class="col-lg-4"><?=$fvalue['label'];?></label>
         <div class="col-lg-8">
-            <input type="text" class="form-control" name="email" id="email" value="">
+        <?php switch ($fvalue['type']){
+				case "text":
+					print '<input type="text" class="form-control" name="'.$fvalue['name'].'" id="'.$fvalue['name'].'" value="'.$fvalue['value'].'">';
+				break;
+				case "textarea":
+					print '<textarea name="'.$fvalue['name'].'" class="form-control" id="'.$fvalue['name'].'">'.$fvalue['value'].'</textarea>';
+				break;
+				case "select":
+					print '<select name="'.$fvalue['name'].'" id="'.$fvalue['name'].'" class="form-control">';
+					foreach($fvalue['value'] as $select){
+						print '<option value="'.$select['value'].'" ';
+						if($select['selected']){
+							print 'selected="selected"';
+						}
+						print' >'.$select['value'].'</option>';
+					}
+						print '</select>';
+				break;
+				case "checkbox":
+					foreach($fvalue['name'] as $checkbox){
+						print '<input type="checkbox" name="'.$checkbox['name'].'" value="'.$checkbox['value'].'" ';
+						if(!empty($checkbox['checked'])){
+							print 'checked="checked"';
+						}
+						print '> '.$checkbox['label'].'';
+					}
+				break;
+			
+		}?>
+           
         </div>
     </div>
-    <!-- Description-->
-    <div class="form-group">
-    <label for="name" class="col-lg-4">Description:</label>
-        <div class="col-lg-8">
-          <textarea name="description" class="form-control" id="description"></textarea>
-        </div>
-    </div>
-    <!-- Total-->
-    <div class="form-group">
-    <label for="name" class="col-lg-4">Total Value:</label>
-        <div class="col-lg-6">
-            <input type="text" class="form-control" name="total_value" id="total_value" value="">
-        </div>
-    </div>
-    <!-- Currency-->
-	<div class="form-group">
-    <label for="name" class="col-lg-4">Currency-Code:</label>
-        <div class="col-lg-5">
-          <select name="currency_code" id="currency_code" class="form-control">
-            <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-          </select>
-        </div>
-    </div>
-    <!-- PayTypes-->
-    <div class="form-group">
-    <label for="name" class="col-lg-4">Pay Types:</label>
-        <div class="col-lg-8">
-          	<?php foreach ($payme_files as $payme_fields){?>
-            <label>
-                <input type="checkbox" name="pay_type[<?=$payme_fields->get_code();?>]" value="1"> <?=$payme_fields->get_name();?>
-            </label>
-            <?php } ?>
-            
-        </div>
-    </div>
+    
+    <?php  } ?>
+    
+	
 </fieldset>
 </form>

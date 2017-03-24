@@ -58,6 +58,10 @@ class payme {
 	// Get methods //
 	// //////////////
 	
+	public function get_field() {
+		return ($this->field);
+	}
+	
 	public function get_payme_users_head() {
 		return ($this->payme_users_head);
 	}
@@ -475,6 +479,127 @@ class payme {
 			}
 		}
 		
+	}
+	
+	/*Create Structure for edit/add */
+	public function payme_edit($system_db,$client_db,$payme_users_head_id=0) {
+		
+		$field = array();
+		
+		$field[0]['label'] = "Email";
+		$field[0]['type'] = "text";
+		$field[0]['name'] = "email";
+		//$field[0]['value'] = "xx";
+		
+		$field[1]['label'] = "Description";
+		$field[1]['type'] = "textarea";
+		$field[1]['name'] = "description";
+		//$field[1]['value'] = "xx";
+		
+		$field[2]['label'] = "Total Value";
+		$field[2]['type'] = "text";
+		$field[2]['name'] = "total_value";
+		//$field[2]['value'] = "xx";
+		
+		$field[3]['label'] = "Currency-Code";
+		$field[3]['type'] = "select";
+		$field[3]['name'] = "currency_code";
+		$field[3]['value'][0]['value'] = "EUR";
+		$field[3]['value'][0]['selected'] = 0;
+		$field[3]['value'][1]['value'] = "USD";
+		$field[3]['value'][1]['selected'] = 0;
+		
+		$field[4]['label'] = "Pay Types";
+		$field[4]['type'] = "checkbox";
+		$field[4]['name'][0]['name'] = "pay_type[NAME]";
+		$field[4]['name'][0]['label'] = "[NAME]";
+		$field[4]['name'][0]['checked'] = "0";
+		$field[4]['name'][0]['value'] = "1";
+		
+		$field[4]['name'][1]['name'] = "pay_type[NAME2]";
+		$field[4]['name'][1]['checked'] = "0";
+		$field[4]['name'][1]['label'] = "[NAME]";
+		$field[4]['name'][1]['value'] = "1";
+		
+		
+		
+		/*payme_users_head - client_db */
+		require_once (dirname(__FILE__)."/payme_users_head.class.php");
+		
+		if($payme_users_head_id){ //detect if id exist
+		
+			$obj_payme_users_head = new payme_users_head();
+			$obj_payme_users_head->set_id($payme_users_head_id);
+			$obj_payme_users_head->load($client_db);
+			
+			$field[0]['value'] = $obj_payme_users_head->get_email();
+			$field[1]['value'] = $obj_payme_users_head->get_description();
+			$field[2]['value'] = $obj_payme_users_head->get_total();
+
+			/*
+			$sql = ("SELECT 
+					payme_users_head.id 
+				FROM 
+					payme_users_head 
+				WHERE 
+					payme_users_head.enabled = '".$this->enabled."' 
+					AND payme_users_head.id = '".addslashes($payme_users_head_id)."' 
+				");
+			$rs = $system_db->execute ( $sql );
+			
+			
+			if ($row = $client_db->get_row ( $rs )) {
+				$id = $row->id;
+			}else{ 
+				$this->error = "MaxID: Error";	
+				return (false);
+			}*/
+			
+			
+		}
+		
+		/*payme_type - system */
+		require_once (dirname(__FILE__)."/payme_type.mygest.class.php");
+
+		$this->error = false;
+		
+		$sql_where = "";
+		if($this->payme_type_id){
+			$sql_where = " AND payme_type.id = '".$this->payme_type_id."'";
+		}
+		
+		$this->payme_users_head = array();
+		$sql = ("SELECT 
+					payme_type.id
+				FROM 
+					payme_type
+				WHERE
+					payme_type.enabled = '".$this->enabled."'
+					$sql_where
+					ORDER BY payme_type.name DESC
+				");
+		$rs = $system_db->execute ( $sql );
+		
+		while($row = $system_db->get_row ( $rs )) {
+			
+			/*instance payme_type information from system db*/
+			$obj_payme_type= new payme_type();
+			$obj_payme_type->set_id($row->id);
+			$obj_payme_type->load_connect($system_db,$client_db); //<- falta detectar se esta preenchido
+			
+			$this->payme_type[] = $obj_payme_type;
+		}
+		
+		
+		$this->field = $field;
+		
+		
+		$this->error = $system_db->get_error ();
+		if ($this->error){
+			return (true);
+		}else{
+			return (false);
+		}
 	}
 	
 	// Destructor //

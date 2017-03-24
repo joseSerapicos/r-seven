@@ -13,12 +13,14 @@
 
 class myfiles_users {
 	private $id;
+	private $fk_stores;
 	private $file_path;
 	private $filename;
+	private $internalname;
 	private $file_size;
 	private $external_access;
-	//private $insert_user;
-	//private $insert_time;
+	private $insert_user;
+	private $insert_time;
 	private $enabled;
 	
 	private $error;
@@ -46,8 +48,10 @@ class myfiles_users {
 	public function __construct0() {
 			
 		$this->id = false;
+		$this->fk_stores = false;
 		$this->file_path = false;
 		$this->filename = false;
+		$this->internalname = false;
 		$this->file_size = false;
 		$this->external_access = false;
 		$this->enabled = "1";
@@ -59,12 +63,17 @@ class myfiles_users {
 	public function set_id($var_id) {
 		$this->id = $var_id;
 	}
-	
+	public function set_fk_stores($var_id) {
+		$this->fk_stores = $var_id;
+	}
 	public function set_file_path($var_id) {
 		$this->file_path = $var_id;
 	}
 	public function set_filename($var_id) {
 		$this->filename = $var_id;
+	}
+	public function set_internalname($var_id) {
+		$this->internalname = $var_id;
 	}
 	public function set_file_size($var_id) {
 		$this->file_size = $var_id;
@@ -89,8 +98,14 @@ class myfiles_users {
 	public function get_id() {
 		return ($this->id);
 	}
+	public function get_fk_stores() {
+		return ($this->fk_stores);
+	}
 	public function get_file_path() {
 		return ($this->file_path);
+	}
+	public function get_internalname() {
+		return ($this->internalname);
 	}
 	public function get_filename() {
 		return ($this->filename);
@@ -128,8 +143,10 @@ class myfiles_users {
 
 		$sql = ("SELECT 
 					myfiles_users.id,
+					myfiles_users.fk_stores,
 					myfiles_users.file_path,
 					myfiles_users.filename,
+					myfiles_users.internalname,
 					myfiles_users.file_size,
 					myfiles_users.external_access,
 					myfiles_users.insert_time,
@@ -145,8 +162,10 @@ class myfiles_users {
 		if ($row = $user_db->get_row ( $rs )) {
 			
 			$this->id 				= $row->id;
+			$this->fk_stores 		= $row->fk_stores;
 			$this->file_path 		= $row->file_path;
 			$this->filename 		= $row->filename;
+			$this->internalname		= $row->internalname;
 			$this->file_size 		= $row->file_size;
 			$this->external_access 	= $row->external_access;
 			$this->insert_time 		= $row->insert_time;
@@ -172,19 +191,23 @@ class myfiles_users {
 		if(empty($this->id)) {
 			// INSERT	(".(empty($this->fk_development_file_system)?"NULL":("'".addslashes($this->fk_development_file_system)."'")).",
 			
-			$sql = ("INSERT INTO
-						myfiles_users
-							(myfiles_users.file_path,
+			$sql = ("INSERT INTO 
+						myfiles_users 
+							(myfiles_users.fk_stores,
+							myfiles_users.file_path,
 							myfiles_users.filename,
+							myfiles_users.internalname,
 							myfiles_users.file_size,
 							myfiles_users.external_access,
 							myfiles_users.insert_time,
 							myfiles_users.insert_user,
-							myfiles_users.enabled,
+							myfiles_users.enabled
 							)
-					VALUES
-						('".addslashes($this->file_path)."',
+					VALUES 
+						('".addslashes($this->fk_stores)."',
+						'".addslashes($this->file_path)."',
 						'".addslashes($this->filename)."',
+						'".addslashes($this->internalname)."',
 						'".addslashes($this->file_size)."',
 						'".addslashes($this->external_access)."',
 						CURRENT_TIMESTAMP(),
@@ -195,15 +218,17 @@ class myfiles_users {
 		else {
 			
 			// UPDATE	
-			$sql = ("UPDATE
-						myfiles_users
-					SET
+			$sql = ("UPDATE 
+						myfiles_users 
+					SET 
+						myfiles_users.fk_stores = '".addslashes($this->fk_stores)."',
 						myfiles_users.file_path = '".addslashes($this->file_path)."',
 						myfiles_users.filename = '".addslashes($this->filename)."',
+						myfiles_users.internalname = '".addslashes($this->internalname)."',
 						myfiles_users.file_size = '".addslashes($this->file_size)."',
 						myfiles_users.external_access = '".addslashes($this->external_access)."',
-						myfiles_users.enabled = '".addslashes($this->enabled)."'
-					WHERE
+						myfiles_users.enabled = '".addslashes($this->enabled)."' 
+					WHERE 
 						myfiles_users.id = '".addslashes($this->id)."'");
 		}
 		$rs = $var_db->execute($sql);
@@ -216,9 +241,9 @@ class myfiles_users {
 				
 		$this->error = false;
 	
-		$sql = ("DELETE FROM
-					myfiles_users
-				WHERE
+		$sql = ("DELETE FROM 
+					myfiles_users 
+				WHERE 
 					myfiles_users.id = ".addslashes( $this->id ));
 		$rs = $system_db->execute($sql);
 		

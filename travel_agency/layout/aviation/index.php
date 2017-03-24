@@ -1,30 +1,40 @@
 <?php
 require_once (dirname ( __FILE__ ) . "/../../../top.php"); // Carregamento do top                                                    
 
-// Includes : Ficheiros necessarios
-//include_once (DIR_ROOT . "classes/development/development_framework.class.php");
-//include_once (DIR_ROOT . "classes/development/development_framework_array.class.php");
+/*Aviation*/
+include_once (DIR_ROOT . "travel_agency/classes/aviation.master.class.php");
+
+$aviation = new aviation();
+$aviation->client_list($masterSystemDb);
+$aviation_head = $aviation->get_aviation_head();
+
+//echo "<pre>";print_r($aviation_head);echo "</pre>";
+
 ?>
 
-
-<div class="main">
-    <div class="container">
-    	<div class="row">
-			<div class="col-md-12">
-            
-            	<div class="widget stacked">
-					<div class="widget-header">
-						<i class="<?= ($obj_module?$obj_module->get_icon($db_main):'') ?>"></i>
-						<h3><?= ($obj_module?$obj_module->get_name():'') ?><?= ($obj_menu?(' : '.$obj_menu->get_name()):'') ?></h3>
-					</div>
-
-					<div class="widget-content">
-                        <h2>Code here...</h2>
-                    </div>
-                </div>
-                    
-</div></div></div></div>
-
+<table width="100%" border="1" class="table table-bordered table-hover table-striped">
+      <tr>
+        <th width="2%">PNR</th>
+        <th width="34%">Company</th>
+        <th width="12%">Ticket</th>
+        <th width="26%">Pax</th>
+        <th width="13%">IATA</th>
+        <th width="13%">Action</th>
+      </tr>
+      <?php foreach($aviation_head as $ahead){ ?>
+      <tr>
+        <td><?=$ahead->get_pnr();?></td>
+        <td>&nbsp;
+          <?=$ahead->get_general_company();?>
+        </td>
+        <td><?=$ahead->get_ticket();?></td>
+      	<td><?=$ahead->get_pax();?></td>
+        <td><?=$ahead->get_agency();?></td>
+           <td> <button class="btn btn-default icon-edit" title="Edit" />
+          <button class="btn btn-default icon-remove deleteSingle"  myId="" /></td>
+      </tr>
+      <?php  }  ?>
+</table>
 
 
 <?php require_once (DIR_ROOT."/bottom.php"); ?>

@@ -16,6 +16,8 @@ $headerButtons['add']['addEditSingleHeader'] = true; // Se "true", e "$headerBut
 // deleteAll
 $headerButtons['deleteAll'] = array();
 $headerButtons['deleteAll']['enabled'] = false;
+$headerButtons['deleteAll']['addDeleteSingleHeader'] = true; // Se "true", adiciona os scripts para "deleteSingleHeader"
+$headerButtons['deleteAll']['addMultiDeleteAllHeader'] = false; // Se "true", adiciona os scripts para "multiDeleteAllHeader"
 // Help
 $headerButtons['help'] = array();
 $headerButtons['help']['id'] = "helpbtn";

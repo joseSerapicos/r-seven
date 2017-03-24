@@ -52,13 +52,13 @@ echo("</pre>");
 										  <?php foreach($myclick_client_list as $client_list){ ?>
 										  <tr>
 										    <td width="13%" align="center"><img src="myclick/layout/img/<?=$client_list->get_mygest_myclick_head()->get_logo();?>" /></td>
-										    <td width="56%">										      <?=$client_list->get_mygest_myclick_head()->get_name();?></td>
+										    <td width="56%">										      <?=$client_list->get_description();?></td>
 										    <td><?=$client_list->get_mygest_myclick_head()->get_cat();?></td>
 										    <td>Version: <?=$client_list->get_version();?></td>
 										    <td>
-                                              <button class="btn btn-default icon-circle-arrow-right Go" onClick="window.open('myclick/go_to_myclick.php?id=<?=$client_list->get_mygest_myclick_head()->get_id();?>')" title="Go" />
-                                              <button class="btn btn-default icon-edit Edit"  title="Edit" />
-                                              <button class="btn btn-default icon-remove deleteSingle"  myId="<?= $client_list->get_id() ?>" id="deleteSingle" />
+                                              <button class="btn btn-default icon-circle-arrow-right Go" onClick="window.open('myclick/layout/go_to_myclick.php?id=<?=$client_list->get_id();?>')" title="Go" />
+                                            <button class="btn btn-default icon-edit Edit multiAddHeader" data-toggle="modal" data-backdrop="static" id="" name="" data-target="#addActionSelector" data-myScriptGetForm="<?= (PATH_ROOT."myclick/layout/myclick_form_add.php") ?>" data-myScriptPostForm="<?= (PATH_ROOT."myclick/scripts/myclick_form_save.php") ?>" data-myId="edit:<?=$client_list->get_id();?>"></button>
+                                           <button class="btn btn-default optionButton icon-remove deleteSingleHeader" data-myId="<?= $client_list->get_id() ?>" data-myScriptPostForm="<?= (PATH_ROOT."myclick/scripts/myclick_form_delete.php") ?>"  />
 										      <!-- /btn-group --></td>
 									      </tr>
 										  <?php }  ?>
@@ -82,7 +82,7 @@ echo("</pre>");
 										    <td><?=$value->get_cat();?></td>
 										    <td>Version <?=$value->get_version();?></td>
 										    <td>
-                                                <button class="btn btn-default icon-plus optionButton multiAddHeader" data-toggle="modal" data-backdrop="static" id="" name="" data-target="#addActionSelector" data-myScriptGetForm="<?= (PATH_ROOT."myclick/layout/myclick_form_add.php") ?>" data-myScriptPostForm="<?= (PATH_ROOT."myclick/scripts/myclick_form_save.php") ?>" data-myId="<?=$value->get_id();?>"></button>
+                                                <button class="btn btn-default icon-plus optionButton multiAddHeader" data-toggle="modal" data-backdrop="static" id="" name="" data-target="#addActionSelector" data-myScriptGetForm="<?= (PATH_ROOT."myclick/layout/myclick_form_add.php") ?>" data-myScriptPostForm="<?= (PATH_ROOT."myclick/scripts/myclick_form_save.php") ?>" data-myId="add:<?=$value->get_id();?>"></button>
 								<!-- /btn-group --></td>
 									    </tr>
                                         <?php }//end foreach ?>

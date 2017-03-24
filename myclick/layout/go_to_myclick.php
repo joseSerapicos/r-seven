@@ -1,5 +1,5 @@
 <?php
-require_once (dirname ( __FILE__ ) . "/../../top.php"); 
+require_once (dirname ( __FILE__ ) . "/../../top_all.php"); 
 
 
 /*GET*/

@@ -88,7 +88,8 @@ class mylist {
 		$rs = $client_db->execute ( $sql );
 		
 		while($row = $client_db->get_row ( $rs )) {
-			$obj_mylist_difusion_list = new mylist_difusion_list($client_db,$row->id);
+			$obj_mylist_difusion_list = new mylist_difusion_list();
+			$obj_mylist_difusion_list->load($client_db,$row->id);
 			$this->mylist_difusion_list[] = $obj_mylist_difusion_list; 
 		}
 		
@@ -100,8 +101,46 @@ class mylist {
 			return (false);
 		}
 	}
-	public function submit_list($sytem_db,$client_db,$post) {
-		echo "<pre>";print_r($post);echo "</pre>";
+	// function upload file//
+	public function mylist_submit($client_db,$post) {
+		
+		/*Includes - mylist_difusion_list*/
+		include_once (dirname(__FILE__) . "/mylist_difusion_list.class.php"); //client_db head
+		
+		//echo "<pre>";print_r($post);echo "</pre>";die();
+		$mylist_id 	= $post['mylist_id']; //used in edit
+		
+		$email 		= $post['email'];
+		$ref_1 		= $post['reference_1'];
+		$ref_2 		= $post['reference_2'];
+		
+		$ob_mylist_difusion_list = new mylist_difusion_list();
+		
+		if(!empty($mylist_id)){
+			$ob_mylist_difusion_list->set_id($mylist_id);
+		}
+		$ob_mylist_difusion_list->set_email($email);
+		$ob_mylist_difusion_list->set_reference_1($ref_1);
+		$ob_mylist_difusion_list->set_reference_2($ref_2);
+		$ob_mylist_difusion_list->set_enabled("1");
+		$ob_mylist_difusion_list->save($client_db);
+	
+	}
+	// function upload file//
+	public function mylist_delete($client_db,$post) {
+		
+		/*Includes - mylist_difusion_list*/
+		include_once (dirname(__FILE__) . "/mylist_difusion_list.class.php"); //client_db head
+		
+		//echo "<pre>";print_r($post);echo "</pre>";die();
+		$mylist_id 	= $post['mylist_id']; //used in edit
+		
+		
+		$ob_mylist_difusion_list = new mylist_difusion_list();
+		
+		$ob_mylist_difusion_list->set_id($mylist_id);
+		$ob_mylist_difusion_list->delete($client_db);
+	
 	}
 	
 	// Destructor //
