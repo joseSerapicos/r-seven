@@ -1,0 +1,4 @@
+[22-Apr-2014 17:38:41] PHP Fatal error:  Class 'module_menu_info' not found in /home/mygest/public_html/mygest/administration/modules_menus/scripts/save_form_menus.php on line 33
+[22-Apr-2014 17:38:52] PHP Fatal error:  Class 'module_menu_info' not found in /home/mygest/public_html/mygest/administration/modules_menus/scripts/save_form_menus.php on line 33
+[24-Apr-2014 12:15:45] PHP Fatal error:  Call to undefined method user_tmp::user_tmp() in /home/mygest/public_html/mygest/administration/users/scripts/delete_form_users.php on line 38
+[24-Apr-2014 12:16:05] PHP Fatal error:  Call to undefined method user_tmp::user_tmp() in /home/mygest/public_html/mygest/administration/users/scripts/delete_form_users.php on line 38
