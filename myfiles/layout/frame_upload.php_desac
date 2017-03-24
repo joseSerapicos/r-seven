@@ -1,0 +1,6 @@
+<?php print_r($_FILES);?>
+<script src="/mygest/master/layout/js/libs/jquery-ui-1.10.0.custom.min.js"></script>
+
+<form method="post" id="upload-form" role="form" class="form-horizontal col-md-7" enctype="multipart/form-data">
+  <input type="file" name="file" id="file" class="file_upload"  onmouseout="" onblur="document.getElementById('upload-form').submit();"/>
+</form>

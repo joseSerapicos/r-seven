@@ -1,0 +1,415 @@
+DROP TABLE `bus_partidas_classes_allot`
+DROP TABLE `bus_partidas_autocarros_seating`;
+-- DROP TABLE `bus_autocarros_classes_lotacao`;
+DROP TABLE `bus_precos_classes_tipos_pax`;
+DROP TABLE `bus_tipos_pax`;
+DROP TABLE `bus_precos_classes`;
+DROP TABLE `bus_partidas_zonas`;
+DROP TABLE `bus_partidas_res_pax`;
+DROP TABLE `bus_autocarros`;
+DROP TABLE `bus_seating_scheme_bancos`;
+DROP TABLE `bus_classes`;
+DROP TABLE `bus_seating_scheme_corredores`;
+DROP TABLE `bus_seating_scheme_pisos`;
+DROP TABLE `bus_seating_scheme`;
+DROP TABLE `bus_partidas`;
+DROP TABLE `bus_linhas_zonas`;
+DROP TABLE `bus_linhas_classes`;
+DROP TABLE `bus_linhas_pax`;
+DROP TABLE `bus_zonas`;
+DROP TABLE `bus_linhas`;
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_linhas` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(32) NOT NULL,
+  `description` VARCHAR(256) DEFAULT NULL,
+  `status` TINYINT UNSIGNED DEFAULT 0,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_zonas` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(32) NOT NULL,
+  `status` TINYINT UNSIGNED DEFAULT 0,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_linhas_zonas` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_linhas` INT UNSIGNED NOT NULL,
+  `fk_bus_zonas` INT UNSIGNED NOT NULL,
+  `priority` TINYINT UNSIGNED NULL,
+  `time` VARCHAR(5) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_bus_linhas` (`fk_bus_linhas`),
+  KEY `fk_bus_zonas` (`fk_bus_zonas`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+ALTER TABLE `bus_linhas_zonas` ADD CONSTRAINT `bus_linhas_zonas_fk_1` FOREIGN KEY (`fk_bus_linhas`) REFERENCES `bus_linhas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_linhas_zonas` ADD CONSTRAINT `bus_linhas_zonas_fk_2` FOREIGN KEY (`fk_bus_zonas`) REFERENCES `bus_zonas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_partidas` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_linhas` INT UNSIGNED NOT NULL,
+  `date` DATE NOT NULL,
+  `allot_type` ENUM('FS','SS','AL','BUS') NOT NULL,
+  `status` TINYINT UNSIGNED DEFAULT 0,
+  `status_b2b` TINYINT UNSIGNED DEFAULT 0,
+  `status_b2c` TINYINT UNSIGNED DEFAULT 0,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `fk_bus_linhas-date` (`fk_bus_linhas`,`date`),
+  KEY `fk_bus_linhas` (`fk_bus_linhas`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+ALTER TABLE `bus_partidas` ADD CONSTRAINT `bus_partidas_fk_1` FOREIGN KEY (`fk_bus_linhas`) REFERENCES `bus_linhas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_seating_scheme` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(64) NOT NULL,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_seating_scheme_pisos` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_seating_scheme` INT UNSIGNED NOT NULL,
+  `name` VARCHAR(64) NOT NULL,
+  `priority` TINYINT UNSIGNED NOT NULL,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `fk_bus_seating_scheme_name` (`fk_bus_seating_scheme`,`name`),
+  KEY `fk_bus_seating_scheme` (`fk_bus_seating_scheme`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+ALTER TABLE `bus_seating_scheme_pisos` ADD CONSTRAINT `fk_bus_seating_scheme_fk_1` FOREIGN KEY (`fk_bus_seating_scheme`) REFERENCES `bus_seating_scheme` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_seating_scheme_corredores` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_seating_scheme_pisos` INT UNSIGNED NOT NULL,
+  `name` VARCHAR(64) NOT NULL,
+  `priority` TINYINT UNSIGNED NOT NULL,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `fk_bus_seating_scheme_pisos_name` (`fk_bus_seating_scheme_pisos`,`name`),
+  KEY `fk_bus_seating_scheme_pisos` (`fk_bus_seating_scheme_pisos`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+ALTER TABLE `bus_seating_scheme_corredores` ADD CONSTRAINT `fk_bus_seating_scheme_pisos_fk_1` FOREIGN KEY (`fk_bus_seating_scheme_pisos`) REFERENCES `bus_seating_scheme_pisos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_classes` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `class` VARCHAR(32),
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `class` (`class`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_linhas_classes` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_linhas` INT UNSIGNED NOT NULL,
+  `fk_bus_classes` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_bus_linhas` (`fk_bus_linhas`),
+  KEY `fk_bus_classes` (`fk_bus_classes`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+ALTER TABLE `bus_linhas_classes` ADD CONSTRAINT `bus_linhas_classes_fk_1` FOREIGN KEY (`fk_bus_linhas`) REFERENCES `bus_linhas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_linhas_classes` ADD CONSTRAINT `bus_linhas_classes_fk_2` FOREIGN KEY (`fk_bus_classes`) REFERENCES `bus_classes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_partidas_classes_allot` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_partidas` INT UNSIGNED NOT NULL,
+  `fk_bus_linhas_classes` INT UNSIGNED NOT NULL,
+  `allot` INT UNSIGNED NOT NULL,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `fk_bus_partidas_linhas_classes` (`fk_bus_partidas`,`fk_bus_linhas_classes`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+ALTER TABLE `bus_partidas_classes_allot` ADD CONSTRAINT `bus_partidas_classes_allot_fk_1` FOREIGN KEY (`fk_bus_partidas`) REFERENCES `bus_partidas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_partidas_classes_allot` ADD CONSTRAINT `bus_partidas_classes_allot_fk_2` FOREIGN KEY (`fk_bus_linhas_classes`) REFERENCES `bus_linhas_classes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_seating_scheme_bancos` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_seating_scheme_corredores` INT UNSIGNED NOT NULL,
+  `seat` TINYINT UNSIGNED NOT NULL,
+  `fk_bus_classes` INT UNSIGNED NULL,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  -- (COMENTADO PARA NAO DAR PROBLEMAS NO UPDATE SE ESTIVER A FAZER UPDATE PARA UM BANCO QUE JA ESTA A SER USADO NUM REGISTO QUE AINDA NAO SE ENCONTRA ACTUALIZADO) UNIQUE KEY `fk_bus_seating_scheme_corredores_name` (`fk_bus_seating_scheme_corredores`,`seat`),
+  KEY `fk_bus_seating_scheme_corredores` (`fk_bus_seating_scheme_corredores`),
+  KEY `fk_bus_classes` (`fk_bus_classes`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+ALTER TABLE `bus_seating_scheme_bancos` ADD CONSTRAINT `fk_bus_seating_scheme_corredores_fk_1` FOREIGN KEY (`fk_bus_seating_scheme_corredores`) REFERENCES `bus_seating_scheme_corredores` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_seating_scheme_bancos` ADD CONSTRAINT `fk_bus_classes_fk_2_1` FOREIGN KEY (`fk_bus_classes`) REFERENCES `bus_classes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_autocarros` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_seating_scheme` INT UNSIGNED NOT NULL,
+  `name` VARCHAR(64) NOT NULL,
+  `car_plate` VARCHAR(16) NOT NULL,
+  `status` TINYINT UNSIGNED DEFAULT 0,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`),
+  UNIQUE KEY `car_plate` (`car_plate`),
+  KEY `fk_bus_seating_scheme` (`fk_bus_seating_scheme`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+
+ALTER TABLE `bus_autocarros` ADD CONSTRAINT `fk_bus_seating_scheme_fk_1_2` FOREIGN KEY (`fk_bus_seating_scheme`) REFERENCES `bus_seating_scheme` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_partidas_autocarros` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_partidas` INT UNSIGNED NOT NULL,
+  `fk_bus_autocarros` INT UNSIGNED NOT NULL,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `fk_bus_partidas_autocarros` (`fk_bus_partidas`,`fk_bus_autocarros`),
+  KEY `fk_bus_partidas` (`fk_bus_partidas`),
+  KEY `fk_bus_autocarros` (`fk_bus_autocarros`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+ALTER TABLE `bus_partidas_autocarros` ADD CONSTRAINT `fk_bus_partidas_fk_1` FOREIGN KEY (`fk_bus_partidas`) REFERENCES `bus_partidas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_partidas_autocarros` ADD CONSTRAINT `fk_bus_autocarros_fk_2` FOREIGN KEY (`fk_bus_autocarros`) REFERENCES `bus_autocarros` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_precos_classes` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_linhas` INT UNSIGNED NOT NULL,
+  `fk_bus_classes` INT UNSIGNED NOT NULL,
+  `name` VARCHAR(64) NOT NULL,
+  `begin_date` DATE NOT NULL,
+  `end_date` DATE NOT NULL,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `fk_bus_linhas_classes_name` (`fk_bus_linhas`,`fk_bus_classes`,`name`),
+  KEY `fk_bus_linhas` (`fk_bus_linhas`),
+  KEY `fk_bus_classes` (`fk_bus_classes`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+ALTER TABLE `bus_precos_classes` ADD CONSTRAINT `fk_bus_linhas_fk_1` FOREIGN KEY (`fk_bus_linhas`) REFERENCES `bus_linhas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_precos_classes` ADD CONSTRAINT `fk_bus_classes_fk_2_2` FOREIGN KEY (`fk_bus_classes`) REFERENCES `bus_classes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_tipos_pax` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(16) NOT NULL,
+  `begin_age` TINYINT UNSIGNED NULL,
+  `end_age` TINYINT UNSIGNED NULL,
+  `type` ENUM('ADT','CHD1','CHD2','CHD3','INF') NOT NULL,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_linhas_tipos_pax` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_linhas` INT UNSIGNED NOT NULL,
+  `fk_bus_tipos_pax` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_bus_linhas` (`fk_bus_linhas`),
+  KEY `fk_bus_tipos_pax` (`fk_bus_tipos_pax`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+ALTER TABLE `bus_linhas_tipos_pax` ADD CONSTRAINT `bus_linhas_tipos_pax_fk_1` FOREIGN KEY (`fk_bus_linhas`) REFERENCES `bus_linhas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_linhas_tipos_pax` ADD CONSTRAINT `bus_linhas_tipos_pax_fk_2` FOREIGN KEY (`fk_bus_tipos_pax`) REFERENCES `bus_tipos_pax` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_precos_classes_tipos_pax` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_precos_classes` INT UNSIGNED NOT NULL,
+  `fk_bus_tipos_pax` INT UNSIGNED NOT NULL,
+  `net` DECIMAL(6,2) NOT NULL,
+  `pvp` DECIMAL(6,2) NOT NULL,
+  `pvp_round_trip` DECIMAL(6,2) NOT NULL,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `fk_bus_precos_classes_tipos_pax` (`fk_bus_precos_classes`,`fk_bus_tipos_pax`),
+  KEY `fk_bus_precos_classes` (`fk_bus_precos_classes`),
+  KEY `fk_bus_tipos_pax` (`fk_bus_tipos_pax`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+ALTER TABLE `bus_precos_classes_tipos_pax` ADD CONSTRAINT `fk_bus_precos_classes_fk_1` FOREIGN KEY (`fk_bus_precos_classes`) REFERENCES `bus_precos_classes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_precos_classes_tipos_pax` ADD CONSTRAINT `fk_bus_tipos_pax_fk_3` FOREIGN KEY (`fk_bus_tipos_pax`) REFERENCES `bus_tipos_pax` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+-- PASSOU A SER DESNECESSARIA COM A INTRODUCAO DAS TABELAS DO SCHEMA
+-- CREATE TABLE IF NOT EXISTS `bus_autocarros_classes_lotacao` (
+--   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+--   `fk_bus_autocarros` INT UNSIGNED NOT NULL,
+--   `fk_bus_classes` INT UNSIGNED NOT NULL,
+--   `lotacao` TINYINT UNSIGNED NOT NULL,
+--   `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+--   `insert_user` VARCHAR(32) NOT NULL,
+--   `update_time` TIMESTAMP NULL,
+--   `update_user` VARCHAR(32) NOT NULL,
+--   PRIMARY KEY (`id`),
+--   UNIQUE KEY `fk_bus_autocarros_classes` (`fk_bus_autocarros`,`fk_bus_classes`),
+--   KEY `fk_bus_autocarros` (`fk_bus_autocarros`),
+--   KEY `fk_bus_classes` (`fk_bus_classes`)
+-- ) ENGINE=INNODB AUTO_INCREMENT=1;
+
+-- ALTER TABLE `bus_autocarros_classes_lotacao` ADD CONSTRAINT `fk_bus_autocarros_fk_1_1` FOREIGN KEY (`fk_bus_autocarros`) REFERENCES `bus_autocarros` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+-- ALTER TABLE `bus_autocarros_classes_lotacao` ADD CONSTRAINT `fk_bus_classes_fk_2_3` FOREIGN KEY (`fk_bus_classes`) REFERENCES `bus_classes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_partidas_res_pax` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_partidas` INT UNSIGNED NOT NULL,
+  `fk_res_pax` INT UNSIGNED NOT NULL,
+  `fk_bus_zonas_in` INT UNSIGNED NOT NULL,
+  `fk_bus_zonas_out` INT UNSIGNED NOT NULL,
+  `fk_bus_classes` INT UNSIGNED NOT NULL,
+  `fk_bus_autocarros` INT UNSIGNED NULL,
+  `fk_bus_seating_scheme_bancos` INT UNSIGNED NULL,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `bus_partidas_res_pax` (`fk_bus_partidas`,`fk_res_pax`),
+  KEY `fk_bus_partidas` (`fk_bus_partidas`),
+  KEY `fk_res_pax` (`fk_res_pax`),
+  KEY `fk_bus_zonas_in` (`fk_bus_zonas_in`),
+  KEY `fk_bus_zonas_out` (`fk_bus_zonas_out`),
+  KEY `fk_bus_classes` (`fk_bus_classes`),
+  KEY `fk_bus_autocarros` (`fk_bus_autocarros`),
+  KEY `fk_bus_seating_scheme_bancos` (`fk_bus_seating_scheme_bancos`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+ALTER TABLE `bus_partidas_res_pax` ADD CONSTRAINT `bus_partidas_res_pax_fk_1` FOREIGN KEY (`fk_bus_partidas`) REFERENCES `bus_partidas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_partidas_res_pax` ADD CONSTRAINT `bus_partidas_res_pax_fk_6` FOREIGN KEY (`fk_bus_zonas_in`) REFERENCES `bus_zonas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_partidas_res_pax` ADD CONSTRAINT `bus_partidas_res_pax_fk_7` FOREIGN KEY (`fk_bus_zonas_out`) REFERENCES `bus_zonas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_partidas_res_pax` ADD CONSTRAINT `bus_partidas_res_pax_fk_2` FOREIGN KEY (`fk_bus_classes`) REFERENCES `bus_classes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_partidas_res_pax` ADD CONSTRAINT `bus_partidas_res_pax_fk_3` FOREIGN KEY (`fk_bus_autocarros`) REFERENCES `bus_autocarros` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_partidas_res_pax` ADD CONSTRAINT `bus_partidas_res_pax_fk_4` FOREIGN KEY (`fk_bus_seating_scheme_bancos`) REFERENCES `bus_seating_scheme_bancos` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+-- ALTER TABLE `bus_partidas_res_pax` ADD CONSTRAINT `bus_partidas_res_pax_fk_5` FOREIGN KEY (`fk_res_pax`) REFERENCES `res_pax` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_partidas_zonas` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_partidas` INT UNSIGNED NOT NULL,
+  `fk_bus_zonas` INT UNSIGNED NOT NULL,
+  `fk_bus_autocarros` INT UNSIGNED NULL,
+  `priority` TINYINT UNSIGNED NULL,
+  `time` VARCHAR(5) NOT NULL,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `bus_partidas_zonas_autocarros` (`fk_bus_partidas`,`fk_bus_zonas`,`fk_bus_autocarros`),
+  KEY `fk_bus_partidas` (`fk_bus_partidas`),
+  KEY `fk_bus_zonas` (`fk_bus_zonas`),
+  KEY `fk_bus_autocarros` (`fk_bus_autocarros`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+ALTER TABLE `bus_partidas_zonas` ADD CONSTRAINT `bus_partidas_zonas_fk_1` FOREIGN KEY (`fk_bus_partidas`) REFERENCES `bus_partidas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_partidas_zonas` ADD CONSTRAINT `bus_partidas_zonas_fk_2` FOREIGN KEY (`fk_bus_zonas`) REFERENCES `bus_zonas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_partidas_zonas` ADD CONSTRAINT `bus_partidas_zonas_fk_3` FOREIGN KEY (`fk_bus_autocarros`) REFERENCES `bus_autocarros` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- --------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `bus_suplementos_classes_tipos_pax_zonas` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `fk_bus_precos_classes` INT UNSIGNED NOT NULL,
+  `fk_bus_tipos_pax` INT UNSIGNED NOT NULL,
+  `fk_bus_linhas_zonas` INT UNSIGNED NOT NULL,
+  `pvp` DECIMAL(6,2) NOT NULL,
+  `insert_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `insert_user` VARCHAR(32) NOT NULL,
+  `update_time` TIMESTAMP NULL,
+  `update_user` VARCHAR(32) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `fk_bus_precos_classes_tipos_pax_zonas` (`fk_bus_precos_classes`,`fk_bus_tipos_pax`,`fk_bus_linhas_zonas`),
+  KEY `fk_bus_precos_classes` (`fk_bus_precos_classes`),
+  KEY `fk_bus_tipos_pax` (`fk_bus_tipos_pax`),
+  KEY `fk_bus_linhas_zonas` (`fk_bus_linhas_zonas`)
+) ENGINE=INNODB AUTO_INCREMENT=1;
+
+ALTER TABLE `bus_suplementos_classes_tipos_pax_zonas` ADD CONSTRAINT `bus_suplementos_classes_tipos_pax_zonas_fk_1` FOREIGN KEY (`fk_bus_precos_classes`) REFERENCES `bus_precos_classes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_suplementos_classes_tipos_pax_zonas` ADD CONSTRAINT `bus_suplementos_classes_tipos_pax_zonas_fk_2` FOREIGN KEY (`fk_bus_tipos_pax`) REFERENCES `bus_tipos_pax` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `bus_suplementos_classes_tipos_pax_zonas` ADD CONSTRAINT `bus_suplementos_classes_tipos_pax_zonas_fk_3` FOREIGN KEY (`fk_bus_linhas_zonas`) REFERENCES `bus_linhas_zonas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
