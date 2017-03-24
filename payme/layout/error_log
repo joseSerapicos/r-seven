@@ -1,0 +1,8 @@
+[24-Mar-2014 11:42:47] PHP Warning:  require_once(/home/mygest/public_html/mygest/payme/layout/../general/top.php) [<a href='function.require-once'>function.require-once</a>]: failed to open stream: No such file or directory in /home/mygest/public_html/mygest/payme/layout/index.php on line 2
+[24-Mar-2014 11:42:47] PHP Fatal error:  require_once() [<a href='function.require'>function.require</a>]: Failed opening required '/home/mygest/public_html/mygest/payme/layout/../general/top.php' (include_path='.:/usr/lib/php:/usr/local/lib/php') in /home/mygest/public_html/mygest/payme/layout/index.php on line 2
+[08-Apr-2014 11:59:39] PHP Warning:  Unterminated comment starting line 20 in /home/mygest/public_html/mygest/payme/layout/payme_form_add.php on line 20
+[08-Apr-2014 11:59:39] PHP Fatal error:  fatal flex scanner internal error--end of buffer missed in /home/mygest/public_html/mygest/payme/layout/payme_form_add.php on line 20
+[08-Apr-2014 13:31:26] PHP Warning:  Invalid argument supplied for foreach() in /home/mygest/public_html/mygest/payme/layout/payme_form_add.php on line 72
+[08-Apr-2014 13:33:42] PHP Warning:  Invalid argument supplied for foreach() in /home/mygest/public_html/mygest/payme/layout/payme_form_add.php on line 72
+[08-Apr-2014 13:34:28] PHP Warning:  Invalid argument supplied for foreach() in /home/mygest/public_html/mygest/payme/layout/payme_form_add.php on line 72
+[08-Apr-2014 13:35:44] PHP Warning:  Invalid argument supplied for foreach() in /home/mygest/public_html/mygest/payme/layout/payme_form_add.php on line 72

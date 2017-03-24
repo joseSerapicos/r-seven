@@ -1,4 +1,5 @@
 <?php
 /* LOGIN */
-define ( 'ERROR_LOGIN_1', 'Login error. Please try again.' );
+define('ERROR_LOGIN', 'Invalid login.');
+/* /LOGIN */
 ?>
