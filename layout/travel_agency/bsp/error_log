@@ -1,0 +1,27 @@
+[30-Jan-2014 12:51:42] PHP Warning:  require_once(/home/mygest/public_html/mygest/layout/travel_agency/bsp/../general/top.php) [<a href='function.require-once'>function.require-once</a>]: failed to open stream: No such file or directory in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 2
+[30-Jan-2014 12:51:42] PHP Fatal error:  require_once() [<a href='function.require'>function.require</a>]: Failed opening required '/home/mygest/public_html/mygest/layout/travel_agency/bsp/../general/top.php' (include_path='.:/usr/lib/php:/usr/local/lib/php') in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 2
+[31-Jan-2014 15:55:23] PHP Fatal error:  Call to a member function get_aviation_bsp_head() on a non-object in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 15
+[31-Jan-2014 16:16:32] PHP Fatal error:  Call to undefined method aviation_bsp_head::get_aviation_bsp_head() in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 41
+[31-Jan-2014 16:17:22] PHP Fatal error:  Call to undefined method aviation_bsp_head::get_aviation_bsp_head() in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 41
+[31-Jan-2014 16:18:17] PHP Fatal error:  Call to undefined method aviation_bsp_head::get_date_from() in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 42
+[31-Jan-2014 17:00:24] PHP Fatal error:  Call to private method aviation_bsp_head::load() from context 'aviation_bsp' in /home/mygest/public_html/mygest/classes/travel_agency/bsp/aviation_bsp.master.class.php on line 100
+[31-Jan-2014 17:02:59] PHP Fatal error:  Call to private method aviation_bsp_head::load() from context 'aviation_bsp' in /home/mygest/public_html/mygest/classes/travel_agency/bsp/aviation_bsp.master.class.php on line 100
+[31-Jan-2014 17:03:03] PHP Fatal error:  Call to private method aviation_bsp_head::load() from context 'aviation_bsp' in /home/mygest/public_html/mygest/classes/travel_agency/bsp/aviation_bsp.master.class.php on line 100
+[31-Jan-2014 17:03:05] PHP Fatal error:  Call to private method aviation_bsp_head::load() from context 'aviation_bsp' in /home/mygest/public_html/mygest/classes/travel_agency/bsp/aviation_bsp.master.class.php on line 100
+[31-Jan-2014 17:03:13] PHP Fatal error:  Call to private method aviation_bsp_head::load() from context 'aviation_bsp' in /home/mygest/public_html/mygest/classes/travel_agency/bsp/aviation_bsp.master.class.php on line 100
+[31-Jan-2014 17:07:23] PHP Fatal error:  Call to private method aviation_bsp_head::load() from context 'aviation_bsp' in /home/mygest/public_html/mygest/classes/travel_agency/bsp/aviation_bsp.master.class.php on line 100
+[31-Jan-2014 17:08:00] PHP Fatal error:  Call to a member function get_name() on a non-object in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 41
+[31-Jan-2014 17:08:22] PHP Fatal error:  Call to a member function get_name() on a non-object in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 41
+[31-Jan-2014 17:09:05] PHP Fatal error:  Call to a member function get_name() on a non-object in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 41
+[31-Jan-2014 17:09:35] PHP Fatal error:  Call to a member function get_name() on a non-object in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 42
+[31-Jan-2014 17:10:08] PHP Fatal error:  Call to a member function get_name() on a non-object in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 42
+[31-Jan-2014 17:11:01] PHP Fatal error:  Call to a member function get_name() on a non-object in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 42
+[31-Jan-2014 17:11:26] PHP Fatal error:  Call to a member function get_name() on a non-object in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 42
+[31-Jan-2014 17:13:00] PHP Fatal error:  Call to a member function get_name() on a non-object in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 42
+[31-Jan-2014 17:14:01] PHP Fatal error:  Call to a member function get_name() on a non-object in /home/mygest/public_html/mygest/layout/travel_agency/bsp/index.php on line 42
+[31-Jan-2014 17:59:41] PHP Fatal error:  Call to undefined function  load_aviation_bsp_detail() in /home/mygest/public_html/mygest/classes/travel_agency/bsp/aviation_bsp_head.class.php on line 171
+[31-Jan-2014 18:07:17] PHP Fatal error:  Call to a member function get_aviation_bsp_detail() on a non-object in /home/mygest/public_html/mygest/layout/travel_agency/bsp/bsp_detail.php on line 19
+[31-Jan-2014 18:08:57] PHP Fatal error:  Call to a member function get_aviation_bsp_detail() on a non-object in /home/mygest/public_html/mygest/layout/travel_agency/bsp/bsp_detail.php on line 19
+[31-Jan-2014 18:09:22] PHP Fatal error:  Call to a member function aviation_bsp_detail() on a non-object in /home/mygest/public_html/mygest/layout/travel_agency/bsp/bsp_detail.php on line 19
+[31-Jan-2014 18:31:12] PHP Catchable fatal error:  Object of class aviation_bsp_detail could not be converted to string in /home/mygest/public_html/mygest/layout/travel_agency/bsp/bsp_detail.php on line 22
+[31-Jan-2014 18:45:35] PHP Fatal error:  Call to undefined method aviation_bsp_detail::get_emission_date() in /home/mygest/public_html/mygest/layout/travel_agency/bsp/bsp_detail.php on line 91
