@@ -1,0 +1,22 @@
+[05-May-2014 12:31:09] PHP Fatal error:  Cannot use object of type store_tmp as array in /home/mygest/public_html/mygest/administration/stores/layout/get_form_stores.php on line 52
+[05-May-2014 12:33:35] PHP Fatal error:  Cannot access private property store_tmp::$id in /home/mygest/public_html/mygest/administration/stores/layout/get_form_stores.php on line 52
+[05-May-2014 12:35:30] PHP Fatal error:  Class 'user_tmp' not found in /home/mygest/public_html/mygest/administration/stores/layout/get_form_stores.php on line 21
+[09-May-2014 13:29:21 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 17:32:27 Europe/Paris] PHP Fatal error:  Class 'store_tmp' not found in /home/mygest/public_html/mygest/administration/stores/layout/get_form_stores.php on line 20
+[09-May-2014 17:32:38 Europe/Paris] PHP Fatal error:  Class 'store_tmp' not found in /home/mygest/public_html/mygest/administration/stores/layout/get_form_stores.php on line 20
+[09-May-2014 17:32:44 Europe/Paris] PHP Fatal error:  Class 'store_tmp' not found in /home/mygest/public_html/mygest/administration/stores/layout/get_form_stores.php on line 20
+[09-May-2014 17:33:03 Europe/Paris] PHP Fatal error:  Class 'store_tmp' not found in /home/mygest/public_html/mygest/administration/stores/layout/get_form_stores.php on line 20
+[09-May-2014 17:33:46 Europe/Paris] PHP Fatal error:  Class 'store_tmp' not found in /home/mygest/public_html/mygest/administration/stores/layout/get_form_stores.php on line 20
+[09-May-2014 17:33:55 Europe/Paris] PHP Fatal error:  Class 'store_tmp' not found in /home/mygest/public_html/mygest/administration/stores/layout/get_form_stores.php on line 20
+[09-May-2014 17:34:11 Europe/Paris] PHP Fatal error:  Class 'store_tmp' not found in /home/mygest/public_html/mygest/administration/stores/layout/get_form_stores.php on line 20
+[09-May-2014 17:34:52 Europe/Paris] PHP Fatal error:  Class 'store_tmp' not found in /home/mygest/public_html/mygest/administration/stores/layout/get_form_stores.php on line 20
+[19-May-2014 13:27:28 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[19-May-2014 13:27:28 Europe/Paris] PHP Fatal error:  Class 'store_tmp' not found in /home/mygest/public_html/mygest/administration/stores/layout/get_form_stores.php on line 20
+[19-May-2014 13:27:35 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[19-May-2014 13:27:39 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[19-May-2014 13:27:39 Europe/Paris] PHP Fatal error:  Class 'store_tmp' not found in /home/mygest/public_html/mygest/administration/stores/layout/get_form_stores.php on line 20
+[19-May-2014 13:27:51 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[19-May-2014 13:27:51 Europe/Paris] PHP Fatal error:  Class 'store_tmp' not found in /home/mygest/public_html/mygest/administration/stores/layout/get_form_stores.php on line 20
+[19-May-2014 13:30:20 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[19-May-2014 13:30:29 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[19-May-2014 13:31:08 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82

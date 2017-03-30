@@ -1,0 +1,10 @@
+[22-Apr-2014 17:38:41] PHP Fatal error:  Class 'module_menu_info' not found in /home/mygest/public_html/mygest/administration/modules_menus/scripts/save_form_menus.php on line 33
+[22-Apr-2014 17:38:52] PHP Fatal error:  Class 'module_menu_info' not found in /home/mygest/public_html/mygest/administration/modules_menus/scripts/save_form_menus.php on line 33
+[24-Apr-2014 12:15:45] PHP Fatal error:  Call to undefined method user_tmp::user_tmp() in /home/mygest/public_html/mygest/administration/users/scripts/delete_form_users.php on line 38
+[24-Apr-2014 12:16:05] PHP Fatal error:  Call to undefined method user_tmp::user_tmp() in /home/mygest/public_html/mygest/administration/users/scripts/delete_form_users.php on line 38
+[05-May-2014 12:59:11] PHP Fatal error:  Class 'store_tmp' not found in /home/mygest/public_html/mygest/administration/stores/scripts/save_form_stores.php on line 46
+[05-May-2014 12:59:30] PHP Fatal error:  Class 'store_tmp' not found in /home/mygest/public_html/mygest/administration/stores/scripts/save_form_stores.php on line 46
+[05-May-2014 13:00:22] PHP Fatal error:  Call to undefined method store_tmp::get_set_insert_user() in /home/mygest/public_html/mygest/administration/stores/scripts/save_form_stores.php on line 70
+[05-May-2014 13:00:37] PHP Fatal error:  Call to undefined method store_tmp::get_set_insert_user() in /home/mygest/public_html/mygest/administration/stores/scripts/save_form_stores.php on line 70
+[05-May-2014 13:01:43] PHP Fatal error:  Call to undefined method store_tmp::get_set_insert_user() in /home/mygest/public_html/mygest/administration/stores/scripts/save_form_stores.php on line 70
+[05-May-2014 13:02:46] PHP Fatal error:  Call to undefined method store_tmp::set_set_insert_user() in /home/mygest/public_html/mygest/administration/stores/scripts/save_form_stores.php on line 70

@@ -1,0 +1,16 @@
+[10-Apr-2014 00:49:45] PHP Warning:  require_once(/home/mygest/public_html/mygest//development/modules_info/classes/module_menus_info.class.php) [<a href='function.require-once'>function.require-once</a>]: failed to open stream: No such file or directory in /home/mygest/public_html/mygest/development/modules_info/scripts/save_form_menus.php on line 5
+[10-Apr-2014 00:49:45] PHP Fatal error:  require_once() [<a href='function.require'>function.require</a>]: Failed opening required '/home/mygest/public_html/mygest//development/modules_info/classes/module_menus_info.class.php' (include_path='.:/usr/lib/php:/usr/local/lib/php') in /home/mygest/public_html/mygest/development/modules_info/scripts/save_form_menus.php on line 5
+[09-May-2014 13:38:35 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 13:38:35 Europe/Paris] PHP Notice:  Undefined index: id in /home/mygest/public_html/mygest/development/menus_settings_info/scripts/save_form_settings.php on line 21
+[09-May-2014 13:39:07 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 13:39:07 Europe/Paris] PHP Notice:  Undefined index: id in /home/mygest/public_html/mygest/development/menus_settings_info/scripts/save_form_settings.php on line 21
+[09-May-2014 16:59:33 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 16:59:48 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 17:04:40 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 17:05:42 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[20-May-2014 12:20:44 Europe/Paris] PHP Notice:  Undefined index: id in /home/mygest/public_html/mygest/development/menus_settings_info/scripts/save_form_settings.php on line 21
+[20-May-2014 12:21:06 Europe/Paris] PHP Notice:  Undefined index: id in /home/mygest/public_html/mygest/development/menus_settings_info/scripts/save_form_settings.php on line 21
+[20-May-2014 12:21:12 Europe/Paris] PHP Notice:  Undefined index: id in /home/mygest/public_html/mygest/development/menus_settings_info/scripts/save_form_settings.php on line 21
+[20-May-2014 12:21:21 Europe/Paris] PHP Notice:  Undefined index: id in /home/mygest/public_html/mygest/development/menus_settings_info/scripts/save_form_settings.php on line 21
+[21-May-2014 19:41:53 Europe/Paris] PHP Fatal error:  Class 'menu_setting_info' not found in /home/mygest/public_html/mygest/administration/menus_settings/scripts/save_form_settings.php on line 34
+[21-May-2014 19:43:16 Europe/Paris] PHP Fatal error:  Call to undefined method menu_setting::fk_mygest_menus_settings_info() in /home/mygest/public_html/mygest/administration/menus_settings/scripts/save_form_settings.php on line 40
