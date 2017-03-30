@@ -1,0 +1,97 @@
+/*------------------------------------------------------------------
+[Custom Stylesheet]
+Last change:	03/25/2013
+Assigned to:	You
+-------------------------------------------------------------------*/
+
+
+/* Align */
+.alignCenter {
+	text-align:center;
+}
+.alignLeft {
+	text-align:left;
+}
+.alignRight {
+	text-align:right;
+}
+/* /Align */
+
+
+/* Border */
+.redBorder {
+	border:1px solid #F00;
+}
+/* Border */
+
+
+/* Clear para divs */
+div.clear
+{
+	clear: both;
+}
+/* /Clear para divs */
+
+
+/* Loading skin */
+#loading_skin {
+	width:100%;
+	height:100%;
+	padding-top:4%;
+	text-align:center;
+	border: none 0px;
+	background-color:#FFFFFF;
+	display:block;
+	position:fixed;
+	z-index:99;
+}
+/* /Loading skin */
+
+
+/* Menus das options dos formularios */
+.options_menu
+{
+	position:relative;
+	float:right;
+	padding-right:6px;
+}
+/* /Menus das options dos formularios */
+
+
+/* Option buttons dos formularios */
+.optionButton
+{
+	margin-right:6px;
+	margin-bottom:6px;
+}
+/* /Option dos formularios */
+
+
+/* Tooltip override */
+.redTooltipInner {
+	background-color:#F00 !important;
+}
+.redTooltipArrow {
+	border-right-color:#F00 !important;
+}
+/* /Tooltip override */
+
+
+/* Accordion with buttons */
+.optionButtonAccordion {
+	float:right;
+	margin-right:6px;
+	position:relative;
+	top:-6px;
+}
+.accordionTitle {
+	float:left;	
+}
+/* /Accordion */
+
+
+/* Accordion: Overflow */
+.panel-body {
+	overflow:auto;
+}
+/* /Accordion: Overflow */

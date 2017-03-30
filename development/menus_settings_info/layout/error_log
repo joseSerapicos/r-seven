@@ -1,0 +1,9 @@
+[15-Apr-2014 19:15:34] PHP Fatal error:  Class 'framework_master' not found in /home/mygest/public_html/mygest/development/menus_settings_info/layout/get_form_settings.php on line 39
+[15-Apr-2014 19:17:15] PHP Fatal error:  Class 'framework_master' not found in /home/mygest/public_html/mygest/development/menus_settings_info/layout/get_form_settings.php on line 39
+[09-May-2014 13:34:17 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 13:34:22 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 13:34:40 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 13:37:40 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 16:53:57 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 16:59:21 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 17:05:11 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82

@@ -1,0 +1,11 @@
+[07-May-2014 17:37:51] PHP Fatal error:  Call to undefined function  saveuserstorepermissions() in /home/mygest/public_html/mygest/administration/users_permissions/scripts/save_form.php on line 47
+[07-May-2014 17:39:43] PHP Fatal error:  Call to undefined function  saveuserstorepermissions() in /home/mygest/public_html/mygest/administration/users_permissions/scripts/save_form.php on line 47
+[09-May-2014 13:17:46 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 13:19:58 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 13:22:44 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 13:23:04 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 13:25:05 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 16:17:50 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 16:52:56 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 16:54:28 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
+[09-May-2014 17:06:35 Europe/Paris] PHP Notice:  Undefined index: masterStore in /home/mygest/public_html/mygest/top4_connections.php on line 82
