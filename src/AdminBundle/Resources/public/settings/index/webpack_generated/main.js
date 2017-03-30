@@ -4893,16 +4893,27 @@ webpackJsonp([1],[
 	    /**
 	     * Order objects by key
 	     * @param objects
-	     * @param key
+	     * @param keys
 	     * @returns {any}
 	     */
-	    Helper.orderObjects = function (objects, key) {
-	        if (objects) {
-	            objects.sort(function (obj1, obj2) {
-	                // If key is equal, then sort by id desc
-	                var orderKey = ((obj1[key] == obj2[key]) ? 'id' : key);
-	                return ((obj1[orderKey] > obj2[orderKey]) ? 1 : 0);
-	            });
+	    Helper.orderObjects = function (objects, keys) {
+	        var prevKey = null;
+	        if (objects && keys) {
+	            var _loop_1 = function (key) {
+	                objects.sort(function (obj1, obj2) {
+	                    if (!prevKey || (obj1[prevKey] == obj2[prevKey])) {
+	                        // If key is equal, then sort by id "DESC"
+	                        var orderKey = ((obj1[key] == obj2[key]) ? 'id' : key);
+	                        return ((obj1[orderKey] > obj2[orderKey]) ? 1 : 0);
+	                    }
+	                    return 0;
+	                });
+	                prevKey = key;
+	            };
+	            for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+	                var key = keys_1[_i];
+	                _loop_1(key);
+	            }
 	        }
 	        return objects;
 	    };
@@ -6636,33 +6647,32 @@ webpackJsonp([1],[
 	};
 	var core_1 = __webpack_require__(3);
 	var helper_1 = __webpack_require__(36);
-	var accordion_box_extension_component_1 = __webpack_require__(54);
+	var tabs_component_1 = __webpack_require__(54);
 	var nav_manager_service_1 = __webpack_require__(46);
 	var form_service_1 = __webpack_require__(56);
 	var data_box_extension_module_1 = __webpack_require__(57);
 	var data_service_1 = __webpack_require__(62);
 	var actions_service_1 = __webpack_require__(52);
 	var modal_service_1 = __webpack_require__(38);
-	// EntitySetting
-	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/entity-setting/edit');
-	var entity_setting_form_popup_module_1 = __webpack_require__(63);
-	// ClientSetting
-	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/client-setting/edit');
-	var client_setting_form_popup_module_1 = __webpack_require__(81);
-	// SupplierSetting
-	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/supplier-setting/edit');
-	var supplier_setting_form_popup_module_1 = __webpack_require__(83);
+	/* Import dependencies */
+	// Entities Setting
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'admin/settings/entities-menus');
+	var entities_setting_ext_module_1 = __webpack_require__(64);
 	// BookingSetting
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/booking-setting/edit');
-	var booking_setting_form_popup_module_1 = __webpack_require__(85);
+	var booking_setting_form_popup_module_1 = __webpack_require__(89);
+	// Document Types Setting
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'admin/settings/document-types-menus');
+	var document_types_setting_ext_module_1 = __webpack_require__(91);
+	/* /Import dependencies */
 	var MainComponent = (function (_super) {
 	    __extends(MainComponent, _super);
-	    function MainComponent(elementRef, renderer, provider, helperService, navManagerService, viewContainerRef, modalService) {
-	        var _this = _super.call(this) || this;
-	        _super.prototype.initAccordionBoxExtensionComponent.call(_this, elementRef, renderer, provider || null, helperService, navManagerService);
-	        // Init modal here
-	        modalService.init(viewContainerRef);
-	        _this._dependenciesData = (_this._helperService.getGlobalVar('dependency') || []);
+	    function MainComponent(elementRef, renderer, provider, helperService, navManagerService, _modalService, viewContainerRef) {
+	        var _this = _super.call(this, elementRef, renderer, provider, helperService, navManagerService) || this;
+	        _this._modalService = _modalService;
+	        _this.viewContainerRef = viewContainerRef;
+	        _this._modalService.init(viewContainerRef);
+	        _this._dependenciesData = _this._helperService.getGlobalVar('dependency');
 	        return _this;
 	    }
 	    /**
@@ -6671,25 +6681,25 @@ webpackJsonp([1],[
 	     * @returns NavData
 	     */
 	    MainComponent.prototype.getNavData = function (index) {
-	        var data = {
-	            module: data_box_extension_module_1.DataBoxExtensionModule,
-	            component: 'DataBoxComponent'
-	        };
 	        switch (index) {
 	            case 0:
-	                data['dataProvider'] = this._dependenciesData['entitySetting'];
-	                break;
+	                return {
+	                    module: entities_setting_ext_module_1.EntitiesSettingExtModule,
+	                    component: 'EntitiesSettingComponent'
+	                };
 	            case 1:
-	                data['dataProvider'] = this._dependenciesData['clientSetting'];
-	                break;
+	                return {
+	                    module: data_box_extension_module_1.DataBoxExtensionModule,
+	                    component: 'DataBoxComponent',
+	                    urlProvider: (this._helperService.getGlobalVar('route') + 'booking/booking-setting/data')
+	                };
 	            case 2:
-	                data['dataProvider'] = this._dependenciesData['supplierSetting'];
-	                break;
-	            case 3:
-	                data['dataProvider'] = this._dependenciesData['bookingSetting'];
-	                break;
+	                return {
+	                    module: document_types_setting_ext_module_1.DocumentTypesSettingExtModule,
+	                    component: 'DocumentTypesSettingComponent'
+	                };
 	        }
-	        return data;
+	        return null;
 	    };
 	    /**
 	     * Get nav providers (to lazy load components in container with dependency injection)
@@ -6699,63 +6709,53 @@ webpackJsonp([1],[
 	     */
 	    MainComponent.prototype.getNavProviders = function (index, data) {
 	        if (data === void 0) { data = null; }
-	        var providers = [
-	            form_service_1.FormService,
-	            { provide: 'DataService', useClass: data_service_1.DataService },
-	            actions_service_1.ActionsService,
-	            { provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data) },
-	            { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
-	            { provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data) }
-	        ];
 	        switch (index) {
 	            case 0:
-	                providers.push({ provide: 'Popups', useValue: {
-	                        module: entity_setting_form_popup_module_1.EntitySettingFormPopupModule,
-	                        component: 'EntitySettingFormPopupComponent',
-	                        providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }]
-	                    } });
-	                break;
+	                return [
+	                    nav_manager_service_1.NavManagerService
+	                ];
 	            case 1:
-	                providers.push({ provide: 'Popups', useValue: {
-	                        module: client_setting_form_popup_module_1.ClientSettingFormPopupModule,
-	                        component: 'ClientSettingFormPopupComponent',
-	                        providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }]
-	                    } });
-	                break;
+	                return [
+	                    form_service_1.FormService,
+	                    { provide: 'DataService', useClass: data_service_1.DataService },
+	                    actions_service_1.ActionsService,
+	                    { provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data) },
+	                    { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
+	                    { provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data) },
+	                    { provide: 'Popups', useValue: {
+	                            module: booking_setting_form_popup_module_1.BookingSettingFormPopupModule,
+	                            component: 'BookingSettingFormPopupComponent',
+	                            providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }]
+	                        } }
+	                ];
 	            case 2:
-	                providers.push({ provide: 'Popups', useValue: {
-	                        module: supplier_setting_form_popup_module_1.SupplierSettingFormPopupModule,
-	                        component: 'SupplierSettingFormPopupComponent',
-	                        providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }]
-	                    } });
-	                break;
-	            case 3:
-	                providers.push({ provide: 'Popups', useValue: {
-	                        module: booking_setting_form_popup_module_1.BookingSettingFormPopupModule,
-	                        component: 'BookingSettingFormPopupComponent',
-	                        providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }]
-	                    } });
-	                break;
+	                return [
+	                    nav_manager_service_1.NavManagerService
+	                ];
 	        }
-	        return providers;
+	        return null;
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    MainComponent.prototype.ngAfterViewInit = function () {
+	        _super.prototype.ngAfterViewInit.call(this);
+	        // Open the first tab
+	        this._navManagerService.navTo(0);
 	    };
 	    return MainComponent;
-	}(accordion_box_extension_component_1.AccordionBoxExtensionComponent));
-	__decorate([
-	    core_1.ViewChildren('js_lazyLoadContainer', { read: core_1.ViewContainerRef }),
-	    __metadata("design:type", core_1.QueryList)
-	], MainComponent.prototype, "lazyLoadViewContainerRefQL", void 0);
+	}(tabs_component_1.TabsComponent));
 	MainComponent = __decorate([
 	    core_1.Component({
 	        selector: '#js_main',
-	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'admin/settings/menus'
+	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'admin/settings/main-menus'
 	    }),
-	    __param(2, core_1.Optional()), __param(2, core_1.Inject('Provider')),
+	    __param(2, core_1.Inject('Provider')),
 	    __param(3, core_1.Inject('HelperService')),
 	    __metadata("design:paramtypes", [core_1.ElementRef,
 	        core_1.Renderer, Object, Object, nav_manager_service_1.NavManagerService,
-	        core_1.ViewContainerRef,
-	        modal_service_1.ModalService])
+	        modal_service_1.ModalService,
+	        core_1.ViewContainerRef])
 	], MainComponent);
 	exports.MainComponent = MainComponent;
 
@@ -6779,42 +6779,45 @@ webpackJsonp([1],[
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
 	var core_1 = __webpack_require__(3);
 	var helper_1 = __webpack_require__(36);
-	var box_extension_component_1 = __webpack_require__(55);
-	var AccordionBoxExtensionComponent = (function (_super) {
-	    __extends(AccordionBoxExtensionComponent, _super);
-	    function AccordionBoxExtensionComponent() {
-	        return _super.call(this) || this;
+	var base_component_1 = __webpack_require__(55);
+	var nav_manager_service_1 = __webpack_require__(46);
+	var TabsComponent = (function (_super) {
+	    __extends(TabsComponent, _super);
+	    function TabsComponent(elementRef, renderer, provider, _helperService, _navManagerService) {
+	        var _this = _super.call(this, elementRef, renderer, provider || null) || this;
+	        _this._helperService = _helperService;
+	        _this._navManagerService = _navManagerService;
+	        return _this;
 	    }
-	    AccordionBoxExtensionComponent.prototype.initAccordionBoxExtensionComponent = function (elementRef, renderer, provider, helperService, navManagerService) {
-	        // Parent construct
-	        _super.prototype.initBoxExtensionComponent.call(this, elementRef, renderer, provider);
-	        // Constructor vars
-	        this._helperService = helperService;
-	        this._navManagerService = navManagerService;
-	    };
 	    /**
 	     * Lifecycle callback
 	     */
-	    AccordionBoxExtensionComponent.prototype.ngAfterViewInit = function () {
+	    TabsComponent.prototype.ngAfterViewInit = function () {
 	        // Initializes the children navigation manager service
 	        this._navManagerService.init(this, this.lazyLoadViewContainerRefQL);
 	    };
-	    return AccordionBoxExtensionComponent;
-	}(box_extension_component_1.BoxExtensionComponent));
+	    return TabsComponent;
+	}(base_component_1.BaseComponent));
 	__decorate([
 	    core_1.ViewChildren('js_lazyLoadContainer', { read: core_1.ViewContainerRef }),
 	    __metadata("design:type", core_1.QueryList)
-	], AccordionBoxExtensionComponent.prototype, "lazyLoadViewContainerRefQL", void 0);
-	AccordionBoxExtensionComponent = __decorate([
+	], TabsComponent.prototype, "lazyLoadViewContainerRefQL", void 0);
+	TabsComponent = __decorate([
 	    core_1.Component({
-	        selector: 'js_accordion',
+	        selector: '.js_tabs',
 	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
 	    }),
-	    __metadata("design:paramtypes", [])
-	], AccordionBoxExtensionComponent);
-	exports.AccordionBoxExtensionComponent = AccordionBoxExtensionComponent;
+	    __param(2, core_1.Optional()), __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, Object, nav_manager_service_1.NavManagerService])
+	], TabsComponent);
+	exports.TabsComponent = TabsComponent;
 
 
 /***/ },
@@ -6822,56 +6825,67 @@ webpackJsonp([1],[
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
 	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
 	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
 	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
 	    return c > 3 && r && Object.defineProperty(target, key, r), r;
 	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
 	var core_1 = __webpack_require__(3);
-	var base_extension_component_1 = __webpack_require__(43);
 	/**
-	 * Box (simple base box)
+	 * Used only as base component to be extended for others components
 	 */
-	var BoxExtensionComponent = (function (_super) {
-	    __extends(BoxExtensionComponent, _super);
-	    function BoxExtensionComponent() {
-	        var _this = _super !== null && _super.apply(this, arguments) || this;
-	        // Controls the toggle of the show/hide content.
-	        // It starts "true" otherwise the content may not be rendered correctly.
-	        _this._isExpanded = true;
-	        return _this;
+	// Component
+	var BaseComponent = (function () {
+	    function BaseComponent(_elementRef, _renderer, 
+	        // This provider can becomes any provider defined by your child
+	        // (don't need the "inject" because it's a static class, so will be provider by children components)
+	        _provider) {
+	        this._elementRef = _elementRef;
+	        this._renderer = _renderer;
+	        this._provider = _provider;
+	        // Set defaults
+	        if (!this._provider) {
+	            this._provider = [];
+	        }
+	        // Set main class
+	        var mainClass = this.getProviderExtraDataAttr('class');
+	        if (mainClass) {
+	            this._renderer.setElementClass(this._elementRef.nativeElement, mainClass, true);
+	        }
 	    }
 	    /**
-	     * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
-	     * @param elementRef
-	     * @param renderer
-	     * @param provider
+	     * Get provider attribute
+	     * @param attribute
+	     * @returns {any|null}
 	     */
-	    BoxExtensionComponent.prototype.initBoxExtensionComponent = function (elementRef, renderer, provider) {
-	        _super.prototype.initBaseExtensionComponent.call(this, elementRef, renderer, provider);
+	    BaseComponent.prototype.getProviderAttr = function (attribute) {
+	        return this._provider[attribute] || null;
 	    };
 	    /**
-	     * Expander action. Used by expanded directive output.
-	     * @param isExpanded (value returned by the expander directive on change)
+	     * Get provider extra data attribute
+	     * @param attribute
+	     * @returns {any|null}
 	     */
-	    BoxExtensionComponent.prototype.expanderAction = function (isExpanded) {
-	        this._isExpanded = isExpanded;
+	    BaseComponent.prototype.getProviderExtraDataAttr = function (attribute) {
+	        return ((this._provider['extraData'] && this._provider['extraData'][attribute])
+	            ? this._provider['extraData'][attribute]
+	            : null);
 	    };
-	    return BoxExtensionComponent;
-	}(base_extension_component_1.BaseExtensionComponent));
-	BoxExtensionComponent = __decorate([
+	    return BaseComponent;
+	}());
+	BaseComponent = __decorate([
 	    core_1.Component({
-	        selector: '.js_box',
+	        selector: '.js_base',
 	        template: ''
-	    })
-	], BoxExtensionComponent);
-	exports.BoxExtensionComponent = BoxExtensionComponent;
+	    }),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object])
+	], BaseComponent);
+	exports.BaseComponent = BaseComponent;
 
 
 /***/ },
@@ -7455,7 +7469,7 @@ webpackJsonp([1],[
 	};
 	var core_1 = __webpack_require__(3);
 	var data_service_1 = __webpack_require__(62);
-	var box_extension_component_1 = __webpack_require__(55);
+	var box_extension_component_1 = __webpack_require__(63);
 	// Popup Types
 	exports.PopupTypes = {
 	    edit: 'edit',
@@ -8530,9 +8544,13 @@ webpackJsonp([1],[
 	                // Refresh object
 	                if (obj) {
 	                    that.setObject(obj, index);
-	                    // If objects are not returned, then order objects by "priority" value
+	                    // If objects are not returned, then order objects by "search" "orderBy" provider
 	                    if (!data.objects) {
-	                        that._helperService.orderObjects(that._provider.objects, 'priority');
+	                        // Get fields from search
+	                        var orderFields = that._provider.search.orderBy.map(function ($item) {
+	                            return $item['field'];
+	                        });
+	                        that._helperService.orderObjects(that._provider.objects, orderFields);
 	                    }
 	                }
 	            }, function (errors) {
@@ -8676,6 +8694,63 @@ webpackJsonp([1],[
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var base_extension_component_1 = __webpack_require__(43);
+	/**
+	 * Box (simple base box)
+	 */
+	var BoxExtensionComponent = (function (_super) {
+	    __extends(BoxExtensionComponent, _super);
+	    function BoxExtensionComponent() {
+	        var _this = _super !== null && _super.apply(this, arguments) || this;
+	        // Controls the toggle of the show/hide content.
+	        // It starts "true" otherwise the content may not be rendered correctly.
+	        _this._isExpanded = true;
+	        return _this;
+	    }
+	    /**
+	     * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
+	     * @param elementRef
+	     * @param renderer
+	     * @param provider
+	     */
+	    BoxExtensionComponent.prototype.initBoxExtensionComponent = function (elementRef, renderer, provider) {
+	        _super.prototype.initBaseExtensionComponent.call(this, elementRef, renderer, provider);
+	    };
+	    /**
+	     * Expander action. Used by expanded directive output.
+	     * @param isExpanded (value returned by the expander directive on change)
+	     */
+	    BoxExtensionComponent.prototype.expanderAction = function (isExpanded) {
+	        this._isExpanded = isExpanded;
+	    };
+	    return BoxExtensionComponent;
+	}(base_extension_component_1.BaseExtensionComponent));
+	BoxExtensionComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_box',
+	        template: ''
+	    })
+	], BoxExtensionComponent);
+	exports.BoxExtensionComponent = BoxExtensionComponent;
+
+
+/***/ },
+/* 64 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
 	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
 	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8685,36 +8760,260 @@ webpackJsonp([1],[
 	var core_1 = __webpack_require__(3);
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
-	var ng_bootstrap_1 = __webpack_require__(64);
-	var entity_setting_form_popup_component_1 = __webpack_require__(72);
-	var field_types_extension_module_1 = __webpack_require__(75);
-	var EntitySettingFormPopupModule = (function () {
-	    function EntitySettingFormPopupModule() {
+	var search_module_1 = __webpack_require__(47);
+	var entities_setting_component_1 = __webpack_require__(65);
+	var EntitiesSettingExtModule = (function () {
+	    function EntitiesSettingExtModule() {
 	    }
-	    return EntitySettingFormPopupModule;
+	    return EntitiesSettingExtModule;
 	}());
-	EntitySettingFormPopupModule = __decorate([
+	EntitiesSettingExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, search_module_1.SearchModule],
+	        declarations: [
+	            entities_setting_component_1.EntitiesSettingComponent
+	        ],
+	        exports: [entities_setting_component_1.EntitiesSettingComponent]
+	    })
+	], EntitiesSettingExtModule);
+	exports.EntitiesSettingExtModule = EntitiesSettingExtModule;
+
+
+/***/ },
+/* 65 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(36);
+	var accordion_component_1 = __webpack_require__(66);
+	var nav_manager_service_1 = __webpack_require__(46);
+	var form_service_1 = __webpack_require__(56);
+	var data_box_extension_module_1 = __webpack_require__(57);
+	var data_service_1 = __webpack_require__(62);
+	var actions_service_1 = __webpack_require__(52);
+	/* Import dependencies */
+	// ClientSetting
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/client-setting/edit');
+	var client_setting_form_popup_module_1 = __webpack_require__(67);
+	// SupplierSetting
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/supplier-setting/edit');
+	var supplier_setting_form_popup_module_1 = __webpack_require__(85);
+	// EntitySetting
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/entity-setting/edit');
+	var entity_setting_form_popup_module_1 = __webpack_require__(87);
+	/* /Import dependencies */
+	var EntitiesSettingComponent = (function (_super) {
+	    __extends(EntitiesSettingComponent, _super);
+	    function EntitiesSettingComponent(elementRef, renderer, provider, helperService, navManagerService) {
+	        var _this = _super.call(this, elementRef, renderer, provider || null, helperService, navManagerService) || this;
+	        _this._dependenciesData = (_this._helperService.getGlobalVar('dependency') || []);
+	        return _this;
+	    }
+	    /**
+	     * Get navigation data (needed data to lazy load container)
+	     * @param index (index to load)
+	     * @returns NavData
+	     */
+	    EntitiesSettingComponent.prototype.getNavData = function (index) {
+	        var data = {
+	            module: data_box_extension_module_1.DataBoxExtensionModule,
+	            component: 'DataBoxComponent'
+	        };
+	        switch (index) {
+	            case 0:
+	                data['dataProvider'] = this._dependenciesData['clientSetting'];
+	                break;
+	            case 1:
+	                data['dataProvider'] = this._dependenciesData['supplierSetting'];
+	                break;
+	            case 2:
+	                data['dataProvider'] = this._dependenciesData['entitySetting'];
+	                break;
+	        }
+	        return data;
+	    };
+	    /**
+	     * Get nav providers (to lazy load components in container with dependency injection)
+	     * @param index (index to load)
+	     * @param data (data to resolve all providers)
+	     * @returns {Array}
+	     */
+	    EntitiesSettingComponent.prototype.getNavProviders = function (index, data) {
+	        if (data === void 0) { data = null; }
+	        var providers = [
+	            form_service_1.FormService,
+	            { provide: 'DataService', useClass: data_service_1.DataService },
+	            actions_service_1.ActionsService,
+	            { provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data) },
+	            { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
+	            { provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data) }
+	        ];
+	        switch (index) {
+	            case 0:
+	                providers.push({ provide: 'Popups', useValue: {
+	                        module: client_setting_form_popup_module_1.ClientSettingFormPopupModule,
+	                        component: 'ClientSettingFormPopupComponent',
+	                        providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }]
+	                    } });
+	                break;
+	            case 1:
+	                providers.push({ provide: 'Popups', useValue: {
+	                        module: supplier_setting_form_popup_module_1.SupplierSettingFormPopupModule,
+	                        component: 'SupplierSettingFormPopupComponent',
+	                        providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }]
+	                    } });
+	                break;
+	            case 2:
+	                providers.push({ provide: 'Popups', useValue: {
+	                        module: entity_setting_form_popup_module_1.EntitySettingFormPopupModule,
+	                        component: 'EntitySettingFormPopupComponent',
+	                        providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }]
+	                    } });
+	                break;
+	        }
+	        return providers;
+	    };
+	    return EntitiesSettingComponent;
+	}(accordion_component_1.AccordionComponent));
+	__decorate([
+	    core_1.ViewChildren('js_lazyLoadContainer', { read: core_1.ViewContainerRef }),
+	    __metadata("design:type", core_1.QueryList)
+	], EntitiesSettingComponent.prototype, "lazyLoadViewContainerRefQL", void 0);
+	EntitiesSettingComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_entitiesSetting',
+	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'admin/settings/entities-menus'
+	    }),
+	    __param(2, core_1.Optional()), __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, Object, nav_manager_service_1.NavManagerService])
+	], EntitiesSettingComponent);
+	exports.EntitiesSettingComponent = EntitiesSettingComponent;
+
+
+/***/ },
+/* 66 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(36);
+	var base_component_1 = __webpack_require__(55);
+	var nav_manager_service_1 = __webpack_require__(46);
+	var AccordionComponent = (function (_super) {
+	    __extends(AccordionComponent, _super);
+	    function AccordionComponent(elementRef, renderer, provider, _helperService, _navManagerService) {
+	        var _this = _super.call(this, elementRef, renderer, provider || null) || this;
+	        _this._helperService = _helperService;
+	        _this._navManagerService = _navManagerService;
+	        return _this;
+	    }
+	    /**
+	     * Lifecycle callback
+	     */
+	    AccordionComponent.prototype.ngAfterViewInit = function () {
+	        // Initializes the children navigation manager service
+	        this._navManagerService.init(this, this.lazyLoadViewContainerRefQL);
+	    };
+	    return AccordionComponent;
+	}(base_component_1.BaseComponent));
+	__decorate([
+	    core_1.ViewChildren('js_lazyLoadContainer', { read: core_1.ViewContainerRef }),
+	    __metadata("design:type", core_1.QueryList)
+	], AccordionComponent.prototype, "lazyLoadViewContainerRefQL", void 0);
+	AccordionComponent = __decorate([
+	    core_1.Component({
+	        selector: 'js_accordion',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Optional()), __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, Object, nav_manager_service_1.NavManagerService])
+	], AccordionComponent);
+	exports.AccordionComponent = AccordionComponent;
+
+
+/***/ },
+/* 67 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(68);
+	var client_setting_form_popup_component_1 = __webpack_require__(76);
+	var field_types_extension_module_1 = __webpack_require__(79);
+	var ClientSettingFormPopupModule = (function () {
+	    function ClientSettingFormPopupModule() {
+	    }
+	    return ClientSettingFormPopupModule;
+	}());
+	ClientSettingFormPopupModule = __decorate([
 	    core_1.NgModule({
 	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule,
 	            field_types_extension_module_1.FieldTypesExtensionModule,
 	            ng_bootstrap_1.NgbModule
 	        ],
 	        declarations: [
-	            entity_setting_form_popup_component_1.EntitySettingFormPopupComponent
+	            client_setting_form_popup_component_1.ClientSettingFormPopupComponent
 	        ],
-	        exports: [entity_setting_form_popup_component_1.EntitySettingFormPopupComponent]
+	        exports: [client_setting_form_popup_component_1.ClientSettingFormPopupComponent]
 	    })
-	], EntitySettingFormPopupModule);
-	exports.EntitySettingFormPopupModule = EntitySettingFormPopupModule;
+	], ClientSettingFormPopupModule);
+	exports.ClientSettingFormPopupModule = ClientSettingFormPopupModule;
 
 
 /***/ },
-/* 64 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function webpackUniversalModuleDefinition(root, factory) {
 		if(true)
-			module.exports = factory(__webpack_require__(65), __webpack_require__(67), __webpack_require__(69), __webpack_require__(5), __webpack_require__(22), __webpack_require__(3), __webpack_require__(30));
+			module.exports = factory(__webpack_require__(69), __webpack_require__(71), __webpack_require__(73), __webpack_require__(5), __webpack_require__(22), __webpack_require__(3), __webpack_require__(30));
 		else if(typeof define === 'function' && define.amd)
 			define(["rxjs/add/operator/do", "rxjs/add/operator/let", "rxjs/add/observable/fromEvent", "rxjs/Observable", "@angular/common", "@angular/core", "@angular/forms"], factory);
 		else if(typeof exports === 'object')
@@ -14271,18 +14570,18 @@ webpackJsonp([1],[
 	//# sourceMappingURL=ng-bootstrap.js.map
 
 /***/ },
-/* 65 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Observable_1 = __webpack_require__(5);
-	var do_1 = __webpack_require__(66);
+	var do_1 = __webpack_require__(70);
 	Observable_1.Observable.prototype.do = do_1._do;
 	Observable_1.Observable.prototype._do = do_1._do;
 	//# sourceMappingURL=do.js.map
 
 /***/ },
-/* 66 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14399,18 +14698,18 @@ webpackJsonp([1],[
 	//# sourceMappingURL=do.js.map
 
 /***/ },
-/* 67 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Observable_1 = __webpack_require__(5);
-	var let_1 = __webpack_require__(68);
+	var let_1 = __webpack_require__(72);
 	Observable_1.Observable.prototype.let = let_1.letProto;
 	Observable_1.Observable.prototype.letBind = let_1.letProto;
 	//# sourceMappingURL=let.js.map
 
 /***/ },
-/* 68 */
+/* 72 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -14427,26 +14726,26 @@ webpackJsonp([1],[
 	//# sourceMappingURL=let.js.map
 
 /***/ },
-/* 69 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var Observable_1 = __webpack_require__(5);
-	var fromEvent_1 = __webpack_require__(70);
+	var fromEvent_1 = __webpack_require__(74);
 	Observable_1.Observable.fromEvent = fromEvent_1.fromEvent;
 	//# sourceMappingURL=fromEvent.js.map
 
 /***/ },
-/* 70 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var FromEventObservable_1 = __webpack_require__(71);
+	var FromEventObservable_1 = __webpack_require__(75);
 	exports.fromEvent = FromEventObservable_1.FromEventObservable.create;
 	//# sourceMappingURL=fromEvent.js.map
 
 /***/ },
-/* 71 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14583,7 +14882,7 @@ webpackJsonp([1],[
 	//# sourceMappingURL=FromEventObservable.js.map
 
 /***/ },
-/* 72 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14606,32 +14905,32 @@ webpackJsonp([1],[
 	};
 	var core_1 = __webpack_require__(3);
 	var helper_1 = __webpack_require__(36);
-	var form_popup_extension_component_1 = __webpack_require__(73);
+	var form_popup_extension_component_1 = __webpack_require__(77);
 	var form_service_1 = __webpack_require__(56);
-	var EntitySettingFormPopupComponent = (function (_super) {
-	    __extends(EntitySettingFormPopupComponent, _super);
-	    function EntitySettingFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
+	var ClientSettingFormPopupComponent = (function (_super) {
+	    __extends(ClientSettingFormPopupComponent, _super);
+	    function ClientSettingFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
 	        var _this = _super.call(this) || this;
 	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
 	        return _this;
 	    }
-	    return EntitySettingFormPopupComponent;
+	    return ClientSettingFormPopupComponent;
 	}(form_popup_extension_component_1.FormPopupExtensionComponent));
-	EntitySettingFormPopupComponent = __decorate([
+	ClientSettingFormPopupComponent = __decorate([
 	    core_1.Component({
-	        selector: '#js_entitySettingFormPopup',
+	        selector: '#js_clientSettingFormPopup',
 	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
 	    }),
 	    __param(2, core_1.Inject('Provider')),
 	    __param(4, core_1.Inject('DataService')),
 	    __metadata("design:paramtypes", [core_1.ElementRef,
 	        core_1.Renderer, Object, form_service_1.FormService, Object])
-	], EntitySettingFormPopupComponent);
-	exports.EntitySettingFormPopupComponent = EntitySettingFormPopupComponent;
+	], ClientSettingFormPopupComponent);
+	exports.ClientSettingFormPopupComponent = ClientSettingFormPopupComponent;
 
 
 /***/ },
-/* 73 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14650,7 +14949,7 @@ webpackJsonp([1],[
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var core_1 = __webpack_require__(3);
-	var form_extension_component_1 = __webpack_require__(74);
+	var form_extension_component_1 = __webpack_require__(78);
 	var FormPopupExtensionComponent = (function (_super) {
 	    __extends(FormPopupExtensionComponent, _super);
 	    function FormPopupExtensionComponent() {
@@ -14772,7 +15071,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 74 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14842,7 +15141,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 75 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -14855,11 +15154,11 @@ webpackJsonp([1],[
 	var core_1 = __webpack_require__(3);
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
-	var field_type_auto_complete_component_1 = __webpack_require__(76);
-	var password_component_1 = __webpack_require__(77);
-	var field_type_multi_checkbox_directive_1 = __webpack_require__(78);
-	var field_type_html_select_directive_1 = __webpack_require__(79);
-	var field_type_date_picker_directive_1 = __webpack_require__(80);
+	var field_type_auto_complete_component_1 = __webpack_require__(80);
+	var password_component_1 = __webpack_require__(81);
+	var field_type_multi_checkbox_directive_1 = __webpack_require__(82);
+	var field_type_html_select_directive_1 = __webpack_require__(83);
+	var field_type_date_picker_directive_1 = __webpack_require__(84);
 	var FieldTypesExtensionModule = (function () {
 	    function FieldTypesExtensionModule() {
 	    }
@@ -14888,7 +15187,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 76 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15218,7 +15517,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 77 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15277,7 +15576,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 78 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15375,7 +15674,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 79 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15482,7 +15781,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 80 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15642,7 +15941,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 81 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -15655,94 +15954,9 @@ webpackJsonp([1],[
 	var core_1 = __webpack_require__(3);
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
-	var ng_bootstrap_1 = __webpack_require__(64);
-	var client_setting_form_popup_component_1 = __webpack_require__(82);
-	var field_types_extension_module_1 = __webpack_require__(75);
-	var ClientSettingFormPopupModule = (function () {
-	    function ClientSettingFormPopupModule() {
-	    }
-	    return ClientSettingFormPopupModule;
-	}());
-	ClientSettingFormPopupModule = __decorate([
-	    core_1.NgModule({
-	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule,
-	            field_types_extension_module_1.FieldTypesExtensionModule,
-	            ng_bootstrap_1.NgbModule
-	        ],
-	        declarations: [
-	            client_setting_form_popup_component_1.ClientSettingFormPopupComponent
-	        ],
-	        exports: [client_setting_form_popup_component_1.ClientSettingFormPopupComponent]
-	    })
-	], ClientSettingFormPopupModule);
-	exports.ClientSettingFormPopupModule = ClientSettingFormPopupModule;
-
-
-/***/ },
-/* 82 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var __param = (this && this.__param) || function (paramIndex, decorator) {
-	    return function (target, key) { decorator(target, key, paramIndex); }
-	};
-	var core_1 = __webpack_require__(3);
-	var helper_1 = __webpack_require__(36);
-	var form_popup_extension_component_1 = __webpack_require__(73);
-	var form_service_1 = __webpack_require__(56);
-	var ClientSettingFormPopupComponent = (function (_super) {
-	    __extends(ClientSettingFormPopupComponent, _super);
-	    function ClientSettingFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
-	        var _this = _super.call(this) || this;
-	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
-	        return _this;
-	    }
-	    return ClientSettingFormPopupComponent;
-	}(form_popup_extension_component_1.FormPopupExtensionComponent));
-	ClientSettingFormPopupComponent = __decorate([
-	    core_1.Component({
-	        selector: '#js_clientSettingFormPopup',
-	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
-	    }),
-	    __param(2, core_1.Inject('Provider')),
-	    __param(4, core_1.Inject('DataService')),
-	    __metadata("design:paramtypes", [core_1.ElementRef,
-	        core_1.Renderer, Object, form_service_1.FormService, Object])
-	], ClientSettingFormPopupComponent);
-	exports.ClientSettingFormPopupComponent = ClientSettingFormPopupComponent;
-
-
-/***/ },
-/* 83 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var core_1 = __webpack_require__(3);
-	var common_1 = __webpack_require__(22);
-	var forms_1 = __webpack_require__(30);
-	var ng_bootstrap_1 = __webpack_require__(64);
-	var supplier_setting_form_popup_component_1 = __webpack_require__(84);
-	var field_types_extension_module_1 = __webpack_require__(75);
+	var ng_bootstrap_1 = __webpack_require__(68);
+	var supplier_setting_form_popup_component_1 = __webpack_require__(86);
+	var field_types_extension_module_1 = __webpack_require__(79);
 	var SupplierSettingFormPopupModule = (function () {
 	    function SupplierSettingFormPopupModule() {
 	    }
@@ -15761,91 +15975,6 @@ webpackJsonp([1],[
 	    })
 	], SupplierSettingFormPopupModule);
 	exports.SupplierSettingFormPopupModule = SupplierSettingFormPopupModule;
-
-
-/***/ },
-/* 84 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var __param = (this && this.__param) || function (paramIndex, decorator) {
-	    return function (target, key) { decorator(target, key, paramIndex); }
-	};
-	var core_1 = __webpack_require__(3);
-	var helper_1 = __webpack_require__(36);
-	var form_popup_extension_component_1 = __webpack_require__(73);
-	var form_service_1 = __webpack_require__(56);
-	var SupplierSettingFormPopupComponent = (function (_super) {
-	    __extends(SupplierSettingFormPopupComponent, _super);
-	    function SupplierSettingFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
-	        var _this = _super.call(this) || this;
-	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
-	        return _this;
-	    }
-	    return SupplierSettingFormPopupComponent;
-	}(form_popup_extension_component_1.FormPopupExtensionComponent));
-	SupplierSettingFormPopupComponent = __decorate([
-	    core_1.Component({
-	        selector: '#js_supplierSettingFormPopup',
-	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
-	    }),
-	    __param(2, core_1.Inject('Provider')),
-	    __param(4, core_1.Inject('DataService')),
-	    __metadata("design:paramtypes", [core_1.ElementRef,
-	        core_1.Renderer, Object, form_service_1.FormService, Object])
-	], SupplierSettingFormPopupComponent);
-	exports.SupplierSettingFormPopupComponent = SupplierSettingFormPopupComponent;
-
-
-/***/ },
-/* 85 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var core_1 = __webpack_require__(3);
-	var common_1 = __webpack_require__(22);
-	var forms_1 = __webpack_require__(30);
-	var ng_bootstrap_1 = __webpack_require__(64);
-	var booking_setting_form_popup_component_1 = __webpack_require__(86);
-	var field_types_extension_module_1 = __webpack_require__(75);
-	var BookingSettingFormPopupModule = (function () {
-	    function BookingSettingFormPopupModule() {
-	    }
-	    return BookingSettingFormPopupModule;
-	}());
-	BookingSettingFormPopupModule = __decorate([
-	    core_1.NgModule({
-	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule,
-	            field_types_extension_module_1.FieldTypesExtensionModule,
-	            ng_bootstrap_1.NgbModule
-	        ],
-	        declarations: [
-	            booking_setting_form_popup_component_1.BookingSettingFormPopupComponent
-	        ],
-	        exports: [booking_setting_form_popup_component_1.BookingSettingFormPopupComponent]
-	    })
-	], BookingSettingFormPopupModule);
-	exports.BookingSettingFormPopupModule = BookingSettingFormPopupModule;
 
 
 /***/ },
@@ -15872,7 +16001,177 @@ webpackJsonp([1],[
 	};
 	var core_1 = __webpack_require__(3);
 	var helper_1 = __webpack_require__(36);
-	var form_popup_extension_component_1 = __webpack_require__(73);
+	var form_popup_extension_component_1 = __webpack_require__(77);
+	var form_service_1 = __webpack_require__(56);
+	var SupplierSettingFormPopupComponent = (function (_super) {
+	    __extends(SupplierSettingFormPopupComponent, _super);
+	    function SupplierSettingFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
+	        return _this;
+	    }
+	    return SupplierSettingFormPopupComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	SupplierSettingFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '#js_supplierSettingFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object])
+	], SupplierSettingFormPopupComponent);
+	exports.SupplierSettingFormPopupComponent = SupplierSettingFormPopupComponent;
+
+
+/***/ },
+/* 87 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(68);
+	var entity_setting_form_popup_component_1 = __webpack_require__(88);
+	var field_types_extension_module_1 = __webpack_require__(79);
+	var EntitySettingFormPopupModule = (function () {
+	    function EntitySettingFormPopupModule() {
+	    }
+	    return EntitySettingFormPopupModule;
+	}());
+	EntitySettingFormPopupModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule,
+	            field_types_extension_module_1.FieldTypesExtensionModule,
+	            ng_bootstrap_1.NgbModule
+	        ],
+	        declarations: [
+	            entity_setting_form_popup_component_1.EntitySettingFormPopupComponent
+	        ],
+	        exports: [entity_setting_form_popup_component_1.EntitySettingFormPopupComponent]
+	    })
+	], EntitySettingFormPopupModule);
+	exports.EntitySettingFormPopupModule = EntitySettingFormPopupModule;
+
+
+/***/ },
+/* 88 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(36);
+	var form_popup_extension_component_1 = __webpack_require__(77);
+	var form_service_1 = __webpack_require__(56);
+	var EntitySettingFormPopupComponent = (function (_super) {
+	    __extends(EntitySettingFormPopupComponent, _super);
+	    function EntitySettingFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
+	        return _this;
+	    }
+	    return EntitySettingFormPopupComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	EntitySettingFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '#js_entitySettingFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object])
+	], EntitySettingFormPopupComponent);
+	exports.EntitySettingFormPopupComponent = EntitySettingFormPopupComponent;
+
+
+/***/ },
+/* 89 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(68);
+	var booking_setting_form_popup_component_1 = __webpack_require__(90);
+	var field_types_extension_module_1 = __webpack_require__(79);
+	var BookingSettingFormPopupModule = (function () {
+	    function BookingSettingFormPopupModule() {
+	    }
+	    return BookingSettingFormPopupModule;
+	}());
+	BookingSettingFormPopupModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule,
+	            field_types_extension_module_1.FieldTypesExtensionModule,
+	            ng_bootstrap_1.NgbModule
+	        ],
+	        declarations: [
+	            booking_setting_form_popup_component_1.BookingSettingFormPopupComponent
+	        ],
+	        exports: [booking_setting_form_popup_component_1.BookingSettingFormPopupComponent]
+	    })
+	], BookingSettingFormPopupModule);
+	exports.BookingSettingFormPopupModule = BookingSettingFormPopupModule;
+
+
+/***/ },
+/* 90 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(36);
+	var form_popup_extension_component_1 = __webpack_require__(77);
 	var form_service_1 = __webpack_require__(56);
 	var BookingSettingFormPopupComponent = (function (_super) {
 	    __extends(BookingSettingFormPopupComponent, _super);
@@ -15894,6 +16193,423 @@ webpackJsonp([1],[
 	        core_1.Renderer, Object, form_service_1.FormService, Object])
 	], BookingSettingFormPopupComponent);
 	exports.BookingSettingFormPopupComponent = BookingSettingFormPopupComponent;
+
+
+/***/ },
+/* 91 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var search_module_1 = __webpack_require__(47);
+	var document_types_setting_component_1 = __webpack_require__(92);
+	var DocumentTypesSettingExtModule = (function () {
+	    function DocumentTypesSettingExtModule() {
+	    }
+	    return DocumentTypesSettingExtModule;
+	}());
+	DocumentTypesSettingExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, search_module_1.SearchModule],
+	        declarations: [
+	            document_types_setting_component_1.DocumentTypesSettingComponent
+	        ],
+	        exports: [document_types_setting_component_1.DocumentTypesSettingComponent]
+	    })
+	], DocumentTypesSettingExtModule);
+	exports.DocumentTypesSettingExtModule = DocumentTypesSettingExtModule;
+
+
+/***/ },
+/* 92 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(36);
+	var accordion_component_1 = __webpack_require__(66);
+	var nav_manager_service_1 = __webpack_require__(46);
+	var form_service_1 = __webpack_require__(56);
+	var data_box_extension_module_1 = __webpack_require__(57);
+	var data_service_1 = __webpack_require__(62);
+	var actions_service_1 = __webpack_require__(52);
+	/* Import dependencies */
+	// EntitySetting
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'accounting/client-document-type-setting/edit');
+	var client_document_type_setting_form_popup_ext_module_1 = __webpack_require__(93);
+	// ClientSetting
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'accounting/supplier-document-type-setting/edit');
+	var supplier_document_type_setting_form_popup_ext_module_1 = __webpack_require__(95);
+	// SupplierSetting
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'accounting/entity-document-type-setting/edit');
+	var entity_document_type_setting_form_popup_ext_module_1 = __webpack_require__(97);
+	/* /Import dependencies */
+	var DocumentTypesSettingComponent = (function (_super) {
+	    __extends(DocumentTypesSettingComponent, _super);
+	    function DocumentTypesSettingComponent(elementRef, renderer, provider, helperService, navManagerService) {
+	        return _super.call(this, elementRef, renderer, provider || null, helperService, navManagerService) || this;
+	    }
+	    /**
+	     * Get navigation data (needed data to lazy load container)
+	     * @param index (index to load)
+	     * @returns NavData
+	     */
+	    DocumentTypesSettingComponent.prototype.getNavData = function (index) {
+	        var data = {
+	            module: data_box_extension_module_1.DataBoxExtensionModule,
+	            component: 'DataBoxComponent'
+	        };
+	        switch (index) {
+	            case 0:
+	                data['urlProvider'] = (this._helperService.getGlobalVar('route') + 'accounting/client-document-type-setting/data');
+	                break;
+	            case 1:
+	                data['urlProvider'] = (this._helperService.getGlobalVar('route') + 'accounting/supplier-document-type-setting/data');
+	                break;
+	            case 2:
+	                data['urlProvider'] = (this._helperService.getGlobalVar('route') + 'accounting/entity-document-type-setting/data');
+	                break;
+	        }
+	        return data;
+	    };
+	    /**
+	     * Get nav providers (to lazy load components in container with dependency injection)
+	     * @param index (index to load)
+	     * @param data (data to resolve all providers)
+	     * @returns {Array}
+	     */
+	    DocumentTypesSettingComponent.prototype.getNavProviders = function (index, data) {
+	        if (data === void 0) { data = null; }
+	        var providers = [
+	            form_service_1.FormService,
+	            { provide: 'DataService', useClass: data_service_1.DataService },
+	            actions_service_1.ActionsService,
+	            { provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data) },
+	            { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
+	            { provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data) }
+	        ];
+	        switch (index) {
+	            case 0:
+	                providers.push({ provide: 'Popups', useValue: {
+	                        module: client_document_type_setting_form_popup_ext_module_1.ClientDocumentTypeSettingFormPopupExtModule,
+	                        component: 'ClientDocumentTypeSettingFormPopupComponent',
+	                        providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }]
+	                    } });
+	                break;
+	            case 1:
+	                providers.push({ provide: 'Popups', useValue: {
+	                        module: supplier_document_type_setting_form_popup_ext_module_1.SupplierDocumentTypeSettingFormPopupExtModule,
+	                        component: 'SupplierDocumentTypeSettingFormPopupComponent',
+	                        providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }]
+	                    } });
+	                break;
+	            case 2:
+	                providers.push({ provide: 'Popups', useValue: {
+	                        module: entity_document_type_setting_form_popup_ext_module_1.EntityDocumentTypeSettingFormPopupExtModule,
+	                        component: 'EntityDocumentTypeSettingFormPopupComponent',
+	                        providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }]
+	                    } });
+	                break;
+	        }
+	        return providers;
+	    };
+	    return DocumentTypesSettingComponent;
+	}(accordion_component_1.AccordionComponent));
+	__decorate([
+	    core_1.ViewChildren('js_lazyLoadContainer', { read: core_1.ViewContainerRef }),
+	    __metadata("design:type", core_1.QueryList)
+	], DocumentTypesSettingComponent.prototype, "lazyLoadViewContainerRefQL", void 0);
+	DocumentTypesSettingComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_documentTypesSetting',
+	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'admin/settings/document-types-menus'
+	    }),
+	    __param(2, core_1.Optional()), __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, Object, nav_manager_service_1.NavManagerService])
+	], DocumentTypesSettingComponent);
+	exports.DocumentTypesSettingComponent = DocumentTypesSettingComponent;
+
+
+/***/ },
+/* 93 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(68);
+	var client_document_type_setting_form_popup_component_1 = __webpack_require__(94);
+	var field_types_extension_module_1 = __webpack_require__(79);
+	var ClientDocumentTypeSettingFormPopupExtModule = (function () {
+	    function ClientDocumentTypeSettingFormPopupExtModule() {
+	    }
+	    return ClientDocumentTypeSettingFormPopupExtModule;
+	}());
+	ClientDocumentTypeSettingFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule,
+	            field_types_extension_module_1.FieldTypesExtensionModule,
+	            ng_bootstrap_1.NgbModule
+	        ],
+	        declarations: [
+	            client_document_type_setting_form_popup_component_1.ClientDocumentTypeSettingFormPopupComponent
+	        ],
+	        exports: [client_document_type_setting_form_popup_component_1.ClientDocumentTypeSettingFormPopupComponent]
+	    })
+	], ClientDocumentTypeSettingFormPopupExtModule);
+	exports.ClientDocumentTypeSettingFormPopupExtModule = ClientDocumentTypeSettingFormPopupExtModule;
+
+
+/***/ },
+/* 94 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(36);
+	var form_popup_extension_component_1 = __webpack_require__(77);
+	var form_service_1 = __webpack_require__(56);
+	var ClientDocumentTypeSettingFormPopupComponent = (function (_super) {
+	    __extends(ClientDocumentTypeSettingFormPopupComponent, _super);
+	    function ClientDocumentTypeSettingFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
+	        return _this;
+	    }
+	    return ClientDocumentTypeSettingFormPopupComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	ClientDocumentTypeSettingFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '#js_clientDocumentTypeSettingFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object])
+	], ClientDocumentTypeSettingFormPopupComponent);
+	exports.ClientDocumentTypeSettingFormPopupComponent = ClientDocumentTypeSettingFormPopupComponent;
+
+
+/***/ },
+/* 95 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(68);
+	var supplier_document_type_setting_form_popup_component_1 = __webpack_require__(96);
+	var field_types_extension_module_1 = __webpack_require__(79);
+	var SupplierDocumentTypeSettingFormPopupExtModule = (function () {
+	    function SupplierDocumentTypeSettingFormPopupExtModule() {
+	    }
+	    return SupplierDocumentTypeSettingFormPopupExtModule;
+	}());
+	SupplierDocumentTypeSettingFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule,
+	            field_types_extension_module_1.FieldTypesExtensionModule,
+	            ng_bootstrap_1.NgbModule
+	        ],
+	        declarations: [
+	            supplier_document_type_setting_form_popup_component_1.SupplierDocumentTypeSettingFormPopupComponent
+	        ],
+	        exports: [supplier_document_type_setting_form_popup_component_1.SupplierDocumentTypeSettingFormPopupComponent]
+	    })
+	], SupplierDocumentTypeSettingFormPopupExtModule);
+	exports.SupplierDocumentTypeSettingFormPopupExtModule = SupplierDocumentTypeSettingFormPopupExtModule;
+
+
+/***/ },
+/* 96 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(36);
+	var form_popup_extension_component_1 = __webpack_require__(77);
+	var form_service_1 = __webpack_require__(56);
+	var SupplierDocumentTypeSettingFormPopupComponent = (function (_super) {
+	    __extends(SupplierDocumentTypeSettingFormPopupComponent, _super);
+	    function SupplierDocumentTypeSettingFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
+	        return _this;
+	    }
+	    return SupplierDocumentTypeSettingFormPopupComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	SupplierDocumentTypeSettingFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '#js_supplierDocumentTypeSettingFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object])
+	], SupplierDocumentTypeSettingFormPopupComponent);
+	exports.SupplierDocumentTypeSettingFormPopupComponent = SupplierDocumentTypeSettingFormPopupComponent;
+
+
+/***/ },
+/* 97 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(68);
+	var entity_document_type_setting_form_popup_component_1 = __webpack_require__(98);
+	var field_types_extension_module_1 = __webpack_require__(79);
+	var EntityDocumentTypeSettingFormPopupExtModule = (function () {
+	    function EntityDocumentTypeSettingFormPopupExtModule() {
+	    }
+	    return EntityDocumentTypeSettingFormPopupExtModule;
+	}());
+	EntityDocumentTypeSettingFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule,
+	            field_types_extension_module_1.FieldTypesExtensionModule,
+	            ng_bootstrap_1.NgbModule
+	        ],
+	        declarations: [
+	            entity_document_type_setting_form_popup_component_1.EntityDocumentTypeSettingFormPopupComponent
+	        ],
+	        exports: [entity_document_type_setting_form_popup_component_1.EntityDocumentTypeSettingFormPopupComponent]
+	    })
+	], EntityDocumentTypeSettingFormPopupExtModule);
+	exports.EntityDocumentTypeSettingFormPopupExtModule = EntityDocumentTypeSettingFormPopupExtModule;
+
+
+/***/ },
+/* 98 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(36);
+	var form_popup_extension_component_1 = __webpack_require__(77);
+	var form_service_1 = __webpack_require__(56);
+	var EntityDocumentTypeSettingFormPopupComponent = (function (_super) {
+	    __extends(EntityDocumentTypeSettingFormPopupComponent, _super);
+	    function EntityDocumentTypeSettingFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
+	        return _this;
+	    }
+	    return EntityDocumentTypeSettingFormPopupComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	EntityDocumentTypeSettingFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '#js_entityDocumentTypeSettingFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object])
+	], EntityDocumentTypeSettingFormPopupComponent);
+	exports.EntityDocumentTypeSettingFormPopupComponent = EntityDocumentTypeSettingFormPopupComponent;
 
 
 /***/ }

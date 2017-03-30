@@ -53,11 +53,11 @@ class ServiceAvailabilityRepository extends BaseEntityRepository {
             'serviceObj' => array('label' => 'Service', 'type' => 'object', 'acl' => 'read', 'typeDetail' => array(
                 'table' => 'service', 'bundle' => 'services', 'type' => 'none')),
             'description' => array('label' => 'Description', 'type' => 'text', 'acl' => 'edit'),
-            'startDate' => array('label' => 'Start date', 'type' => 'date', 'acl' => 'edit', 'typeDetail' => array(
-                'expr' => 'max', 'exprField' => 'endDate'
+            'startDate' => array('label' => 'Start Date', 'type' => 'date', 'acl' => 'edit', 'view' => array(
+                'typeDetail' => array('rules' => array(array('expr' => 'max', 'value' => 'endDate')))
             )),
-            'endDate' => array('label' => 'End date', 'type' => 'date', 'acl' => 'edit', 'typeDetail' => array(
-                'expr' => 'min', 'exprField' => 'startDate'
+            'endDate' => array('label' => 'End Date', 'type' => 'date', 'acl' => 'edit', 'view' => array(
+                'typeDetail' => array('rules' => array(array('expr' => 'min', 'value' => 'startDate')))
             )),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),

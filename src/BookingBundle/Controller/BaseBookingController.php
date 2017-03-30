@@ -118,6 +118,9 @@ class BaseBookingController extends BaseEntityController
                     'label' => 'Services'
                 ),
                 array(
+                    'label' => 'Current Account'
+                ),
+                array(
                     'label' => 'Observations'
                 ),
                 array(

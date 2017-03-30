@@ -118,17 +118,25 @@ export class Helper {
     /**
      * Order objects by key
      * @param objects
-     * @param key
+     * @param keys
      * @returns {any}
      */
-    public static orderObjects(objects: any, key: string): any
+    public static orderObjects(objects: any, keys: string[]): any
     {
-        if (objects) {
-            objects.sort(function (obj1, obj2) {
-                // If key is equal, then sort by id "DESC"
-                let orderKey = ((obj1[key] == obj2[key]) ? 'id' : key);
-                return ((obj1[orderKey] > obj2[orderKey]) ? 1 : 0);
-            });
+        let prevKey = null;
+
+        if (objects && keys) {
+            for (let key of keys) {
+                objects.sort(function (obj1, obj2) {
+                    if (!prevKey || (obj1[prevKey] == obj2[prevKey])) {
+                        // If key is equal, then sort by id "DESC"
+                        let orderKey = ((obj1[key] == obj2[key]) ? 'id' : key);
+                        return ((obj1[orderKey] > obj2[orderKey]) ? 1 : 0);
+                    }
+                    return 0;
+                });
+                prevKey = key;
+            }
         }
 
         return objects;

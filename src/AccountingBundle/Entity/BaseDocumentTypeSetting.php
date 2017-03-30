@@ -6,25 +6,14 @@ use Doctrine\ORM\Mapping as ORM;
 
 
 /**
- * @ORM\Entity(repositoryClass="AccountingBundle\Entity\DocumentSettingRepository")
- * @ORM\Table(name="documentSetting",
- *     uniqueConstraints={
- *         @ORM\UniqueConstraint(name="unq_documentSetting", columns={"fk_store", "fk_documentType"})
- *     }
- * )
+ * @ORM\MappedSuperclass(repositoryClass="AccountingBundle\Entity\BaseDocumentTypeSettingRepository")
  */
-class DocumentSetting extends BaseEntity {
+class BaseDocumentTypeSetting extends BaseEntity {
     /**
      * @ORM\ManyToOne(targetEntity="\AdminBundle\Entity\Store")
      * @ORM\JoinColumn(name="fk_store", referencedColumnName="id", nullable=true, unique=false, onDelete="CASCADE")
      */
     protected $storeObj;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="DocumentType")
-     * @ORM\JoinColumn(name="fk_documentType", referencedColumnName="id", nullable=false, unique=false, onDelete="CASCADE")
-     */
-    protected $documentTypeObj;
 
     /**
      * @ORM\Column(name="seriesPrefix", type="string", length=8, nullable=true, unique=false, options={"comment":"Series prefix"})
@@ -55,26 +44,6 @@ class DocumentSetting extends BaseEntity {
     public function getStoreObj()
     {
         return $this->storeObj;
-    }
-
-    /**
-     * Set documentTypeObj
-     * @param \AccountingBundle\Entity\DocumentType $documentTypeObj
-     * @return $this
-     */
-    public function setDocumentTypeObj(\AccountingBundle\Entity\DocumentType $documentTypeObj)
-    {
-        $this->documentTypeObj = $documentTypeObj;
-        return $this;
-    }
-
-    /**
-     * Get documentTypeObj
-     * @return \AccountingBundle\Entity\DocumentType
-     */
-    public function getDocumentTypeObj()
-    {
-        return $this->documentTypeObj;
     }
 
     /**

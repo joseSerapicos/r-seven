@@ -19,6 +19,14 @@ class Store extends BaseEntity {
     protected $name;
 
     /**
+     * @ORM\ManyToOne(targetEntity="\AdminBundle\Entity\Store")
+     * @ORM\JoinColumn(name="fk_fallbackStore", referencedColumnName="id", nullable=true, unique=false, onDelete="SET NULL")
+     *
+     * Fallback store to get data that is not already defined here.
+     */
+    protected $fallbackStoreObj;
+
+    /**
      * @ORM\Column(name="formalName", type="string", length=64, nullable=true, unique=false, options={"comment":"Formal name"})
      */
     protected $formalName;
@@ -64,11 +72,6 @@ class Store extends BaseEntity {
     protected $storeObj;
 
     /**
-     * @ORM\Column(name="shareBasicInfo", type="boolean", nullable=false, unique=false, options={"default":0, "comment":"Share basic info"})
-     */
-    protected $shareBasicInfo;
-
-    /**
      * @ORM\Column(name="shareEntities", type="string", length=16, nullable=true, unique=false, options={"default":0, "comment":"Share entities"})
      */
     protected $shareEntities; // [ALL, CLIENTS, SUPPLIERS]
@@ -77,7 +80,6 @@ class Store extends BaseEntity {
      * @ORM\Column(name="shareCurrentAccounts", type="string", length=16, nullable=true, unique=false, options={"default":0, "comment":"Share current accounts"})
      */
     protected $shareCurrentAccounts; // [ALL, CLIENTS, SUPPLIERS]
-
 
     /**
      * Get name
@@ -100,6 +102,27 @@ class Store extends BaseEntity {
     }
 
     /**
+     * Set fallbackStoreObj
+     * @param \AdminBundle\Entity\Store $fallbackStoreObj
+     * @return $this
+     */
+    public function setFallbackStoreObj(\AdminBundle\Entity\Store $fallbackStoreObj = null)
+    {
+        $fallbackStoreObj = (($fallbackStoreObj == $this) ? null : $fallbackStoreObj); // Avoid infinite loop
+        $this->fallbackStoreObj = $fallbackStoreObj;
+        return $this;
+    }
+
+    /**
+     * Get fallbackStoreObj
+     * @return \AdminBundle\Entity\Store
+     */
+    public function getFallbackStoreObj()
+    {
+        return $this->fallbackStoreObj;
+    }
+
+    /**
      * Set formalName
      * @param string $formalName
      * @return Store
@@ -112,11 +135,18 @@ class Store extends BaseEntity {
 
     /**
      * Get formalName
+     * @param bool $useFallback (Use fallback to force a non empty return)
      * @return string
      */
-    public function getFormalName()
+    public function getFormalName($useFallback = false)
     {
-        return $this->formalName;
+        return ((empty($this->formalName) && $useFallback)
+            ? (empty($this->fallbackStoreObj)
+                ? $this->name
+                : $this->fallbackStoreObj->getFormalName()
+            )
+            : $this->formalName
+        );
     }
 
     /**
@@ -156,11 +186,15 @@ class Store extends BaseEntity {
 
     /**
      * Get taxNumber
+     * @param bool $useFallback (Use fallback to force a non empty return)
      * @return string
      */
-    public function getTaxNumber()
+    public function getTaxNumber($useFallback = false)
     {
-        return $this->taxNumber;
+        return ((empty($this->taxNumber) && $useFallback && !empty($this->fallbackStoreObj))
+            ? $this->fallbackStoreObj->getTaxNumber()
+            : $this->taxNumber
+        );
     }
 
     /**
@@ -249,26 +283,6 @@ class Store extends BaseEntity {
     public function getStoreObj()
     {
         return $this->storeObj;
-    }
-
-    /**
-     * Set shareBasicInfo
-     * @param boolean $shareBasicInfo
-     * @return $this
-     */
-    public function setShareBasicInfo($shareBasicInfo)
-    {
-        $this->shareBasicInfo = $shareBasicInfo;
-        return $this;
-    }
-
-    /**
-     * Get shareBasicInfo
-     * @return boolean
-     */
-    public function getShareBasicInfo()
-    {
-        return $this->shareBasicInfo;
     }
 
     /**

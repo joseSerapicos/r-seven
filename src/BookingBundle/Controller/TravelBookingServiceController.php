@@ -46,6 +46,9 @@ class TravelBookingServiceController extends BaseBookingServiceController
             ),
             'delete' => array(
                 'name' => '_booking__travel_booking_service__delete',
+            ),
+            'order' => array(
+                'name' => '_booking__travel_booking_service__order',
             )
         );
 
@@ -64,9 +67,20 @@ class TravelBookingServiceController extends BaseBookingServiceController
             'quantity', 'totalCost', 'totalSell', 'totalMarkup',
             'invoiceStatus', 'confirmationStatus', 'isAutoAllot'
         );
-        $this->templateConf['search']['orderBy'] = array(array('field' => 'startDate', 'value' => 'ASC'));
+        $this->templateConf['search']['orderBy'] = array(
+            array('field' => 'startDate', 'value' => 'ASC'),
+            array('field' => 'priority', 'value' => 'ASC')
+        );
         // Empty criteria to be able to see all registers because "search" action is disabled.
         $this->templateConf['search']['criteria'] = array();
+
+        // Actions for template/view
+        $this->templateConf['actions'] = array_merge(
+            $this->templateConf['actions'],
+            array(
+                'order' => true
+            )
+        );
 
         // Extra data
         $this->templateConf['extraData']['template'] = array(
@@ -213,6 +227,24 @@ class TravelBookingServiceController extends BaseBookingServiceController
             $this->setDependenciesPlaces();
         }
         return $response;
+    }
+
+    /**
+     * @Route("/booking/travel-booking-service/order/{travelBooking}/{id}/{type}",
+     *     name="_booking__travel_booking_service__order",
+     *     defaults={"id" = null, "type" = null}
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $travelBooking
+     * @param $id
+     * @param $type
+     * @return mixed
+     */
+    public function orderLocalChildAction(Request $request, $travelBooking, $id, $type)
+    {
+        return parent::orderChildAction($request, array($travelBooking), $id, $type);
     }
 
     /**

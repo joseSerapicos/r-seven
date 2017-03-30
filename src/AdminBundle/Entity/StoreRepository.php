@@ -53,7 +53,17 @@ class StoreRepository extends BaseEntityRepository
         return self::$metadata = self::processMetadata(array(
             'id' => array('label' => 'Id', 'type' => 'number', 'acl' => 'read'),
             'name' => array('label' => 'Name', 'type' => 'text', 'acl' => 'edit'),
+            'fallbackStoreObj' => array('label' => 'Fallback Store', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(
+                'table' => 'store', 'bundle' => 'admin', 'type' => 'select'), 'isRequired' => false),
             'formalName' => array('label' => 'Formal Name', 'type' => 'text', 'acl' => 'edit'),
+            'taxNumber' => array('label' => 'Tax Number', 'type' => 'text', 'acl' => 'edit'),
+            'storeAddressObj' => array('label' => 'Address', 'type' => 'object', 'acl' => 'read',
+                'typeDetail' => array(
+                    'table' => 'storeAddress', 'field' => 'id', 'bundle' => 'admin', 'type' => 'none',
+                    'metadata' => array('method' => 'merge', 'pushAfterField' => 'taxNumber')
+                ),
+                'form' => array('type' => 'embed')
+            ),
             'color' => array('label' => 'Color', 'type' => 'none', 'acl' => 'edit', 'default' => '#000000',
                 'form' => array('type' => 'color')),
             'privacy' => array('label' => 'Privacy', 'type' => 'enum', 'acl' => 'edit',
@@ -74,8 +84,6 @@ class StoreRepository extends BaseEntityRepository
                     )),
                 'form' => array('type' => 'select')
             ),
-            'shareBasicInfo' => array('label' => 'Basic Info', 'type' => 'none', 'acl' => 'edit',
-                'form' => array('type' => 'boolean')),
             'shareEntities' => array('label' => 'Entities', 'type' => 'enum', 'acl' => 'edit', 'isRequired' => false,
                 'typeDetail' => array(
                     'type' => 'none', 'choices' => array(
@@ -96,14 +104,6 @@ class StoreRepository extends BaseEntityRepository
             ),
             'storeObj' => array('label' => 'Store to Share', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(
                 'table' => 'store', 'bundle' => 'admin', 'type' => 'select'), 'isRequired' => false),
-            'taxNumber' => array('label' => 'Tax Number', 'type' => 'text', 'acl' => 'edit'),
-            'storeAddressObj' => array('label' => 'Address', 'type' => 'object', 'acl' => 'read',
-                'typeDetail' => array(
-                    'table' => 'storeAddress', 'field' => 'id', 'bundle' => 'admin', 'type' => 'none',
-                    'metadata' => array('method' => 'merge', 'pushAfterField' => 'id')
-                ),
-                'form' => array('type' => 'embed')
-            ),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
             'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
@@ -158,7 +158,7 @@ class StoreRepository extends BaseEntityRepository
     public function getStoreAcl($store)
     {
         $options = array(
-            'fields' => array('id', 'shareBasicInfo', 'shareEntities', 'shareCurrentAccounts'),
+            'fields' => array('id', 'shareEntities', 'shareCurrentAccounts'),
             'criteria' => array(
                 array( // Enabled stores
                     'field' => 'isEnabled',
@@ -186,9 +186,8 @@ class StoreRepository extends BaseEntityRepository
 
         $result = $this->executeQueryBuilder($qb);
 
-        // store acl, stats only with access to itself
+        // store acl, give access to itself
         $acl = array(
-            'shareBasicInfo' => array($store),
             'shareEntities' => array(
                 'all' => array($store),
                 'clients' => array($store),
@@ -205,11 +204,6 @@ class StoreRepository extends BaseEntityRepository
             foreach ($result as $sharedStore) {
                 foreach ($sharedStore as $sharedResource => $value) {
                     switch ($sharedResource) {
-                        case 'shareBasicInfo':
-                            if ($value == 1) {
-                                $acl[$sharedResource][] = $sharedStore['id'];
-                            }
-                            break;
                         case 'shareEntities':
                         case 'shareCurrentAccounts':
                             switch ($value) {

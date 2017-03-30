@@ -14,15 +14,10 @@
     {% set supplierSettingData = render(controller(
         'EntitiesBundle:SupplierSetting:data'
     )) %}
-
-    {% set bookingSettingData = render(controller(
-        'BookingBundle:BookingSetting:data'
-    )) %}
     <script>
         _app.dependency.entitySetting = {{ entitySettingData|raw }};
         _app.dependency.clientSetting = {{ clientSettingData|raw }};
         _app.dependency.supplierSetting = {{ supplierSettingData|raw }};
-        _app.dependency.bookingSetting = {{ bookingSettingData|raw }};
     </script>
 {% endblock %}
 
@@ -34,9 +29,9 @@
 
 {% block local_javascripts %}
     {% javascripts output="assets/admin/settings/index/js/local.js"
-    '@AdminBundle/Resources/public/settings/index/webpack_generated/common.js'
-    '@AdminBundle/Resources/public/settings/index/webpack_generated/app.js'
-    '@AdminBundle/Resources/public/settings/index/webpack_generated/main.js'
+        '@AdminBundle/Resources/public/settings/index/webpack_generated/common.js'
+        '@AdminBundle/Resources/public/settings/index/webpack_generated/app.js'
+        '@AdminBundle/Resources/public/settings/index/webpack_generated/main.js'
     %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}

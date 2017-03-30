@@ -56,8 +56,7 @@ class BookingSettingController extends BaseEntityController
 
         // Extra data
         $this->templateConf['extraData']['template'] = array(
-            'class' => '-merge-view',
-            'hasMergeHeader' => true
+            'class' => '-merge-view'
         );
 
         return $this;
@@ -109,5 +108,19 @@ class BookingSettingController extends BaseEntityController
     public function deleteAction(Request $request, $id)
     {
         return parent::deleteAction($request, $id);
+    }
+
+    /**
+     * @Route("/booking/booking-setting/data",
+     *     name="_booking__booking_setting__data"
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @return mixed
+     */
+    public function dataAction(Request $request)
+    {
+        return parent::dataAction($request);
     }
 }

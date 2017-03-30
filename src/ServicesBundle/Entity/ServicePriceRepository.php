@@ -79,10 +79,10 @@ class ServicePriceRepository extends BaseEntityRepository {
                     '(focusout)' => 'onSellValueEnterKey($event.target.value)'
                 )),
             'userFieldTyped' => array('label' => 'Field Typed By User', 'type' => 'hidden', 'acl' => 'edit'),
-            'startDate' => array('label' => 'Start date', 'type' => 'date', 'acl' => 'edit', 'view' => array(
+            'startDate' => array('label' => 'Start Date', 'type' => 'date', 'acl' => 'edit', 'view' => array(
                 'typeDetail' => array('rules' => array(array('expr' => 'max', 'value' => 'endDate')))
             )),
-            'endDate' => array('label' => 'End date', 'type' => 'date', 'acl' => 'edit', 'view' => array(
+            'endDate' => array('label' => 'End Date', 'type' => 'date', 'acl' => 'edit', 'view' => array(
                 'typeDetail' => array('rules' => array(array('expr' => 'min', 'value' => 'startDate')))
             )),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),

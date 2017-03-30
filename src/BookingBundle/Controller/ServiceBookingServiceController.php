@@ -52,6 +52,9 @@ class ServiceBookingServiceController extends BaseBookingServiceController
             ),
             'delete' => array(
                 'name' => '_booking__service_booking_service__delete',
+            ),
+            'order' => array(
+                'name' => '_booking__service_booking_service__order',
             )
         );
 
@@ -70,9 +73,20 @@ class ServiceBookingServiceController extends BaseBookingServiceController
             'quantity', 'totalCost', 'totalSell', 'totalMarkup',
             'invoiceStatus', 'confirmationStatus', 'isAutoAllot'
         );
-        $this->templateConf['search']['orderBy'] = array(array('field' => 'startDate', 'value' => 'ASC'));
+        $this->templateConf['search']['orderBy'] = array(
+            array('field' => 'startDate', 'value' => 'ASC'),
+            array('field' => 'priority', 'value' => 'ASC')
+        );
         // Empty criteria to be able to see all registers because "search" action is disabled.
         $this->templateConf['search']['criteria'] = array();
+
+        // Actions for template/view
+        $this->templateConf['actions'] = array_merge(
+            $this->templateConf['actions'],
+            array(
+                'order' => true
+            )
+        );
 
         // Extra data
         $this->templateConf['extraData']['template'] = array(
@@ -199,6 +213,24 @@ class ServiceBookingServiceController extends BaseBookingServiceController
     public function deleteLocalChildAction(Request $request, $serviceBooking, $id)
     {
         return parent::deleteLocalChildAction($request, $serviceBooking, $id);
+    }
+
+    /**
+     * @Route("/booking/service-booking-service/order/{serviceBooking}/{id}/{type}",
+     *     name="_booking__service_booking_service__order",
+     *     defaults={"id" = null, "type" = null}
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $serviceBooking
+     * @param $id
+     * @param $type
+     * @return mixed
+     */
+    public function orderLocalChildAction(Request $request, $serviceBooking, $id, $type)
+    {
+        return parent::orderChildAction($request, array($serviceBooking), $id, $type);
     }
 
     /**

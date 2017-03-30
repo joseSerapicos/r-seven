@@ -976,9 +976,13 @@ export class DataService {
                     if (obj) {
                         that.setObject(obj, index);
 
-                        // If objects are not returned, then order objects by "priority" value
+                        // If objects are not returned, then order objects by "search" "orderBy" provider
                         if (!data.objects) {
-                            that._helperService.orderObjects(that._provider.objects, 'priority');
+                            // Get fields from search
+                            let orderFields = that._provider.search.orderBy.map(function($item) {
+                                return $item['field'];
+                            });
+                            that._helperService.orderObjects(that._provider.objects, orderFields);
                         }
                     }
                 },

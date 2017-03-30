@@ -10729,16 +10729,27 @@ webpackJsonp([1],[
 	    /**
 	     * Order objects by key
 	     * @param objects
-	     * @param key
+	     * @param keys
 	     * @returns {any}
 	     */
-	    Helper.orderObjects = function (objects, key) {
-	        if (objects) {
-	            objects.sort(function (obj1, obj2) {
-	                // If key is equal, then sort by id "DESC"
-	                var orderKey = ((obj1[key] == obj2[key]) ? 'id' : key);
-	                return ((obj1[orderKey] > obj2[orderKey]) ? 1 : 0);
-	            });
+	    Helper.orderObjects = function (objects, keys) {
+	        var prevKey = null;
+	        if (objects && keys) {
+	            var _loop_1 = function (key) {
+	                objects.sort(function (obj1, obj2) {
+	                    if (!prevKey || (obj1[prevKey] == obj2[prevKey])) {
+	                        // If key is equal, then sort by id "DESC"
+	                        var orderKey = ((obj1[key] == obj2[key]) ? 'id' : key);
+	                        return ((obj1[orderKey] > obj2[orderKey]) ? 1 : 0);
+	                    }
+	                    return 0;
+	                });
+	                prevKey = key;
+	            };
+	            for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+	                var key = keys_1[_i];
+	                _loop_1(key);
+	            }
 	        }
 	        return objects;
 	    };
@@ -12437,9 +12448,13 @@ webpackJsonp([1],[
 	                // Refresh object
 	                if (obj) {
 	                    that.setObject(obj, index);
-	                    // If objects are not returned, then order objects by "priority" value
+	                    // If objects are not returned, then order objects by "search" "orderBy" provider
 	                    if (!data.objects) {
-	                        that._helperService.orderObjects(that._provider.objects, 'priority');
+	                        // Get fields from search
+	                        var orderFields = that._provider.search.orderBy.map(function ($item) {
+	                            return $item['field'];
+	                        });
+	                        that._helperService.orderObjects(that._provider.objects, orderFields);
 	                    }
 	                }
 	            }, function (errors) {

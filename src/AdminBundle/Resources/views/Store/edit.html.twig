@@ -34,13 +34,6 @@
                             <div class="col-sm-12"><div class="form-control-box">
                                 <div class="row"><div class="col-sm-12">
                                     {% include 'AppBundle:form:field.html.twig' with {
-                                        'field': 'shareBasicInfo',
-                                        'metadata': fields['metadata']['shareBasicInfo'],
-                                        'form': form
-                                    } %}
-                                </div></div>
-                                <div class="row"><div class="col-sm-12">
-                                    {% include 'AppBundle:form:field.html.twig' with {
                                         'field': 'shareEntities',
                                         'metadata': fields['metadata']['shareEntities'],
                                         'form': form
@@ -57,7 +50,7 @@
                         </div>
                     </div>
                 </div>
-            {% elseif (field not in ['storeObj', 'shareBasicInfo', 'shareEntities', 'shareCurrentAccounts']) %}
+            {% elseif (field not in ['storeObj', 'shareEntities', 'shareCurrentAccounts']) %}
                 {% include 'AppBundle:form:field.html.twig' with {
                     'field': field,
                     'metadata': fields['metadata'][field],

@@ -175,5 +175,7 @@ class BasePriceTotals extends BaseEntity
             $this->totalMargin = round(($this->totalProfit / $this->totalSell) * 100, 2);
             $this->totalMarkup = round(($this->totalProfit / $this->totalCost) * 100, 2);
         }
+
+        return $this;
     }
 }

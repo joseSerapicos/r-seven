@@ -1,6 +1,7 @@
 interface AppInterface {
+    userRole: string,
     isDebug: boolean,
-    csrfToken: String,
+    csrfToken: string,
     route: string,
     modules: any,
     flashMessages: any,

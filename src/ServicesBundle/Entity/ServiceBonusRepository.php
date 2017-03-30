@@ -109,11 +109,11 @@ class ServiceBonusRepository extends BaseEntityRepository {
                 'form' => array('type' => 'select')
             ),
             'daysToApplyValue' => array('label' => 'Days to Apply Value', 'type' => 'number', 'acl' => 'edit'),
-            'startDate' => array('label' => 'Start date', 'type' => 'date', 'acl' => 'edit', 'typeDetail' => array(
-                'expr' => 'max', 'exprField' => 'endDate'
+            'startDate' => array('label' => 'Start Date', 'type' => 'date', 'acl' => 'edit', 'view' => array(
+                'typeDetail' => array('rules' => array(array('expr' => 'max', 'value' => 'endDate')))
             )),
-            'endDate' => array('label' => 'End date', 'type' => 'date', 'acl' => 'edit', 'typeDetail' => array(
-                'expr' => 'min', 'exprField' => 'startDate'
+            'endDate' => array('label' => 'End Date', 'type' => 'date', 'acl' => 'edit', 'view' => array(
+                'typeDetail' => array('rules' => array(array('expr' => 'min', 'value' => 'startDate')))
             )),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),

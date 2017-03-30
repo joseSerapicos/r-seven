@@ -5,18 +5,12 @@ import {NavManagerService} from '../../../../../../AppBundle/Resources/public/ts
 import {TabsComponent, ITabs, LazyLoadData} from '../../../../../../AppBundle/Resources/public/ts/tabs/tabs.component';
 
 /* Import dependencies */
-// Save last templateUrl
-let tmpTemplateUrl = Helper.getRuntimeVar('templateUrl');
-
 // Parent id of dependencies
 var parentId = Helper.getGlobalVar('conf')['object']['id'];
 
 // Contacts
 Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'admin/store/contacts');
 import {ContactsModule} from "./contacts.module";
-
-// Restore last templateUrl
-Helper.setRuntimeVar('templateUrl', tmpTemplateUrl);
 /* /Import dependencies */
 
 

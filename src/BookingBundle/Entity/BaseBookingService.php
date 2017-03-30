@@ -76,6 +76,11 @@ class BaseBookingService extends BasePriceTotals {
      */
     protected $invoiceStatus; // [NO, PARTIAL, YES]
 
+    /**
+     * @ORM\Column(name="priority", type="smallint", nullable=false, unique=false, options={"unsigned":true, "default":0, "comment":"Priority. Determines the order."})
+     */
+    protected $priority;
+
 
     /**
      * Set description
@@ -374,5 +379,25 @@ class BaseBookingService extends BasePriceTotals {
     public function getIsAutoAvailability()
     {
         return $this->isAutoAvailability;
+    }
+
+    /**
+     * Set priority
+     * @param integer $priority
+     * @return $this
+     */
+    public function setPriority($priority)
+    {
+        $this->priority = $priority;
+        return $this;
+    }
+
+    /**
+     * Get priority
+     * @return integer
+     */
+    public function getPriority()
+    {
+        return $this->priority;
     }
 }

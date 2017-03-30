@@ -41,7 +41,7 @@ class Entity extends BaseEntity {
     protected $surname;
 
     /**
-     * @ORM\Column(name="legalName", type="string", length=128, nullable=true, unique=false, options={"comment":"Formal Name"})
+     * @ORM\Column(name="legalName", type="string", length=128, nullable=true, unique=false, options={"comment":"Legal Name"})
      *
      * Based on this definition: http://www.invention-protection.com/ip/publications/docs/Legal_Name_Trade_Name_Trademark.html
      */
@@ -198,12 +198,12 @@ class Entity extends BaseEntity {
 
     /**
      * Get legalName
-     *
+     * @param bool $useFallback (Use fallback to force a non empty return)
      * @return string
      */
-    public function getLegalName()
+    public function getLegalName($useFallback = false)
     {
-        return $this->legalName;
+        return ((empty($this->legalName) && $useFallback) ? ($this->name . ' ' . $this->surname) : $this->legalName);
     }
 
     /**

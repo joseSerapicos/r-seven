@@ -48,7 +48,9 @@ module.exports = function() {
         bookingTravelBookingIndex: { bundle: 'booking', controller: 'base-booking', action: 'index', dependencies: ['app'] },
         bookingTravelBookingDetail: { bundle: 'booking', controller: 'base-booking', action: 'detail', dependencies: ['app'] },
         bookingServiceBookingIndex: { bundle: 'booking', controller: 'base-booking', action: 'index', dependencies: ['app'] },
-        bookingServiceBookingDetail: { bundle: 'booking', controller: 'base-booking', action: 'detail', dependencies: ['app'] }
+        bookingServiceBookingDetail: { bundle: 'booking', controller: 'base-booking', action: 'detail', dependencies: ['app'] },
+        // Accounting
+        accountingDocumentTypesIndex: { bundle: 'accounting', controller: 'document-types', action: 'index', dependencies: ['app'] }
     };
 
     /**
