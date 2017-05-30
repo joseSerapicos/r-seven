@@ -1,5 +1,6 @@
-import {Injectable, ViewContainerRef, QueryList} from '@angular/core';
+import {Injectable, ViewContainerRef, QueryList, Optional, Inject} from '@angular/core';
 import {NavManagerService, INavManager as IWizardManager, LazyLoadData} from '../nav-manager/nav-manager.service';
+import {WizardManagerServiceProvider} from './wizard-manager-service-provider';
 
 // Reexports
 export {IWizardManager, LazyLoadData};
@@ -21,8 +22,14 @@ export class WizardManagerService
     protected _component: any = null; // Parent component that uses and implement this service
 
     constructor(
-        protected _navManagerService: NavManagerService
-    ) {}
+        protected _navManagerService: NavManagerService,
+        @Optional() @Inject('WizardManagerServiceProvider') protected _provider: WizardManagerServiceProvider
+    ) {
+        // Set default values for provider
+        if (!this._provider) {
+            this._provider = {};
+        }
+    }
 
     /**
      * Initialization of service.
@@ -62,7 +69,14 @@ export class WizardManagerService
     {
         if ($event) { $event.preventDefault(); }
 
-        this._navManagerService.navTo(this._navManagerService.getIndex() + 1).then(
+        let nextIndex = (this._navManagerService.getIndex() + 1);
+
+        // Force to rebuild all components
+        if (this._provider.rebuildNextStepComponents) {
+            this._navManagerService.unsetComponentRef(nextIndex);
+        }
+
+        this._navManagerService.navTo(nextIndex).then(
             data => { return; },
             errors => { return; }
         );

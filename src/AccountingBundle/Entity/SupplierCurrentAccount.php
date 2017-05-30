@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="AccountingBundle\Entity\SupplierCurrentAccountRepository")
  * @ORM\Table(name="supplierCurrentAccount",
  *     uniqueConstraints={
- *         @ORM\UniqueConstraint(name="unq_supplierCurrentAccount_number", columns={"fk_supplierDocumentType", "number"})
+ *         @ORM\UniqueConstraint(name="unq_supplierCurrentAccount_code", columns={"fk_supplierDocumentType", "code"})
  *     }
  * )
  */

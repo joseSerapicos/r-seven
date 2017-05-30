@@ -71,7 +71,7 @@ class ServiceBookingServiceController extends BaseBookingServiceController
         $this->templateConf['search']['fields'] = array(
             'icon', 'name', 'reference', 'startDate', 'endDate',
             'quantity', 'totalCost', 'totalSell', 'totalMarkup',
-            'invoiceStatus', 'confirmationStatus', 'isAutoAllot'
+            'confirmationStatus', 'isAutoAllot'
         );
         $this->templateConf['search']['orderBy'] = array(
             array('field' => 'startDate', 'value' => 'ASC'),

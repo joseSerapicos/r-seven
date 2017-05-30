@@ -58,4 +58,50 @@ class VatCodeRepository extends BaseEntityRepository {
             'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
         ));
     }
+
+    /**
+     * Check if object is in use by documents
+     * @param $object
+     * @return mixed
+     */
+    public function isInUseByDocuments($object)
+    {
+        $options = array(
+            'fields' => array('id'),
+            'limit' => 1
+        );
+
+        // Clients
+        $qb = $this->queryBuilder($options, false);
+        $qb->innerJoin('AccountingBundle\Entity\ClientCurrentAccountDetail',
+            'clientCurrentAccountDetail',
+            'WITH',
+            ('clientCurrentAccountDetail.vatCodeObj = ' . $object->getId())
+        );
+        $result = $this->executeQueryBuilder($qb);
+
+        /*if (empty($result)) { // @TODO ENABLE THIS CODE WHEN TABLES ARE DEFINED
+            // Suppliers
+            $qb = $this->queryBuilder($options, false);
+            $qb->innerJoin('AccountingBundle\Entity\SupplierCurrentAccountDetail',
+                'supplierCurrentAccountDetail',
+                'WITH',
+                ('supplierCurrentAccountDetail.vatCodeObj = ' . $object->getId())
+            );
+            $result = $this->executeQueryBuilder($qb);
+        }
+
+        if (empty($result)) {
+            // Entities
+            $qb = $this->queryBuilder($options, false);
+            $qb->innerJoin('AccountingBundle\Entity\EntityCurrentAccountDetail',
+                'entityCurrentAccountDetail',
+                'WITH',
+                ('entityCurrentAccountDetail.vatCodeObj = ' . $object->getId())
+            );
+            $result = $this->executeQueryBuilder($qb);
+        }*/
+
+        return (!empty($result));
+    }
 }

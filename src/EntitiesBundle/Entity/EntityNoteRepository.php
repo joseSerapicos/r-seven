@@ -54,7 +54,7 @@ class EntityNoteRepository extends BaseEntityRepository
             'entityObj' => array('label' => 'Entity', 'type' => 'object', 'acl' => 'read', 'typeDetail' => array(
                 'table' => 'entity', 'bundle' => 'entities', 'type' => 'none')),
             'name' => array('label' => 'Name/Title', 'type' => 'text', 'acl' => 'edit'),
-            'description' => array('label' => 'Description', 'type' => 'text', 'acl' => 'edit'),
+            'description' => array('label' => 'Description', 'type' => 'textarea', 'acl' => 'edit', 'attr' => array('rows' => '3')),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
             'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)

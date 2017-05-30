@@ -1,4 +1,4 @@
-import {Component, Inject, Injector, ReflectiveInjector, Input, Host} from '@angular/core';
+import {Component, Inject, Injector, ReflectiveInjector, Input, Output, Host, EventEmitter} from '@angular/core';
 import {DataService} from '../../data-service/data.service';
 import {ModalService} from '../../../modal/ts/modal.service';
 import {PostService} from '../../post.service';
@@ -35,7 +35,8 @@ export interface AutoCompleteProviders {
                        (input)="onEnterKey($event)"
                        [ngModel]="_label"
                        [class.error]="_formService.getErrors()[field] && (_formService.getErrors()[field].length > 0)"
-                       type="text">
+                       type="text"
+                       [placeholder]="placeholder">
                 <a (click)="onControlClick($event)"><i class="fa fa-angle-down"></i></a>
             </span>
             <span class="input-group-btn" *ngIf="_controlMode">
@@ -73,6 +74,9 @@ export interface AutoCompleteProviders {
 export class FieldTypeAutoCompleteComponent {
     @Input() field: string; // Field to handle object and to get the respective data from AutoCompleteProviders
     @Input() selfReference: boolean;
+    @Input() placeholder: string = ''; // Set empty as default, because value can be undefined
+
+    @Output() onChange = new EventEmitter();
 
     private _onObjectChangeSubscription: any; // When the object change in formService
     private _onChildObjectsChangeSubscription: any; // When the object change in dataService (pagination)
@@ -113,6 +117,12 @@ export class FieldTypeAutoCompleteComponent {
      */
     reset(): FieldTypeAutoCompleteComponent
     {
+        // Clear choices (can be from old object)
+        if (this._childDataServiceChoices) {
+            this._childDataServiceChoices.setObjects([]);
+            this.resetChoices();
+        }
+
         this._object = this._formService.getObject();
 
         let value = this._object[this.field],
@@ -129,6 +139,8 @@ export class FieldTypeAutoCompleteComponent {
 
         this._lastSelectedChoice = {id: value, label: normalizedValue};
         this.setLabel();
+
+        this.setControlMode();
 
         return this;
     }
@@ -224,6 +236,7 @@ export class FieldTypeAutoCompleteComponent {
                 this._lastSelectedChoice = {id: choice.id, label: choice.label};
                 this.setLabel();
                 this.setControlMode();
+                this.onChange.emit(choice['id']);
             }
         }
     }
@@ -364,7 +377,6 @@ export class FieldTypeAutoCompleteComponent {
         this._provider = (this._autoCompleteProviders[this.field] || null);
         this._fieldInView = (this._dataService.getProviderAttr('fields')['metadata'][this.field]['fieldInView'] || null);
         this.reset();
-        this.setControlMode();
 
         // Dependency conf previously saved in provider
         if (this._provider.childInjector) {
@@ -417,7 +429,7 @@ export class FieldTypeAutoCompleteComponent {
     {
         this._childDataServicePopup = this._childInjector.get('DataService');
         this._childDataServiceChoices = this._childInjector.get('DataServiceChoices');
-        this._onChildObjectsChangeSubscription = this._childDataServiceChoices.getOnObjectsChangeEmitter()
+        this._onChildObjectsChangeSubscription = this._childDataServiceChoices.getOnObjectsRefreshEmitter()
             .subscribe(object => this.resetChoices());
         this._childCandidateSearch = this._childDataServiceChoices.getCandidateSearch(); // To filter objects
 

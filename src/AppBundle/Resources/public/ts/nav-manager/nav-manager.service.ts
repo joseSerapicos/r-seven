@@ -126,7 +126,7 @@ export class NavManagerService
         if (index == null) {
             index = this._currentIndex;
         }
-        return this._llComponentRefArr[index];
+        return (this._llComponentRefArr[index] || null);
     }
 
     /**
@@ -138,8 +138,10 @@ export class NavManagerService
     {
         index = (index || this._currentIndex);
 
-        this._llComponentRefArr[index].destroy();
-        this._llComponentRefArr[index] = null;
+        if (this._llComponentRefArr[index]) {
+            this._llComponentRefArr[index].destroy();
+            this._llComponentRefArr[index] = null;
+        }
 
         return this;
     }
@@ -200,6 +202,14 @@ export class NavManagerService
         let that = this;
 
         return new Promise(function(resolve, reject) {
+            if (that._llComponentRefArr[index] // Container has been loaded
+                || !that._component['getNavData'] // Component doesn't have the necessary implementation to lazy load
+            ) {
+                that._currentIndex = index;
+                return resolve(true);
+            }
+
+            // Get lazy load view
             let llViewIndex = null,
                 llClass = ('js_lazyLoadContainer_' + index); // Lazy load class
 
@@ -210,11 +220,7 @@ export class NavManagerService
                     break;
                 }
             }
-
-            if ((llViewIndex === null) // No lazy load view
-                || that._llComponentRefArr[index] // Container has been loaded
-                || !that._component['getNavData'] // Component doesn't have the necessary implementation to lazy load
-            ) {
+            if (llViewIndex === null) { // No lazy load view
                 that._currentIndex = index;
                 return resolve(true);
             }
@@ -274,7 +280,8 @@ export class NavManagerService
         if (providers) {
             injector = ReflectiveInjector.fromResolvedProviders(
                 ReflectiveInjector.resolve(providers),
-                this._injector
+                // Use in firs instance the injector of the component (is more refined)
+                (this._component['_injector'] || this._injector)
             );
         }
 

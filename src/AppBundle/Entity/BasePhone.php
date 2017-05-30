@@ -64,4 +64,40 @@ class BasePhone extends BaseEntity {
     {
         return $this->phone;
     }
+
+    /**
+     * Overrides parent method.
+     * @return mixed
+     */
+    public function __toString()
+    {
+        return $this->__customToString();
+    }
+
+    /**
+     * Customizable string
+     * @param bool $hasIcon
+     * @param bool $hasName
+     * @param bool $hasPhone
+     * @return string
+     */
+    public function __customToString($hasIcon = true, $hasName = true, $hasPhone = true)
+    {
+        $output = '';
+
+        if ($hasIcon) {
+            $output .= ('<i class="fa fa-phone"></i> ');
+        }
+        if ($hasName && $this->name) {
+            $output .= $this->name;
+        }
+        if ($hasPhone) {
+            if ($hasName && $this->name) {
+                $output .= ': ';
+            }
+            $output .= $this->phone;
+        }
+
+        return $output;
+    }
 }

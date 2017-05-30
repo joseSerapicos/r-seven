@@ -41,10 +41,12 @@ class TravelBookingServicePriceController extends BaseBookingServicePriceControl
 
         // Search
         $this->templateConf['search']['fields'] = array('postingType', 'description',
-            'quantity', 'costValue', 'sellValue', 'totalMarkup'
+            'quantity', 'totalCost', 'totalSell'
         );
         // Empty criteria to be able to see all registers because "search" action is disabled.
         $this->templateConf['search']['criteria'] = array();
+        // To show the last inserted in the last position
+        $this->templateConf['search']['orderBy'] = array(array('field' => 'id', 'value' => 'ASC'));
 
         // Extra data
         $this->templateConf['extraData']['template'] = array(

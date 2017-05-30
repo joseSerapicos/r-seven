@@ -378,11 +378,12 @@ class UserController extends BaseEntityController
     /**
      * Get object
      * @param $id
+     * @param $storage (can be 'db' or 'session')
      * @return object
      */
-    protected function getObject($id)
+    protected function getObject($id = null, $storage = 'db')
     {
-        $obj = parent::getObject($id);
+        $obj = parent::getObject($id, $storage);
 
         // Set password encoder to encode password
         return $obj->setPasswordEncoder($this->container->get('security.password_encoder'));

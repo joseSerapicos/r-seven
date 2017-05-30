@@ -148,4 +148,17 @@ class ServiceBookingController extends BaseBookingController
     {
         return parent::detailTabsAction();
     }
+
+    /**
+     * @Route("/booking/service-booking/current-accounts-menus",
+     *     name="_booking__service_booking__current_accounts_menus"
+     * )
+     *
+     * Overrides parent method
+     * @return mixed
+     */
+    public function currentAccountsMenusAction()
+    {
+        return parent::currentAccountsMenusAction();
+    }
 }

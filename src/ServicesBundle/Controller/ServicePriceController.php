@@ -120,13 +120,13 @@ class ServicePriceController extends BaseEntityChildController
             $data = $this->getRequestData($request);
 
             // Validate dates (dates can't be duplicated, it would generate inconsistency of data)
-            // Check "startDate"
             $datesOptions = array('fields' => array('id'));
             if ($id) {
                 $datesOptions['criteria'] = array (
                     array('field' => 'id', 'expr' => 'neq', 'value' => $id)
                 );
             }
+            // Check "startDate" (if start data exist in any date interval already defined)
             $dates = $this->getLocalRepositoryService()
                 ->execute(
                     'getCurrentPriceByDate',
@@ -137,7 +137,7 @@ class ServicePriceController extends BaseEntityChildController
                     )
                 );
             if (!is_array($dates) || (count($dates) < 1)) {
-                // Check "endDate"
+                // Check "endDate" (if end data exist in any date interval already defined)
                 $dates = $this->getLocalRepositoryService()
                     ->execute(
                         'getCurrentPriceByDate',
@@ -159,26 +159,25 @@ class ServicePriceController extends BaseEntityChildController
             }
 
             // Validate result
+            $priceService = $this->get('app.service.price');
             $frontResult = $backResult = 0;
             if (!empty($data['form']['marginMethod']) && ($data['form']['marginMethod'] != 'none')) {
                 switch ($data['form']['userFieldTyped']) {
                     case 'COST':
-                        $backResult = $this->get('app.service.price')->calcSellValue($data['form']);
-                        $frontResult = round($data['form']['sellValue'], 4);
+                        $backResult = $priceService->calcSellValue($data['form']);
+                        $frontResult = $data['form']['sellValue'];
                         break;
                     case 'SELL':
-                        $backResult = $this->get('app.service.price')->calcCostValue($data['form']);
-                        $frontResult = round($data['form']['costValue'], 4);
+                        $backResult = $priceService->calcCostValue($data['form']);
+                        $frontResult = $data['form']['costValue'];
                         break;
                 }
             }
-            if ($backResult !== $frontResult) {
+            if (!$priceService->isEqual($backResult, $frontResult)) {
                 $this->responseConf['status'] = 0;
                 $this->addFlashMessage(
-                    ('Data not persisted! Invalid value was detected:<br/>'
-                        .$frontResult.' Does not match with '.$backResult
-                    ),
-                    'Error',
+                    ('Invalid value was detected:<br/>' . $frontResult . ' Does not match with ' . $backResult),
+                    'Data not persisted',
                     'error'
                 );
                 return $this->getResponse(true);

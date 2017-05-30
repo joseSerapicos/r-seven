@@ -17,6 +17,20 @@ export class Helper {
     private static runtimeVar = {};
 
     /**
+     * Get decimal configuration
+     * @returns {{unit: {value: number, iterator: number}, total: {value: number, iterator: number}}}
+     */
+    public static getDecimalConf(): any
+    {
+        // Configure number of decimals to use and to round
+        let decimalConf = {unit: {value: 4, iterator: 0}, total: {value: 2, iterator: 0}};
+        decimalConf.unit.iterator = Math.pow(10, decimalConf.unit.value);
+        decimalConf.total.iterator = Math.pow(10, decimalConf.total.value);
+
+        return decimalConf;
+    }
+
+    /**
      * Get object length
      * @param object
      * @returns {number}
@@ -296,7 +310,8 @@ export class Helper {
     public static getFormProvider(data: any): FormProvider
     {
         return {
-            label: data.label || ''
+            label: data.label || '',
+            preventObjectOverride: true
         };
     }
 

@@ -18,16 +18,11 @@ class BaseCurrentAccount extends BaseEntity {
      */
 
     /**
-     * @ORM\Column(name="number", type="string", length=24, nullable=false, unique=false, options={"comment":"Number/Code"})
+     * @ORM\Column(name="code", type="string", length=24, nullable=false, unique=false, options={"comment":"Number/Code"})
      *
-     * Add unique constraint with document type: (name="unq_baseCurrentAccount_number", columns={"fk_documentType", "number"})
+     * Add unique constraint with document type: (name="unq_baseCurrentAccount_code", columns={"fk_documentType", "code"})
      */
-    protected $number;
-
-    /**
-     * @ORM\Column(name="description", type="string", length=256, nullable=true, unique=false, options={"comment":"Description"})
-     */
-    protected $description;
+    protected $code;
 
     /**
      * @ORM\Column(name="date", type="date", nullable=false, unique=false, options={"comment":"Date of document"})
@@ -38,6 +33,11 @@ class BaseCurrentAccount extends BaseEntity {
      * @ORM\Column(name="dueDate", type="date", nullable=true, unique=false, options={"comment":"Due date of document"})
      */
     protected $dueDate;
+
+    /**
+     * @ORM\Column(name="comments", type="string", length=256, nullable=true, unique=false, options={"comment":"Comments"})
+     */
+    protected $comments;
 
     /**
      * @ORM\ManyToOne(targetEntity="\AdminBundle\Entity\Store")
@@ -126,9 +126,9 @@ class BaseCurrentAccount extends BaseEntity {
     protected $entityCountry;
 
     /**
-     * @ORM\Column(name="total", type="decimal", scale=2, nullable=false, unique=false, options={"default":"0", "comment":"Total"})
+     * @ORM\Column(name="subTotal", type="decimal", scale=2, nullable=false, unique=false, options={"default":"0", "comment":"Sub total (total without VAT)"})
      */
-    protected $total;
+    protected $subTotal;
 
     /**
      * @ORM\Column(name="totalVat", type="decimal", scale=2, nullable=false, unique=false, options={"default":"0", "comment":"Total VAT"})
@@ -137,48 +137,48 @@ class BaseCurrentAccount extends BaseEntity {
 
 
     /**
-     * Set number
-     * @param string $number
+     * Set code
+     * @param string $code
      * @return $this
      */
-    public function setNumber($number)
+    public function setCode($code)
     {
-        $this->number = $number;
+        $this->code = $code;
 
         return $this;
     }
 
     /**
-     * Get number
+     * Get code
      * @return string
      */
-    public function getNumber()
+    public function getCode()
     {
-        return $this->number;
+        return $this->code;
     }
 
     /**
-     * Set description
+     * Set comments
      *
-     * @param string $description
+     * @param string $comments
      *
      * @return $this
      */
-    public function setDescription($description)
+    public function setComments($comments)
     {
-        $this->description = $description;
+        $this->comments = $comments;
 
         return $this;
     }
 
     /**
-     * Get description
+     * Get comments
      *
      * @return string
      */
-    public function getDescription()
+    public function getComments()
     {
-        return $this->description;
+        return $this->comments;
     }
 
     /**
@@ -614,23 +614,23 @@ class BaseCurrentAccount extends BaseEntity {
     }
 
     /**
-     * Set total
-     * @param string $total
+     * Set subTotal
+     * @param string $subTotal
      * @return $this
      */
-    public function setTotal($total)
+    public function setSubTotal($subTotal)
     {
-        $this->total = $total;
+        $this->subTotal = $subTotal;
         return $this;
     }
 
     /**
-     * Get total
+     * Get subTotal
      * @return string
      */
-    public function getTotal()
+    public function getSubTotal()
     {
-        return $this->total;
+        return $this->subTotal;
     }
 
     /**
@@ -651,5 +651,15 @@ class BaseCurrentAccount extends BaseEntity {
     public function getTotalVat()
     {
         return $this->totalVat;
+    }
+
+    /**
+     * Get total
+     * @return string
+     */
+    public function getTotal()
+    {
+        // For direct queries use "SUM()"
+        return round($this->subTotal + $this->totalVat, 2);
     }
 }

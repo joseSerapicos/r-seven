@@ -78,7 +78,7 @@ class SettingsController extends BaseController
 
     /**
      * @Route("/admin/settings/entities-menus",
-     *     name="_admin__settings__entities-menus"
+     *     name="_admin__settings__entities_menus"
      * )
      *
      * Action to get the menus of entities
@@ -105,7 +105,7 @@ class SettingsController extends BaseController
 
     /**
      * @Route("/admin/settings/document-types-menus",
-     *     name="_admin__settings__document-types-menus"
+     *     name="_admin__settings__document_types_menus"
      * )
      *
      * Action to get the menus of entities

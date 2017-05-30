@@ -208,12 +208,13 @@ class UserGroupAclController extends BaseEntityController
      * Save object
      * @param $object
      * @param $hasFlush (it determines if should be executed the flush method to persist data in database)
+     * @param $addToResponse (determines if object should be added to response)
      * @return $this
      */
-    protected function saveObject(&$object, $hasFlush = true)
+    protected function saveObject(&$object, $hasFlush = true, $addToResponse = false)
     {
         // Save UserGroupAcl
-        parent::saveObject($object, false);
+        parent::saveObject($object, false, $addToResponse);
 
         // Check if the logged user has "Admin" privileges, if not it needs to add the logged user to the UserGroupAcl
         // so the logged user can access it.

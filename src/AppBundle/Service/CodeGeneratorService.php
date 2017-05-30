@@ -117,4 +117,109 @@ class CodeGeneratorService
 
         return $this;
     }
+
+    /**
+     * Get Surrounding Objects
+     * @param $code
+     * @param $repositoryService
+     * @param $settingRepository
+     * @param $entityRepository
+     * @param array $criteria
+     * @return null
+     */
+    public function getSurroundingObjects($code, $repositoryService, $settingRepository, $entityRepository, $criteria = array())
+    {
+        $store = $this->session->get('_app.store');
+
+        if ($store) {
+            $surroundingObjects = array('prev' => null, 'next' => null);
+            // Get specific setting for store
+            $settingObj = $repositoryService->setEntityRepository($settingRepository)
+                ->execute(
+                    'queryBuilder',
+                    array(
+                        array('criteria' => array_merge(
+                            $criteria,
+                            array(
+                                array('field' => 'storeObj', 'expr' => 'eq', 'value' => $store),
+                                array('field' => 'isEnabled', 'expr' => 'eq', 'value' => true)
+                            )
+                        )),
+                        true,
+                        'getResult'
+                    )
+                );
+            $settingObj = reset($settingObj);
+
+            // Get general setting
+            if (empty($settingObj)) {
+                $settingObj = $repositoryService->execute(
+                    'queryBuilder',
+                    array(
+                        array('criteria' => array_merge(
+                            $criteria,
+                            array(
+                                array('field' => 'storeObj', 'expr' => 'isNull', 'value' => null),
+                                array('field' => 'isEnabled', 'expr' => 'eq', 'value' => true)
+                            )
+                        )),
+                        true,
+                        'getResult'
+                    )
+                );
+                $settingObj = reset($settingObj);
+            }
+
+            if (empty($code)) {
+                // Get last code
+                if (!empty($settingObj)) {
+                    // Try to get the code until it is guaranteed that it is the really last code
+                    for ($i = 0; $i < 1000; $i++) {
+                        // Determines
+                        $number = ($settingObj->getSeriesNumber() + $i);
+                        $prefix = $settingObj->getSeriesPrefix();
+                        $prefix = ($prefix ? $prefix : '');
+
+                        // Check if code is already in use
+                        $ObjectUsingCode = $repositoryService->setEntityRepository($entityRepository)
+                            ->execute(
+                                'findOneByCode',
+                                array($prefix . $number)
+                            );
+
+                        if (empty($ObjectUsingCode)) {
+                            return $surroundingObjects;
+                            break;
+                        } else {
+                            $surroundingObjects['prev'] = $ObjectUsingCode;
+                        }
+                    }
+                }
+            } else {
+                $splitChars = 0; // Number of chars to split the number of the prefix
+                $number = 0;
+                while (intval($number) < 1) { // While $number is = 0, we need to check the previous value
+                    $splitChars++;
+                    $number = substr($code, -$splitChars); // Get only the last characters (numbers)
+                }
+                $prefix = substr($code, 0, -$splitChars); // Remove only the last characters (numbers)
+
+                $surroundingObjects['prev'] = $repositoryService->setEntityRepository($entityRepository)
+                    ->execute(
+                        'findOneByCode',
+                        array($prefix . (intval($number) - 1))
+                    );
+
+                $surroundingObjects['next'] = $repositoryService->setEntityRepository($entityRepository)
+                    ->execute(
+                        'findOneByCode',
+                        array($prefix . (intval($number) + 1))
+                    );
+
+                return $surroundingObjects;
+            }
+        }
+
+        throw new \InvalidArgumentException("Error determining the object 'Code'. Maximum number of attempts reached. Please try again.");
+    }
 }

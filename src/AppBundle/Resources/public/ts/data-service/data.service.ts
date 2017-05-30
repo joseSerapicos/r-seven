@@ -30,7 +30,8 @@ export class DataService {
     protected _newObjectsIds: number[] = []; // Array of "ids" with new objects added by the user
 
     protected _onObjectChangeEmitter: EventEmitter<any>; // When the object change
-    protected _onObjectsChangeEmitter: EventEmitter<any>; // When the list of objects change
+    protected _onObjectsRefreshEmitter: EventEmitter<any>; // When the list of objects change
+    protected _onObjectsChangeEmitter: EventEmitter<any>; // When objects change, from add, refresh, delete, etc (useful when you need to update parent)
 
     protected _candidateSearch: Search; // Candidate to new search with modified parameters
 
@@ -46,6 +47,7 @@ export class DataService {
         }
 
         this._onObjectChangeEmitter = new EventEmitter();
+        this._onObjectsRefreshEmitter = new EventEmitter();
         this._onObjectsChangeEmitter = new EventEmitter();
 
         this.setObjects(this._provider.objects || []);
@@ -111,7 +113,15 @@ export class DataService {
     }
 
     /**
-     * Get on objects change emitter to tell all subscribers about changes
+     * Get on objects refresh emitter to tell all subscribers about changes
+     * @returns {EventEmitter<any>}
+     */
+    public getOnObjectsRefreshEmitter() {
+        return this._onObjectsRefreshEmitter;
+    }
+
+    /**
+     * Get on objects change emitter to tell all subscribers about changes (add, refresh, delete, etc)
      * @returns {EventEmitter<any>}
      */
     public getOnObjectsChangeEmitter() {
@@ -159,6 +169,14 @@ export class DataService {
 
             this.post(route, this.getRequestData(null, false, false)).then(
                 data => {
+                    // Local data (do not override, merge data)
+                    if (data['localData']) {
+                        that._provider.localData = that._helperService.mergeObjects(
+                            that._provider.localData,
+                            data['localData']
+                        );
+                    }
+
                     let obj = (data.object || null);
                     // Refresh object
                     if (obj) {
@@ -191,11 +209,22 @@ export class DataService {
                     that.getRequestData(null, false, false)
                 ).then(
                     data => {
+                        // Local data (do not override, merge data)
+                        if (data['localData']) {
+                            that._provider.localData = that._helperService.mergeObjects(
+                                that._provider.localData,
+                                data['localData']
+                            );
+                        }
+
+                        // Object
                         that._objectIndex = index; // The index of original object that was selected
                         that.setLocalObject(data.object);
+
                         // Now object has all of fields with the values, is not limited to the search selected field,
                         // so we need normalize the object, because now it can has new values.
                         that.setNormalizedObject();
+
                         return resolve(true);
                     },
                     errors => { reject(false); });
@@ -214,31 +243,34 @@ export class DataService {
      */
     public setObject(object: any, index: any = null): any
     {
-        // Normalize object to template
-        this._normalizedObject = this._helperService.cloneObject(object, true);
-        this.normalizeObjectsToTemplate([this._normalizedObject]);
+        if (object) {
+            // Normalize object to template
+            this._normalizedObject = this._helperService.cloneObject(object, true);
+            this.normalizeObjectsToTemplate([this._normalizedObject]);
 
-        if (object && object['id']) { // Ignore new objects (no id defined)
-            let objectsProvider = (this._objectsProvider || this._provider.objects);
+            // Objects stored in session does not be considered really objects.
+            if (object['id'] && !object['_isSessionStorage']) {
+                let objectsProvider = (this._objectsProvider || this._provider.objects);
 
-            // Refresh objects array
-            if ((index != null) && objectsProvider[index]) {
-                // Update existent object
-                this._objectIndex = index;
-                objectsProvider[index] = this._normalizedObject;
-                this._normalizedObject['_isEdited'] = true; // Flag to use in template
-            } else {
-                // Add new object at first of array (to best user experience)
-                this._objectIndex = 0; // Update index to the new index
-                this.pushToObjects([this._normalizedObject], true);
-                this._newObjectsIds.push(object['id']); // New object added
-                this._normalizedObject['_isNew'] = true; // Flag to use in template
+                // Refresh objects array
+                if ((index != null) && objectsProvider[index]) {
+                    // Update existent object
+                    this._objectIndex = index;
+                    objectsProvider[index] = this._normalizedObject;
+                    this._normalizedObject['_isEdited'] = true; // Flag to use in template
+                    // Emmit changes (object has been edited)
+                    this._onObjectsChangeEmitter.emit(null);
+                } else {
+                    // Add new object at first of array (to best user experience)
+                    this._objectIndex = 0; // Update index to the new index
+                    this.pushToObjects([this._normalizedObject], true);
+                    this._newObjectsIds.push(object['id']); // New object added
+                    this._normalizedObject['_isNew'] = true; // Flag to use in template
+                }
             }
-        } else {
-            this._objectIndex = null;
-        }
 
-        this.setLocalObject(object);
+            this.setLocalObject(object);
+        }
 
         return this;
     }
@@ -361,14 +393,10 @@ export class DataService {
         } else { // Replace objects
             this.resetObjects();
             this.pushToObjects(objects);
-            this.newObject().then( // Reset object, index and all information of object can be changed
-                data => {},
-                errors => { console.log(errors); }
-            );
         }
 
         // Emmit changes
-        this._onObjectsChangeEmitter.emit(objects);
+        this._onObjectsRefreshEmitter.emit(objects);
 
         return this;
     }
@@ -381,6 +409,7 @@ export class DataService {
         this._provider.objects = [];
         this._objectsIds = [];
         this._newObjectsIds = [];
+        this._objectIndex = null; // Reset object index
         return this;
     }
 
@@ -407,10 +436,8 @@ export class DataService {
             }
         }
 
-        // Emmit changes
-        /*if (hasChanges) {
-            this._onObjectsChangeEmitter.emit(objects);
-        }*/
+        // Emmit changes (object has been added)
+        this._onObjectsChangeEmitter.emit(null);
 
         return this;
     }
@@ -433,6 +460,9 @@ export class DataService {
         if ((index = this._helperService.arraySearch(objId, this._newObjectsIds)) != null) {
             this._newObjectsIds.splice(index, 1);
         }
+
+        // Emmit changes (object has been deleted)
+        this._onObjectsChangeEmitter.emit(null);
 
         return this;
     }
@@ -696,6 +726,7 @@ export class DataService {
 
         return new Promise(function(resolve, reject) {
             let newObj = {};
+            // Create by copy
             if (index != null) {
                 let objectsProvider = (that._objectsProvider || that._provider.objects);
 
@@ -715,21 +746,63 @@ export class DataService {
                                 newObj[fieldInView] = data.object[fieldInView];
                             }
                         }
-                        that.setObject(newObj);
-                        that.resetExtraFields();
+                        that.setNewObject(newObj);
                         return resolve(true);
                     },
                     errors => { console.log(errors); return reject(false); }
                 );
             } else {
-                for (let field of that._provider.fields['form']) {
-                    newObj[field] = (that._provider.fields['metadata'][field]['default'] || null);
+                // Create by server action
+                if (that._provider.route['new']) {
+                    return that._postService.post(
+                        that._provider.route['new']['url'],
+                        that.getRequestData()
+                    ).then(
+                        data => {
+                            // Local data (do not override, merge data)
+                            if (data['localData']) {
+                                that._provider.localData = that._helperService.mergeObjects(
+                                    that._provider.localData,
+                                    data['localData']
+                                );
+                            }
+
+                            // Object
+                            that.setNewObject(data.object);
+                            return resolve(true);
+                        },
+                        errors => { console.log(errors); return reject(false); }
+                    );
                 }
-                that.setObject(newObj);
-                that.resetExtraFields();
-                return resolve(true);
+                // Create empty object
+                else {
+                    for (let field of that._provider.fields['form']) {
+                        newObj[field] = (that._provider.fields['metadata'][field]['default'] || null);
+                    }
+                    that.setNewObject(newObj);
+                    return resolve(true);
+                }
             }
         });
+    }
+
+    /**
+     * Set new object
+     * @param object
+     * @returns {DataService}
+     */
+    protected setNewObject(object: any) {
+        // Normalize object to template
+        this._normalizedObject = this._helperService.cloneObject(object, true);
+        this.normalizeObjectsToTemplate([this._normalizedObject]);
+
+        // Set object
+        this._objectIndex = null;
+        this.setLocalObject(object);
+
+        this.resetExtraFields();
+
+        return this;
     }
 
     /**
@@ -768,10 +841,12 @@ export class DataService {
                         that.setFieldsChoices(data.fieldsChoices);
                     }
 
-                    // Local data (Do not override, merge data)
+                    // Local data (do not override, merge data)
                     if (data['localData']) {
-                        that._provider.localData =
-                            that._helperService.mergeObjects(that._provider.localData, data['localData']);
+                        that._provider.localData = that._helperService.mergeObjects(
+                            that._provider.localData,
+                            data['localData']
+                        );
                     }
 
                     let obj = (data.object || null);
@@ -783,10 +858,12 @@ export class DataService {
                     return resolve(obj);
                 },
                 errors => {
-                    // Local data (Do not override, merge data). Exception in errors list used in some cases.
+                    // Local data (do not override, merge data). Exception in errors list used in some cases.
                     if (errors['localData']) {
-                        that._provider.localData =
-                            that._helperService.mergeObjects(that._provider.localData, errors['localData']);
+                        that._provider.localData = that._helperService.mergeObjects(
+                            that._provider.localData,
+                            errors['localData']
+                        );
                         delete errors['localData']; // It's no more necessary
                     }
 
@@ -901,47 +978,6 @@ export class DataService {
     }
 
     /**
-     * Delete object.
-     * @param index
-     * @returns {Promise}
-     */
-    public delete(index: any): Promise<any>
-    {
-        let that = this,
-            objectsProvider = (this._objectsProvider || this._provider.objects);
-
-        return new Promise(function(resolve, reject) {
-            that.post(
-                that._provider.route['delete']['url'] + '/' + objectsProvider[index]['id'],
-                that.getRequestData()
-            ).then(
-                data => {
-                    // Refresh all objects
-                    if (data.objects) {
-                        that.setObjects(data.objects);
-                    }
-
-                    // Refresh fields choices
-                    if (data.fieldsChoices) {
-                        that.setFieldsChoices(data.fieldsChoices);
-                    }
-
-                    // Refresh objects array
-                    that.pullFromObjects(index);
-
-                    that.newObject().then(
-                        data => {},
-                        errors => { console.log(errors); }
-                    );
-
-                    return resolve(true);
-                },
-                errors => { console.log(errors); return resolve(false); }
-            );
-        });
-    }
-
-    /**
      * Order object (change priority value).
      * @param index
      * @param type
@@ -993,6 +1029,45 @@ export class DataService {
         }
 
         return this;
+    }
+
+    /**
+     * Delete object.
+     * @param index
+     * @returns {Promise}
+     */
+    public delete(index: any): Promise<any>
+    {
+        let that = this,
+            objectsProvider = (this._objectsProvider || this._provider.objects);
+
+        return new Promise(function(resolve, reject) {
+            that.post(
+                that._provider.route['delete']['url'] + '/' + objectsProvider[index]['id'],
+                that.getRequestData()
+            ).then(
+                data => {
+                    // Refresh all objects
+                    if (data.objects) {
+                        that.setObjects(data.objects);
+                    }
+
+                    // Refresh fields choices
+                    if (data.fieldsChoices) {
+                        that.setFieldsChoices(data.fieldsChoices);
+                    }
+
+                    // Refresh objects array
+                    that.pullFromObjects(index);
+
+                    // Reset object index
+                    that._objectIndex = null;
+
+                    return resolve(true);
+                },
+                errors => { console.log(errors); return reject(false); }
+            );
+        });
     }
 
     /**
@@ -1061,6 +1136,77 @@ export class DataService {
 
         location.href = (this._provider.route[route]['url'] + '/' + objectsProvider[index]['id']);
         return;
+    }
+
+    /**
+     * Run/Execute action. Execute action directly.
+     * @param route
+     * @param data
+     * @param updateData
+     * @returns {Promise}
+     */
+    public runAction(route: string, data: any = null, updateData: boolean = false): Promise<any> {
+        let that = this;
+
+        return new Promise(function(resolve, reject) {
+            return that.post(route, that.getRequestData(data, false, false)).then(
+                data => {
+                    if (updateData) {
+                        // Local data (do not override, merge data)
+                        if (data['localData']) {
+                            that._provider.localData = that._helperService.mergeObjects(
+                                that._provider.localData,
+                                data['localData']
+                            );
+                        }
+
+                        // Refresh object
+                        if (data['object']) {
+                            that.setObject(data.object, that._objectIndex);
+                        }
+                    }
+
+                    return resolve(data);
+                },
+                errors => { console.log(errors); return reject(errors); }
+            );
+        });
+    }
+
+    /**
+     * Submit indexes id
+     * @param route
+     * @param indexes
+     * @param allowEmptySubmit (allow submit when data is empty,
+     * some cases it is necessary to inform that the user does not select any choice)
+     * @returns {Promise}
+     */
+    public submitIndexesId(route: string, indexes: any, allowEmptySubmit: boolean = false): Promise<any>
+    {
+        let that = this;
+        let objects = this._provider.objects;
+        let idArr = [];
+
+        return new Promise(function(resolve, reject) {
+            if (objects && indexes && (indexes.length > 0)) {
+                for (let obj of indexes) {
+                    if (objects[obj.value]) {
+                        idArr.push(objects[obj.value]['id']);
+                    }
+                }
+            }
+
+            if  ((idArr.length > 0) || allowEmptySubmit) {
+                // Submit to provided route
+                return that.runAction(route, {id: idArr}).then(
+                    data => { return resolve(data); },
+                    errors => { console.log(errors); return reject(errors); }
+                );
+            } else {
+                // No indexes to submit
+                return resolve(null);
+            }
+        });
     }
 
     /**

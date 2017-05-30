@@ -54,15 +54,35 @@ class StoreLinkRepository extends BaseEntityRepository
             'storeObj' => array('label' => 'Store', 'type' => 'object', 'acl' => 'read', 'typeDetail' => array(
                 'table' => 'store', 'bundle' => 'admin', 'type' => 'none')),
             'appIconObj' => array('label' => 'Icon', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(
-                'table' => 'app_icon', 'bundle' => 'sysadmin', 'type' => 'none'),
-                'form' => array('type' => 'number')),
+                'table' => 'app_icon', 'fieldInView' => 'icon', 'bundle' => 'sysadmin', 'type' => 'none',
+                'choices' => array('query' => 'getChoicesForLink')), 'isRequired' => false,
+                'form' => array('type' => 'html-select')
+            ),
             'icon' => array('table' => 'app_icon', 'field' => 'icon', 'label' => 'Icon', 'type' => 'icon',
                 'acl' => 'read', 'dependency' => 'appIconObj', 'form' => array('type' => 'none')),
             'name' => array('label' => 'Name / Description', 'type' => 'text', 'acl' => 'edit'),
             'link' => array('label' => 'Link', 'type' => 'link', 'acl' => 'edit'),
+            'forDocuments' => array('label' => 'For Documents', 'type' => 'boolean', 'acl' => 'edit'),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
             'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
         ));
+    }
+
+    /**
+     * @param $storeObj
+     * @return mixed
+     */
+    public function getForDocumentsByStore($storeObj)
+    {
+        $output = array();
+
+        $objArr = $this->findBy(array('storeObj' => $storeObj, 'forDocuments' => true, 'isEnabled' => true));
+
+        foreach ($objArr as $obj) {
+            $output[] = $obj->__customToString(true, false, true);
+        }
+
+        return $output;
     }
 }

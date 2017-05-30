@@ -73,7 +73,10 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                     );
                     $metadata[$field]['typeDetail']['formClass'] = ($metadata[$field]['typeDetail']['Bundle']
                         .'\Form\\'
-                        .$metadata[$field]['typeDetail']['entity'].'Type'
+                        .(((isset($metadata[$field]['form']) && isset($metadata[$field]['form']['typeClass']))
+                                ? $metadata[$field]['form']['typeClass']
+                                : $metadata[$field]['typeDetail']['entity']
+                            ).'Type')
                     );
 
                     // Merge foreign metadata into local metadata
@@ -97,11 +100,11 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                                     $value['parent'] = $field; // Parent field (used in form)
                                 }
 
-                                if (empty($value['table'])) {
+                                if (!isset($value['table'])) { // Use isset not empty, table is used as empty for calculated fields
                                     // Defines only if empty, otherwise can be a foreign field into the join entity
                                     $value['table'] = $fieldMetadata['typeDetail']['table'];
                                 }
-                                if (empty($value['dependency'])) {
+                                if (!isset($value['dependency'])) {
                                     // Defines only if empty, otherwise can be a foreign field into the join entity
                                     $value['dependency'] = $field;
                                 }
@@ -144,9 +147,7 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
     {
         $fieldMetadata = (empty($metadata[$field]) ? null : $metadata[$field]);
 
-        if (!$attribute || !$fieldMetadata) {
-            return null;
-        }
+        if (!$attribute || !$fieldMetadata) { return null; }
 
         switch ($attribute) {
             case 'type':
@@ -589,7 +590,7 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
      * @param $queryBuilder
      * @return $this
      */
-    public function debug($queryBuilder)
+    public function debugQueryBuilder($queryBuilder)
     {
         echo($queryBuilder->getQuery()->getSql());
         echo("<pre>");
@@ -597,5 +598,23 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
         echo("</pre>");
 
         return $this;
+    }
+
+    /**
+     * Debug variable
+     * @param $data
+     * @param boolean $exit (exit application)
+     */
+    static protected function debugVar($data, $exit = false)
+    {
+        $endId = uniqid('debug-var-end-anchor-');
+
+        echo('<div style="margin: 12px;"><a href="#'.$endId.'">Go to end</a><pre>');
+        print_r($data);
+        echo('</pre><div id="'.$endId.'"></div></div>');
+
+        if ($exit) {
+            exit;
+        }
     }
 }

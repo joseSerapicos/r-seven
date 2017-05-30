@@ -55,6 +55,15 @@ class TravelBookingService extends BaseBookingService {
     }
 
     /**
+     * Get bookingObj (alias to getTravelBookingObj, used in base/abstract classes where booking type is not refined yet)
+     * @return \BookingBundle\Entity\TravelBooking
+     */
+    public function getBookingObj()
+    {
+        return $this->getTravelBookingObj();
+    }
+
+    /**
      * Set placeObj
      *
      * @param \BookingBundle\Entity\Place $placeObj

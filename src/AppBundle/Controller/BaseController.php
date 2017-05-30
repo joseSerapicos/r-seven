@@ -12,7 +12,10 @@ abstract class BaseController extends Controller
 {
     // Very important flags that changes the way how controller is initialized.
     // It should be defined before call the init() method.
-    protected $flags = array();
+    protected $flags = array(
+        'storage' => 'db', // Default storage
+        'parent' => null // Parent id used in some features like SessionStorage
+    );
     // Local configuration
     protected $localConf = array();
     // Template/view configuration
@@ -28,7 +31,14 @@ abstract class BaseController extends Controller
         'label' => null
     );
     // Response to send after process request
-    protected $responseConf = array();
+    protected $responseConf = array(
+        'status' => 1, // [1: success, 0: error]
+        'errors' => array(),
+        'flashMessages' => array(), // (error, warning, info and success messages)
+        'hasConf' => false,
+        'localData' => array(), // Local specific custom data of controller to sent to template
+        'addObjectSessionStorageFlag' => true // Mark session storage object with a flag to be identified by template
+    );
     // Controls if controller has been initialized
     protected $isInitialized = false;
 
@@ -143,15 +153,8 @@ abstract class BaseController extends Controller
         /* /Extra data */
 
         /* Response */
-        $this->responseConf = array(
-            'status' => 1, // [1: success, 0: error]
-            'errors' => array(),
-            'flashMessages' => array(), // (error, warning, info and success messages)
-            'hasConf' => false,
-            // Avoid to wrap data with status (in case of fragments originated by calls from twig)
-            'hasStatus' => !empty($requestRoute),
-            'localData' => array() // Local specific custom data of controller to sent to template
-        );
+        // Avoid to wrap data with status (in case of fragments originated by calls from twig)
+        $this->responseConf['hasStatus'] = !empty($requestRoute);
         /* /Response */
 
         return $this;
@@ -226,14 +229,14 @@ abstract class BaseController extends Controller
     }
 
     /**
-     * Print variable
+     * Debug variable
      * @param $data
-     * @param boolean $exit (exit application)
+     * @param boolean $exit (if true you can see the correct format when the final response is "json")
      * @return $this
      */
-    protected function printVar($data, $exit = false)
+    protected function debugVar($data, $exit = true)
     {
-        $endId = uniqid('print-var-end-');
+        $endId = uniqid('debug-var-end-anchor-');
 
         echo('<div style="margin: 12px;"><a href="#'.$endId.'">Go to end</a><pre>');
         print_r($data);

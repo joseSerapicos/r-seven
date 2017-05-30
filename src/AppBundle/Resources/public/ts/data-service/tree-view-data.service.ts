@@ -86,43 +86,45 @@ export class TreeViewDataService extends DataService
      */
     public setObject(object: any, index: any = null): any
     {
-        let objIndex = ((index && index['objIndex'])
-                ? index['objIndex'] // From out of service
-                : index // From DataService or not defined
-        );
+        if (object) {
+            let objIndex = null;
 
-        if (object && object['id']) { // Ignore new objects (no id defined)
-            let oldParentNodeIndex = ((index && index['parentNodeIndex'])
-                    ? index['parentNodeIndex'] // From out of service
-                    : ((index != null)
-                        ? this._objectsProviderIndex // From DataService
-                        : null // Not defined
+            // Objects stored in session does not be considered really objects.
+            if (!object['_isSessionStorage']) {
+                objIndex = ((index && index['objIndex'])
+                        ? index['objIndex'] // From out of service
+                        : index // From DataService or not defined
+                );
+
+                let oldParentNodeIndex = ((index && index['parentNodeIndex'])
+                        ? index['parentNodeIndex'] // From out of service
+                        : ((index != null)
+                            ? this._objectsProviderIndex // From DataService
+                            : null // Not defined
                     )
-            );
-            let newParentNodeIndex = (object[this._provider.extraData['treeView']['parentNodeField']] || 0);
+                );
+                let newParentNodeIndex = (object[this._provider.extraData['treeView']['parentNodeField']] || 0);
 
-            // Create a new array entry for parent node, if not exist yet
-            if (!(newParentNodeIndex in this._provider.objects)) {
-                this._provider.objects[newParentNodeIndex] = [];
+                // Create a new array entry for parent node, if not exist yet
+                if (!(newParentNodeIndex in this._provider.objects)) {
+                    this._provider.objects[newParentNodeIndex] = [];
+                }
+
+                // Remove from old parent node
+                if ((oldParentNodeIndex != null) && (oldParentNodeIndex != newParentNodeIndex)) {
+                    this._objectsProvider = this._provider.objects[oldParentNodeIndex];
+                    this.pullFromObjects(objIndex);
+                    this._provider.objects[newParentNodeIndex].unshift(object); // Add new entry in new parent node
+                    objIndex = 0; // Index of new entry in parent (to be marked as edited)
+                }
+
+                // Update objects provider
+                this._objectsProviderIndex = newParentNodeIndex;
+                this._objectsProvider = this._provider.objects[newParentNodeIndex];
             }
 
-            // Remove from old parent node
-            if ((oldParentNodeIndex != null) && (oldParentNodeIndex != newParentNodeIndex)) {
-                this._objectsProvider = this._provider.objects[oldParentNodeIndex];
-                this.pullFromObjects(objIndex);
-                this._provider.objects[newParentNodeIndex].unshift(object); // Add new entry in new parent node
-                objIndex = 0; // Index of new entry in parent (to be marked as edited)
-            }
-
-            // Update objects provider
-            this._objectsProviderIndex = newParentNodeIndex;
-            this._objectsProvider = this._provider.objects[newParentNodeIndex];
-        } else {
-            // New object (unsaved), does not belong to any object provider (no parent defined)
-            this._objectsProviderIndex = null;
+            super.setObject(object, objIndex);
         }
-
-        super.setObject(object, objIndex);
 
         return this;
     }
@@ -215,13 +217,8 @@ export class TreeViewDataService extends DataService
             this._provider.objects[objNodesIndex] = this._objectsProvider;
         }
 
-        this.newObject().then( // Reset object, index and all information of object can be changed
-            data => {},
-            errors => { console.log(errors); }
-        );
-
         // Emmit changes
-        this._onObjectsChangeEmitter.emit(objects);
+        this._onObjectsRefreshEmitter.emit(objects);
 
         return this;
     }

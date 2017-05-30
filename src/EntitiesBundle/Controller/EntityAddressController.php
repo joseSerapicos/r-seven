@@ -32,6 +32,9 @@ class EntityAddressController extends BaseEntityChildController
             'get' => array(
                 'name' => '_entities__entity_address__get'
             ),
+            'choices' => array(
+                'name' => '_entities__entity_address__choices'
+            ),
             'edit' => array(
                 'name' => '_entities__entity_address__edit',
             ),
@@ -79,6 +82,21 @@ class EntityAddressController extends BaseEntityChildController
     public function getLocalChildAction(Request $request, $entity, $id)
     {
         return parent::getChildAction($request, array($entity), $id);
+    }
+
+    /**
+     * @Route("/entities/entity-address/choices/{entity}",
+     *     name="_entities__entity_address__choices"
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $entity
+     * @return mixed
+     */
+    public function choicesLocalChildAction(Request $request, $entity)
+    {
+        return parent::choicesChildAction($request, array($entity));
     }
 
     /**

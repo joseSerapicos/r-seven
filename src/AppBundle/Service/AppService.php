@@ -85,6 +85,9 @@ class AppService
             $this->setStoreAcl();
         }
 
+        // Temporary storage (array with time as key, to clear storage correctly)
+        $session->set('_storage', array());
+
         return $this;
     }
 

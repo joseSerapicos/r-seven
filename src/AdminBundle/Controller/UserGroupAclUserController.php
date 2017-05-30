@@ -160,15 +160,16 @@ class UserGroupAclUserController extends BaseEntityChildController
      * Save object
      * @param $object
      * @param $hasFlush (it determines if should be executed the flush method to persist data in database)
+     * @param $addToResponse (determines if object should be added to response)
      * @return $this
      */
-    protected function saveObject(&$object, $hasFlush = true)
+    protected function saveObject(&$object, $hasFlush = true, $addToResponse = false)
     {
         if (!$this->checkLoggedUserPermission($object)) {
-            return $this->getResponse(true);
+            parent::saveObject($object, $hasFlush, $addToResponse);
         }
 
-        return parent::saveObject($object, $hasFlush);
+        return $this;
     }
 
     /**
@@ -179,11 +180,11 @@ class UserGroupAclUserController extends BaseEntityChildController
      */
     protected function deleteObject($object, $hasFlush = true)
     {
-        if (!$this->checkLoggedUserPermission($object)) {
-            return $this->getResponse(true);
+        if ($this->checkLoggedUserPermission($object)) {
+            parent::deleteObject($object, $hasFlush);
         }
 
-        return parent::deleteObject($object, $hasFlush);
+        return $this;
     }
 
     /**

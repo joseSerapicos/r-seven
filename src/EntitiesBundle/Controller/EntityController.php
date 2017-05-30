@@ -176,7 +176,11 @@ class EntityController extends BaseEntityController
         $form->handleRequest($request);
 
         // Check if is submitted
-        if($form->isSubmitted() && $form->isValid()) {
+        if($form->isSubmitted()) {
+            if (!$this->validateForm($form)) {
+                return $this->getResponse(true);
+            }
+
             // Get data
             $content = $request->getContent();
             $fields = array();

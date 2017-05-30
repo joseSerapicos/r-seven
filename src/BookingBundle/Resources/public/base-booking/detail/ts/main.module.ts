@@ -22,6 +22,8 @@ import {EntityDetailModule} from '../../../../../../AppBundle/Resources/public/t
 // Auto-complete
 Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'entities/client/edit');
 import {LocalFormPopupExtensionModule} from '../../../../../../EntitiesBundle/Resources/public/client/index/ts/local-form-popup.extension-module';
+Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'entities/supplier/edit');
+import {LocalFormPopupExtensionModule as SupplierFormPopupExtensionModule} from '../../../../../../EntitiesBundle/Resources/public/supplier/index/ts/local-form-popup.extension-module';
 Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'entities/entity/edit');
 import {FormPopupExtensionModule} from '../../../../../../AppBundle/Resources/public/ts/form/form-popup.extension-module';
 let autoCompleteProviders: AutoCompleteProviders = {
@@ -33,6 +35,18 @@ let autoCompleteProviders: AutoCompleteProviders = {
             component: 'LocalFormPopupComponent',
             providers: [
                 {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Client'})},
+                FormService
+            ]
+        }
+    },
+    supplierObj: {
+        urlConf: (Helper.getGlobalVar('route') + 'entities/supplier/conf'),
+        control: 'edit',
+        popups: {
+            module: SupplierFormPopupExtensionModule,
+            component: 'LocalFormPopupComponent',
+            providers: [
+                {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Supplier'})},
                 FormService
             ]
         }
@@ -60,7 +74,6 @@ entityDetailProvider.popup = {
     component: 'BookingFormPopupComponent',
     providers: [
         {provide: 'Provider', useValue: Helper.getFormProvider(_app.conf)},
-        {provide: 'AutoCompleteProviders', useValue: autoCompleteProviders},
         FormService
     ]
 };
@@ -89,7 +102,9 @@ entityDetailProvider.popup = {
         {provide: 'EntityDetailProvider', useValue: entityDetailProvider},
         {provide: 'Provider', useValue: Helper.getBaseProvider(_app.conf)},
         {provide: 'DataServiceProvider', useValue: Helper.getDataServiceProvider(_app.conf)},
-        {provide: 'ActionsServiceProvider', useValue: Helper.getActionsServiceProvider(_app.conf)}
+        {provide: 'ActionsServiceProvider', useValue: Helper.getActionsServiceProvider(_app.conf)},
+        // Used by "booking" edit, "bookingService" edit and "currentAccounts" edit
+        {provide: 'AutoCompleteProviders', useValue: autoCompleteProviders}
     ],
     bootstrap: [MainComponent]
 })

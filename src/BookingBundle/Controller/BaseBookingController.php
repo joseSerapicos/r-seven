@@ -118,7 +118,7 @@ class BaseBookingController extends BaseEntityController
                     'label' => 'Services'
                 ),
                 array(
-                    'label' => 'Current Account'
+                    'label' => 'Current Accounts'
                 ),
                 array(
                     'label' => 'Observations'
@@ -131,12 +131,35 @@ class BaseBookingController extends BaseEntityController
     }
 
     /**
+     * DEFINE ROUTE HERE
+     *
+     * Action to get the menus of current accounts
+     * @return mixed
+     */
+    public function currentAccountsMenusAction()
+    {
+        // Render form
+        return $this->render('AppBundle:accordion:default.html.twig', array(
+            '_containers' => array(
+                array(
+                    'label' => 'Client Current Account'
+                ),
+                array(
+                    'label' => 'Supplier Current Account'
+                )
+            ),
+            '_id' => 'current-accounts'
+        ));
+    }
+
+    /**
      * Overrides parent method
      * @param $object
      * @param $hasFlush (it determines if should be executed the flush method to persist data in database)
+     * @param $addToResponse (determines if object should be added to response)
      * @return $this
      */
-    protected function saveObject(&$object, $hasFlush = true)
+    protected function saveObject(&$object, $hasFlush = true, $addToResponse = false)
     {
         // Flags
         $this->flags['setting'] = array(
@@ -153,27 +176,31 @@ class BaseBookingController extends BaseEntityController
             )
         );
 
-        parent::saveObject($object, $hasFlush);
+        parent::saveObject($object, $hasFlush, $addToResponse);
 
         return $this;
     }
 
     /**
-     * Overrides parent method
-     * @return object
+     * Set default values to object
+     * @param $object
+     * @return $this
      */
-    protected function newObject()
+    protected function setObjectDefaultValues($object)
     {
-        $obj = parent::newObject();
-
-        $obj->setTotalCost(0);
-        $obj->setTotalMargin(0);
-        $obj->setTotalMarkup(0);
-        $obj->setTotalProfit(0);
-        $obj->setTotalSell(0);
-        $obj->setInvoiceStatus("NO");
-        $obj->setConfirmationStatus("YES");
-
-        return $obj;
+        parent::setObjectDefaultValues($object);
+        // Set default data
+        if (empty($object->getId())) {
+            $object->setSubTotalCost(0);
+            $object->setSubTotalSell(0);
+            $object->setTotalVatCost(0);
+            $object->setTotalVatSell(0);
+            $object->setTotalMargin(0);
+            $object->setTotalMarkup(0);
+            $object->setTotalProfit(0);
+            $object->setInvoiceStatus("NO");
+            $object->setConfirmationStatus("YES");
+        }
+        return $this;
     }
 }

@@ -16,7 +16,7 @@ export class CalendarComponent extends DataBoxComponent
 {
     // To get notify about changes over the service
     protected _onObjectChangeSubscription: any;
-    protected _onObjectsChangeSubscription: any;
+    protected _onObjectsRefreshSubscription: any;
 
     protected _lastMonthSearched: string;
     protected _candidateSearch: any;
@@ -49,7 +49,7 @@ export class CalendarComponent extends DataBoxComponent
         this._onObjectChangeSubscription = this._dataService.getOnObjectChangeEmitter()
             .subscribe(object => this.refreshCalendar());
         // Object change event subscription
-        this._onObjectsChangeSubscription = this._dataService.getOnObjectsChangeEmitter()
+        this._onObjectsRefreshSubscription = this._dataService.getOnObjectsRefreshEmitter()
             .subscribe(objects => this.refreshCalendar());
 
         this._lastMonthSearched = moment().format('YYYY-MM');
@@ -214,6 +214,6 @@ export class CalendarComponent extends DataBoxComponent
     ngOnDestroy()
     {
         this._onObjectChangeSubscription.unsubscribe();
-        this._onObjectsChangeSubscription.unsubscribe();
+        this._onObjectsRefreshSubscription.unsubscribe();
     }
 }

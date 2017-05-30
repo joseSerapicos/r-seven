@@ -272,6 +272,27 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
     }
 
     /**
+     * Submit choices
+     * @param route (route to submit choices)
+     * @param allowEmptySubmit (allow submit when data is empty,
+     * some cases it is necessary to inform that the user does not select any choice)
+     * @returns {Promise}
+     */
+    public submitChoices(route: string, allowEmptySubmit: boolean = false): Promise<any>
+    {
+        let $form = $(this._elementRef.nativeElement).find('.ibox-content form'),
+            data = $form.serializeArray(),
+            that = this;
+
+        return new Promise(function(resolve, reject) {
+            return that._dataService.submitIndexesId(route, data, allowEmptySubmit).then(
+                data => { return resolve(data); },
+                errors => { console.log(errors); return reject(errors); }
+            );
+        });
+    }
+
+    /**
      * Detail action.
      * @param $event
      * @param data

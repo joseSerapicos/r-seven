@@ -1,5 +1,13 @@
 {% extends 'AppBundle::base.html.twig' %}
 
+{% block stylesheets %}
+    {% stylesheets filter="scssphp" output="assets/admin/store/detail/css/all.css"
+        '@AppBundle/Resources/public/scss/select-box.scss'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
 {% block head_javascripts %}
     {{ parent() }}
 

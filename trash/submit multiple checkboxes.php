@@ -110,7 +110,11 @@ class EntityGroupEntityController extends BaseEntityChildController
         $form->handleRequest($request);
 
         // Check if is submitted
-        if($form->isSubmitted() && $form->isValid()) {
+        if($form->isSubmitted()) {
+            if (!$this->validateForm($form)) {
+                return $this->getResponse(true);
+            }
+
             // Process request
             $data = $this->getAndProcessRequestData($request, false);
 

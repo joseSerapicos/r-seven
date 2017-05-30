@@ -1,7 +1,7 @@
 <?php
 namespace ServicesBundle\Entity;
 
-use AppBundle\Entity\BasePrice;
+use AppBundle\Entity\BasePriceDefinition;
 use Doctrine\ORM\Mapping as ORM;
 
 
@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     indexes={@ORM\Index(name="idx_servicePrice_date", columns={"startDate", "endDate"})}
  * )
  */
-class ServicePrice extends BasePrice {
+class ServicePrice extends BasePriceDefinition {
     /**
      * @ORM\ManyToOne(targetEntity="Service")
      * @ORM\JoinColumn(name="fk_service", referencedColumnName="id", nullable=false, unique=false, onDelete="CASCADE")

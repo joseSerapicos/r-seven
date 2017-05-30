@@ -24,14 +24,14 @@ class BaseAddress extends BaseEntity {
     protected $street2;
 
     /**
-     * @ORM\Column(name="city", type="string", length=64, nullable=false, unique=false, options={"comment":"City"})
-     */
-    protected $city;
-
-    /**
      * @ORM\Column(name="postCode", type="string", length=12, nullable=false, unique=false, options={"comment":"Post code"})
      */
     protected $postCode;
+
+    /**
+     * @ORM\Column(name="city", type="string", length=64, nullable=false, unique=false, options={"comment":"City"})
+     */
+    protected $city;
 
     /**
      * @ORM\Column(name="region", type="string", length=64, nullable=true, unique=false, options={"comment":"Region"})
@@ -114,29 +114,6 @@ class BaseAddress extends BaseEntity {
     }
 
     /**
-     * Set city
-     *
-     * @param string $city
-     * @return $this
-     */
-    public function setCity($city)
-    {
-        $this->city = $city;
-
-        return $this;
-    }
-
-    /**
-     * Get city
-     *
-     * @return string
-     */
-    public function getCity()
-    {
-        return $this->city;
-    }
-
-    /**
      * Set postCode
      *
      * @param string $postCode
@@ -157,6 +134,29 @@ class BaseAddress extends BaseEntity {
     public function getPostCode()
     {
         return $this->postCode;
+    }
+
+    /**
+     * Set city
+     *
+     * @param string $city
+     * @return $this
+     */
+    public function setCity($city)
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    /**
+     * Get city
+     *
+     * @return string
+     */
+    public function getCity()
+    {
+        return $this->city;
     }
 
     /**

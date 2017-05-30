@@ -31,9 +31,9 @@
                 </div>
             {% elseif field != 'marginValue' %}
                 {% include 'AppBundle:form:field.html.twig' with {
-                'field': field,
-                'metadata': fields['metadata'][field],
-                'form': form
+                    'field': field,
+                    'metadata': fields['metadata'][field],
+                    'form': form
                 } %}
             {% endif %}
         {% endfor %}

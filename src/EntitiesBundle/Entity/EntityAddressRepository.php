@@ -56,13 +56,30 @@ class EntityAddressRepository extends BaseEntityRepository
             'name' => array('label' => 'Name / Description', 'type' => 'text', 'acl' => 'edit'),
             'street1' => array('label' => 'Street 1/2', 'type' => 'text', 'acl' => 'edit'),
             'street2' => array('label' => 'Street 2/2', 'type' => 'text', 'acl' => 'edit'),
-            'city' => array('label' => 'City', 'type' => 'text', 'acl' => 'edit'),
             'postCode' => array('label' => 'Post Code', 'type' => 'text', 'acl' => 'edit'),
+            'city' => array('label' => 'City', 'type' => 'text', 'acl' => 'edit'),
             'region' => array('label' => 'Region', 'type' => 'text', 'acl' => 'edit'),
             'country' => array('label' => 'Country', 'type' => 'text', 'acl' => 'edit'),
+            'forDocuments' => array('label' => 'For Documents', 'type' => 'boolean', 'acl' => 'edit'),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
             'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
         ));
+    }
+
+    /**
+     * @param $entityObj
+     * @return mixed
+     */
+    public function getForDocumentsByEntity($entityObj)
+    {
+        $objArr = $this->findBy(array('entityObj' => $entityObj, 'forDocuments' => true, 'isEnabled' => true));
+
+        // If specific address for documents is not available, get any one
+        if (count($objArr) < 1) {
+            $objArr = $this->findBy(array('entityObj' => $entityObj, 'isEnabled' => true));
+        }
+
+        return reset($objArr);
     }
 }

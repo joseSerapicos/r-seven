@@ -1,4 +1,4 @@
-import {Component, ElementRef, Inject, Renderer, QueryList, ViewContainerRef, ViewChildren} from '@angular/core';
+import {Component, ElementRef, Injector, Inject, Renderer, QueryList, ViewContainerRef, ViewChildren} from '@angular/core';
 import {DataService} from '../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
 import {ActionsService} from '../../../../../../AppBundle/Resources/public/ts/actions/actions.service';
 import {Helper} from '../../../../../../AppBundle/Resources/public/ts/helper';
@@ -27,14 +27,14 @@ import {BookingServiceAddFormPopupExtensionModule} from '../../../base-booking-s
 Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'booking/' + parentController + '-service/edit/' + parentId);
 import {BookingServiceEditFormPopupExtensionModule} from '../../../base-booking-service/edit/ts/booking-service-edit-form-popup.extension-module';
 // Auto-complete
-Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'entities/supplier/edit');
-import {LocalFormPopupExtensionModule as SupplierFormPopupExtensionModule} from '../../../../../../EntitiesBundle/Resources/public/supplier/index/ts/local-form-popup.extension-module';
-Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'entities/entity/edit');
-import {FormPopupExtensionModule} from '../../../../../../AppBundle/Resources/public/ts/form/form-popup.extension-module';
 Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'booking/place/edit');
 import {BookingPlaceFormPopupExtensionModule} from '../../../booking-place/ts/booking-place-form-popup.extension-module';
 Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'booking/country/edit');
 import {BookingCountryFormPopupExtensionModule} from '../../../booking-country/ts/booking-country-form-popup.extension-module';
+
+// Booking Current Accounts
+Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'booking/' + parentController + '/current-accounts-menus');
+import {CurrentAccountsExtModule} from './current-accounts.ext-module';
 
 // BookingObservation
 Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'booking/' + parentController + '-observation/edit/' + parentId);
@@ -63,7 +63,8 @@ export class MainComponent extends TabsComponent implements ITabs
         navManagerService: NavManagerService,
         protected _modalService: ModalService,
         protected viewContainerRef: ViewContainerRef,
-        @Inject('DataService') protected _dataService: any
+        @Inject('DataService') protected _dataService: any,
+        protected _injector: Injector
     ) {
         super(
             elementRef,
@@ -99,11 +100,16 @@ export class MainComponent extends TabsComponent implements ITabs
                 };
             case 2:
                 return {
+                    module: CurrentAccountsExtModule,
+                    component: 'CurrentAccountsComponent'
+                };
+            case 3:
+                return {
                     module: ObservationExtensionModule,
                     component: 'ObservationComponent',
                     urlProvider: (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-observation/data/' + parentId)
                 };
-            case 3:
+            case 4:
                 return {
                     module: FileModule,
                     component: 'FileComponent',
@@ -140,68 +146,47 @@ export class MainComponent extends TabsComponent implements ITabs
                 ];
                 break;
             case 1:
-                let autoCompleteProviders: AutoCompleteProviders = {
-                    supplierObj: {
-                        urlConf: (Helper.getGlobalVar('route') + 'entities/supplier/conf'),
-                        control: 'edit',
-                        popups: {
-                            module: SupplierFormPopupExtensionModule,
-                            component: 'LocalFormPopupComponent',
-                            providers: [
-                                {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Supplier'})},
-                                FormService
-                            ]
-                        }
-                    },
-                    entityObj: {
-                        urlConf: (Helper.getGlobalVar('route') + 'entities/entity/conf'),
-                        control: 'edit',
-                        popups: {
-                            module: FormPopupExtensionModule,
-                            component: 'FormPopupComponent',
-                            providers: [
-                                {provide: 'Provider', useValue: Helper.getFormProvider(_app.conf)},
-                                FormService
-                            ]
-                        }
-                    },
-                    placeObj: {
-                        urlConf: (Helper.getGlobalVar('route') + 'booking/place/conf'),
-                        control: 'edit',
-                        popups: {
-                            module: BookingPlaceFormPopupExtensionModule,
-                            component: 'BookingPlaceFormPopupComponent',
-                            providers: [
-                                {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Place'})},
-                                FormService
-                            ]
-                        }
-                    },
-                    placeToObj: {
-                        urlConf: (Helper.getGlobalVar('route') + 'booking/place/conf'),
-                        control: 'edit',
-                        popups: {
-                            module: BookingPlaceFormPopupExtensionModule,
-                            component: 'BookingPlaceFormPopupComponent',
-                            providers: [
-                                {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Place'})},
-                                FormService
-                            ]
-                        }
-                    },
-                    countryObj: {
-                        urlConf: (Helper.getGlobalVar('route') + 'booking/country/conf'),
-                        control: 'edit',
-                        popups: {
-                            module: BookingCountryFormPopupExtensionModule,
-                            component: 'BookingCountryFormPopupComponent',
-                            providers: [
-                                {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Country'})},
-                                FormService
-                            ]
+                let autoCompleteProviders = this._helperService.mergeObjects(
+                    this._injector.get('AutoCompleteProviders'),
+                    {
+                        placeObj: {
+                            urlConf: (Helper.getGlobalVar('route') + 'booking/place/conf'),
+                            control: 'edit',
+                            popups: {
+                                module: BookingPlaceFormPopupExtensionModule,
+                                component: 'BookingPlaceFormPopupComponent',
+                                providers: [
+                                    {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Place'})},
+                                    FormService
+                                ]
+                            }
+                        },
+                        placeToObj: {
+                            urlConf: (Helper.getGlobalVar('route') + 'booking/place/conf'),
+                            control: 'edit',
+                            popups: {
+                                module: BookingPlaceFormPopupExtensionModule,
+                                component: 'BookingPlaceFormPopupComponent',
+                                providers: [
+                                    {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Place'})},
+                                    FormService
+                                ]
+                            }
+                        },
+                        countryObj: {
+                            urlConf: (Helper.getGlobalVar('route') + 'booking/country/conf'),
+                            control: 'edit',
+                            popups: {
+                                module: BookingCountryFormPopupExtensionModule,
+                                component: 'BookingCountryFormPopupComponent',
+                                providers: [
+                                    {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Country'})},
+                                    FormService
+                                ]
+                            }
                         }
                     }
-                };
+                );
 
                 providers = [
                     {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
@@ -231,6 +216,10 @@ export class MainComponent extends TabsComponent implements ITabs
                 ];
                 break;
             case 2:
+                return [
+                    NavManagerService
+                ];
+            case 3:
                 providers = [
                     {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
                     {provide: 'Popups', useValue: {
@@ -243,7 +232,7 @@ export class MainComponent extends TabsComponent implements ITabs
                     }}
                 ];
                 break;
-            case 3:
+            case 4:
                 providers = [
                     {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
                     {provide: 'Popups', useValue: {

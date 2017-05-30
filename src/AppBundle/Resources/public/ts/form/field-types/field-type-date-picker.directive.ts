@@ -99,8 +99,9 @@ export class FieldTypeDatePickerDirective {
                         this.control['markDisabled'] = (date: any) => {
                             let dateToCheck = new Date(date.year, date.month - 1, date.day);
                             for (let dateRange of dateRanges) {
-                                let dateFrom = new Date(dateRange['startDate']),
-                                    dateTo = new Date(dateRange['endDate']);
+                                // ' 00:00:00' is necessary to get the expected behavior
+                                let dateFrom = new Date(dateRange['startDate'] + ' 00:00:00'),
+                                    dateTo = new Date(dateRange['endDate'] + ' 00:00:00');
                                 if ((dateToCheck.getTime() >= dateFrom.getTime())
                                     && (dateToCheck.getTime() <= dateTo.getTime())
                                 ) {

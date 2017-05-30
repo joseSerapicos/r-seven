@@ -215,6 +215,9 @@ a.label, a.badge {
 .input-group .form-control-box {
     display: table-cell;
 }
+textarea {
+    resize: vertical;
+}
 
 
 /* Modal */

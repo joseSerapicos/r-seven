@@ -25,9 +25,9 @@ class Stoddre extends BaseEntity {
     protected $name;
 
     /**
-     * @ORM\Column(name="formalName", type="string", length=64, nullable=true, unique=false, options={"comment":"Formal name"})
+     * @ORM\Column(name="legalName", type="string", length=64, nullable=true, unique=false, options={"comment":"Formal name"})
      */
-    protected $formalName;
+    protected $legalName;
 
     /**
      * @ORM\Column(name="taxNumber", type="string", length=12, nullable=true, unique=false, options={"comment":"Tax number"})
@@ -83,23 +83,23 @@ class Stoddre extends BaseEntity {
     }
 
     /**
-     * Set formalName
-     * @param string $formalName
+     * Set legalName
+     * @param string $legalName
      * @return Store
      */
-    public function setFormalName($formalName)
+    public function setLegalName($legalName)
     {
-        $this->formalName = $formalName;
+        $this->legalName = $legalName;
         return $this;
     }
 
     /**
-     * Get formalName
+     * Get legalName
      * @return string
      */
-    public function getFormalName()
+    public function getLegalName()
     {
-        return $this->formalName;
+        return $this->legalName;
     }
 
     /**

@@ -28,11 +28,32 @@ class TravelBookingServicePrice extends BaseBookingServicePrice {
     }
 
     /**
+     * Set bookingServiceObj
+     * (alias to travelBookingServiceObj, used in base/abstract classes where bookingService type is not refined yet)
+     * @param \BookingBundle\Entity\TravelBookingService $travelBookingServiceObj
+     * @return TravelBookingServicePrice
+     */
+    public function setBookingServiceObj(\BookingBundle\Entity\TravelBookingService $travelBookingServiceObj)
+    {
+        return $this->setTravelBookingServiceObj($travelBookingServiceObj);
+    }
+
+    /**
      * Get travelBookingServiceObj
      * @return \BookingBundle\Entity\TravelBookingService
      */
     public function getTravelBookingServiceObj()
     {
         return $this->travelBookingServiceObj;
+    }
+
+    /**
+     * Get bookingServiceObj
+     * (alias to travelBookingServiceObj, used in base/abstract classes where bookingService type is not refined yet)
+     * @return \BookingBundle\Entity\TravelBookingService
+     */
+    public function getBookingServiceObj()
+    {
+        return $this->getTravelBookingServiceObj();
     }
 }

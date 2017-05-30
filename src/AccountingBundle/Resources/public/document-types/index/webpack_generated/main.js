@@ -5038,7 +5038,8 @@ webpackJsonp([1],[
 	     */
 	    Helper.getFormProvider = function (data) {
 	        return {
-	            label: data.label || ''
+	            label: data.label || '',
+	            preventObjectOverride: true
 	        };
 	    };
 	    /**
@@ -5953,6 +5954,13 @@ webpackJsonp([1],[
 	    NavManagerService.prototype.loadNav = function (index) {
 	        var that = this;
 	        return new Promise(function (resolve, reject) {
+	            if (that._llComponentRefArr[index] // Container has been loaded
+	                || !that._component['getNavData'] // Component doesn't have the necessary implementation to lazy load
+	            ) {
+	                that._currentIndex = index;
+	                return resolve(true);
+	            }
+	            // Get lazy load view
 	            var llViewIndex = null, llClass = ('js_lazyLoadContainer_' + index); // Lazy load class
 	            // Check if is a lazy load container (by its index in class)
 	            for (var index_1 in that._llViewContainerRefArr) {
@@ -5961,10 +5969,7 @@ webpackJsonp([1],[
 	                    break;
 	                }
 	            }
-	            if ((llViewIndex === null) // No lazy load view
-	                || that._llComponentRefArr[index] // Container has been loaded
-	                || !that._component['getNavData'] // Component doesn't have the necessary implementation to lazy load
-	            ) {
+	            if (llViewIndex === null) {
 	                that._currentIndex = index;
 	                return resolve(true);
 	            }
@@ -6920,23 +6925,46 @@ webpackJsonp([1],[
 	        this._object = {}; // Object used by form
 	        this._$form = null; // DOM form
 	        this._errors = {}; // Form errors validation
+	        // Used to force form to submit,
+	        // generally when you need that user confirm the date, but the data has no changes.
+	        this._forceSubmit = false;
 	        // Controls if the form is on "save" mode (waiting to finish the save process). It's useful to control the
 	        // save action (avoid multiples clicks on button) and to recognize the object change after saved by DataService.
 	        this._isOnSave = false;
+	        // Confirm object override by user to prevent data loss (when the object is changed in DataService)
+	        this._preventObjectOverride = true;
 	        this._onObjectChangeEmitter = new core_1.EventEmitter();
 	        // Object change event subscription
 	        this._onObjectChangeSubscription = this._dataService.getOnObjectChangeEmitter()
 	            .subscribe(function (object) { return _this.onObjectChangeSubscription(object); });
-	        // Set object
-	        this.setObject(this._dataService.getObject());
-	        // Form build
+	        // Set object, if it has not been setted before open the form
+	        if (!this._dataService.getObject()) {
+	            // If object is not setted, create a new
+	            var that_1 = this;
+	            this.newObject().then(function (data) {
+	                that_1.setObject(_this._dataService.getObject());
+	                that_1.buildForm(formBuilder);
+	            }, function (errors) { return; });
+	        }
+	        else {
+	            this.setObject(this._dataService.getObject());
+	            this.buildForm(formBuilder);
+	        }
+	    }
+	    /**
+	     * Build form
+	     * @param formBuilder
+	     * @returns {FormService}
+	     */
+	    FormService.prototype.buildForm = function (formBuilder) {
 	        var formControls = {}, fields = (this._dataService.getFields('form') || []).concat(this._helperService.objectKeys(this._dataService.getProviderExtraDataAttr('fields')));
 	        for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
 	            var field = fields_1[_i];
 	            formControls[field] = [this._object[field] || null];
 	        }
 	        this._form = formBuilder.group(formControls);
-	    }
+	        return this;
+	    };
 	    /**
 	     * Initialization of service.
 	     * This method should be called in "ngOnInit" method of parent component,
@@ -6948,6 +6976,7 @@ webpackJsonp([1],[
 	        // Local variables
 	        this._component = component;
 	        this._$form = $(component._elementRef.nativeElement).find('form');
+	        this._preventObjectOverride = this._component.getProviderAttr('preventObjectOverride');
 	        return this;
 	    };
 	    /**
@@ -6964,13 +6993,15 @@ webpackJsonp([1],[
 	    FormService.prototype.onObjectChangeSubscription = function (object) {
 	        // Set object only if is different
 	        if (object != this._originalObject) {
-	            if (this._isOnSave) {
-	                // Form is waiting for save process, this is the saved object,
-	                // it's not necessary any confirmation, if you need more security in this process, add a token.
+	            if (
+	            // Form is waiting for save process, this is the saved object,
+	            // it's not necessary any confirmation, if you need more security in this process, add a token.
+	            this._isOnSave
+	                || !this._preventObjectOverride) {
 	                this.setObject(object);
 	                return;
 	            }
-	            // Regular change in object
+	            // Confirm object override by user to prevent data loss
 	            this.confirmAndSetObject(object).then(function (data) { return; }, function (errors) { return; });
 	        }
 	    };
@@ -7022,6 +7053,10 @@ webpackJsonp([1],[
 	            this._object = helper_1.Helper.cloneObject(this._originalNormalizedObject, true);
 	            // Reset errors
 	            this._errors = {};
+	            if (this._dataService.getObjectIndex() == null) {
+	                // If no index is defined, it's a new object
+	                this._forceSubmit = true;
+	            }
 	            this._onObjectChangeEmitter.emit(this._object); // Object as changed to the original, notify subscribers
 	        }
 	        return this;
@@ -7128,13 +7163,11 @@ webpackJsonp([1],[
 	     * Save form. Handle submit form.
 	     * This method should be called from child component.
 	     * @param route (optional route to overrides default route)
-	     * @param forceSubmit (force form to submit even if object has no changes)
 	     * @param hasValidation
 	     * @returns {Promise}
 	     */
-	    FormService.prototype.save = function (route, forceSubmit, hasValidation) {
+	    FormService.prototype.save = function (route, hasValidation) {
 	        if (route === void 0) { route = null; }
-	        if (forceSubmit === void 0) { forceSubmit = false; }
 	        if (hasValidation === void 0) { hasValidation = true; }
 	        var that = this;
 	        return new Promise(function (resolve, reject) {
@@ -7145,7 +7178,7 @@ webpackJsonp([1],[
 	            // Put form in "save" mode
 	            that._isOnSave = true;
 	            // Current form object has changes from user?
-	            if (forceSubmit || !that._object['id'] || that.hasChanges()) {
+	            if (that._forceSubmit || !that._object['id'] || that.hasChanges()) {
 	                // Validate form
 	                if (hasValidation) {
 	                    that._errors = {};
@@ -7166,6 +7199,8 @@ webpackJsonp([1],[
 	                that._dataService.save(data, id, route).then(function (object) {
 	                    // Update form after save with saved object
 	                    that.setObject(object);
+	                    // Force submit is reset, each activation is valid  only once
+	                    that._forceSubmit = false;
 	                    return resolve(true);
 	                }, function (errors) {
 	                    if (errors) {
@@ -7199,16 +7234,37 @@ webpackJsonp([1],[
 	     * @param $event
 	     */
 	    FormService.prototype.saveAndEnterAction = function ($event) {
-	        var _this = this;
 	        if ($event === void 0) { $event = null; }
 	        if ($event) {
 	            $event.preventDefault();
 	        }
 	        var that = this;
 	        this.save().then(function (data) {
-	            _this._dataService.detail();
+	            that.newAction();
 	            return;
 	        }, function (errors) { return; });
+	    };
+	    /**
+	     * Add a new entry (newObject is used in name because new is a reserved word).
+	     * @returns {Promise}
+	     */
+	    FormService.prototype.newObject = function () {
+	        var that = this;
+	        return new Promise(function (resolve, reject) {
+	            this._dataService.newObject().then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
+	        });
+	    };
+	    /**
+	     * Add a new entry action.
+	     * This method should be called when the form is initialized.
+	     * @param $event
+	     */
+	    FormService.prototype.newAction = function ($event) {
+	        if ($event === void 0) { $event = null; }
+	        if ($event) {
+	            $event.preventDefault();
+	        }
+	        this.newObject().then(function (data) { return; }, function (errors) { return; });
 	    };
 	    /**
 	     * Save and add a new entry.
@@ -7216,15 +7272,12 @@ webpackJsonp([1],[
 	     * @param $event
 	     */
 	    FormService.prototype.saveAndNewAction = function ($event) {
-	        var _this = this;
 	        if ($event === void 0) { $event = null; }
 	        if ($event) {
 	            $event.preventDefault();
 	        }
-	        this.save().then(function (data) {
-	            _this._dataService.newObject();
-	            return;
-	        }, function (errors) { return; });
+	        var that = this;
+	        this.save().then(function (data) { that.newAction(); return; }, function (errors) { return; });
 	    };
 	    /**
 	     * Reset object.
@@ -7261,6 +7314,14 @@ webpackJsonp([1],[
 	            $event.preventDefault();
 	        }
 	        this.reset().then(function (data) { return; }, function (errors) { return; });
+	    };
+	    /**
+	     * Set forceSubmit
+	     * @returns {FormService}
+	     */
+	    FormService.prototype.setForceSubmit = function () {
+	        this._forceSubmit = true;
+	        return this;
 	    };
 	    return FormService;
 	}());
@@ -7919,30 +7980,30 @@ webpackJsonp([1],[
 	     */
 	    DataService.prototype.setObject = function (object, index) {
 	        if (index === void 0) { index = null; }
-	        // Normalize object to template
-	        this._normalizedObject = this._helperService.cloneObject(object, true);
-	        this.normalizeObjectsToTemplate([this._normalizedObject]);
-	        if (object && object['id']) {
-	            var objectsProvider = (this._objectsProvider || this._provider.objects);
-	            // Refresh objects array
-	            if ((index != null) && objectsProvider[index]) {
-	                // Update existent object
-	                this._objectIndex = index;
-	                objectsProvider[index] = this._normalizedObject;
-	                this._normalizedObject['_isEdited'] = true; // Flag to use in template
+	        if (object) {
+	            // Normalize object to template
+	            this._normalizedObject = this._helperService.cloneObject(object, true);
+	            this.normalizeObjectsToTemplate([this._normalizedObject]);
+	            // Objects stored in session does not be considered really objects.
+	            if (!object['_isSessionStorage']) {
+	                var objectsProvider = (this._objectsProvider || this._provider.objects);
+	                // Refresh objects array
+	                if ((index != null) && objectsProvider[index]) {
+	                    // Update existent object
+	                    this._objectIndex = index;
+	                    objectsProvider[index] = this._normalizedObject;
+	                    this._normalizedObject['_isEdited'] = true; // Flag to use in template
+	                }
+	                else {
+	                    // Add new object at first of array (to best user experience)
+	                    this._objectIndex = 0; // Update index to the new index
+	                    this.pushToObjects([this._normalizedObject], true);
+	                    this._newObjectsIds.push(object['id']); // New object added
+	                    this._normalizedObject['_isNew'] = true; // Flag to use in template
+	                }
 	            }
-	            else {
-	                // Add new object at first of array (to best user experience)
-	                this._objectIndex = 0; // Update index to the new index
-	                this.pushToObjects([this._normalizedObject], true);
-	                this._newObjectsIds.push(object['id']); // New object added
-	                this._normalizedObject['_isNew'] = true; // Flag to use in template
-	            }
+	            this.setLocalObject(object);
 	        }
-	        else {
-	            this._objectIndex = null;
-	        }
-	        this.setLocalObject(object);
 	        return this;
 	    };
 	    /**
@@ -8053,9 +8114,6 @@ webpackJsonp([1],[
 	        else {
 	            this.resetObjects();
 	            this.pushToObjects(objects);
-	            this.newObject().then(// Reset object, index and all information of object can be changed
-	            function (// Reset object, index and all information of object can be changed
-	                data) { }, function (errors) { console.log(errors); });
 	        }
 	        // Emmit changes
 	        this._onObjectsChangeEmitter.emit(objects);
@@ -8069,6 +8127,7 @@ webpackJsonp([1],[
 	        this._provider.objects = [];
 	        this._objectsIds = [];
 	        this._newObjectsIds = [];
+	        this._objectIndex = null; // Reset object index
 	        return this;
 	    };
 	    /**
@@ -8346,6 +8405,7 @@ webpackJsonp([1],[
 	        var that = this;
 	        return new Promise(function (resolve, reject) {
 	            var newObj = {};
+	            // Create by copy
 	            if (index != null) {
 	                var objectsProvider = (that._objectsProvider || that._provider.objects);
 	                return that._postService.post(that._provider.route['get']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
@@ -8360,21 +8420,49 @@ webpackJsonp([1],[
 	                            newObj[fieldInView] = data.object[fieldInView];
 	                        }
 	                    }
-	                    that.setObject(newObj);
-	                    that.resetExtraFields();
+	                    that.setNewObject(newObj);
 	                    return resolve(true);
 	                }, function (errors) { console.log(errors); return reject(false); });
 	            }
 	            else {
-	                for (var _i = 0, _a = that._provider.fields['form']; _i < _a.length; _i++) {
-	                    var field = _a[_i];
-	                    newObj[field] = (that._provider.fields['metadata'][field]['default'] || null);
+	                // Create by server action
+	                if (that._provider.route['new']) {
+	                    return that._postService.post(that._provider.route['new']['url'], that.getRequestData()).then(function (data) {
+	                        // Local data (Do not override, merge data)
+	                        if (data['localData']) {
+	                            that._provider.localData =
+	                                that._helperService.mergeObjects(that._provider.localData, data['localData']);
+	                        }
+	                        // Object
+	                        that.setNewObject(data.object);
+	                        return resolve(true);
+	                    }, function (errors) { console.log(errors); return reject(false); });
 	                }
-	                that.setObject(newObj);
-	                that.resetExtraFields();
-	                return resolve(true);
+	                else {
+	                    for (var _i = 0, _a = that._provider.fields['form']; _i < _a.length; _i++) {
+	                        var field = _a[_i];
+	                        newObj[field] = (that._provider.fields['metadata'][field]['default'] || null);
+	                    }
+	                    that.setNewObject(newObj);
+	                    return resolve(true);
+	                }
 	            }
 	        });
+	    };
+	    /**
+	     * Set new object
+	     * @param object
+	     * @returns {DataService}
+	     */
+	    DataService.prototype.setNewObject = function (object) {
+	        // Normalize object to template
+	        this._normalizedObject = this._helperService.cloneObject(object, true);
+	        this.normalizeObjectsToTemplate([this._normalizedObject]);
+	        // Set object
+	        this._objectIndex = null;
+	        this.setLocalObject(object);
+	        this.resetExtraFields();
+	        return this;
 	    };
 	    /**
 	     * Save object.
@@ -8505,6 +8593,7 @@ webpackJsonp([1],[
 	    DataService.prototype.delete = function (index) {
 	        var that = this, objectsProvider = (this._objectsProvider || this._provider.objects);
 	        return new Promise(function (resolve, reject) {
+	            var _this = this;
 	            that.post(that._provider.route['delete']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
 	                // Refresh all objects
 	                if (data.objects) {
@@ -8516,7 +8605,8 @@ webpackJsonp([1],[
 	                }
 	                // Refresh objects array
 	                that.pullFromObjects(index);
-	                that.newObject().then(function (data) { }, function (errors) { console.log(errors); });
+	                // Reset object index
+	                _this._objectIndex = null;
 	                return resolve(true);
 	            }, function (errors) { console.log(errors); return resolve(false); });
 	        });
@@ -8612,6 +8702,19 @@ webpackJsonp([1],[
 	        var objectsProvider = (this._objectsProvider || this._provider.objects);
 	        location.href = (this._provider.route[route]['url'] + '/' + objectsProvider[index]['id']);
 	        return;
+	    };
+	    /**
+	     * Run/Execute action. Execute action directly.
+	     * @param route
+	     * @param data
+	     * @returns {Promise}
+	     */
+	    DataService.prototype.runAction = function (route, data) {
+	        if (data === void 0) { data = null; }
+	        var that = this;
+	        return new Promise(function (resolve, reject) {
+	            return that.post(route, that.getRequestData(data, false, false)).then(function (data) { return resolve(data); }, function (errors) { console.log(errors); return reject(errors); });
+	        });
 	    };
 	    /**
 	     * Post to server.
@@ -14996,6 +15099,8 @@ webpackJsonp([1],[
 	        this._injector = _injector;
 	        this._autoCompleteProviders = _autoCompleteProviders;
 	        this._helperService = _helperService;
+	        this.placeholder = ''; // Set empty as default, because value can be undefined
+	        this.onChange = new core_1.EventEmitter();
 	        this._isHidden = true;
 	        this._lastSelectedChoice = { id: null, label: '' };
 	        this._choices = [];
@@ -15010,6 +15115,11 @@ webpackJsonp([1],[
 	     * @returns {FieldTypeAutoCompleteComponent}
 	     */
 	    FieldTypeAutoCompleteComponent.prototype.reset = function () {
+	        // Clear choices (can be from old object)
+	        if (this._childDataServiceChoices) {
+	            this._childDataServiceChoices.setObjects([]);
+	            this.resetChoices();
+	        }
 	        this._object = this._formService.getObject();
 	        var value = this._object[this.field], normalizedValue = '';
 	        if (value) {
@@ -15021,6 +15131,7 @@ webpackJsonp([1],[
 	        }
 	        this._lastSelectedChoice = { id: value, label: normalizedValue };
 	        this.setLabel();
+	        this.setControlMode();
 	        return this;
 	    };
 	    /**
@@ -15097,6 +15208,7 @@ webpackJsonp([1],[
 	                this._lastSelectedChoice = { id: choice.id, label: choice.label };
 	                this.setLabel();
 	                this.setControlMode();
+	                this.onChange.emit(choice['id']);
 	            }
 	        }
 	    };
@@ -15215,7 +15327,6 @@ webpackJsonp([1],[
 	        this._provider = (this._autoCompleteProviders[this.field] || null);
 	        this._fieldInView = (this._dataService.getProviderAttr('fields')['metadata'][this.field]['fieldInView'] || null);
 	        this.reset();
-	        this.setControlMode();
 	        // Dependency conf previously saved in provider
 	        if (this._provider.childInjector) {
 	            this._childInjector = this._provider.childInjector;
@@ -15275,10 +15386,18 @@ webpackJsonp([1],[
 	    core_1.Input(),
 	    __metadata("design:type", Boolean)
 	], FieldTypeAutoCompleteComponent.prototype, "selfReference", void 0);
+	__decorate([
+	    core_1.Input(),
+	    __metadata("design:type", String)
+	], FieldTypeAutoCompleteComponent.prototype, "placeholder", void 0);
+	__decorate([
+	    core_1.Output(),
+	    __metadata("design:type", Object)
+	], FieldTypeAutoCompleteComponent.prototype, "onChange", void 0);
 	FieldTypeAutoCompleteComponent = __decorate([
 	    core_1.Component({
 	        selector: 'js_autoComplete',
-	        template: "\n    <div class=\"auto-complete\">\n        <div class=\"input-group\">\n            <span class=\"control\">\n                <input class=\"form-control\"\n                       (click)=\"onInputClick($event)\"\n                       (input)=\"onEnterKey($event)\"\n                       [ngModel]=\"_label\"\n                       [class.error]=\"_formService.getErrors()[field] && (_formService.getErrors()[field].length > 0)\"\n                       type=\"text\">\n                <a (click)=\"onControlClick($event)\"><i class=\"fa fa-angle-down\"></i></a>\n            </span>\n            <span class=\"input-group-btn\" *ngIf=\"_controlMode\">\n                <button (click)=\"triggerAction($event)\"\n                        class=\"btn btn-primary\"\n                        type=\"button\"><i class=\"fa\"\n                                         [class.fa-check]=\"_controlMode == 'save'\"\n                                         [class.fa-plus]=\"_controlMode == 'add'\"\n                                         [class.fa-pencil]=\"_controlMode == 'edit'\"></i></button>\n            </span>\n        </div>\n        <div class=\"choices\">\n            <ul [hidden]=\"_isHidden\"\n                (click)=\"onChoiceClick($event)\">\n                <template [ngIf]=\"selfReference\"><template ngFor let-choice [ngForOf]=\"_choices\" let-choiceIndex=\"index\">\n                    <li *ngIf=\"choice['id'] != _object['id']\"\n                        [attr.data-index]=\"choiceIndex\">{{choice['label']}}</li>\n                </template></template>\n                <template [ngIf]=\"!selfReference\">\n                    <li *ngFor=\"let choice of _choices; let choiceIndex = index\"\n                        [attr.data-index]=\"choiceIndex\">{{choice['label']}}</li>\n                </template>\n                <li *ngIf=\"_childCandidateSearch && _childCandidateSearch.hasMore\"\n                    (click)=\"getMoreObjects($event)\"\n                    class=\"-pagination\"\n                    title=\"Load more results...\"><span>...</span></li>\n            </ul>\n        </div>\n    </div>\n    ",
+	        template: "\n    <div class=\"auto-complete\">\n        <div class=\"input-group\">\n            <span class=\"control\">\n                <input class=\"form-control\"\n                       (click)=\"onInputClick($event)\"\n                       (input)=\"onEnterKey($event)\"\n                       [ngModel]=\"_label\"\n                       [class.error]=\"_formService.getErrors()[field] && (_formService.getErrors()[field].length > 0)\"\n                       type=\"text\"\n                       [placeholder]=\"placeholder\">\n                <a (click)=\"onControlClick($event)\"><i class=\"fa fa-angle-down\"></i></a>\n            </span>\n            <span class=\"input-group-btn\" *ngIf=\"_controlMode\">\n                <button (click)=\"triggerAction($event)\"\n                        class=\"btn btn-primary\"\n                        type=\"button\"><i class=\"fa\"\n                                         [class.fa-check]=\"_controlMode == 'save'\"\n                                         [class.fa-plus]=\"_controlMode == 'add'\"\n                                         [class.fa-pencil]=\"_controlMode == 'edit'\"></i></button>\n            </span>\n        </div>\n        <div class=\"choices\">\n            <ul [hidden]=\"_isHidden\"\n                (click)=\"onChoiceClick($event)\">\n                <template [ngIf]=\"selfReference\"><template ngFor let-choice [ngForOf]=\"_choices\" let-choiceIndex=\"index\">\n                    <li *ngIf=\"choice['id'] != _object['id']\"\n                        [attr.data-index]=\"choiceIndex\">{{choice['label']}}</li>\n                </template></template>\n                <template [ngIf]=\"!selfReference\">\n                    <li *ngFor=\"let choice of _choices; let choiceIndex = index\"\n                        [attr.data-index]=\"choiceIndex\">{{choice['label']}}</li>\n                </template>\n                <li *ngIf=\"_childCandidateSearch && _childCandidateSearch.hasMore\"\n                    (click)=\"getMoreObjects($event)\"\n                    class=\"-pagination\"\n                    title=\"Load more results...\"><span>...</span></li>\n            </ul>\n        </div>\n    </div>\n    ",
 	        host: {
 	            '(document:click)': 'onDocumentClick($event)',
 	        }

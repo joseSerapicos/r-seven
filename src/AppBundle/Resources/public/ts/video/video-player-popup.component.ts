@@ -1,3 +1,4 @@
+var videojs = require('video.js');
 import {Component, Inject, ElementRef, Renderer} from '@angular/core';
 import {SafeResourceUrl, DomSanitizer} from '@angular/platform-browser';
 import {BaseModalPopup} from '../../modal/ts/modal.service';
@@ -27,7 +28,9 @@ export interface VideoPlayerProvider {
                             </div>
                         </div>
                         <div class="ibox-content video-player">
-                            <video *ngIf="getProviderAttr('source') == 'file'" controls><source [src]="_url" type="video/{{getExtension()}}"></video>
+                            <video *ngIf="getProviderAttr('source') == 'file'"
+                                   class="js_flvPlayer video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
+                                   controls><source [src]="_url" type="video/{{getExtension()}}"></video>
                             <iframe *ngIf="getProviderAttr('source') == 'youtube'" [src]="_url" frameborder="0" allowfullscreen></iframe>
                             <iframe *ngIf="getProviderAttr('source') == 'vimeo'" [src]="_url" frameborder="0" allowfullscreen></iframe>
                         </div>
@@ -41,6 +44,7 @@ export interface VideoPlayerProvider {
 export class VideoPlayerPopupComponent extends BaseModalPopup
 {
     protected _url: any;//SafeResourceUrl;
+    protected _playerInstance: any = null; // Player instance, used when source is 'file'
 
     constructor(
         elementRef: ElementRef,
@@ -97,5 +101,15 @@ export class VideoPlayerPopupComponent extends BaseModalPopup
                 $(this).addClass('fullscreen-video');
             }
         );
+
+        // Instantiate player for flv videos
+        if (this.getProviderAttr('source') == 'file') {
+            this._playerInstance = videojs(
+                $(this._elementRef.nativeElement).find('.js_flvPlayer')[0], // Use the first element
+                {},
+                function() {}
+            );
+            // this._playerInstance.play(); // Auto play
+        }
     }
 }

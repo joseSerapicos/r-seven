@@ -7,7 +7,7 @@
                 <div>
                     <small>{% verbatim %}{{obj['insertTime']}}{% endverbatim %}</small>
                     <h4>{% verbatim %}{{obj['name']}}{% endverbatim %}</h4>
-                    <p>{% verbatim %}{{obj['description']}}{% endverbatim %}</p>
+                    <div [innerHTML]="obj['description']"></div>
                     <span class="txt-align-r actions no-user-select"
                           (click)="triggerAction($event)">
                         <template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">

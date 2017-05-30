@@ -64,12 +64,14 @@ webpackJsonp([1],[
 	var nav_manager_service_1 = __webpack_require__(55);
 	var main_component_1 = __webpack_require__(56);
 	// Dynamic entity detail
-	var entity_detail_module_1 = __webpack_require__(122);
+	var entity_detail_module_1 = __webpack_require__(139);
 	// Auto-complete
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/client/edit');
-	var local_form_popup_extension_module_1 = __webpack_require__(124);
+	var local_form_popup_extension_module_1 = __webpack_require__(141);
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/supplier/edit');
+	var local_form_popup_extension_module_2 = __webpack_require__(143);
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/entity/edit');
-	var form_popup_extension_module_1 = __webpack_require__(105);
+	var form_popup_extension_module_1 = __webpack_require__(145);
 	var autoCompleteProviders = {
 	    clientObj: {
 	        urlConf: (helper_1.Helper.getGlobalVar('route') + 'entities/client/conf'),
@@ -79,6 +81,18 @@ webpackJsonp([1],[
 	            component: 'LocalFormPopupComponent',
 	            providers: [
 	                { provide: 'Provider', useValue: helper_1.Helper.getFormProvider({ label: 'Client' }) },
+	                form_service_1.FormService
+	            ]
+	        }
+	    },
+	    supplierObj: {
+	        urlConf: (helper_1.Helper.getGlobalVar('route') + 'entities/supplier/conf'),
+	        control: 'edit',
+	        popups: {
+	            module: local_form_popup_extension_module_2.LocalFormPopupExtensionModule,
+	            component: 'LocalFormPopupComponent',
+	            providers: [
+	                { provide: 'Provider', useValue: helper_1.Helper.getFormProvider({ label: 'Supplier' }) },
 	                form_service_1.FormService
 	            ]
 	        }
@@ -98,7 +112,7 @@ webpackJsonp([1],[
 	};
 	// Form for popup
 	helper_1.Helper.setRuntimeVar('templateUrl', _app.conf.route['edit']['url'] + '/' + _app.conf.object['id']);
-	var booking_form_popup_extension_module_1 = __webpack_require__(126);
+	var booking_form_popup_extension_module_1 = __webpack_require__(147);
 	// Provider
 	var entityDetailProvider = helper_1.Helper.getEntityDetailProvider(_app.conf);
 	entityDetailProvider.popup = {
@@ -106,7 +120,6 @@ webpackJsonp([1],[
 	    component: 'BookingFormPopupComponent',
 	    providers: [
 	        { provide: 'Provider', useValue: helper_1.Helper.getFormProvider(_app.conf) },
-	        { provide: 'AutoCompleteProviders', useValue: autoCompleteProviders },
 	        form_service_1.FormService
 	    ]
 	};
@@ -139,7 +152,9 @@ webpackJsonp([1],[
 	            { provide: 'EntityDetailProvider', useValue: entityDetailProvider },
 	            { provide: 'Provider', useValue: helper_1.Helper.getBaseProvider(_app.conf) },
 	            { provide: 'DataServiceProvider', useValue: helper_1.Helper.getDataServiceProvider(_app.conf) },
-	            { provide: 'ActionsServiceProvider', useValue: helper_1.Helper.getActionsServiceProvider(_app.conf) }
+	            { provide: 'ActionsServiceProvider', useValue: helper_1.Helper.getActionsServiceProvider(_app.conf) },
+	            // Used by "booking" edit, "bookingService" edit and "currentAccounts" edit
+	            { provide: 'AutoCompleteProviders', useValue: autoCompleteProviders }
 	        ],
 	        bootstrap: [main_component_1.MainComponent]
 	    })
@@ -10644,6 +10659,17 @@ webpackJsonp([1],[
 	    function Helper() {
 	    }
 	    /**
+	     * Get decimal configuration
+	     * @returns {{unit: {value: number, iterator: number}, total: {value: number, iterator: number}}}
+	     */
+	    Helper.getDecimalConf = function () {
+	        // Configure number of decimals to use and to round
+	        var decimalConf = { unit: { value: 4, iterator: 0 }, total: { value: 2, iterator: 0 } };
+	        decimalConf.unit.iterator = Math.pow(10, decimalConf.unit.value);
+	        decimalConf.total.iterator = Math.pow(10, decimalConf.total.value);
+	        return decimalConf;
+	    };
+	    /**
 	     * Get object length
 	     * @param object
 	     * @returns {number}
@@ -10874,7 +10900,8 @@ webpackJsonp([1],[
 	     */
 	    Helper.getFormProvider = function (data) {
 	        return {
-	            label: data.label || ''
+	            label: data.label || '',
+	            preventObjectOverride: true
 	        };
 	    };
 	    /**
@@ -10967,6 +10994,12 @@ webpackJsonp([1],[
 	        var that = this;
 	        return new Promise(function (resolve, reject) {
 	            return $.post(url, data, function (postResponse) {
+	                // Unknown response, generally html responses (debug, exceptions, etc.)
+	                if (!postResponse || (typeof postResponse !== 'object')) {
+	                    that.handleFlashMessages({});
+	                    return reject({});
+	                }
+	                // Regular response
 	                that.handleFlashMessages(postResponse);
 	                var isSuccess = (postResponse.status == 1);
 	                delete postResponse.status; // Is no more necessary
@@ -10986,6 +11019,9 @@ webpackJsonp([1],[
 	                    }
 	                }
 	                return reject(errors);
+	            }).fail(function (errors) {
+	                that.handleFlashMessages({});
+	                return reject({});
 	            });
 	        });
 	        /*let headers = new Headers();
@@ -11691,6 +11727,7 @@ webpackJsonp([1],[
 	            this.pinProvider();
 	        }
 	        this._onObjectChangeEmitter = new core_1.EventEmitter();
+	        this._onObjectsRefreshEmitter = new core_1.EventEmitter();
 	        this._onObjectsChangeEmitter = new core_1.EventEmitter();
 	        this.setObjects(this._provider.objects || []);
 	        // Initialize the search
@@ -11742,7 +11779,14 @@ webpackJsonp([1],[
 	        return this._onObjectChangeEmitter;
 	    };
 	    /**
-	     * Get on objects change emitter to tell all subscribers about changes
+	     * Get on objects refresh emitter to tell all subscribers about changes
+	     * @returns {EventEmitter<any>}
+	     */
+	    DataService.prototype.getOnObjectsRefreshEmitter = function () {
+	        return this._onObjectsRefreshEmitter;
+	    };
+	    /**
+	     * Get on objects change emitter to tell all subscribers about changes (add, refresh, delete, etc)
 	     * @returns {EventEmitter<any>}
 	     */
 	    DataService.prototype.getOnObjectsChangeEmitter = function () {
@@ -11780,6 +11824,10 @@ webpackJsonp([1],[
 	        if (id) {
 	            var that_1 = this, route = (this._provider.route['get']['url'] + '/' + id);
 	            this.post(route, this.getRequestData(null, false, false)).then(function (data) {
+	                // Local data (do not override, merge data)
+	                if (data['localData']) {
+	                    that_1._provider.localData = that_1._helperService.mergeObjects(that_1._provider.localData, data['localData']);
+	                }
 	                var obj = (data.object || null);
 	                // Refresh object
 	                if (obj) {
@@ -11801,6 +11849,11 @@ webpackJsonp([1],[
 	            if (index != that._objectIndex) {
 	                var objectsProvider = (that._objectsProvider || that._provider.objects);
 	                that._postService.post(that._provider.route['get']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData(null, false, false)).then(function (data) {
+	                    // Local data (do not override, merge data)
+	                    if (data['localData']) {
+	                        that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
+	                    }
+	                    // Object
 	                    that._objectIndex = index; // The index of original object that was selected
 	                    that.setLocalObject(data.object);
 	                    // Now object has all of fields with the values, is not limited to the search selected field,
@@ -11823,30 +11876,32 @@ webpackJsonp([1],[
 	     */
 	    DataService.prototype.setObject = function (object, index) {
 	        if (index === void 0) { index = null; }
-	        // Normalize object to template
-	        this._normalizedObject = this._helperService.cloneObject(object, true);
-	        this.normalizeObjectsToTemplate([this._normalizedObject]);
-	        if (object && object['id']) {
-	            var objectsProvider = (this._objectsProvider || this._provider.objects);
-	            // Refresh objects array
-	            if ((index != null) && objectsProvider[index]) {
-	                // Update existent object
-	                this._objectIndex = index;
-	                objectsProvider[index] = this._normalizedObject;
-	                this._normalizedObject['_isEdited'] = true; // Flag to use in template
+	        if (object) {
+	            // Normalize object to template
+	            this._normalizedObject = this._helperService.cloneObject(object, true);
+	            this.normalizeObjectsToTemplate([this._normalizedObject]);
+	            // Objects stored in session does not be considered really objects.
+	            if (object['id'] && !object['_isSessionStorage']) {
+	                var objectsProvider = (this._objectsProvider || this._provider.objects);
+	                // Refresh objects array
+	                if ((index != null) && objectsProvider[index]) {
+	                    // Update existent object
+	                    this._objectIndex = index;
+	                    objectsProvider[index] = this._normalizedObject;
+	                    this._normalizedObject['_isEdited'] = true; // Flag to use in template
+	                    // Emmit changes (object has been edited)
+	                    this._onObjectsChangeEmitter.emit(null);
+	                }
+	                else {
+	                    // Add new object at first of array (to best user experience)
+	                    this._objectIndex = 0; // Update index to the new index
+	                    this.pushToObjects([this._normalizedObject], true);
+	                    this._newObjectsIds.push(object['id']); // New object added
+	                    this._normalizedObject['_isNew'] = true; // Flag to use in template
+	                }
 	            }
-	            else {
-	                // Add new object at first of array (to best user experience)
-	                this._objectIndex = 0; // Update index to the new index
-	                this.pushToObjects([this._normalizedObject], true);
-	                this._newObjectsIds.push(object['id']); // New object added
-	                this._normalizedObject['_isNew'] = true; // Flag to use in template
-	            }
+	            this.setLocalObject(object);
 	        }
-	        else {
-	            this._objectIndex = null;
-	        }
-	        this.setLocalObject(object);
 	        return this;
 	    };
 	    /**
@@ -11957,12 +12012,9 @@ webpackJsonp([1],[
 	        else {
 	            this.resetObjects();
 	            this.pushToObjects(objects);
-	            this.newObject().then(// Reset object, index and all information of object can be changed
-	            function (// Reset object, index and all information of object can be changed
-	                data) { }, function (errors) { console.log(errors); });
 	        }
 	        // Emmit changes
-	        this._onObjectsChangeEmitter.emit(objects);
+	        this._onObjectsRefreshEmitter.emit(objects);
 	        return this;
 	    };
 	    /**
@@ -11973,6 +12025,7 @@ webpackJsonp([1],[
 	        this._provider.objects = [];
 	        this._objectsIds = [];
 	        this._newObjectsIds = [];
+	        this._objectIndex = null; // Reset object index
 	        return this;
 	    };
 	    /**
@@ -11997,10 +12050,8 @@ webpackJsonp([1],[
 	                this._objectsIds.push(parseInt(obj['id']));
 	            }
 	        }
-	        // Emmit changes
-	        /*if (hasChanges) {
-	            this._onObjectsChangeEmitter.emit(objects);
-	        }*/
+	        // Emmit changes (object has been added)
+	        this._onObjectsChangeEmitter.emit(null);
 	        return this;
 	    };
 	    /**
@@ -12017,6 +12068,8 @@ webpackJsonp([1],[
 	        if ((index = this._helperService.arraySearch(objId, this._newObjectsIds)) != null) {
 	            this._newObjectsIds.splice(index, 1);
 	        }
+	        // Emmit changes (object has been deleted)
+	        this._onObjectsChangeEmitter.emit(null);
 	        return this;
 	    };
 	    /**
@@ -12250,6 +12303,7 @@ webpackJsonp([1],[
 	        var that = this;
 	        return new Promise(function (resolve, reject) {
 	            var newObj = {};
+	            // Create by copy
 	            if (index != null) {
 	                var objectsProvider = (that._objectsProvider || that._provider.objects);
 	                return that._postService.post(that._provider.route['get']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
@@ -12264,21 +12318,48 @@ webpackJsonp([1],[
 	                            newObj[fieldInView] = data.object[fieldInView];
 	                        }
 	                    }
-	                    that.setObject(newObj);
-	                    that.resetExtraFields();
+	                    that.setNewObject(newObj);
 	                    return resolve(true);
 	                }, function (errors) { console.log(errors); return reject(false); });
 	            }
 	            else {
-	                for (var _i = 0, _a = that._provider.fields['form']; _i < _a.length; _i++) {
-	                    var field = _a[_i];
-	                    newObj[field] = (that._provider.fields['metadata'][field]['default'] || null);
+	                // Create by server action
+	                if (that._provider.route['new']) {
+	                    return that._postService.post(that._provider.route['new']['url'], that.getRequestData()).then(function (data) {
+	                        // Local data (do not override, merge data)
+	                        if (data['localData']) {
+	                            that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
+	                        }
+	                        // Object
+	                        that.setNewObject(data.object);
+	                        return resolve(true);
+	                    }, function (errors) { console.log(errors); return reject(false); });
 	                }
-	                that.setObject(newObj);
-	                that.resetExtraFields();
-	                return resolve(true);
+	                else {
+	                    for (var _i = 0, _a = that._provider.fields['form']; _i < _a.length; _i++) {
+	                        var field = _a[_i];
+	                        newObj[field] = (that._provider.fields['metadata'][field]['default'] || null);
+	                    }
+	                    that.setNewObject(newObj);
+	                    return resolve(true);
+	                }
 	            }
 	        });
+	    };
+	    /**
+	     * Set new object
+	     * @param object
+	     * @returns {DataService}
+	     */
+	    DataService.prototype.setNewObject = function (object) {
+	        // Normalize object to template
+	        this._normalizedObject = this._helperService.cloneObject(object, true);
+	        this.normalizeObjectsToTemplate([this._normalizedObject]);
+	        // Set object
+	        this._objectIndex = null;
+	        this.setLocalObject(object);
+	        this.resetExtraFields();
+	        return this;
 	    };
 	    /**
 	     * Save object.
@@ -12312,10 +12393,9 @@ webpackJsonp([1],[
 	                if (data.fieldsChoices) {
 	                    that.setFieldsChoices(data.fieldsChoices);
 	                }
-	                // Local data (Do not override, merge data)
+	                // Local data (do not override, merge data)
 	                if (data['localData']) {
-	                    that._provider.localData =
-	                        that._helperService.mergeObjects(that._provider.localData, data['localData']);
+	                    that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
 	                }
 	                var obj = (data.object || null);
 	                // Refresh object
@@ -12324,10 +12404,9 @@ webpackJsonp([1],[
 	                }
 	                return resolve(obj);
 	            }, function (errors) {
-	                // Local data (Do not override, merge data). Exception in errors list used in some cases.
+	                // Local data (do not override, merge data). Exception in errors list used in some cases.
 	                if (errors['localData']) {
-	                    that._provider.localData =
-	                        that._helperService.mergeObjects(that._provider.localData, errors['localData']);
+	                    that._provider.localData = that._helperService.mergeObjects(that._provider.localData, errors['localData']);
 	                    delete errors['localData']; // It's no more necessary
 	                }
 	                // Refresh object
@@ -12402,30 +12481,6 @@ webpackJsonp([1],[
 	        return this;
 	    };
 	    /**
-	     * Delete object.
-	     * @param index
-	     * @returns {Promise}
-	     */
-	    DataService.prototype.delete = function (index) {
-	        var that = this, objectsProvider = (this._objectsProvider || this._provider.objects);
-	        return new Promise(function (resolve, reject) {
-	            that.post(that._provider.route['delete']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
-	                // Refresh all objects
-	                if (data.objects) {
-	                    that.setObjects(data.objects);
-	                }
-	                // Refresh fields choices
-	                if (data.fieldsChoices) {
-	                    that.setFieldsChoices(data.fieldsChoices);
-	                }
-	                // Refresh objects array
-	                that.pullFromObjects(index);
-	                that.newObject().then(function (data) { }, function (errors) { console.log(errors); });
-	                return resolve(true);
-	            }, function (errors) { console.log(errors); return resolve(false); });
-	        });
-	    };
-	    /**
 	     * Order object (change priority value).
 	     * @param index
 	     * @param type
@@ -12462,6 +12517,31 @@ webpackJsonp([1],[
 	            });
 	        }
 	        return this;
+	    };
+	    /**
+	     * Delete object.
+	     * @param index
+	     * @returns {Promise}
+	     */
+	    DataService.prototype.delete = function (index) {
+	        var that = this, objectsProvider = (this._objectsProvider || this._provider.objects);
+	        return new Promise(function (resolve, reject) {
+	            that.post(that._provider.route['delete']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
+	                // Refresh all objects
+	                if (data.objects) {
+	                    that.setObjects(data.objects);
+	                }
+	                // Refresh fields choices
+	                if (data.fieldsChoices) {
+	                    that.setFieldsChoices(data.fieldsChoices);
+	                }
+	                // Refresh objects array
+	                that.pullFromObjects(index);
+	                // Reset object index
+	                that._objectIndex = null;
+	                return resolve(true);
+	            }, function (errors) { console.log(errors); return reject(false); });
+	        });
 	    };
 	    /**
 	     * Delete objects from array by index.
@@ -12516,6 +12596,65 @@ webpackJsonp([1],[
 	        var objectsProvider = (this._objectsProvider || this._provider.objects);
 	        location.href = (this._provider.route[route]['url'] + '/' + objectsProvider[index]['id']);
 	        return;
+	    };
+	    /**
+	     * Run/Execute action. Execute action directly.
+	     * @param route
+	     * @param data
+	     * @param updateData
+	     * @returns {Promise}
+	     */
+	    DataService.prototype.runAction = function (route, data, updateData) {
+	        if (data === void 0) { data = null; }
+	        if (updateData === void 0) { updateData = false; }
+	        var that = this;
+	        return new Promise(function (resolve, reject) {
+	            return that.post(route, that.getRequestData(data, false, false)).then(function (data) {
+	                if (updateData) {
+	                    // Local data (do not override, merge data)
+	                    if (data['localData']) {
+	                        that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
+	                    }
+	                    // Refresh object
+	                    if (data['object']) {
+	                        that.setObject(data.object, that._objectIndex);
+	                    }
+	                }
+	                return resolve(data);
+	            }, function (errors) { console.log(errors); return reject(errors); });
+	        });
+	    };
+	    /**
+	     * Submit indexes id
+	     * @param route
+	     * @param indexes
+	     * @param allowEmptySubmit (allow submit when data is empty,
+	     * some cases it is necessary to inform that the user does not select any choice)
+	     * @returns {Promise}
+	     */
+	    DataService.prototype.submitIndexesId = function (route, indexes, allowEmptySubmit) {
+	        if (allowEmptySubmit === void 0) { allowEmptySubmit = false; }
+	        var that = this;
+	        var objects = this._provider.objects;
+	        var idArr = [];
+	        return new Promise(function (resolve, reject) {
+	            if (objects && indexes && (indexes.length > 0)) {
+	                for (var _i = 0, indexes_1 = indexes; _i < indexes_1.length; _i++) {
+	                    var obj = indexes_1[_i];
+	                    if (objects[obj.value]) {
+	                        idArr.push(objects[obj.value]['id']);
+	                    }
+	                }
+	            }
+	            if ((idArr.length > 0) || allowEmptySubmit) {
+	                // Submit to provided route
+	                return that.runAction(route, { id: idArr }).then(function (data) { return resolve(data); }, function (errors) { console.log(errors); return reject(errors); });
+	            }
+	            else {
+	                // No indexes to submit
+	                return resolve(null);
+	            }
+	        });
 	    };
 	    /**
 	     * Post to server.
@@ -12746,33 +12885,57 @@ webpackJsonp([1],[
 	var modal_service_1 = __webpack_require__(44);
 	var helper_1 = __webpack_require__(42);
 	var FormService = (function () {
-	    function FormService(_modalService, formBuilder, _dataService, _helperService) {
+	    function FormService(_modalService, formBuilder, _dataService, _helperService, _provider) {
 	        var _this = this;
 	        this._modalService = _modalService;
 	        this._dataService = _dataService;
 	        this._helperService = _helperService;
+	        this._provider = _provider;
 	        this._originalObject = {}; // Original object to compare changes and reset object in DataService
-	        this._originalNormalizedObject = {}; // Original normalized object to compare changes and reset object in form
+	        this._originalNormalizedObject = {}; // Original normalized (for form) object to compare changes and reset object in form
 	        this._object = {}; // Object used by form
 	        this._$form = null; // DOM form
 	        this._errors = {}; // Form errors validation
-	        // Controls if the form is on "save" mode (waiting to finish the save process). It's useful to control the
-	        // save action (avoid multiples clicks on button) and to recognize the object change after saved by DataService.
-	        this._isOnSave = false;
+	        // Set default values for provider
+	        if (!this._provider) {
+	            this._provider = {};
+	        }
 	        this._onObjectChangeEmitter = new core_1.EventEmitter();
 	        // Object change event subscription
 	        this._onObjectChangeSubscription = this._dataService.getOnObjectChangeEmitter()
 	            .subscribe(function (object) { return _this.onObjectChangeSubscription(object); });
-	        // Set object
-	        this.setObject(this._dataService.getObject());
-	        // Form build
-	        var formControls = {}, fields = (this._dataService.getFields('form') || []).concat(this._helperService.objectKeys(this._dataService.getProviderExtraDataAttr('fields')));
+	        this._forceSubmit = false;
+	        this._isOnSave = false;
+	        this._preventObjectOverride = true;
+	        // Set object, if it has not been setted before open the form
+	        if (!this._dataService.getObject()) {
+	            // If object is not setted, create a new
+	            var that_1 = this;
+	            this.newObject().then(function (data) {
+	                that_1.setObject(_this._dataService.getObject());
+	                that_1.buildForm(formBuilder);
+	            }, function (errors) { return; });
+	        }
+	        else {
+	            this.setObject(this._dataService.getObject());
+	            this.buildForm(formBuilder);
+	        }
+	    }
+	    /**
+	     * Build form
+	     * @param formBuilder
+	     * @returns {FormService}
+	     */
+	    FormService.prototype.buildForm = function (formBuilder) {
+	        var formControls = {}, fields = (this._provider.fields || this._dataService.getFields('form') || []).concat(this._helperService.objectKeys(this._dataService.getProviderExtraDataAttr('fields')));
+	        // Set form controls
 	        for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
 	            var field = fields_1[_i];
 	            formControls[field] = [this._object[field] || null];
 	        }
 	        this._form = formBuilder.group(formControls);
-	    }
+	        return this;
+	    };
 	    /**
 	     * Initialization of service.
 	     * This method should be called in "ngOnInit" method of parent component,
@@ -12784,6 +12947,7 @@ webpackJsonp([1],[
 	        // Local variables
 	        this._component = component;
 	        this._$form = $(component._elementRef.nativeElement).find('form');
+	        this._preventObjectOverride = this._component.getProviderAttr('preventObjectOverride');
 	        return this;
 	    };
 	    /**
@@ -12798,15 +12962,18 @@ webpackJsonp([1],[
 	     * @param object
 	     */
 	    FormService.prototype.onObjectChangeSubscription = function (object) {
-	        // Set object only if is different
-	        if (object != this._originalObject) {
-	            if (this._isOnSave) {
-	                // Form is waiting for save process, this is the saved object,
-	                // it's not necessary any confirmation, if you need more security in this process, add a token.
+	        if ((object != this._originalObject) // Set object only if is different
+	            && !this._isOnSave // If form is on save object will be setted by the save method when there are some correct procedures
+	        ) {
+	            if (
+	            // Form is waiting for save process, this is the saved object,
+	            // it's not necessary any confirmation, if you need more security in this process, add a token.
+	            this._isOnSave
+	                || !this._preventObjectOverride) {
 	                this.setObject(object);
 	                return;
 	            }
-	            // Regular change in object
+	            // Confirm object override by user to prevent data loss
 	            this.confirmAndSetObject(object).then(function (data) { return; }, function (errors) { return; });
 	        }
 	    };
@@ -12858,6 +13025,8 @@ webpackJsonp([1],[
 	            this._object = helper_1.Helper.cloneObject(this._originalNormalizedObject, true);
 	            // Reset errors
 	            this._errors = {};
+	            // This object is saved in session and needs to be confirmed by user before save them in database
+	            this._forceSubmit = (object['_isSessionStorage'] ? true : false);
 	            this._onObjectChangeEmitter.emit(this._object); // Object as changed to the original, notify subscribers
 	        }
 	        return this;
@@ -12914,11 +13083,18 @@ webpackJsonp([1],[
 	        return this._object;
 	    };
 	    /**
+	     * Get originalObject
+	     * @returns any
+	     */
+	    FormService.prototype.getOriginalObject = function () {
+	        return this._originalNormalizedObject;
+	    };
+	    /**
 	     * Check if the object has changes from user
-	     * @returns boolean
+	     * @returns {boolean|Boolean}
 	     */
 	    FormService.prototype.hasChanges = function () {
-	        return !this._helperService.isEqualObject(this._object, this._originalNormalizedObject);
+	        return (!this._helperService.isEqualObject(this._object, this._originalNormalizedObject));
 	    };
 	    /**
 	     * Get form
@@ -12964,13 +13140,11 @@ webpackJsonp([1],[
 	     * Save form. Handle submit form.
 	     * This method should be called from child component.
 	     * @param route (optional route to overrides default route)
-	     * @param forceSubmit (force form to submit even if object has no changes)
 	     * @param hasValidation
 	     * @returns {Promise}
 	     */
-	    FormService.prototype.save = function (route, forceSubmit, hasValidation) {
+	    FormService.prototype.save = function (route, hasValidation) {
 	        if (route === void 0) { route = null; }
-	        if (forceSubmit === void 0) { forceSubmit = false; }
 	        if (hasValidation === void 0) { hasValidation = true; }
 	        var that = this;
 	        return new Promise(function (resolve, reject) {
@@ -12981,7 +13155,7 @@ webpackJsonp([1],[
 	            // Put form in "save" mode
 	            that._isOnSave = true;
 	            // Current form object has changes from user?
-	            if (forceSubmit || !that._object['id'] || that.hasChanges()) {
+	            if (that._forceSubmit || !that._object['id'] || that.hasChanges()) {
 	                // Validate form
 	                if (hasValidation) {
 	                    that._errors = {};
@@ -13000,6 +13174,8 @@ webpackJsonp([1],[
 	                var id = that._object['id'] ? that._object['id'] : null;
 	                // Save form
 	                that._dataService.save(data, id, route).then(function (object) {
+	                    // Force submit is reset, each activation is valid  only once
+	                    that._forceSubmit = false;
 	                    // Update form after save with saved object
 	                    that.setObject(object);
 	                    return resolve(true);
@@ -13035,16 +13211,37 @@ webpackJsonp([1],[
 	     * @param $event
 	     */
 	    FormService.prototype.saveAndEnterAction = function ($event) {
-	        var _this = this;
 	        if ($event === void 0) { $event = null; }
 	        if ($event) {
 	            $event.preventDefault();
 	        }
 	        var that = this;
 	        this.save().then(function (data) {
-	            _this._dataService.detail();
+	            that.newAction();
 	            return;
 	        }, function (errors) { return; });
+	    };
+	    /**
+	     * Add a new entry (newObject is used in name because new is a reserved word).
+	     * @returns {Promise}
+	     */
+	    FormService.prototype.newObject = function () {
+	        var that = this;
+	        return new Promise(function (resolve, reject) {
+	            that._dataService.newObject().then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
+	        });
+	    };
+	    /**
+	     * Add a new entry action.
+	     * This method should be called when the form is initialized.
+	     * @param $event
+	     */
+	    FormService.prototype.newAction = function ($event) {
+	        if ($event === void 0) { $event = null; }
+	        if ($event) {
+	            $event.preventDefault();
+	        }
+	        this.newObject().then(function (data) { return; }, function (errors) { return; });
 	    };
 	    /**
 	     * Save and add a new entry.
@@ -13052,15 +13249,12 @@ webpackJsonp([1],[
 	     * @param $event
 	     */
 	    FormService.prototype.saveAndNewAction = function ($event) {
-	        var _this = this;
 	        if ($event === void 0) { $event = null; }
 	        if ($event) {
 	            $event.preventDefault();
 	        }
-	        this.save().then(function (data) {
-	            _this._dataService.newObject();
-	            return;
-	        }, function (errors) { return; });
+	        var that = this;
+	        this.save().then(function (data) { that.newAction(); return; }, function (errors) { return; });
 	    };
 	    /**
 	     * Reset object.
@@ -13098,14 +13292,25 @@ webpackJsonp([1],[
 	        }
 	        this.reset().then(function (data) { return; }, function (errors) { return; });
 	    };
+	    /**
+	     * Set forceSubmit
+	     * @param forceSubmit
+	     * @returns {FormService}
+	     */
+	    FormService.prototype.setForceSubmit = function (forceSubmit) {
+	        if (forceSubmit === void 0) { forceSubmit = true; }
+	        this._forceSubmit = forceSubmit;
+	        return this;
+	    };
 	    return FormService;
 	}());
 	FormService = __decorate([
 	    core_1.Injectable(),
 	    __param(2, core_1.Inject('DataService')),
 	    __param(3, core_1.Inject('HelperService')),
+	    __param(4, core_1.Optional()), __param(4, core_1.Inject('FormServiceProvider')),
 	    __metadata("design:paramtypes", [modal_service_1.ModalService,
-	        forms_1.FormBuilder, Object, Object])
+	        forms_1.FormBuilder, Object, Object, Object])
 	], FormService);
 	exports.FormService = FormService;
 
@@ -13200,7 +13405,7 @@ webpackJsonp([1],[
 	        if (index == null) {
 	            index = this._currentIndex;
 	        }
-	        return this._llComponentRefArr[index];
+	        return (this._llComponentRefArr[index] || null);
 	    };
 	    /**
 	     * Unset componentRef of current index (if index is not provided)
@@ -13210,8 +13415,10 @@ webpackJsonp([1],[
 	    NavManagerService.prototype.unsetComponentRef = function (index) {
 	        if (index === void 0) { index = null; }
 	        index = (index || this._currentIndex);
-	        this._llComponentRefArr[index].destroy();
-	        this._llComponentRefArr[index] = null;
+	        if (this._llComponentRefArr[index]) {
+	            this._llComponentRefArr[index].destroy();
+	            this._llComponentRefArr[index] = null;
+	        }
 	        return this;
 	    };
 	    /**
@@ -13252,6 +13459,13 @@ webpackJsonp([1],[
 	    NavManagerService.prototype.loadNav = function (index) {
 	        var that = this;
 	        return new Promise(function (resolve, reject) {
+	            if (that._llComponentRefArr[index] // Container has been loaded
+	                || !that._component['getNavData'] // Component doesn't have the necessary implementation to lazy load
+	            ) {
+	                that._currentIndex = index;
+	                return resolve(true);
+	            }
+	            // Get lazy load view
 	            var llViewIndex = null, llClass = ('js_lazyLoadContainer_' + index); // Lazy load class
 	            // Check if is a lazy load container (by its index in class)
 	            for (var index_1 in that._llViewContainerRefArr) {
@@ -13260,10 +13474,7 @@ webpackJsonp([1],[
 	                    break;
 	                }
 	            }
-	            if ((llViewIndex === null) // No lazy load view
-	                || that._llComponentRefArr[index] // Container has been loaded
-	                || !that._component['getNavData'] // Component doesn't have the necessary implementation to lazy load
-	            ) {
+	            if (llViewIndex === null) {
 	                that._currentIndex = index;
 	                return resolve(true);
 	            }
@@ -13295,7 +13506,9 @@ webpackJsonp([1],[
 	        var viewContainerRef = this._llViewContainerRefArr[lazyLoadViewIndex];
 	        var injector = null;
 	        if (providers) {
-	            injector = core_1.ReflectiveInjector.fromResolvedProviders(core_1.ReflectiveInjector.resolve(providers), this._injector);
+	            injector = core_1.ReflectiveInjector.fromResolvedProviders(core_1.ReflectiveInjector.resolve(providers), 
+	            // Use in firs instance the injector of the component (is more refined)
+	            (this._component['_injector'] || this._injector));
 	        }
 	        var that = this;
 	        return this._dynamicComponentLoaderService.load(lazyLoadData.module, lazyLoadData.component, viewContainerRef, injector).then(function (componentRef) {
@@ -13361,30 +13574,30 @@ webpackJsonp([1],[
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-service/edit/' + parentId);
 	var booking_service_edit_form_popup_extension_module_1 = __webpack_require__(101);
 	// Auto-complete
-	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/supplier/edit');
-	var local_form_popup_extension_module_1 = __webpack_require__(103);
-	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/entity/edit');
-	var form_popup_extension_module_1 = __webpack_require__(105);
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/place/edit');
-	var booking_place_form_popup_extension_module_1 = __webpack_require__(107);
+	var booking_place_form_popup_extension_module_1 = __webpack_require__(103);
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/country/edit');
-	var booking_country_form_popup_extension_module_1 = __webpack_require__(109);
+	var booking_country_form_popup_extension_module_1 = __webpack_require__(105);
+	// Booking Current Accounts
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '/current-accounts-menus');
+	var current_accounts_ext_module_1 = __webpack_require__(107);
 	// BookingObservation
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-observation/edit/' + parentId);
-	var observation_extension_module_1 = __webpack_require__(111);
-	var booking_observation_form_popup_extension_module_1 = __webpack_require__(113);
+	var observation_extension_module_1 = __webpack_require__(128);
+	var booking_observation_form_popup_extension_module_1 = __webpack_require__(130);
 	// BookingFile
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-file/edit/' + parentId);
-	var file_module_1 = __webpack_require__(115);
-	var booking_file_form_popup_extension_module_1 = __webpack_require__(117);
+	var file_module_1 = __webpack_require__(132);
+	var booking_file_form_popup_extension_module_1 = __webpack_require__(134);
 	/* /Import dependencies */
 	var MainComponent = (function (_super) {
 	    __extends(MainComponent, _super);
-	    function MainComponent(elementRef, renderer, provider, helperService, navManagerService, _modalService, viewContainerRef, _dataService) {
+	    function MainComponent(elementRef, renderer, provider, helperService, navManagerService, _modalService, viewContainerRef, _dataService, _injector) {
 	        var _this = _super.call(this, elementRef, renderer, provider, helperService, navManagerService) || this;
 	        _this._modalService = _modalService;
 	        _this.viewContainerRef = viewContainerRef;
 	        _this._dataService = _dataService;
+	        _this._injector = _injector;
 	        _this._modalService.init(viewContainerRef);
 	        _this._dependenciesData = _this._helperService.getGlobalVar('dependency');
 	        return _this;
@@ -13410,11 +13623,16 @@ webpackJsonp([1],[
 	                };
 	            case 2:
 	                return {
+	                    module: current_accounts_ext_module_1.CurrentAccountsExtModule,
+	                    component: 'CurrentAccountsComponent'
+	                };
+	            case 3:
+	                return {
 	                    module: observation_extension_module_1.ObservationExtensionModule,
 	                    component: 'ObservationComponent',
 	                    urlProvider: (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-observation/data/' + parentId)
 	                };
-	            case 3:
+	            case 4:
 	                return {
 	                    module: file_module_1.FileModule,
 	                    component: 'FileComponent',
@@ -13448,31 +13666,7 @@ webpackJsonp([1],[
 	                ];
 	                break;
 	            case 1:
-	                var autoCompleteProviders = {
-	                    supplierObj: {
-	                        urlConf: (helper_1.Helper.getGlobalVar('route') + 'entities/supplier/conf'),
-	                        control: 'edit',
-	                        popups: {
-	                            module: local_form_popup_extension_module_1.LocalFormPopupExtensionModule,
-	                            component: 'LocalFormPopupComponent',
-	                            providers: [
-	                                { provide: 'Provider', useValue: helper_1.Helper.getFormProvider({ label: 'Supplier' }) },
-	                                form_service_1.FormService
-	                            ]
-	                        }
-	                    },
-	                    entityObj: {
-	                        urlConf: (helper_1.Helper.getGlobalVar('route') + 'entities/entity/conf'),
-	                        control: 'edit',
-	                        popups: {
-	                            module: form_popup_extension_module_1.FormPopupExtensionModule,
-	                            component: 'FormPopupComponent',
-	                            providers: [
-	                                { provide: 'Provider', useValue: helper_1.Helper.getFormProvider(_app.conf) },
-	                                form_service_1.FormService
-	                            ]
-	                        }
-	                    },
+	                var autoCompleteProviders = this._helperService.mergeObjects(this._injector.get('AutoCompleteProviders'), {
 	                    placeObj: {
 	                        urlConf: (helper_1.Helper.getGlobalVar('route') + 'booking/place/conf'),
 	                        control: 'edit',
@@ -13509,7 +13703,7 @@ webpackJsonp([1],[
 	                            ]
 	                        }
 	                    }
-	                };
+	                });
 	                providers = [
 	                    { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
 	                    { provide: 'Popups', useValue: {
@@ -13538,6 +13732,10 @@ webpackJsonp([1],[
 	                ];
 	                break;
 	            case 2:
+	                return [
+	                    nav_manager_service_1.NavManagerService
+	                ];
+	            case 3:
 	                providers = [
 	                    { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
 	                    { provide: 'Popups', useValue: {
@@ -13550,7 +13748,7 @@ webpackJsonp([1],[
 	                        } }
 	                ];
 	                break;
-	            case 3:
+	            case 4:
 	                providers = [
 	                    { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
 	                    { provide: 'Popups', useValue: {
@@ -13595,7 +13793,7 @@ webpackJsonp([1],[
 	    __metadata("design:paramtypes", [core_1.ElementRef,
 	        core_1.Renderer, Object, Object, nav_manager_service_1.NavManagerService,
 	        modal_service_1.ModalService,
-	        core_1.ViewContainerRef, Object])
+	        core_1.ViewContainerRef, Object, core_1.Injector])
 	], MainComponent);
 	exports.MainComponent = MainComponent;
 
@@ -13614,6 +13812,9 @@ webpackJsonp([1],[
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
 	var core_1 = __webpack_require__(3);
 	var nav_manager_service_1 = __webpack_require__(55);
 	/**
@@ -13626,10 +13827,15 @@ webpackJsonp([1],[
 	 * so the template has been rendered.
 	 */
 	var WizardManagerService = (function () {
-	    function WizardManagerService(_navManagerService) {
+	    function WizardManagerService(_navManagerService, _provider) {
 	        this._navManagerService = _navManagerService;
+	        this._provider = _provider;
 	        // Local variables
 	        this._component = null; // Parent component that uses and implement this service
+	        // Set default values for provider
+	        if (!this._provider) {
+	            this._provider = {};
+	        }
 	    }
 	    /**
 	     * Initialization of service.
@@ -13665,7 +13871,12 @@ webpackJsonp([1],[
 	        if ($event) {
 	            $event.preventDefault();
 	        }
-	        this._navManagerService.navTo(this._navManagerService.getIndex() + 1).then(function (data) { return; }, function (errors) { return; });
+	        var nextIndex = (this._navManagerService.getIndex() + 1);
+	        // Force to rebuild all components
+	        if (this._provider.rebuildNextStepComponents) {
+	            this._navManagerService.unsetComponentRef(nextIndex);
+	        }
+	        this._navManagerService.navTo(nextIndex).then(function (data) { return; }, function (errors) { return; });
 	    };
 	    /**
 	     * Previous action.
@@ -13723,7 +13934,8 @@ webpackJsonp([1],[
 	}());
 	WizardManagerService = __decorate([
 	    core_1.Injectable(),
-	    __metadata("design:paramtypes", [nav_manager_service_1.NavManagerService])
+	    __param(1, core_1.Optional()), __param(1, core_1.Inject('WizardManagerServiceProvider')),
+	    __metadata("design:paramtypes", [nav_manager_service_1.NavManagerService, Object])
 	], WizardManagerService);
 	exports.WizardManagerService = WizardManagerService;
 
@@ -14885,6 +15097,20 @@ webpackJsonp([1],[
 	        }
 	    };
 	    /**
+	     * Submit choices
+	     * @param route (route to submit choices)
+	     * @param allowEmptySubmit (allow submit when data is empty,
+	     * some cases it is necessary to inform that the user does not select any choice)
+	     * @returns {Promise}
+	     */
+	    DataBoxExtensionComponent.prototype.submitChoices = function (route, allowEmptySubmit) {
+	        if (allowEmptySubmit === void 0) { allowEmptySubmit = false; }
+	        var $form = $(this._elementRef.nativeElement).find('.ibox-content form'), data = $form.serializeArray(), that = this;
+	        return new Promise(function (resolve, reject) {
+	            return that._dataService.submitIndexesId(route, data, allowEmptySubmit).then(function (data) { return resolve(data); }, function (errors) { console.log(errors); return reject(errors); });
+	        });
+	    };
+	    /**
 	     * Detail action.
 	     * @param $event
 	     * @param data
@@ -15113,6 +15339,8 @@ webpackJsonp([1],[
 	        this._injector = _injector;
 	        this._autoCompleteProviders = _autoCompleteProviders;
 	        this._helperService = _helperService;
+	        this.placeholder = ''; // Set empty as default, because value can be undefined
+	        this.onChange = new core_1.EventEmitter();
 	        this._isHidden = true;
 	        this._lastSelectedChoice = { id: null, label: '' };
 	        this._choices = [];
@@ -15127,6 +15355,11 @@ webpackJsonp([1],[
 	     * @returns {FieldTypeAutoCompleteComponent}
 	     */
 	    FieldTypeAutoCompleteComponent.prototype.reset = function () {
+	        // Clear choices (can be from old object)
+	        if (this._childDataServiceChoices) {
+	            this._childDataServiceChoices.setObjects([]);
+	            this.resetChoices();
+	        }
 	        this._object = this._formService.getObject();
 	        var value = this._object[this.field], normalizedValue = '';
 	        if (value) {
@@ -15138,6 +15371,7 @@ webpackJsonp([1],[
 	        }
 	        this._lastSelectedChoice = { id: value, label: normalizedValue };
 	        this.setLabel();
+	        this.setControlMode();
 	        return this;
 	    };
 	    /**
@@ -15214,6 +15448,7 @@ webpackJsonp([1],[
 	                this._lastSelectedChoice = { id: choice.id, label: choice.label };
 	                this.setLabel();
 	                this.setControlMode();
+	                this.onChange.emit(choice['id']);
 	            }
 	        }
 	    };
@@ -15332,7 +15567,6 @@ webpackJsonp([1],[
 	        this._provider = (this._autoCompleteProviders[this.field] || null);
 	        this._fieldInView = (this._dataService.getProviderAttr('fields')['metadata'][this.field]['fieldInView'] || null);
 	        this.reset();
-	        this.setControlMode();
 	        // Dependency conf previously saved in provider
 	        if (this._provider.childInjector) {
 	            this._childInjector = this._provider.childInjector;
@@ -15370,7 +15604,7 @@ webpackJsonp([1],[
 	        var _this = this;
 	        this._childDataServicePopup = this._childInjector.get('DataService');
 	        this._childDataServiceChoices = this._childInjector.get('DataServiceChoices');
-	        this._onChildObjectsChangeSubscription = this._childDataServiceChoices.getOnObjectsChangeEmitter()
+	        this._onChildObjectsChangeSubscription = this._childDataServiceChoices.getOnObjectsRefreshEmitter()
 	            .subscribe(function (object) { return _this.resetChoices(); });
 	        this._childCandidateSearch = this._childDataServiceChoices.getCandidateSearch(); // To filter objects
 	        return this;
@@ -15392,10 +15626,18 @@ webpackJsonp([1],[
 	    core_1.Input(),
 	    __metadata("design:type", Boolean)
 	], FieldTypeAutoCompleteComponent.prototype, "selfReference", void 0);
+	__decorate([
+	    core_1.Input(),
+	    __metadata("design:type", String)
+	], FieldTypeAutoCompleteComponent.prototype, "placeholder", void 0);
+	__decorate([
+	    core_1.Output(),
+	    __metadata("design:type", Object)
+	], FieldTypeAutoCompleteComponent.prototype, "onChange", void 0);
 	FieldTypeAutoCompleteComponent = __decorate([
 	    core_1.Component({
 	        selector: 'js_autoComplete',
-	        template: "\n    <div class=\"auto-complete\">\n        <div class=\"input-group\">\n            <span class=\"control\">\n                <input class=\"form-control\"\n                       (click)=\"onInputClick($event)\"\n                       (input)=\"onEnterKey($event)\"\n                       [ngModel]=\"_label\"\n                       [class.error]=\"_formService.getErrors()[field] && (_formService.getErrors()[field].length > 0)\"\n                       type=\"text\">\n                <a (click)=\"onControlClick($event)\"><i class=\"fa fa-angle-down\"></i></a>\n            </span>\n            <span class=\"input-group-btn\" *ngIf=\"_controlMode\">\n                <button (click)=\"triggerAction($event)\"\n                        class=\"btn btn-primary\"\n                        type=\"button\"><i class=\"fa\"\n                                         [class.fa-check]=\"_controlMode == 'save'\"\n                                         [class.fa-plus]=\"_controlMode == 'add'\"\n                                         [class.fa-pencil]=\"_controlMode == 'edit'\"></i></button>\n            </span>\n        </div>\n        <div class=\"choices\">\n            <ul [hidden]=\"_isHidden\"\n                (click)=\"onChoiceClick($event)\">\n                <template [ngIf]=\"selfReference\"><template ngFor let-choice [ngForOf]=\"_choices\" let-choiceIndex=\"index\">\n                    <li *ngIf=\"choice['id'] != _object['id']\"\n                        [attr.data-index]=\"choiceIndex\">{{choice['label']}}</li>\n                </template></template>\n                <template [ngIf]=\"!selfReference\">\n                    <li *ngFor=\"let choice of _choices; let choiceIndex = index\"\n                        [attr.data-index]=\"choiceIndex\">{{choice['label']}}</li>\n                </template>\n                <li *ngIf=\"_childCandidateSearch && _childCandidateSearch.hasMore\"\n                    (click)=\"getMoreObjects($event)\"\n                    class=\"-pagination\"\n                    title=\"Load more results...\"><span>...</span></li>\n            </ul>\n        </div>\n    </div>\n    ",
+	        template: "\n    <div class=\"auto-complete\">\n        <div class=\"input-group\">\n            <span class=\"control\">\n                <input class=\"form-control\"\n                       (click)=\"onInputClick($event)\"\n                       (input)=\"onEnterKey($event)\"\n                       [ngModel]=\"_label\"\n                       [class.error]=\"_formService.getErrors()[field] && (_formService.getErrors()[field].length > 0)\"\n                       type=\"text\"\n                       [placeholder]=\"placeholder\">\n                <a (click)=\"onControlClick($event)\"><i class=\"fa fa-angle-down\"></i></a>\n            </span>\n            <span class=\"input-group-btn\" *ngIf=\"_controlMode\">\n                <button (click)=\"triggerAction($event)\"\n                        class=\"btn btn-primary\"\n                        type=\"button\"><i class=\"fa\"\n                                         [class.fa-check]=\"_controlMode == 'save'\"\n                                         [class.fa-plus]=\"_controlMode == 'add'\"\n                                         [class.fa-pencil]=\"_controlMode == 'edit'\"></i></button>\n            </span>\n        </div>\n        <div class=\"choices\">\n            <ul [hidden]=\"_isHidden\"\n                (click)=\"onChoiceClick($event)\">\n                <template [ngIf]=\"selfReference\"><template ngFor let-choice [ngForOf]=\"_choices\" let-choiceIndex=\"index\">\n                    <li *ngIf=\"choice['id'] != _object['id']\"\n                        [attr.data-index]=\"choiceIndex\">{{choice['label']}}</li>\n                </template></template>\n                <template [ngIf]=\"!selfReference\">\n                    <li *ngFor=\"let choice of _choices; let choiceIndex = index\"\n                        [attr.data-index]=\"choiceIndex\">{{choice['label']}}</li>\n                </template>\n                <li *ngIf=\"_childCandidateSearch && _childCandidateSearch.hasMore\"\n                    (click)=\"getMoreObjects($event)\"\n                    class=\"-pagination\"\n                    title=\"Load more results...\"><span>...</span></li>\n            </ul>\n        </div>\n    </div>\n    ",
 	        host: {
 	            '(document:click)': 'onDocumentClick($event)',
 	        }
@@ -15650,6 +15892,7 @@ webpackJsonp([1],[
 	        this._elementRef = _elementRef;
 	        this._formService = _formService;
 	        this._dataService = _dataService;
+	        this.onChange = new core_1.EventEmitter();
 	        // Object change event subscription
 	        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
 	            .subscribe(function (object) { return _this.reset(); });
@@ -15662,6 +15905,7 @@ webpackJsonp([1],[
 	        if (value) {
 	            this._formService.getObject()[this.field] = value;
 	            this._$label.html($target.html());
+	            this.onChange.emit(value);
 	        }
 	    };
 	    /**
@@ -15709,6 +15953,10 @@ webpackJsonp([1],[
 	    core_1.Input('htmlSelect'),
 	    __metadata("design:type", String)
 	], FieldTypeHtmlSelectDirective.prototype, "field", void 0);
+	__decorate([
+	    core_1.Output(),
+	    __metadata("design:type", Object)
+	], FieldTypeHtmlSelectDirective.prototype, "onChange", void 0);
 	__decorate([
 	    core_1.HostListener('click', ['$event']),
 	    __metadata("design:type", Function),
@@ -15815,7 +16063,8 @@ webpackJsonp([1],[
 	                            var dateToCheck = new Date(date.year, date.month - 1, date.day);
 	                            for (var _i = 0, dateRanges_2 = dateRanges_1; _i < dateRanges_2.length; _i++) {
 	                                var dateRange = dateRanges_2[_i];
-	                                var dateFrom = new Date(dateRange['startDate']), dateTo = new Date(dateRange['endDate']);
+	                                // ' 00:00:00' is necessary to get the expected behavior
+	                                var dateFrom = new Date(dateRange['startDate'] + ' 00:00:00'), dateTo = new Date(dateRange['endDate'] + ' 00:00:00');
 	                                if ((dateToCheck.getTime() >= dateFrom.getTime())
 	                                    && (dateToCheck.getTime() <= dateTo.getTime())) {
 	                                    return false;
@@ -17097,12 +17346,9 @@ webpackJsonp([1],[
 	var form_service_1 = __webpack_require__(54);
 	var BookingServicePriceFormPopupComponent = (function (_super) {
 	    __extends(BookingServicePriceFormPopupComponent, _super);
-	    function BookingServicePriceFormPopupComponent(elementRef, renderer, provider, formService, dataService, _parentDataService) {
-	        var _this = _super.call(this, elementRef, renderer, provider, formService, dataService) || this;
+	    function BookingServicePriceFormPopupComponent(elementRef, renderer, provider, formService, dataService, _parentDataService, helperService) {
+	        var _this = _super.call(this, elementRef, renderer, provider, formService, dataService, helperService) || this;
 	        _this._parentDataService = _parentDataService;
-	        // Configure number of decimals to use and to round
-	        _this.totalDecimals = 2;
-	        _this.totalDecimalIterator = Math.pow(10, _this.totalDecimals);
 	        // Set default values for new objects
 	        var formObj = _this._formService.getObject();
 	        if (!formObj['id']) {
@@ -17123,20 +17369,52 @@ webpackJsonp([1],[
 	        this.setTotals();
 	    };
 	    /**
+	     * onIsVatIncludedChange
+	     * @param value
+	     */
+	    BookingServicePriceFormPopupComponent.prototype.onIsVatIncludedChange = function (value) {
+	        this._formService.getObject()['isVatIncluded'] = value;
+	        this.setTotals();
+	    };
+	    /**
+	     * onCostValueEnterKey
+	     * @param value
+	     */
+	    BookingServicePriceFormPopupComponent.prototype.onCostValueEnterKey = function (value) {
+	        this._formService.getObject()['user_costValue'] = value;
+	        this.setSellValue();
+	    };
+	    /**
+	     * onSellValueEnterKey
+	     * @param value
+	     */
+	    BookingServicePriceFormPopupComponent.prototype.onSellValueEnterKey = function (value) {
+	        this._formService.getObject()['user_sellValue'] = value;
+	        this.setCostValue();
+	    };
+	    /**
 	     * Overrides parent method
+	     * @param costField
+	     * @param sellField
 	     * @returns {BookingServicePriceFormPopupComponent}
 	     */
-	    BookingServicePriceFormPopupComponent.prototype.setSellValue = function () {
-	        _super.prototype.setSellValue.call(this);
+	    BookingServicePriceFormPopupComponent.prototype.setSellValue = function (costField, sellField) {
+	        if (costField === void 0) { costField = 'user_costValue'; }
+	        if (sellField === void 0) { sellField = 'user_sellValue'; }
+	        _super.prototype.setSellValue.call(this, costField, sellField);
 	        this.setTotals();
 	        return this;
 	    };
 	    /**
 	     * Overrides parent method
+	     * @param costField
+	     * @param sellField
 	     * @returns {BookingServicePriceFormPopupComponent}
 	     */
-	    BookingServicePriceFormPopupComponent.prototype.setCostValue = function () {
-	        _super.prototype.setCostValue.call(this);
+	    BookingServicePriceFormPopupComponent.prototype.setCostValue = function (costField, sellField) {
+	        if (costField === void 0) { costField = 'user_costValue'; }
+	        if (sellField === void 0) { sellField = 'user_sellValue'; }
+	        _super.prototype.setCostValue.call(this, costField, sellField);
 	        this.setTotals();
 	        return this;
 	    };
@@ -17145,11 +17423,55 @@ webpackJsonp([1],[
 	     * @returns {BookingServicePriceFormPopupComponent}
 	     */
 	    BookingServicePriceFormPopupComponent.prototype.setTotals = function () {
-	        var obj = this._formService.getObject();
-	        obj['totalCost'] = (Math.round((parseFloat(obj['costValue'] || '0') * parseFloat(obj['quantity'] || '0'))
-	            * this.totalDecimalIterator) / this.totalDecimalIterator).toFixed(this.totalDecimals);
-	        obj['totalSell'] = (Math.round((parseFloat(obj['sellValue'] || '0') * parseFloat(obj['quantity'] || '0'))
-	            * this.totalDecimalIterator) / this.totalDecimalIterator).toFixed(this.totalDecimals);
+	        var obj = this._formService.getObject(), quantity = parseFloat(obj['quantity'] || '0'), user_costValue = parseFloat(obj['user_costValue'] || '0'), user_sellValue = parseFloat(obj['user_sellValue'] || '0'), isVatIncluded = obj['isVatIncluded'], vatPercentage = parseFloat(obj['vatCode_percentage'] || '0'), costValue = user_costValue, sellValue = user_sellValue, vatValueCost = 0, vatValueSell = 0;
+	        // Calc VAT value and value
+	        if (vatPercentage > 0) {
+	            if (isVatIncluded) {
+	                costValue = parseFloat((Math.round((user_costValue / (1 + (vatPercentage / 100)))
+	                    * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value));
+	                vatValueCost = (user_costValue - costValue);
+	                sellValue = parseFloat((Math.round((user_sellValue / (1 + (vatPercentage / 100)))
+	                    * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value));
+	                vatValueSell = (user_sellValue - sellValue);
+	            }
+	            else {
+	                vatValueCost = parseFloat((Math.round((user_costValue * (vatPercentage / 100))
+	                    * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value));
+	                vatValueSell = parseFloat((Math.round((user_sellValue * (vatPercentage / 100))
+	                    * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value));
+	            }
+	        }
+	        // Value (unit value without VAT)
+	        obj['costValue'] = costValue;
+	        obj['sellValue'] = sellValue;
+	        // Total vat
+	        obj['totalVatCost'] = (Math.round((vatValueCost * quantity)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        obj['totalVatSell'] = (Math.round((vatValueSell * quantity)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        // Total unit
+	        var totalUnitCost = parseFloat((Math.round((costValue + vatValueCost)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value)), totalUnitSell = parseFloat((Math.round((sellValue + vatValueSell)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value));
+	        // Total
+	        obj['totalCost'] = (Math.round(
+	        // Do not use "subTotal" nor "totalVat" to get the "total", because this values are already rounded,
+	        // and in some cases the sum of 2 rounded values cause inquiries.
+	        // Before multiply round the sum to get a coherent total unit value
+	        (totalUnitCost * quantity)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        obj['totalSell'] = (Math.round((totalUnitSell * quantity)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        // Sub total
+	        obj['subTotalCost'] = (Math.round(
+	        // Sub total is determined in this way, because in some cases the sum of "subTotal" and "totalVat"
+	        // rounded does not match with the correct total, given that this values are rounded to 2 decimals
+	        // and lost precision, so in this way we keep the calculus with coherence giving preference to keep
+	        // "totalVat" untouched (legal values).
+	        (parseFloat(obj['totalCost'] || '0') - parseFloat(obj['totalVatCost'] || '0'))
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        obj['subTotalSell'] = (Math.round((parseFloat(obj['totalSell'] || '0') - parseFloat(obj['totalVatSell'] || '0'))
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
 	        return this;
 	    };
 	    return BookingServicePriceFormPopupComponent;
@@ -17162,8 +17484,9 @@ webpackJsonp([1],[
 	    __param(2, core_1.Inject('Provider')),
 	    __param(4, core_1.Inject('DataService')),
 	    __param(5, core_1.Inject('ParentDataService')),
+	    __param(6, core_1.Inject('HelperService')),
 	    __metadata("design:paramtypes", [core_1.ElementRef,
-	        core_1.Renderer, Object, form_service_1.FormService, Object, Object])
+	        core_1.Renderer, Object, form_service_1.FormService, Object, Object, Object])
 	], BookingServicePriceFormPopupComponent);
 	exports.BookingServicePriceFormPopupComponent = BookingServicePriceFormPopupComponent;
 
@@ -17196,16 +17519,11 @@ webpackJsonp([1],[
 	var form_service_1 = __webpack_require__(54);
 	var PriceFormPopupComponent = (function (_super) {
 	    __extends(PriceFormPopupComponent, _super);
-	    function PriceFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
+	    function PriceFormPopupComponent(elementRef, renderer, provider, formService, dataService, _helperService) {
 	        var _this = _super.call(this) || this;
-	        // Configure number of decimals to use and to round
-	        _this.costDecimals = 4;
-	        _this.marginDecimals = 4;
-	        _this.sellDecimals = 4;
+	        _this._helperService = _helperService;
 	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
-	        _this.costDecimalIterator = Math.pow(10, _this.costDecimals);
-	        _this.marginDecimalIterator = Math.pow(10, _this.marginDecimals);
-	        _this.sellDecimalIterator = Math.pow(10, _this.sellDecimals);
+	        _this.decimalConf = _this._helperService.getDecimalConf();
 	        return _this;
 	    }
 	    /**
@@ -17242,52 +17560,60 @@ webpackJsonp([1],[
 	    };
 	    /**
 	     * Set cost price
+	     * @param costField
+	     * @param sellField
 	     * @returns {PriceFormPopupComponent}
 	     */
-	    PriceFormPopupComponent.prototype.setCostValue = function () {
+	    PriceFormPopupComponent.prototype.setCostValue = function (costField, sellField) {
+	        if (costField === void 0) { costField = 'costValue'; }
+	        if (sellField === void 0) { sellField = 'sellValue'; }
 	        var obj = this._formService.getObject();
-	        var sell = (Math.round(parseFloat(obj['sellValue'] || '0') * this.sellDecimalIterator) / this.sellDecimalIterator).toFixed(this.sellDecimals), margin = (Math.round(parseFloat(obj['marginValue'] || '0') * this.marginDecimalIterator) / this.marginDecimalIterator).toFixed(this.marginDecimals), sellFloat = parseFloat(sell), marginFloat = parseFloat(margin);
+	        var sell = (Math.round(parseFloat(obj[sellField] || '0') * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value), margin = (Math.round(parseFloat(obj['marginValue'] || '0') * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value), sellFloat = parseFloat(sell), marginFloat = parseFloat(margin);
 	        // Update inputs with rounded values
-	        obj['sellValue'] = sell;
+	        obj[sellField] = sell;
 	        obj['marginValue'] = margin;
 	        obj['userFieldTyped'] = 'SELL';
 	        switch (obj['marginMethod']) {
 	            case 'MARGIN':
 	                // Avoid that margin exceed the limit (100)
 	                marginFloat = ((marginFloat < 100) ? marginFloat : 99.9999); // Avoid division by zero
-	                obj['costValue'] = (Math.round((sellFloat * (1 - (marginFloat / 100))) * this.costDecimalIterator) / this.costDecimalIterator).toFixed(this.costDecimals);
+	                obj[costField] = (Math.round((sellFloat * (1 - (marginFloat / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value);
 	                break;
 	            case 'MARKUP':
-	                obj['costValue'] = (Math.round((sellFloat / (1 + (marginFloat / 100))) * this.costDecimalIterator) / this.costDecimalIterator).toFixed(this.costDecimals);
+	                obj[costField] = (Math.round((sellFloat / (1 + (marginFloat / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value);
 	                break;
 	            case 'FIXED':
-	                obj['costValue'] = (Math.round((sellFloat - marginFloat) * this.costDecimalIterator) / this.costDecimalIterator).toFixed(this.costDecimals);
+	                obj[costField] = (Math.round((sellFloat - marginFloat) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value);
 	                break;
 	        }
 	        return this;
 	    };
 	    /**
-	     * Set sell price
+	     * Set cost price
+	     * @param costField
+	     * @param sellField
 	     * @returns {PriceFormPopupComponent}
 	     */
-	    PriceFormPopupComponent.prototype.setSellValue = function () {
+	    PriceFormPopupComponent.prototype.setSellValue = function (costField, sellField) {
+	        if (costField === void 0) { costField = 'costValue'; }
+	        if (sellField === void 0) { sellField = 'sellValue'; }
 	        var obj = this._formService.getObject();
-	        var cost = (Math.round(parseFloat(obj['costValue'] || '0') * this.costDecimalIterator) / this.costDecimalIterator).toFixed(this.costDecimals), margin = (Math.round(parseFloat(obj['marginValue'] || '0') * this.marginDecimalIterator) / this.marginDecimalIterator).toFixed(this.marginDecimals), costFloat = parseFloat(cost), marginFloat = parseFloat(margin);
+	        var cost = (Math.round(parseFloat(obj[costField] || '0') * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value), margin = (Math.round(parseFloat(obj['marginValue'] || '0') * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value), costFloat = parseFloat(cost), marginFloat = parseFloat(margin);
 	        // Update inputs with rounded values
-	        obj['costValue'] = cost;
+	        obj[costField] = cost;
 	        obj['marginValue'] = margin;
 	        obj['userFieldTyped'] = 'COST';
 	        switch (obj['marginMethod']) {
 	            case 'MARGIN':
 	                // Avoid that margin exceed the limit (100)
 	                marginFloat = ((marginFloat < 100) ? marginFloat : 99.9999); // Avoid division by zero
-	                obj['sellValue'] = (Math.round((costFloat / (1 - (marginFloat / 100))) * this.sellDecimalIterator) / this.sellDecimalIterator).toFixed(this.sellDecimals);
+	                obj[sellField] = (Math.round((costFloat / (1 - (marginFloat / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value);
 	                break;
 	            case 'MARKUP':
-	                obj['sellValue'] = (Math.round((costFloat * (1 + (marginFloat / 100))) * this.sellDecimalIterator) / this.sellDecimalIterator).toFixed(this.sellDecimals);
+	                obj[sellField] = (Math.round((costFloat * (1 + (marginFloat / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value);
 	                break;
 	            case 'FIXED':
-	                obj['sellValue'] = (Math.round((costFloat + marginFloat) * this.sellDecimalIterator) / this.sellDecimalIterator).toFixed(this.sellDecimals);
+	                obj[sellField] = (Math.round((costFloat + marginFloat) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value);
 	                break;
 	        }
 	        return this;
@@ -17301,8 +17627,9 @@ webpackJsonp([1],[
 	    }),
 	    __param(2, core_1.Inject('Provider')),
 	    __param(4, core_1.Inject('DataService')),
+	    __param(5, core_1.Inject('HelperService')),
 	    __metadata("design:paramtypes", [core_1.ElementRef,
-	        core_1.Renderer, Object, form_service_1.FormService, Object])
+	        core_1.Renderer, Object, form_service_1.FormService, Object, Object])
 	], PriceFormPopupComponent);
 	exports.PriceFormPopupComponent = PriceFormPopupComponent;
 
@@ -17487,176 +17814,7 @@ webpackJsonp([1],[
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
 	var field_types_extension_module_1 = __webpack_require__(74);
-	var local_form_popup_component_1 = __webpack_require__(104);
-	var LocalFormPopupExtensionModule = (function () {
-	    function LocalFormPopupExtensionModule() {
-	    }
-	    return LocalFormPopupExtensionModule;
-	}());
-	LocalFormPopupExtensionModule = __decorate([
-	    core_1.NgModule({
-	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, field_types_extension_module_1.FieldTypesExtensionModule],
-	        declarations: [
-	            local_form_popup_component_1.LocalFormPopupComponent
-	        ],
-	        exports: [local_form_popup_component_1.LocalFormPopupComponent]
-	    })
-	], LocalFormPopupExtensionModule);
-	exports.LocalFormPopupExtensionModule = LocalFormPopupExtensionModule;
-
-
-/***/ },
-/* 104 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var __param = (this && this.__param) || function (paramIndex, decorator) {
-	    return function (target, key) { decorator(target, key, paramIndex); }
-	};
-	var core_1 = __webpack_require__(3);
-	var helper_1 = __webpack_require__(42);
-	var form_popup_extension_component_1 = __webpack_require__(82);
-	var form_service_1 = __webpack_require__(54);
-	var LocalFormPopupComponent = (function (_super) {
-	    __extends(LocalFormPopupComponent, _super);
-	    function LocalFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
-	        var _this = _super.call(this) || this;
-	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
-	        return _this;
-	    }
-	    return LocalFormPopupComponent;
-	}(form_popup_extension_component_1.FormPopupExtensionComponent));
-	LocalFormPopupComponent = __decorate([
-	    core_1.Component({
-	        selector: '.js_localFormPopup',
-	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
-	    }),
-	    __param(2, core_1.Inject('Provider')),
-	    __param(4, core_1.Inject('DataService')),
-	    __metadata("design:paramtypes", [core_1.ElementRef,
-	        core_1.Renderer, Object, form_service_1.FormService, Object])
-	], LocalFormPopupComponent);
-	exports.LocalFormPopupComponent = LocalFormPopupComponent;
-
-
-/***/ },
-/* 105 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var core_1 = __webpack_require__(3);
-	var common_1 = __webpack_require__(22);
-	var forms_1 = __webpack_require__(30);
-	var ng_bootstrap_1 = __webpack_require__(34);
-	var field_types_extension_module_1 = __webpack_require__(74);
-	var form_popup_component_1 = __webpack_require__(106);
-	var FormPopupExtensionModule = (function () {
-	    function FormPopupExtensionModule() {
-	    }
-	    return FormPopupExtensionModule;
-	}());
-	FormPopupExtensionModule = __decorate([
-	    core_1.NgModule({
-	        imports: [
-	            common_1.CommonModule,
-	            forms_1.FormsModule,
-	            forms_1.ReactiveFormsModule,
-	            ng_bootstrap_1.NgbModule,
-	            field_types_extension_module_1.FieldTypesExtensionModule
-	        ],
-	        declarations: [
-	            form_popup_component_1.FormPopupComponent
-	        ],
-	        exports: [form_popup_component_1.FormPopupComponent]
-	    })
-	], FormPopupExtensionModule);
-	exports.FormPopupExtensionModule = FormPopupExtensionModule;
-
-
-/***/ },
-/* 106 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var __param = (this && this.__param) || function (paramIndex, decorator) {
-	    return function (target, key) { decorator(target, key, paramIndex); }
-	};
-	var core_1 = __webpack_require__(3);
-	var helper_1 = __webpack_require__(42);
-	var form_service_1 = __webpack_require__(54);
-	var form_popup_extension_component_1 = __webpack_require__(82);
-	var FormPopupComponent = (function (_super) {
-	    __extends(FormPopupComponent, _super);
-	    function FormPopupComponent(elementRef, renderer, provider, formService, dataService) {
-	        var _this = _super.call(this) || this;
-	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
-	        return _this;
-	    }
-	    return FormPopupComponent;
-	}(form_popup_extension_component_1.FormPopupExtensionComponent));
-	FormPopupComponent = __decorate([
-	    core_1.Component({
-	        selector: '.js_formPopup',
-	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
-	    }),
-	    __param(2, core_1.Inject('Provider')),
-	    __param(4, core_1.Inject('DataService')),
-	    __metadata("design:paramtypes", [core_1.ElementRef,
-	        core_1.Renderer, Object, form_service_1.FormService, Object])
-	], FormPopupComponent);
-	exports.FormPopupComponent = FormPopupComponent;
-
-
-/***/ },
-/* 107 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var core_1 = __webpack_require__(3);
-	var common_1 = __webpack_require__(22);
-	var forms_1 = __webpack_require__(30);
-	var field_types_extension_module_1 = __webpack_require__(74);
-	var booking_place_form_popup_component_1 = __webpack_require__(108);
+	var booking_place_form_popup_component_1 = __webpack_require__(104);
 	var BookingPlaceFormPopupExtensionModule = (function () {
 	    function BookingPlaceFormPopupExtensionModule() {
 	    }
@@ -17680,7 +17838,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 108 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17728,7 +17886,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 109 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17742,7 +17900,7 @@ webpackJsonp([1],[
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
 	var field_types_extension_module_1 = __webpack_require__(74);
-	var booking_country_form_popup_component_1 = __webpack_require__(110);
+	var booking_country_form_popup_component_1 = __webpack_require__(106);
 	var BookingCountryFormPopupExtensionModule = (function () {
 	    function BookingCountryFormPopupExtensionModule() {
 	    }
@@ -17766,7 +17924,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 110 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17814,7 +17972,271 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 111 */
+/* 107 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var search_module_1 = __webpack_require__(61);
+	var current_accounts_component_1 = __webpack_require__(108);
+	var CurrentAccountsExtModule = (function () {
+	    function CurrentAccountsExtModule() {
+	    }
+	    return CurrentAccountsExtModule;
+	}());
+	CurrentAccountsExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, search_module_1.SearchModule],
+	        declarations: [
+	            current_accounts_component_1.CurrentAccountsComponent
+	        ],
+	        exports: [current_accounts_component_1.CurrentAccountsComponent]
+	    })
+	], CurrentAccountsExtModule);
+	exports.CurrentAccountsExtModule = CurrentAccountsExtModule;
+
+
+/***/ },
+/* 108 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var accordion_component_1 = __webpack_require__(109);
+	var nav_manager_service_1 = __webpack_require__(55);
+	var wizard_manager_service_1 = __webpack_require__(57);
+	var form_service_1 = __webpack_require__(54);
+	var data_box_extension_module_1 = __webpack_require__(110);
+	var data_service_1 = __webpack_require__(52);
+	var actions_service_1 = __webpack_require__(53);
+	/* Import dependencies */
+	// Save last templateUrl
+	var tmpTemplateUrl = helper_1.Helper.getRuntimeVar('templateUrl');
+	var parentId = helper_1.Helper.getGlobalVar('conf')['object']['id'], parentController = helper_1.Helper.getGlobalVar('conf')['localData']['controller']; // Determines the type of booking
+	// ClientCurrentAccount
+	// Add
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account/add/' + parentId);
+	var client_current_account_add_form_popup_ext_module_1 = __webpack_require__(111);
+	// Edit
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account/edit/' + parentId);
+	var client_current_account_edit_form_popup_ext_module_1 = __webpack_require__(122);
+	// Auto-complete
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/entity-address/edit/0'); // No parent defined
+	var entity_address_popup_module_1 = __webpack_require__(124);
+	// SupplierCurrentAccount
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-supplier-current-account/edit/' + parentId);
+	var supplier_current_account_form_popup_ext_module_1 = __webpack_require__(126);
+	// Restore last templateUrl
+	helper_1.Helper.setRuntimeVar('templateUrl', tmpTemplateUrl);
+	/* /Import dependencies */
+	var CurrentAccountsComponent = (function (_super) {
+	    __extends(CurrentAccountsComponent, _super);
+	    function CurrentAccountsComponent(elementRef, renderer, provider, helperService, navManagerService, _dataService, _injector) {
+	        var _this = _super.call(this, elementRef, renderer, provider || null, helperService, navManagerService) || this;
+	        _this._dataService = _dataService;
+	        _this._injector = _injector;
+	        return _this;
+	    }
+	    /**
+	     * Get navigation data (needed data to lazy load container)
+	     * @param index (index to load)
+	     * @returns NavData
+	     */
+	    CurrentAccountsComponent.prototype.getNavData = function (index) {
+	        var data = {
+	            module: data_box_extension_module_1.DataBoxExtensionModule,
+	            component: 'DataBoxComponent'
+	        };
+	        switch (index) {
+	            case 0:
+	                data['urlProvider'] = (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account/data/' + parentId);
+	                break;
+	            case 1:
+	                data['urlProvider'] = (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-supplier-current-account/data/' + parentId);
+	                break;
+	        }
+	        return data;
+	    };
+	    /**
+	     * Get nav providers (to lazy load components in container with dependency injection)
+	     * @param index (index to load)
+	     * @param data (data to resolve all providers)
+	     * @returns {Array}
+	     */
+	    CurrentAccountsComponent.prototype.getNavProviders = function (index, data) {
+	        if (data === void 0) { data = null; }
+	        var autoCompleteProviders = this._injector.get('AutoCompleteProviders');
+	        autoCompleteProviders.entityAddressObj = {
+	            urlConf: (helper_1.Helper.getGlobalVar('route') + 'entities/entity-address/conf/0'),
+	            control: 'edit',
+	            popups: {
+	                module: entity_address_popup_module_1.EntityAddressPopupModule,
+	                component: 'EntityAddressPopupComponent',
+	                providers: [
+	                    { provide: 'Provider', useValue: helper_1.Helper.getFormProvider({ label: 'Address' }) },
+	                    form_service_1.FormService
+	                ]
+	            }
+	        };
+	        var providers = [
+	            { provide: 'DataService', useClass: data_service_1.DataService },
+	            { provide: 'ParentDataService', useValue: this._dataService },
+	            actions_service_1.ActionsService,
+	            { provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data) },
+	            { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
+	            { provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data) },
+	            { provide: 'AutoCompleteProviders', useValue: autoCompleteProviders },
+	            // FormService needs to be here for AutoCompleteProviders, however it will be redefined in Popups
+	            // (so we can reuse the same AutoCompleteProviders for all injectors)
+	            form_service_1.FormService
+	        ];
+	        switch (index) {
+	            case 0:
+	                var formProvider = this._helperService.getFormProvider(data);
+	                // To avoid conflicts between forms in steps of the wizard
+	                // (form should override object without notify user)
+	                formProvider['preventObjectOverride'] = false;
+	                providers.push({ provide: 'Popups', useValue: {
+	                        add: {
+	                            module: client_current_account_add_form_popup_ext_module_1.ClientCurrentAccountAddFormPopupExtModule,
+	                            component: 'ClientCurrentAccountAddFormPopupComponent',
+	                            providers: [
+	                                // Set field for wizard form first step
+	                                { provide: 'FormServiceProvider', useValue: { fields: ['clientDocumentTypeObj', 'clientObj'] } },
+	                                { provide: 'Provider', useValue: formProvider },
+	                                nav_manager_service_1.NavManagerService,
+	                                wizard_manager_service_1.WizardManagerService,
+	                                { provide: 'WizardManagerServiceProvider', useValue: { rebuildNextStepComponents: true } },
+	                                // Each FormService has your own provider, so ween need different FormService for popup
+	                                form_service_1.FormService
+	                            ]
+	                        },
+	                        edit: {
+	                            module: client_current_account_edit_form_popup_ext_module_1.ClientCurrentAccountEditFormPopupExtModule,
+	                            component: 'ClientCurrentAccountEditFormPopupComponent',
+	                            providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }],
+	                            FormService: form_service_1.FormService
+	                        }
+	                    } });
+	                break;
+	            case 1:
+	                providers.push({ provide: 'Popups', useValue: {
+	                        module: supplier_current_account_form_popup_ext_module_1.SupplierCurrentAccountFormPopupExtModule,
+	                        component: 'SupplierCurrentAccountFormPopupComponent',
+	                        providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }]
+	                    } });
+	                break;
+	        }
+	        return providers;
+	    };
+	    return CurrentAccountsComponent;
+	}(accordion_component_1.AccordionComponent));
+	__decorate([
+	    core_1.ViewChildren('js_lazyLoadContainer', { read: core_1.ViewContainerRef }),
+	    __metadata("design:type", core_1.QueryList)
+	], CurrentAccountsComponent.prototype, "lazyLoadViewContainerRefQL", void 0);
+	CurrentAccountsComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_currentAccounts',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Optional()), __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('HelperService')),
+	    __param(5, core_1.Inject('DataService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, Object, nav_manager_service_1.NavManagerService, Object, core_1.Injector])
+	], CurrentAccountsComponent);
+	exports.CurrentAccountsComponent = CurrentAccountsComponent;
+
+
+/***/ },
+/* 109 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var base_component_1 = __webpack_require__(59);
+	var nav_manager_service_1 = __webpack_require__(55);
+	var AccordionComponent = (function (_super) {
+	    __extends(AccordionComponent, _super);
+	    function AccordionComponent(elementRef, renderer, provider, _helperService, _navManagerService) {
+	        var _this = _super.call(this, elementRef, renderer, provider || null) || this;
+	        _this._helperService = _helperService;
+	        _this._navManagerService = _navManagerService;
+	        return _this;
+	    }
+	    /**
+	     * Lifecycle callback
+	     */
+	    AccordionComponent.prototype.ngAfterViewInit = function () {
+	        // Initializes the children navigation manager service
+	        this._navManagerService.init(this, this.lazyLoadViewContainerRefQL);
+	    };
+	    return AccordionComponent;
+	}(base_component_1.BaseComponent));
+	__decorate([
+	    core_1.ViewChildren('js_lazyLoadContainer', { read: core_1.ViewContainerRef }),
+	    __metadata("design:type", core_1.QueryList)
+	], AccordionComponent.prototype, "lazyLoadViewContainerRefQL", void 0);
+	AccordionComponent = __decorate([
+	    core_1.Component({
+	        selector: 'js_accordion',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Optional()), __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, Object, nav_manager_service_1.NavManagerService])
+	], AccordionComponent);
+	exports.AccordionComponent = AccordionComponent;
+
+
+/***/ },
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17832,7 +18254,1130 @@ webpackJsonp([1],[
 	var search_module_1 = __webpack_require__(61);
 	var expander_module_1 = __webpack_require__(62);
 	var search_pagination_module_1 = __webpack_require__(68);
-	var observation_component_1 = __webpack_require__(112);
+	var data_box_component_1 = __webpack_require__(76);
+	var DataBoxExtensionModule = (function () {
+	    function DataBoxExtensionModule() {
+	    }
+	    return DataBoxExtensionModule;
+	}());
+	DataBoxExtensionModule = __decorate([
+	    core_1.NgModule({
+	        imports: [
+	            common_1.CommonModule,
+	            forms_1.FormsModule,
+	            forms_1.ReactiveFormsModule,
+	            search_module_1.SearchModule,
+	            search_pagination_module_1.SearchPaginationModule,
+	            expander_module_1.ExpanderModule
+	        ],
+	        declarations: [
+	            data_box_component_1.DataBoxComponent
+	        ],
+	        exports: [data_box_component_1.DataBoxComponent]
+	    })
+	], DataBoxExtensionModule);
+	exports.DataBoxExtensionModule = DataBoxExtensionModule;
+
+
+/***/ },
+/* 111 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(34);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var client_current_account_add_form_popup_component_1 = __webpack_require__(112);
+	var ClientCurrentAccountAddFormPopupExtModule = (function () {
+	    function ClientCurrentAccountAddFormPopupExtModule() {
+	    }
+	    return ClientCurrentAccountAddFormPopupExtModule;
+	}());
+	ClientCurrentAccountAddFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
+	        declarations: [
+	            client_current_account_add_form_popup_component_1.ClientCurrentAccountAddFormPopupComponent
+	        ],
+	        exports: [client_current_account_add_form_popup_component_1.ClientCurrentAccountAddFormPopupComponent]
+	    })
+	], ClientCurrentAccountAddFormPopupExtModule);
+	exports.ClientCurrentAccountAddFormPopupExtModule = ClientCurrentAccountAddFormPopupExtModule;
+
+
+/***/ },
+/* 112 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var form_service_1 = __webpack_require__(54);
+	var helper_1 = __webpack_require__(42);
+	var data_service_1 = __webpack_require__(52);
+	var actions_service_1 = __webpack_require__(53);
+	var wizard_form_popup_component_1 = __webpack_require__(88);
+	var wizard_manager_service_1 = __webpack_require__(57);
+	/* Import dependencies */
+	// Parent id for dependencies
+	var parentId = helper_1.Helper.getGlobalVar('conf')['object']['id'], parentController = helper_1.Helper.getGlobalVar('conf')['localData']['controller']; // Determines the type of booking
+	// Default Detail
+	var booking_service_price_ext_module_1 = __webpack_require__(113);
+	// Detail
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account/add-detail/' + parentId);
+	var client_current_account_add_detail_form_popup_ext_module_1 = __webpack_require__(115);
+	/* /Import dependencies */
+	var ClientCurrentAccountAddFormPopupComponent = (function (_super) {
+	    __extends(ClientCurrentAccountAddFormPopupComponent, _super);
+	    function ClientCurrentAccountAddFormPopupComponent(elementRef, renderer, provider, wizardManagerService, formService, _helperService, _dataService, _parentDataService, _injector) {
+	        var _this = 
+	        // Call parent
+	        _super.call(this, elementRef, renderer, provider, wizardManagerService, formService) || this;
+	        _this._helperService = _helperService;
+	        _this._dataService = _dataService;
+	        _this._parentDataService = _parentDataService;
+	        _this._injector = _injector;
+	        return _this;
+	    }
+	    /**
+	     * Submit navigation (when leave one container to navigate in other one)
+	     * @param index (index to validate)
+	     * @returns {Promise<boolean>}
+	     */
+	    ClientCurrentAccountAddFormPopupComponent.prototype.submitNav = function (index) {
+	        var that = this, route = null, componentRef = null;
+	        return new Promise(function (resolve, reject) {
+	            switch (index) {
+	                case 0:
+	                    // Save form
+	                    route = (that._dataService.getRoute('add'));
+	                    return that._formService.save(route).then(function (data) {
+	                        // Update entityAddress autoCompleteProvider choices route to the updated entity
+	                        var autoCompleteProviders = that._injector.get('AutoCompleteProviders');
+	                        if (autoCompleteProviders['entityAddressObj']['childInjector']) {
+	                            var choicesDataService = autoCompleteProviders['entityAddressObj']['childInjector'].get('DataServiceChoices'), choicesRoute = choicesDataService.getRoute('choices');
+	                            choicesRoute = (choicesRoute.substr(0, choicesRoute.lastIndexOf('/') + 1)
+	                                + that._formService.getObject()['entityObj']);
+	                            choicesDataService.setRoute('choices', choicesRoute);
+	                        }
+	                        return resolve(true);
+	                    }, function (errors) { return reject(false); });
+	                case 1:
+	                    // Submit values
+	                    componentRef = that._wizardManagerService.getComponentRef(index);
+	                    route = (that._dataService.getRoute('add-default-detail') + '/' + that._formService.getObject()['id']);
+	                    return componentRef.instance.submitChoices(route, true).then(function (data) {
+	                        that._dataService.refreshObject();
+	                        return resolve(true);
+	                    }, function (errors) { return reject(false); });
+	                case 2:
+	                    // Save form
+	                    componentRef = that._wizardManagerService.getComponentRef(index);
+	                    route = (that._dataService.getRoute('add-detail'));
+	                    that._formService.setForceSubmit(false); // Disable force submit, at this time the user is finishing
+	                    // the process and submitting the form (this procedure avoid form to question the user when
+	                    // the saved object is returned, because we have two FormServices here using the same DataService)
+	                    return componentRef.instance._formService.save(route).then(function (data) { return resolve(true); }, function (errors) {
+	                        that._formService.setForceSubmit(true); // If error put again form waiting for submit
+	                        return reject(false);
+	                    });
+	            }
+	            // Nothing to do
+	            return resolve(true);
+	        });
+	    };
+	    /**
+	     * Get navigation data (needed data to lazy load container)
+	     * @param index (index to load)
+	     * @returns NavData
+	     */
+	    ClientCurrentAccountAddFormPopupComponent.prototype.getNavData = function (index) {
+	        switch (index) {
+	            case 1:
+	                // @TODO Change module according with document type (receipt will be another)
+	                return {
+	                    module: booking_service_price_ext_module_1.BookingServicePriceExtModule,
+	                    component: 'BookingServicePriceComponent',
+	                    urlProvider: (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account-detail/data-for-invoice/' + parentId)
+	                };
+	            case 2:
+	                return {
+	                    module: client_current_account_add_detail_form_popup_ext_module_1.ClientCurrentAccountAddDetailFormPopupExtModule,
+	                    component: 'ClientCurrentAccountAddDetailFormPopupComponent',
+	                };
+	        }
+	        return null;
+	    };
+	    /**
+	     * Get nav providers (to lazy load components in container with dependency injection)
+	     * @param index (index to load)
+	     * @param data (data to resolve all providers)
+	     * @returns {Array}
+	     */
+	    ClientCurrentAccountAddFormPopupComponent.prototype.getNavProviders = function (index, data) {
+	        if (data === void 0) { data = null; }
+	        switch (index) {
+	            case 1:
+	                return [
+	                    { provide: 'DataService', useClass: data_service_1.DataService },
+	                    actions_service_1.ActionsService,
+	                    { provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data) },
+	                    { provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data) },
+	                    { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
+	                    { provide: 'Popups', useValue: null }
+	                ];
+	            case 2:
+	                return [
+	                    // Reset FormServiceProvider to use DataServiceProvider as default values
+	                    { provide: 'FormServiceProvider', useValue: {} },
+	                    form_service_1.FormService
+	                ];
+	        }
+	        return null;
+	    };
+	    return ClientCurrentAccountAddFormPopupComponent;
+	}(wizard_form_popup_component_1.WizardFormPopupComponent));
+	__decorate([
+	    core_1.ViewChildren('js_lazyLoadContainer', { read: core_1.ViewContainerRef }),
+	    __metadata("design:type", core_1.QueryList)
+	], ClientCurrentAccountAddFormPopupComponent.prototype, "lazyLoadViewContainerRefQL", void 0);
+	ClientCurrentAccountAddFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_clientCurrentAccountAddFormPopup',
+	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account/add/' + parentId
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(5, core_1.Inject('HelperService')),
+	    __param(6, core_1.Inject('DataService')),
+	    __param(7, core_1.Inject('ParentDataService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, wizard_manager_service_1.WizardManagerService,
+	        form_service_1.FormService, Object, Object, Object, core_1.Injector])
+	], ClientCurrentAccountAddFormPopupComponent);
+	exports.ClientCurrentAccountAddFormPopupComponent = ClientCurrentAccountAddFormPopupComponent;
+
+
+/***/ },
+/* 113 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	// This module doesn't use "ReactiveFormsModule", but it needs to import this class
+	// to provide "formBuilder" when inject dependencies in child modules (like form)
+	var forms_1 = __webpack_require__(30);
+	var search_module_1 = __webpack_require__(61);
+	var expander_module_1 = __webpack_require__(62);
+	var search_pagination_module_1 = __webpack_require__(68);
+	var booking_service_price_component_1 = __webpack_require__(114);
+	var BookingServicePriceExtModule = (function () {
+	    function BookingServicePriceExtModule() {
+	    }
+	    return BookingServicePriceExtModule;
+	}());
+	BookingServicePriceExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [
+	            common_1.CommonModule,
+	            forms_1.FormsModule,
+	            forms_1.ReactiveFormsModule,
+	            search_module_1.SearchModule,
+	            search_pagination_module_1.SearchPaginationModule,
+	            expander_module_1.ExpanderModule
+	        ],
+	        declarations: [
+	            booking_service_price_component_1.BookingServicePriceComponent
+	        ],
+	        exports: [booking_service_price_component_1.BookingServicePriceComponent]
+	    })
+	], BookingServicePriceExtModule);
+	exports.BookingServicePriceExtModule = BookingServicePriceExtModule;
+
+
+/***/ },
+/* 114 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var actions_service_1 = __webpack_require__(53);
+	var data_box_extension_component_1 = __webpack_require__(71);
+	var modal_service_1 = __webpack_require__(44);
+	var helper_1 = __webpack_require__(42);
+	// Component
+	var BookingServicePriceComponent = (function (_super) {
+	    __extends(BookingServicePriceComponent, _super);
+	    function BookingServicePriceComponent(viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector) {
+	        var _this = 
+	        // Call parent
+	        _super.call(this) || this;
+	        _super.prototype.initDataBoxExtensionComponent.call(_this, viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector);
+	        return _this;
+	    }
+	    return BookingServicePriceComponent;
+	}(data_box_extension_component_1.DataBoxExtensionComponent));
+	BookingServicePriceComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_bookingServicePrice',
+	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'template/index/base-current-account-detail/accounting'
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('Popups')),
+	    __metadata("design:paramtypes", [core_1.ViewContainerRef,
+	        core_1.Renderer, Object, Object, actions_service_1.ActionsService,
+	        modal_service_1.ModalService, Object, core_1.Injector])
+	], BookingServicePriceComponent);
+	exports.BookingServicePriceComponent = BookingServicePriceComponent;
+
+
+/***/ },
+/* 115 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(34);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var client_current_account_add_detail_form_popup_component_1 = __webpack_require__(116);
+	var ClientCurrentAccountAddDetailFormPopupExtModule = (function () {
+	    function ClientCurrentAccountAddDetailFormPopupExtModule() {
+	    }
+	    return ClientCurrentAccountAddDetailFormPopupExtModule;
+	}());
+	ClientCurrentAccountAddDetailFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
+	        declarations: [
+	            client_current_account_add_detail_form_popup_component_1.ClientCurrentAccountAddDetailFormPopupComponent
+	        ],
+	        exports: [client_current_account_add_detail_form_popup_component_1.ClientCurrentAccountAddDetailFormPopupComponent]
+	    })
+	], ClientCurrentAccountAddDetailFormPopupExtModule);
+	exports.ClientCurrentAccountAddDetailFormPopupExtModule = ClientCurrentAccountAddDetailFormPopupExtModule;
+
+
+/***/ },
+/* 116 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_service_1 = __webpack_require__(54);
+	var dynamic_component_loader_service_1 = __webpack_require__(45);
+	var post_service_1 = __webpack_require__(43);
+	var base_client_current_account_form_popup_ext_component_1 = __webpack_require__(117);
+	var ClientCurrentAccountAddDetailFormPopupComponent = (function (_super) {
+	    __extends(ClientCurrentAccountAddDetailFormPopupComponent, _super);
+	    function ClientCurrentAccountAddDetailFormPopupComponent(elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initBaseClientCurrentAccountFormPopupExtComponent.call(_this, elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService);
+	        return _this;
+	    }
+	    return ClientCurrentAccountAddDetailFormPopupComponent;
+	}(base_client_current_account_form_popup_ext_component_1.BaseClientCurrentAccountFormPopupExtComponent));
+	ClientCurrentAccountAddDetailFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_clientCurrentAccountAddDetailFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('ParentDataService')),
+	    __param(7, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object, core_1.Injector, Object, Object, dynamic_component_loader_service_1.DynamicComponentLoaderService,
+	        post_service_1.PostService])
+	], ClientCurrentAccountAddDetailFormPopupComponent);
+	exports.ClientCurrentAccountAddDetailFormPopupComponent = ClientCurrentAccountAddDetailFormPopupComponent;
+
+
+/***/ },
+/* 117 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_popup_extension_component_1 = __webpack_require__(82);
+	var data_service_1 = __webpack_require__(52);
+	var actions_service_1 = __webpack_require__(53);
+	var form_service_1 = __webpack_require__(54);
+	/* Import dependencies */
+	// Parent id of dependencies
+	var parentController = helper_1.Helper.getGlobalVar('conf')['localData']['controller']; // Determines the type of booking
+	// Save last templateUrl
+	var tmpTemplateUrl = helper_1.Helper.getRuntimeVar('templateUrl');
+	// ClientCurrentAccountDetail
+	var client_current_account_detail_ext_module_1 = __webpack_require__(118);
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account-detail/edit/0');
+	var client_current_account_detail_form_popup_ext_module_1 = __webpack_require__(120);
+	// Restore last templateUrl
+	helper_1.Helper.setRuntimeVar('templateUrl', tmpTemplateUrl);
+	/* /Import dependencies */
+	var BaseClientCurrentAccountFormPopupExtComponent = (function (_super) {
+	    __extends(BaseClientCurrentAccountFormPopupExtComponent, _super);
+	    function BaseClientCurrentAccountFormPopupExtComponent() {
+	        return _super.call(this) || this;
+	    }
+	    BaseClientCurrentAccountFormPopupExtComponent.prototype.initBaseClientCurrentAccountFormPopupExtComponent = function (elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
+	        _super.prototype.initFormPopupExtensionComponent.call(this, elementRef, renderer, provider, formService, dataService);
+	        // Constructor vars
+	        this._injector = injector;
+	        this._parentDataService = parentDataService;
+	        this._helperService = helperService;
+	        this._dynamicComponentLoaderService = dynamicComponentLoaderService;
+	        this._postService = postService;
+	        // Save initial object to detect changes
+	        this._object = this._dataService.getObject();
+	        // Set choices route according with the entity
+	        this.updateEntityAddressAutoCompleteProviderChoicesRoute();
+	    };
+	    /**
+	     * Update Entity Address Auto Complete Provider Choices Route
+	     * Set choices route according with the entity
+	     * @returns {ClientCurrentAccountEditFormPopupComponent}
+	     */
+	    BaseClientCurrentAccountFormPopupExtComponent.prototype.updateEntityAddressAutoCompleteProviderChoicesRoute = function () {
+	        // Update entityAddress autoCompleteProvider choices route to the updated entity
+	        var autoCompleteProviders = this._injector.get('AutoCompleteProviders');
+	        if (autoCompleteProviders['entityAddressObj']['childInjector']) {
+	            var choicesDataService = autoCompleteProviders['entityAddressObj']['childInjector'].get('DataServiceChoices'), choicesRoute = choicesDataService.getRoute('choices');
+	            choicesRoute = (choicesRoute.substr(0, choicesRoute.lastIndexOf('/') + 1)
+	                + this._formService.getObject()['entityObj']);
+	            choicesDataService.setRoute('choices', choicesRoute);
+	        }
+	        else {
+	            autoCompleteProviders['entityAddressObj']['urlConf'] = (autoCompleteProviders['entityAddressObj']['urlConf'].substr(0, (autoCompleteProviders['entityAddressObj']['urlConf'].lastIndexOf('/') + 1))
+	                + this._formService.getObject()['entityObj']);
+	        }
+	        return this;
+	    };
+	    /**
+	     * onEntityAddressChange
+	     * @param value
+	     */
+	    BaseClientCurrentAccountFormPopupExtComponent.prototype.onEntityAddressChange = function (value) {
+	        var _this = this;
+	        this._dataService.runAction((this._dataService.getRoute('edit-entity-address')
+	            + '\\'
+	            + this._formService.getObject()['id']), { entityAddressObj: value }).then(function (data) {
+	            if (data['object']) {
+	                // Copy values instead of set the updated object to avoid lost user changes like dates, comment, etc.
+	                var obj = _this._formService.getObject();
+	                var originalObj = _this._formService.getOriginalObject();
+	                for (var _i = 0, _a = ['entityAddressObj', 'entityStreet1', 'entityStreet2', 'entityPostCode', 'entityCity', 'entityRegion']; _i < _a.length; _i++) {
+	                    var field = _a[_i];
+	                    obj[field] = (data['object'][field] || null);
+	                    // Update original object yet, because this changes are already saved in database,
+	                    // otherwise user will be asked when close the form, because objects are different (have changes),
+	                    // and user can wrongly reset the object for the previous address when this procedure is no more
+	                    // possible because object is updated in database
+	                    originalObj[field] = obj[field];
+	                }
+	            }
+	            return;
+	        }, function (errors) { console.log(errors); return; });
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    BaseClientCurrentAccountFormPopupExtComponent.prototype.ngAfterViewInit = function () {
+	        var _this = this;
+	        _super.prototype.ngAfterViewInit.call(this);
+	        // Load dependency
+	        var that = this, dependencyUrlProvider = (this._helperService.getGlobalVar('route')
+	            + 'booking/' + parentController + '-client-current-account-detail/data/'
+	            + this._formService.getObject()['clientCurrentAccountObj']);
+	        this._postService.post(dependencyUrlProvider, null).then(function (data) {
+	            var providers = [
+	                { provide: 'DataService', useClass: data_service_1.DataService },
+	                actions_service_1.ActionsService,
+	                { provide: 'DataServiceProvider', useValue: that._helperService.getDataServiceProvider(data) },
+	                { provide: 'ActionsServiceProvider', useValue: that._helperService.getActionsServiceProvider(data) },
+	                { provide: 'Provider', useValue: that._helperService.getDataBoxProvider(data) },
+	                { provide: 'Popups', useValue: {
+	                        module: client_current_account_detail_form_popup_ext_module_1.ClientCurrentAccountDetailFormPopupExtModule,
+	                        component: 'ClientCurrentAccountDetailFormPopupComponent',
+	                        providers: [
+	                            form_service_1.FormService,
+	                            { provide: 'Provider', useValue: _this._helperService.getFormProvider(data) }
+	                        ]
+	                    } },
+	                { provide: 'ParentDataService', useValue: _this._dataService }
+	            ], injector = core_1.ReflectiveInjector.fromResolvedProviders(core_1.ReflectiveInjector.resolve(providers), that._injector);
+	            that._dynamicComponentLoaderService.load(client_current_account_detail_ext_module_1.ClientCurrentAccountDetailExtModule, 'ClientCurrentAccountDetailComponent', that.lazyLoadViewContainerRef, injector).then(function (componentRef) {
+	                return true;
+	            }, function (errors) { console.log(errors); return null; });
+	        }, function (errors) { console.log(errors); return false; });
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    BaseClientCurrentAccountFormPopupExtComponent.prototype.ngOnDestroy = function () {
+	        // If object has no changes or "id" is not defined, popup was open and closed without save the object,
+	        // and if the flag '_isSessionStorage' is defined, the object was not saved in database,
+	        // so doesn't make sense refresh the objects
+	        if ((this._object != this._dataService.getObject())
+	            && (this._dataService.getObject()['id'])
+	            && (!this._dataService.getObject()['_isSessionStorage'])) {
+	            // Update object and parent object
+	            this._parentDataService.refreshObject();
+	        }
+	    };
+	    return BaseClientCurrentAccountFormPopupExtComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	__decorate([
+	    core_1.ViewChild('js_lazyLoadContainer', { read: core_1.ViewContainerRef }),
+	    __metadata("design:type", core_1.ViewContainerRef)
+	], BaseClientCurrentAccountFormPopupExtComponent.prototype, "lazyLoadViewContainerRef", void 0);
+	BaseClientCurrentAccountFormPopupExtComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_baseClientCurrentAccountFormPopup',
+	        template: ''
+	    }),
+	    __metadata("design:paramtypes", [])
+	], BaseClientCurrentAccountFormPopupExtComponent);
+	exports.BaseClientCurrentAccountFormPopupExtComponent = BaseClientCurrentAccountFormPopupExtComponent;
+
+
+/***/ },
+/* 118 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	// This module doesn't use "ReactiveFormsModule", but it needs to import this class
+	// to provide "formBuilder" when inject dependencies in child modules (like form)
+	var forms_1 = __webpack_require__(30);
+	var search_module_1 = __webpack_require__(61);
+	var expander_module_1 = __webpack_require__(62);
+	var search_pagination_module_1 = __webpack_require__(68);
+	var client_current_account_detail_component_1 = __webpack_require__(119);
+	var ClientCurrentAccountDetailExtModule = (function () {
+	    function ClientCurrentAccountDetailExtModule() {
+	    }
+	    return ClientCurrentAccountDetailExtModule;
+	}());
+	ClientCurrentAccountDetailExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [
+	            common_1.CommonModule,
+	            forms_1.FormsModule,
+	            forms_1.ReactiveFormsModule,
+	            search_module_1.SearchModule,
+	            search_pagination_module_1.SearchPaginationModule,
+	            expander_module_1.ExpanderModule
+	        ],
+	        declarations: [
+	            client_current_account_detail_component_1.ClientCurrentAccountDetailComponent
+	        ],
+	        exports: [client_current_account_detail_component_1.ClientCurrentAccountDetailComponent]
+	    })
+	], ClientCurrentAccountDetailExtModule);
+	exports.ClientCurrentAccountDetailExtModule = ClientCurrentAccountDetailExtModule;
+
+
+/***/ },
+/* 119 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var actions_service_1 = __webpack_require__(53);
+	var data_box_extension_component_1 = __webpack_require__(71);
+	var modal_service_1 = __webpack_require__(44);
+	var helper_1 = __webpack_require__(42);
+	// Component
+	var ClientCurrentAccountDetailComponent = (function (_super) {
+	    __extends(ClientCurrentAccountDetailComponent, _super);
+	    function ClientCurrentAccountDetailComponent(viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector, _parentDataService // Used in view
+	    ) {
+	        var _this = 
+	        // Call parent
+	        _super.call(this) || this;
+	        _this._parentDataService = _parentDataService; // Used in view
+	        _super.prototype.initDataBoxExtensionComponent.call(_this, viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector);
+	        _this._onObjectsChangeSubscription = _this._dataService.getOnObjectsChangeEmitter()
+	            .subscribe(function (data) { _this._parentDataService.refreshObject(); });
+	        return _this;
+	    }
+	    /**
+	     * Lifecycle callback
+	     */
+	    ClientCurrentAccountDetailComponent.prototype.ngOnDestroy = function () {
+	        this._onObjectsChangeSubscription.unsubscribe();
+	    };
+	    return ClientCurrentAccountDetailComponent;
+	}(data_box_extension_component_1.DataBoxExtensionComponent));
+	ClientCurrentAccountDetailComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_clientCurrentAccountDetail',
+	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'template/index/base-current-account-detail/accounting'
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('Popups')),
+	    __param(8, core_1.Inject('ParentDataService')),
+	    __metadata("design:paramtypes", [core_1.ViewContainerRef,
+	        core_1.Renderer, Object, Object, actions_service_1.ActionsService,
+	        modal_service_1.ModalService, Object, core_1.Injector, Object])
+	], ClientCurrentAccountDetailComponent);
+	exports.ClientCurrentAccountDetailComponent = ClientCurrentAccountDetailComponent;
+
+
+/***/ },
+/* 120 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(34);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var client_current_account_detail_form_popup_component_1 = __webpack_require__(121);
+	var ClientCurrentAccountDetailFormPopupExtModule = (function () {
+	    function ClientCurrentAccountDetailFormPopupExtModule() {
+	    }
+	    return ClientCurrentAccountDetailFormPopupExtModule;
+	}());
+	ClientCurrentAccountDetailFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
+	        declarations: [
+	            client_current_account_detail_form_popup_component_1.ClientCurrentAccountDetailFormPopupComponent
+	        ],
+	        exports: [client_current_account_detail_form_popup_component_1.ClientCurrentAccountDetailFormPopupComponent]
+	    })
+	], ClientCurrentAccountDetailFormPopupExtModule);
+	exports.ClientCurrentAccountDetailFormPopupExtModule = ClientCurrentAccountDetailFormPopupExtModule;
+
+
+/***/ },
+/* 121 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_popup_extension_component_1 = __webpack_require__(82);
+	var form_service_1 = __webpack_require__(54);
+	var ClientCurrentAccountDetailFormPopupComponent = (function (_super) {
+	    __extends(ClientCurrentAccountDetailFormPopupComponent, _super);
+	    function ClientCurrentAccountDetailFormPopupComponent(elementRef, renderer, provider, formService, dataService, _helperService) {
+	        var _this = _super.call(this) || this;
+	        _this._helperService = _helperService;
+	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
+	        _this.decimalConf = _this._helperService.getDecimalConf();
+	        return _this;
+	    }
+	    /**
+	     * onServiceChange
+	     * @param value
+	     */
+	    ClientCurrentAccountDetailFormPopupComponent.prototype.onServiceChange = function (value) {
+	        var that = this;
+	        this._dataService.runAction((this._helperService.getGlobalVar('route')
+	            + 'services/service/get-vat-code-percentage/'
+	            + value)).then(function (data) {
+	            if (data['localData']) {
+	                that._formService.getObject()['vatCode_percentage']
+	                    = (data['localData']['vatCodePercentage'] || null);
+	                that.setTotals();
+	            }
+	        }, function (errors) { console.log(errors); return; });
+	    };
+	    /**
+	     * onQuantityEnterKey
+	     * @param value
+	     */
+	    ClientCurrentAccountDetailFormPopupComponent.prototype.onQuantityEnterKey = function (value) {
+	        this._formService.getObject()['quantity'] = value; // Value is not yet setted in object
+	        this.setTotals();
+	    };
+	    /**
+	     * onValueEnterKey
+	     * @param value
+	     */
+	    ClientCurrentAccountDetailFormPopupComponent.prototype.onValueEnterKey = function (value) {
+	        this._formService.getObject()['user_value'] = value;
+	        this.setTotals();
+	    };
+	    /**
+	     * onIsVatIncludedChange
+	     * @param value
+	     */
+	    ClientCurrentAccountDetailFormPopupComponent.prototype.onIsVatIncludedChange = function (value) {
+	        this._formService.getObject()['isVatIncluded'] = value;
+	        this.setTotals();
+	    };
+	    /**
+	     * Set totals
+	     * @returns {ClientCurrentAccountDetailFormPopupComponent}
+	     */
+	    ClientCurrentAccountDetailFormPopupComponent.prototype.setTotals = function () {
+	        var obj = this._formService.getObject(), quantity = parseFloat(obj['quantity'] || '0'), user_value = parseFloat(obj['user_value'] || '0'), isVatIncluded = obj['isVatIncluded'], vatPercentage = parseFloat(obj['vatCode_percentage'] || '0'), value = user_value, // Unit value without VAT
+	        vatValue = 0;
+	        // Calc VAT value and value
+	        if (vatPercentage > 0) {
+	            if (isVatIncluded) {
+	                value = parseFloat((Math.round((user_value / (1 + (vatPercentage / 100)))
+	                    * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value));
+	                vatValue = (user_value - value);
+	            }
+	            else {
+	                vatValue = parseFloat((Math.round((user_value * (vatPercentage / 100))
+	                    * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value));
+	            }
+	        }
+	        // Value (unit value without VAT)
+	        obj['value'] = value;
+	        // Total vat
+	        obj['totalVat'] = (Math.round((vatValue * quantity)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        var totalUnit = parseFloat((Math.round((value + vatValue)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value));
+	        // Total
+	        obj['total'] = (Math.round(
+	        // Do not use "subTotal" nor "totalVat" to get the "total", because this values are already rounded,
+	        // and in some cases the sum of 2 rounded values cause inquiries.
+	        // Before multiply round the sum to get a coherent total unit value
+	        (totalUnit * quantity)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        // Sub total
+	        obj['subTotal'] = (Math.round(
+	        // Sub total is determined in this way, because in some cases the sum of "subTotal" and "totalVat"
+	        // rounded does not match with the correct total, given that this values are rounded to 2 decimals
+	        // and lost precision, so in this way we keep the calculus with coherence giving preference to keep
+	        // "totalVat" untouched (legal values).
+	        (parseFloat(obj['total'] || '0') - parseFloat(obj['totalVat'] || '0'))
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        return this;
+	    };
+	    return ClientCurrentAccountDetailFormPopupComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	ClientCurrentAccountDetailFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '#js_clientCurrentAccountDetailFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __param(5, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object, Object])
+	], ClientCurrentAccountDetailFormPopupComponent);
+	exports.ClientCurrentAccountDetailFormPopupComponent = ClientCurrentAccountDetailFormPopupComponent;
+
+
+/***/ },
+/* 122 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(34);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var client_current_account_edit_form_popup_component_1 = __webpack_require__(123);
+	var ClientCurrentAccountEditFormPopupExtModule = (function () {
+	    function ClientCurrentAccountEditFormPopupExtModule() {
+	    }
+	    return ClientCurrentAccountEditFormPopupExtModule;
+	}());
+	ClientCurrentAccountEditFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
+	        declarations: [
+	            client_current_account_edit_form_popup_component_1.ClientCurrentAccountEditFormPopupComponent
+	        ],
+	        exports: [client_current_account_edit_form_popup_component_1.ClientCurrentAccountEditFormPopupComponent]
+	    })
+	], ClientCurrentAccountEditFormPopupExtModule);
+	exports.ClientCurrentAccountEditFormPopupExtModule = ClientCurrentAccountEditFormPopupExtModule;
+
+
+/***/ },
+/* 123 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_service_1 = __webpack_require__(54);
+	var dynamic_component_loader_service_1 = __webpack_require__(45);
+	var post_service_1 = __webpack_require__(43);
+	var base_client_current_account_form_popup_ext_component_1 = __webpack_require__(117);
+	var ClientCurrentAccountEditFormPopupComponent = (function (_super) {
+	    __extends(ClientCurrentAccountEditFormPopupComponent, _super);
+	    function ClientCurrentAccountEditFormPopupComponent(elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initBaseClientCurrentAccountFormPopupExtComponent.call(_this, elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService);
+	        return _this;
+	    }
+	    return ClientCurrentAccountEditFormPopupComponent;
+	}(base_client_current_account_form_popup_ext_component_1.BaseClientCurrentAccountFormPopupExtComponent));
+	ClientCurrentAccountEditFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_clientCurrentAccountEditFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('ParentDataService')),
+	    __param(7, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object, core_1.Injector, Object, Object, dynamic_component_loader_service_1.DynamicComponentLoaderService,
+	        post_service_1.PostService])
+	], ClientCurrentAccountEditFormPopupComponent);
+	exports.ClientCurrentAccountEditFormPopupComponent = ClientCurrentAccountEditFormPopupComponent;
+
+
+/***/ },
+/* 124 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var entity_address_popup_component_1 = __webpack_require__(125);
+	var EntityAddressPopupModule = (function () {
+	    function EntityAddressPopupModule() {
+	    }
+	    return EntityAddressPopupModule;
+	}());
+	EntityAddressPopupModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule],
+	        declarations: [
+	            entity_address_popup_component_1.EntityAddressPopupComponent
+	        ],
+	        exports: [entity_address_popup_component_1.EntityAddressPopupComponent]
+	    })
+	], EntityAddressPopupModule);
+	exports.EntityAddressPopupModule = EntityAddressPopupModule;
+
+
+/***/ },
+/* 125 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_popup_extension_component_1 = __webpack_require__(82);
+	var form_service_1 = __webpack_require__(54);
+	var EntityAddressPopupComponent = (function (_super) {
+	    __extends(EntityAddressPopupComponent, _super);
+	    function EntityAddressPopupComponent(elementRef, renderer, provider, formService, dataService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
+	        return _this;
+	    }
+	    return EntityAddressPopupComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	EntityAddressPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '#js_entityAddressPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object])
+	], EntityAddressPopupComponent);
+	exports.EntityAddressPopupComponent = EntityAddressPopupComponent;
+
+
+/***/ },
+/* 126 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(34);
+	var supplier_current_account_form_popup_component_1 = __webpack_require__(127);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var SupplierCurrentAccountFormPopupExtModule = (function () {
+	    function SupplierCurrentAccountFormPopupExtModule() {
+	    }
+	    return SupplierCurrentAccountFormPopupExtModule;
+	}());
+	SupplierCurrentAccountFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule,
+	            field_types_extension_module_1.FieldTypesExtensionModule,
+	            ng_bootstrap_1.NgbModule
+	        ],
+	        declarations: [
+	            supplier_current_account_form_popup_component_1.SupplierCurrentAccountFormPopupComponent
+	        ],
+	        exports: [supplier_current_account_form_popup_component_1.SupplierCurrentAccountFormPopupComponent]
+	    })
+	], SupplierCurrentAccountFormPopupExtModule);
+	exports.SupplierCurrentAccountFormPopupExtModule = SupplierCurrentAccountFormPopupExtModule;
+
+
+/***/ },
+/* 127 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_popup_extension_component_1 = __webpack_require__(82);
+	var form_service_1 = __webpack_require__(54);
+	var SupplierCurrentAccountFormPopupComponent = (function (_super) {
+	    __extends(SupplierCurrentAccountFormPopupComponent, _super);
+	    function SupplierCurrentAccountFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
+	        return _this;
+	    }
+	    return SupplierCurrentAccountFormPopupComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	SupplierCurrentAccountFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '#js_supplierCurrentAccountFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object])
+	], SupplierCurrentAccountFormPopupComponent);
+	exports.SupplierCurrentAccountFormPopupComponent = SupplierCurrentAccountFormPopupComponent;
+
+
+/***/ },
+/* 128 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	// This module doesn't use "ReactiveFormsModule", but it needs to import this class
+	// to provide "formBuilder" when inject dependencies in child modules (like form)
+	var forms_1 = __webpack_require__(30);
+	var search_module_1 = __webpack_require__(61);
+	var expander_module_1 = __webpack_require__(62);
+	var search_pagination_module_1 = __webpack_require__(68);
+	var observation_component_1 = __webpack_require__(129);
 	var ObservationExtensionModule = (function () {
 	    function ObservationExtensionModule() {
 	    }
@@ -17858,7 +19403,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 112 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17909,7 +19454,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 113 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17922,7 +19467,7 @@ webpackJsonp([1],[
 	var core_1 = __webpack_require__(3);
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
-	var booking_observation_form_popup_component_1 = __webpack_require__(114);
+	var booking_observation_form_popup_component_1 = __webpack_require__(131);
 	var BookingObservationFormPopupExtensionModule = (function () {
 	    function BookingObservationFormPopupExtensionModule() {
 	    }
@@ -17941,7 +19486,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 114 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -17989,7 +19534,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 115 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18004,7 +19549,7 @@ webpackJsonp([1],[
 	var search_module_1 = __webpack_require__(61);
 	var search_pagination_module_1 = __webpack_require__(68);
 	var expander_module_1 = __webpack_require__(62);
-	var file_component_1 = __webpack_require__(116);
+	var file_component_1 = __webpack_require__(133);
 	var FileModule = (function () {
 	    function FileModule() {
 	    }
@@ -18026,7 +19571,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 116 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18088,7 +19633,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 117 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18101,7 +19646,7 @@ webpackJsonp([1],[
 	var core_1 = __webpack_require__(3);
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
-	var booking_file_form_popup_component_1 = __webpack_require__(118);
+	var booking_file_form_popup_component_1 = __webpack_require__(135);
 	var BookingFileFormPopupExtensionModule = (function () {
 	    function BookingFileFormPopupExtensionModule() {
 	    }
@@ -18120,7 +19665,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 118 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18143,7 +19688,7 @@ webpackJsonp([1],[
 	};
 	var core_1 = __webpack_require__(3);
 	var helper_1 = __webpack_require__(42);
-	var file_form_popup_component_1 = __webpack_require__(119);
+	var file_form_popup_component_1 = __webpack_require__(136);
 	var BookingFileFormPopupComponent = (function (_super) {
 	    __extends(BookingFileFormPopupComponent, _super);
 	    function BookingFileFormPopupComponent(elementRef, renderer, provider, dataService) {
@@ -18166,7 +19711,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 119 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18187,7 +19732,7 @@ webpackJsonp([1],[
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var Dropzone = __webpack_require__(120);
+	var Dropzone = __webpack_require__(137);
 	var core_1 = __webpack_require__(3);
 	var modal_service_1 = __webpack_require__(44);
 	var helper_1 = __webpack_require__(42);
@@ -18229,7 +19774,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 120 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {
@@ -20000,10 +21545,10 @@ webpackJsonp([1],[
 	
 	}).call(this);
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(121)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(138)(module)))
 
 /***/ },
-/* 121 */
+/* 138 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -20019,7 +21564,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 122 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20033,7 +21578,7 @@ webpackJsonp([1],[
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
 	var expander_module_1 = __webpack_require__(62);
-	var entity_detail_component_1 = __webpack_require__(123);
+	var entity_detail_component_1 = __webpack_require__(140);
 	var EntityDetailModule = (function () {
 	    function EntityDetailModule() {
 	    }
@@ -20052,7 +21597,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 123 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20166,7 +21711,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 124 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20180,7 +21725,7 @@ webpackJsonp([1],[
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
 	var field_types_extension_module_1 = __webpack_require__(74);
-	var local_form_popup_component_1 = __webpack_require__(125);
+	var local_form_popup_component_1 = __webpack_require__(142);
 	var LocalFormPopupExtensionModule = (function () {
 	    function LocalFormPopupExtensionModule() {
 	    }
@@ -20199,7 +21744,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 125 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20247,7 +21792,88 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 126 */
+/* 143 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var local_form_popup_component_1 = __webpack_require__(144);
+	var LocalFormPopupExtensionModule = (function () {
+	    function LocalFormPopupExtensionModule() {
+	    }
+	    return LocalFormPopupExtensionModule;
+	}());
+	LocalFormPopupExtensionModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, field_types_extension_module_1.FieldTypesExtensionModule],
+	        declarations: [
+	            local_form_popup_component_1.LocalFormPopupComponent
+	        ],
+	        exports: [local_form_popup_component_1.LocalFormPopupComponent]
+	    })
+	], LocalFormPopupExtensionModule);
+	exports.LocalFormPopupExtensionModule = LocalFormPopupExtensionModule;
+
+
+/***/ },
+/* 144 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_popup_extension_component_1 = __webpack_require__(82);
+	var form_service_1 = __webpack_require__(54);
+	var LocalFormPopupComponent = (function (_super) {
+	    __extends(LocalFormPopupComponent, _super);
+	    function LocalFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
+	        return _this;
+	    }
+	    return LocalFormPopupComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	LocalFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_localFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object])
+	], LocalFormPopupComponent);
+	exports.LocalFormPopupComponent = LocalFormPopupComponent;
+
+
+/***/ },
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -20262,7 +21888,95 @@ webpackJsonp([1],[
 	var forms_1 = __webpack_require__(30);
 	var ng_bootstrap_1 = __webpack_require__(34);
 	var field_types_extension_module_1 = __webpack_require__(74);
-	var booking_form_popup_component_1 = __webpack_require__(127);
+	var form_popup_component_1 = __webpack_require__(146);
+	var FormPopupExtensionModule = (function () {
+	    function FormPopupExtensionModule() {
+	    }
+	    return FormPopupExtensionModule;
+	}());
+	FormPopupExtensionModule = __decorate([
+	    core_1.NgModule({
+	        imports: [
+	            common_1.CommonModule,
+	            forms_1.FormsModule,
+	            forms_1.ReactiveFormsModule,
+	            ng_bootstrap_1.NgbModule,
+	            field_types_extension_module_1.FieldTypesExtensionModule
+	        ],
+	        declarations: [
+	            form_popup_component_1.FormPopupComponent
+	        ],
+	        exports: [form_popup_component_1.FormPopupComponent]
+	    })
+	], FormPopupExtensionModule);
+	exports.FormPopupExtensionModule = FormPopupExtensionModule;
+
+
+/***/ },
+/* 146 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_service_1 = __webpack_require__(54);
+	var form_popup_extension_component_1 = __webpack_require__(82);
+	var FormPopupComponent = (function (_super) {
+	    __extends(FormPopupComponent, _super);
+	    function FormPopupComponent(elementRef, renderer, provider, formService, dataService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
+	        return _this;
+	    }
+	    return FormPopupComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	FormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_formPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object])
+	], FormPopupComponent);
+	exports.FormPopupComponent = FormPopupComponent;
+
+
+/***/ },
+/* 147 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(34);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var booking_form_popup_component_1 = __webpack_require__(148);
 	var BookingFormPopupExtensionModule = (function () {
 	    function BookingFormPopupExtensionModule() {
 	    }
@@ -20281,7 +21995,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 127 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";

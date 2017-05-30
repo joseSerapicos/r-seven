@@ -55,7 +55,7 @@ class StoreRepository extends BaseEntityRepository
             'name' => array('label' => 'Name', 'type' => 'text', 'acl' => 'edit'),
             'fallbackStoreObj' => array('label' => 'Fallback Store', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(
                 'table' => 'store', 'bundle' => 'admin', 'type' => 'select'), 'isRequired' => false),
-            'formalName' => array('label' => 'Formal Name', 'type' => 'text', 'acl' => 'edit'),
+            'legalName' => array('label' => 'Legal Name', 'type' => 'text', 'acl' => 'edit'),
             'taxNumber' => array('label' => 'Tax Number', 'type' => 'text', 'acl' => 'edit'),
             'storeAddressObj' => array('label' => 'Address', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array(

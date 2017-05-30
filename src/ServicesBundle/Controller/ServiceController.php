@@ -95,6 +95,29 @@ class ServiceController extends BaseEntityController
     }
 
     /**
+     * @Route("/services/service/get-vat-code-percentage/{id}",
+     *     name="_services__service__get_vat_code_percentage"
+     * )
+     *
+     * Action to get the VAT code percentage of object
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function getVatCodePercentageAction(Request $request, $id)
+    {
+        // Set configuration
+        $this->init($request);
+
+        $obj = $this->getObject($id);
+
+        $this->responseConf['localData']['vatCodePercentage']
+            = ($obj->getVatCodeObj() ? $obj->getVatCodeObj()->getPercentage() : null);
+
+        return $this->getResponse(true);
+    }
+
+    /**
      * @Route("/services/service/edit/{id}",
      *     name="_services__service__edit",
      *     defaults={"id" = null},
@@ -136,7 +159,11 @@ class ServiceController extends BaseEntityController
         $form->handleRequest($request);
 
         // Check if is submitted
-        if($form->isSubmitted() && $form->isValid()) {
+        if($form->isSubmitted()) {
+            if (!$this->validateForm($form)) {
+                return $this->getResponse(true);
+            }
+
             // Get data
             $content = $request->getContent();
             $fields = array();

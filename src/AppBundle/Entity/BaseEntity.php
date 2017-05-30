@@ -30,6 +30,17 @@ abstract class BaseEntity {
      */
     protected $isEnabled;
 
+    /**
+     * Set id
+     * This method is used to set a temporary id when object is stored in session
+     * @param string $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
 
     /**
      * Get id
@@ -106,9 +117,11 @@ abstract class BaseEntity {
      */
     public function __toString()
     {
-        return (
-            $this->getName()
-            . ' (' . (method_exists($this, 'getCode') ? $this->getCode() : $this->getId()) . ')'
+        $identifier = (method_exists($this, 'getCode') ? $this->getCode() : $this->getId());
+
+        return (method_exists($this, 'getName')
+            ? ($this->getName() . ' (' . $identifier . ')')
+            : ('' . $identifier) // The return needs to be a string, otherwise we eill get an error
         );
     }
 

@@ -43,6 +43,16 @@ class HelperService
     }
 
     /**
+     * Get bundle name without namespaces
+     * @param $object
+     * @return string
+     */
+    static function getBundleName($object) {
+        $fullClassName = get_class($object);
+        return substr($fullClassName, 0, strpos($fullClassName, '\\'));
+    }
+
+    /**
      * Push into array
      * @param $array
      * @param $newArray

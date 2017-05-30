@@ -1,7 +1,7 @@
 <?php
 namespace ServicesBundle\Entity;
 
-use AppBundle\Entity\BasePriceException;
+use AppBundle\Entity\BasePriceExceptionDefinition;
 use Doctrine\ORM\Mapping as ORM;
 
 
@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * Used for supplement (DEBIT posting) and discount (CREDIT posting)
  */
-class ServicePriceException extends BasePriceException {
+class ServicePriceException extends BasePriceExceptionDefinition {
     /**
      * @ORM\ManyToOne(targetEntity="Service")
      * @ORM\JoinColumn(name="fk_service", referencedColumnName="id", nullable=false, unique=false, onDelete="CASCADE")

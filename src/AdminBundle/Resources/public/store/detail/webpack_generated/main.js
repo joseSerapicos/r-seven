@@ -4796,16 +4796,27 @@ webpackJsonp([1],[
 	    /**
 	     * Order objects by key
 	     * @param objects
-	     * @param key
+	     * @param keys
 	     * @returns {any}
 	     */
-	    Helper.orderObjects = function (objects, key) {
-	        if (objects) {
-	            objects.sort(function (obj1, obj2) {
-	                // If key is equal, then sort by id desc
-	                var orderKey = ((obj1[key] == obj2[key]) ? 'id' : key);
-	                return ((obj1[orderKey] > obj2[orderKey]) ? 1 : 0);
-	            });
+	    Helper.orderObjects = function (objects, keys) {
+	        var prevKey = null;
+	        if (objects && keys) {
+	            var _loop_1 = function (key) {
+	                objects.sort(function (obj1, obj2) {
+	                    if (!prevKey || (obj1[prevKey] == obj2[prevKey])) {
+	                        // If key is equal, then sort by id "DESC"
+	                        var orderKey = ((obj1[key] == obj2[key]) ? 'id' : key);
+	                        return ((obj1[orderKey] > obj2[orderKey]) ? 1 : 0);
+	                    }
+	                    return 0;
+	                });
+	                prevKey = key;
+	            };
+	            for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+	                var key = keys_1[_i];
+	                _loop_1(key);
+	            }
 	        }
 	        return objects;
 	    };
@@ -4930,7 +4941,8 @@ webpackJsonp([1],[
 	     */
 	    Helper.getFormProvider = function (data) {
 	        return {
-	            label: data.label || ''
+	            label: data.label || '',
+	            preventObjectOverride: true
 	        };
 	    };
 	    /**
@@ -5128,6 +5140,8 @@ webpackJsonp([1],[
 	    }
 	    /**
 	     * Initialization
+	     * Init modal always in the main component (so we can ensure that the mainViewContainerRef is always active,
+	     * others component can be hidden or destroyed)
 	     * @param viewContainerRef
 	     * @returns {ModalService}
 	     */
@@ -5843,6 +5857,13 @@ webpackJsonp([1],[
 	    NavManagerService.prototype.loadNav = function (index) {
 	        var that = this;
 	        return new Promise(function (resolve, reject) {
+	            if (that._llComponentRefArr[index] // Container has been loaded
+	                || !that._component['getNavData'] // Component doesn't have the necessary implementation to lazy load
+	            ) {
+	                that._currentIndex = index;
+	                return resolve(true);
+	            }
+	            // Get lazy load view
 	            var llViewIndex = null, llClass = ('js_lazyLoadContainer_' + index); // Lazy load class
 	            // Check if is a lazy load container (by its index in class)
 	            for (var index_1 in that._llViewContainerRefArr) {
@@ -5851,10 +5872,7 @@ webpackJsonp([1],[
 	                    break;
 	                }
 	            }
-	            if ((llViewIndex === null) // No lazy load view
-	                || that._llComponentRefArr[index] // Container has been loaded
-	                || !that._component['getNavData'] // Component doesn't have the necessary implementation to lazy load
-	            ) {
+	            if (llViewIndex === null) {
 	                that._currentIndex = index;
 	                return resolve(true);
 	            }
@@ -5935,15 +5953,11 @@ webpackJsonp([1],[
 	var nav_manager_service_1 = __webpack_require__(44);
 	var tabs_component_1 = __webpack_require__(46);
 	/* Import dependencies */
-	// Save last templateUrl
-	var tmpTemplateUrl = helper_1.Helper.getRuntimeVar('templateUrl');
 	// Parent id of dependencies
 	var parentId = helper_1.Helper.getGlobalVar('conf')['object']['id'];
 	// Contacts
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'admin/store/contacts');
 	var contacts_module_1 = __webpack_require__(48);
-	// Restore last templateUrl
-	helper_1.Helper.setRuntimeVar('templateUrl', tmpTemplateUrl);
 	/* /Import dependencies */
 	var MainComponent = (function (_super) {
 	    __extends(MainComponent, _super);
@@ -7101,23 +7115,46 @@ webpackJsonp([1],[
 	        this._object = {}; // Object used by form
 	        this._$form = null; // DOM form
 	        this._errors = {}; // Form errors validation
+	        // Used to force form to submit,
+	        // generally when you need that user confirm the date, but the data has no changes.
+	        this._forceSubmit = false;
 	        // Controls if the form is on "save" mode (waiting to finish the save process). It's useful to control the
 	        // save action (avoid multiples clicks on button) and to recognize the object change after saved by DataService.
 	        this._isOnSave = false;
+	        // Confirm object override by user to prevent data loss (when the object is changed in DataService)
+	        this._preventObjectOverride = true;
 	        this._onObjectChangeEmitter = new core_1.EventEmitter();
 	        // Object change event subscription
 	        this._onObjectChangeSubscription = this._dataService.getOnObjectChangeEmitter()
 	            .subscribe(function (object) { return _this.onObjectChangeSubscription(object); });
-	        // Set object
-	        this.setObject(this._dataService.getObject());
-	        // Form build
+	        // Set object, if it has not been setted before open the form
+	        if (!this._dataService.getObject()) {
+	            // If object is not setted, create a new
+	            var that_1 = this;
+	            this.newObject().then(function (data) {
+	                that_1.setObject(_this._dataService.getObject());
+	                that_1.buildForm(formBuilder);
+	            }, function (errors) { return; });
+	        }
+	        else {
+	            this.setObject(this._dataService.getObject());
+	            this.buildForm(formBuilder);
+	        }
+	    }
+	    /**
+	     * Build form
+	     * @param formBuilder
+	     * @returns {FormService}
+	     */
+	    FormService.prototype.buildForm = function (formBuilder) {
 	        var formControls = {}, fields = (this._dataService.getFields('form') || []).concat(this._helperService.objectKeys(this._dataService.getProviderExtraDataAttr('fields')));
 	        for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
 	            var field = fields_1[_i];
 	            formControls[field] = [this._object[field] || null];
 	        }
 	        this._form = formBuilder.group(formControls);
-	    }
+	        return this;
+	    };
 	    /**
 	     * Initialization of service.
 	     * This method should be called in "ngOnInit" method of parent component,
@@ -7129,6 +7166,7 @@ webpackJsonp([1],[
 	        // Local variables
 	        this._component = component;
 	        this._$form = $(component._elementRef.nativeElement).find('form');
+	        this._preventObjectOverride = this._component.getProviderAttr('preventObjectOverride');
 	        return this;
 	    };
 	    /**
@@ -7145,13 +7183,15 @@ webpackJsonp([1],[
 	    FormService.prototype.onObjectChangeSubscription = function (object) {
 	        // Set object only if is different
 	        if (object != this._originalObject) {
-	            if (this._isOnSave) {
-	                // Form is waiting for save process, this is the saved object,
-	                // it's not necessary any confirmation, if you need more security in this process, add a token.
+	            if (
+	            // Form is waiting for save process, this is the saved object,
+	            // it's not necessary any confirmation, if you need more security in this process, add a token.
+	            this._isOnSave
+	                || !this._preventObjectOverride) {
 	                this.setObject(object);
 	                return;
 	            }
-	            // Regular change in object
+	            // Confirm object override by user to prevent data loss
 	            this.confirmAndSetObject(object).then(function (data) { return; }, function (errors) { return; });
 	        }
 	    };
@@ -7203,6 +7243,10 @@ webpackJsonp([1],[
 	            this._object = helper_1.Helper.cloneObject(this._originalNormalizedObject, true);
 	            // Reset errors
 	            this._errors = {};
+	            if (this._dataService.getObjectIndex() == null) {
+	                // If no index is defined, it's a new object
+	                this._forceSubmit = true;
+	            }
 	            this._onObjectChangeEmitter.emit(this._object); // Object as changed to the original, notify subscribers
 	        }
 	        return this;
@@ -7309,13 +7353,11 @@ webpackJsonp([1],[
 	     * Save form. Handle submit form.
 	     * This method should be called from child component.
 	     * @param route (optional route to overrides default route)
-	     * @param forceSubmit (force form to submit even if object has no changes)
 	     * @param hasValidation
 	     * @returns {Promise}
 	     */
-	    FormService.prototype.save = function (route, forceSubmit, hasValidation) {
+	    FormService.prototype.save = function (route, hasValidation) {
 	        if (route === void 0) { route = null; }
-	        if (forceSubmit === void 0) { forceSubmit = false; }
 	        if (hasValidation === void 0) { hasValidation = true; }
 	        var that = this;
 	        return new Promise(function (resolve, reject) {
@@ -7326,7 +7368,7 @@ webpackJsonp([1],[
 	            // Put form in "save" mode
 	            that._isOnSave = true;
 	            // Current form object has changes from user?
-	            if (forceSubmit || !that._object['id'] || that.hasChanges()) {
+	            if (that._forceSubmit || !that._object['id'] || that.hasChanges()) {
 	                // Validate form
 	                if (hasValidation) {
 	                    that._errors = {};
@@ -7347,6 +7389,8 @@ webpackJsonp([1],[
 	                that._dataService.save(data, id, route).then(function (object) {
 	                    // Update form after save with saved object
 	                    that.setObject(object);
+	                    // Force submit is reset, each activation is valid  only once
+	                    that._forceSubmit = false;
 	                    return resolve(true);
 	                }, function (errors) {
 	                    if (errors) {
@@ -7380,16 +7424,37 @@ webpackJsonp([1],[
 	     * @param $event
 	     */
 	    FormService.prototype.saveAndEnterAction = function ($event) {
-	        var _this = this;
 	        if ($event === void 0) { $event = null; }
 	        if ($event) {
 	            $event.preventDefault();
 	        }
 	        var that = this;
 	        this.save().then(function (data) {
-	            _this._dataService.detail();
+	            that.newAction();
 	            return;
 	        }, function (errors) { return; });
+	    };
+	    /**
+	     * Add a new entry (newObject is used in name because new is a reserved word).
+	     * @returns {Promise}
+	     */
+	    FormService.prototype.newObject = function () {
+	        var that = this;
+	        return new Promise(function (resolve, reject) {
+	            this._dataService.newObject().then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
+	        });
+	    };
+	    /**
+	     * Add a new entry action.
+	     * This method should be called when the form is initialized.
+	     * @param $event
+	     */
+	    FormService.prototype.newAction = function ($event) {
+	        if ($event === void 0) { $event = null; }
+	        if ($event) {
+	            $event.preventDefault();
+	        }
+	        this.newObject().then(function (data) { return; }, function (errors) { return; });
 	    };
 	    /**
 	     * Save and add a new entry.
@@ -7397,15 +7462,12 @@ webpackJsonp([1],[
 	     * @param $event
 	     */
 	    FormService.prototype.saveAndNewAction = function ($event) {
-	        var _this = this;
 	        if ($event === void 0) { $event = null; }
 	        if ($event) {
 	            $event.preventDefault();
 	        }
-	        this.save().then(function (data) {
-	            _this._dataService.newObject();
-	            return;
-	        }, function (errors) { return; });
+	        var that = this;
+	        this.save().then(function (data) { that.newAction(); return; }, function (errors) { return; });
 	    };
 	    /**
 	     * Reset object.
@@ -7442,6 +7504,14 @@ webpackJsonp([1],[
 	            $event.preventDefault();
 	        }
 	        this.reset().then(function (data) { return; }, function (errors) { return; });
+	    };
+	    /**
+	     * Set forceSubmit
+	     * @returns {FormService}
+	     */
+	    FormService.prototype.setForceSubmit = function () {
+	        this._forceSubmit = true;
+	        return this;
 	    };
 	    return FormService;
 	}());
@@ -8100,30 +8170,30 @@ webpackJsonp([1],[
 	     */
 	    DataService.prototype.setObject = function (object, index) {
 	        if (index === void 0) { index = null; }
-	        // Normalize object to template
-	        this._normalizedObject = this._helperService.cloneObject(object, true);
-	        this.normalizeObjectsToTemplate([this._normalizedObject]);
-	        if (object && object['id']) {
-	            var objectsProvider = (this._objectsProvider || this._provider.objects);
-	            // Refresh objects array
-	            if ((index != null) && objectsProvider[index]) {
-	                // Update existent object
-	                this._objectIndex = index;
-	                objectsProvider[index] = this._normalizedObject;
-	                this._normalizedObject['_isEdited'] = true; // Flag to use in template
+	        if (object) {
+	            // Normalize object to template
+	            this._normalizedObject = this._helperService.cloneObject(object, true);
+	            this.normalizeObjectsToTemplate([this._normalizedObject]);
+	            // Objects stored in session does not be considered really objects.
+	            if (!object['_isSessionStorage']) {
+	                var objectsProvider = (this._objectsProvider || this._provider.objects);
+	                // Refresh objects array
+	                if ((index != null) && objectsProvider[index]) {
+	                    // Update existent object
+	                    this._objectIndex = index;
+	                    objectsProvider[index] = this._normalizedObject;
+	                    this._normalizedObject['_isEdited'] = true; // Flag to use in template
+	                }
+	                else {
+	                    // Add new object at first of array (to best user experience)
+	                    this._objectIndex = 0; // Update index to the new index
+	                    this.pushToObjects([this._normalizedObject], true);
+	                    this._newObjectsIds.push(object['id']); // New object added
+	                    this._normalizedObject['_isNew'] = true; // Flag to use in template
+	                }
 	            }
-	            else {
-	                // Add new object at first of array (to best user experience)
-	                this._objectIndex = 0; // Update index to the new index
-	                this.pushToObjects([this._normalizedObject], true);
-	                this._newObjectsIds.push(object['id']); // New object added
-	                this._normalizedObject['_isNew'] = true; // Flag to use in template
-	            }
+	            this.setLocalObject(object);
 	        }
-	        else {
-	            this._objectIndex = null;
-	        }
-	        this.setLocalObject(object);
 	        return this;
 	    };
 	    /**
@@ -8234,9 +8304,6 @@ webpackJsonp([1],[
 	        else {
 	            this.resetObjects();
 	            this.pushToObjects(objects);
-	            this.newObject().then(// Reset object, index and all information of object can be changed
-	            function (// Reset object, index and all information of object can be changed
-	                data) { }, function (errors) { console.log(errors); });
 	        }
 	        // Emmit changes
 	        this._onObjectsChangeEmitter.emit(objects);
@@ -8250,6 +8317,7 @@ webpackJsonp([1],[
 	        this._provider.objects = [];
 	        this._objectsIds = [];
 	        this._newObjectsIds = [];
+	        this._objectIndex = null; // Reset object index
 	        return this;
 	    };
 	    /**
@@ -8527,6 +8595,7 @@ webpackJsonp([1],[
 	        var that = this;
 	        return new Promise(function (resolve, reject) {
 	            var newObj = {};
+	            // Create by copy
 	            if (index != null) {
 	                var objectsProvider = (that._objectsProvider || that._provider.objects);
 	                return that._postService.post(that._provider.route['get']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
@@ -8541,21 +8610,49 @@ webpackJsonp([1],[
 	                            newObj[fieldInView] = data.object[fieldInView];
 	                        }
 	                    }
-	                    that.setObject(newObj);
-	                    that.resetExtraFields();
+	                    that.setNewObject(newObj);
 	                    return resolve(true);
 	                }, function (errors) { console.log(errors); return reject(false); });
 	            }
 	            else {
-	                for (var _i = 0, _a = that._provider.fields['form']; _i < _a.length; _i++) {
-	                    var field = _a[_i];
-	                    newObj[field] = (that._provider.fields['metadata'][field]['default'] || null);
+	                // Create by server action
+	                if (that._provider.route['new']) {
+	                    return that._postService.post(that._provider.route['new']['url'], that.getRequestData()).then(function (data) {
+	                        // Local data (Do not override, merge data)
+	                        if (data['localData']) {
+	                            that._provider.localData =
+	                                that._helperService.mergeObjects(that._provider.localData, data['localData']);
+	                        }
+	                        // Object
+	                        that.setNewObject(data.object);
+	                        return resolve(true);
+	                    }, function (errors) { console.log(errors); return reject(false); });
 	                }
-	                that.setObject(newObj);
-	                that.resetExtraFields();
-	                return resolve(true);
+	                else {
+	                    for (var _i = 0, _a = that._provider.fields['form']; _i < _a.length; _i++) {
+	                        var field = _a[_i];
+	                        newObj[field] = (that._provider.fields['metadata'][field]['default'] || null);
+	                    }
+	                    that.setNewObject(newObj);
+	                    return resolve(true);
+	                }
 	            }
 	        });
+	    };
+	    /**
+	     * Set new object
+	     * @param object
+	     * @returns {DataService}
+	     */
+	    DataService.prototype.setNewObject = function (object) {
+	        // Normalize object to template
+	        this._normalizedObject = this._helperService.cloneObject(object, true);
+	        this.normalizeObjectsToTemplate([this._normalizedObject]);
+	        // Set object
+	        this._objectIndex = null;
+	        this.setLocalObject(object);
+	        this.resetExtraFields();
+	        return this;
 	    };
 	    /**
 	     * Save object.
@@ -8686,6 +8783,7 @@ webpackJsonp([1],[
 	    DataService.prototype.delete = function (index) {
 	        var that = this, objectsProvider = (this._objectsProvider || this._provider.objects);
 	        return new Promise(function (resolve, reject) {
+	            var _this = this;
 	            that.post(that._provider.route['delete']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
 	                // Refresh all objects
 	                if (data.objects) {
@@ -8697,7 +8795,8 @@ webpackJsonp([1],[
 	                }
 	                // Refresh objects array
 	                that.pullFromObjects(index);
-	                that.newObject().then(function (data) { }, function (errors) { console.log(errors); });
+	                // Reset object index
+	                _this._objectIndex = null;
 	                return resolve(true);
 	            }, function (errors) { console.log(errors); return resolve(false); });
 	        });
@@ -8725,9 +8824,13 @@ webpackJsonp([1],[
 	                // Refresh object
 	                if (obj) {
 	                    that.setObject(obj, index);
-	                    // If objects are not returned, then order objects by "priority" value
+	                    // If objects are not returned, then order objects by "search" "orderBy" provider
 	                    if (!data.objects) {
-	                        that._helperService.orderObjects(that._provider.objects, 'priority');
+	                        // Get fields from search
+	                        var orderFields = that._provider.search.orderBy.map(function ($item) {
+	                            return $item['field'];
+	                        });
+	                        that._helperService.orderObjects(that._provider.objects, orderFields);
 	                    }
 	                }
 	            }, function (errors) {
@@ -8789,6 +8892,19 @@ webpackJsonp([1],[
 	        var objectsProvider = (this._objectsProvider || this._provider.objects);
 	        location.href = (this._provider.route[route]['url'] + '/' + objectsProvider[index]['id']);
 	        return;
+	    };
+	    /**
+	     * Run/Execute action. Execute action directly.
+	     * @param route
+	     * @param data
+	     * @returns {Promise}
+	     */
+	    DataService.prototype.runAction = function (route, data) {
+	        if (data === void 0) { data = null; }
+	        var that = this;
+	        return new Promise(function (resolve, reject) {
+	            return that.post(route, that.getRequestData(data, false, false)).then(function (data) { return resolve(data); }, function (errors) { console.log(errors); return reject(errors); });
+	        });
 	    };
 	    /**
 	     * Post to server.
@@ -9352,7 +9468,8 @@ webpackJsonp([1],[
 	var core_1 = __webpack_require__(3);
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
-	var store_link_popup_component_1 = __webpack_require__(75);
+	var field_types_extension_module_1 = __webpack_require__(75);
+	var store_link_popup_component_1 = __webpack_require__(81);
 	var StoreLinkPopupModule = (function () {
 	    function StoreLinkPopupModule() {
 	    }
@@ -9360,7 +9477,7 @@ webpackJsonp([1],[
 	}());
 	StoreLinkPopupModule = __decorate([
 	    core_1.NgModule({
-	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule],
+	        imports: [common_1.CommonModule, forms_1.FormsModule, field_types_extension_module_1.FieldTypesExtensionModule, forms_1.ReactiveFormsModule],
 	        declarations: [
 	            store_link_popup_component_1.StoreLinkPopupComponent
 	        ],
@@ -9372,6 +9489,822 @@ webpackJsonp([1],[
 
 /***/ },
 /* 75 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var field_type_auto_complete_component_1 = __webpack_require__(76);
+	var password_component_1 = __webpack_require__(77);
+	var field_type_multi_checkbox_directive_1 = __webpack_require__(78);
+	var field_type_html_select_directive_1 = __webpack_require__(79);
+	var field_type_date_picker_directive_1 = __webpack_require__(80);
+	var FieldTypesExtensionModule = (function () {
+	    function FieldTypesExtensionModule() {
+	    }
+	    return FieldTypesExtensionModule;
+	}());
+	FieldTypesExtensionModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule],
+	        declarations: [
+	            field_type_auto_complete_component_1.FieldTypeAutoCompleteComponent,
+	            password_component_1.FieldTypePasswordComponent,
+	            field_type_multi_checkbox_directive_1.FieldTypeMultiCheckboxDirective,
+	            field_type_html_select_directive_1.FieldTypeHtmlSelectDirective,
+	            field_type_date_picker_directive_1.FieldTypeDatePickerDirective
+	        ],
+	        exports: [
+	            field_type_auto_complete_component_1.FieldTypeAutoCompleteComponent,
+	            password_component_1.FieldTypePasswordComponent,
+	            field_type_multi_checkbox_directive_1.FieldTypeMultiCheckboxDirective,
+	            field_type_html_select_directive_1.FieldTypeHtmlSelectDirective,
+	            field_type_date_picker_directive_1.FieldTypeDatePickerDirective
+	        ]
+	    })
+	], FieldTypesExtensionModule);
+	exports.FieldTypesExtensionModule = FieldTypesExtensionModule;
+
+
+/***/ },
+/* 76 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var data_service_1 = __webpack_require__(65);
+	var modal_service_1 = __webpack_require__(36);
+	var post_service_1 = __webpack_require__(35);
+	var form_service_1 = __webpack_require__(59);
+	var data_box_component_1 = __webpack_require__(63);
+	var FieldTypeAutoCompleteComponent = (function () {
+	    function FieldTypeAutoCompleteComponent(_postService, _modalService, _dataService, _formService, _injector, _autoCompleteProviders, _helperService) {
+	        var _this = this;
+	        this._postService = _postService;
+	        this._modalService = _modalService;
+	        this._dataService = _dataService;
+	        this._formService = _formService;
+	        this._injector = _injector;
+	        this._autoCompleteProviders = _autoCompleteProviders;
+	        this._helperService = _helperService;
+	        this.placeholder = ''; // Set empty as default, because value can be undefined
+	        this.onChange = new core_1.EventEmitter();
+	        this._isHidden = true;
+	        this._lastSelectedChoice = { id: null, label: '' };
+	        this._choices = [];
+	        this._search = { term: '', lastTerm: null };
+	        this._childCandidateSearch = null;
+	        // Object change event subscription
+	        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
+	            .subscribe(function (object) { return _this.reset(); });
+	    }
+	    /**
+	     * Reset object
+	     * @returns {FieldTypeAutoCompleteComponent}
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.reset = function () {
+	        // Clear choices (can be from old object)
+	        if (this._childDataServiceChoices) {
+	            this._childDataServiceChoices.setObjects([]);
+	            this.resetChoices();
+	        }
+	        this._object = this._formService.getObject();
+	        var value = this._object[this.field], normalizedValue = '';
+	        if (value) {
+	            normalizedValue = ((this._fieldInView
+	                && this._dataService.getNormalizedObject()
+	                && this._dataService.getNormalizedObject()[this._fieldInView])
+	                ? this._dataService.getNormalizedObject()[this._fieldInView]
+	                : value);
+	        }
+	        this._lastSelectedChoice = { id: value, label: normalizedValue };
+	        this.setLabel();
+	        this.setControlMode();
+	        return this;
+	    };
+	    /**
+	     * Reset choices
+	     * @returns {FieldTypeAutoCompleteComponent}
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.resetChoices = function () {
+	        this._choices = (this._childDataServiceChoices.getProviderAttr('objects') || []);
+	        this._isHidden = !this.hasChoices();
+	        return this;
+	    };
+	    /**
+	     * Host event
+	     * @param $event
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.onDocumentClick = function ($event) {
+	        this._isHidden = true;
+	    };
+	    /**
+	     * onInputClick event (when enter in input).
+	     * @param $event
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.onInputClick = function ($event) {
+	        $event.preventDefault();
+	        $event.stopPropagation();
+	        this._object[this.field] = null;
+	        this._isHidden = !this.hasChoices();
+	        this.setLabel();
+	        this.setControlMode();
+	    };
+	    /**
+	     * On enter key (pagination)
+	     * @param $event
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.onEnterKey = function ($event) {
+	        this._search.term = $event.target.value;
+	        if ((this._search.term != this._search.lastTerm)
+	            && (this._search.term.length % 3 === 0) // Only submit with multiples of three
+	        ) {
+	            this._childCandidateSearch['criteria'] = [{
+	                    'field': 'name',
+	                    'expr': 'lrlike',
+	                    'value': this._search.term
+	                }];
+	            this._childDataServiceChoices.choices();
+	            this._search.lastTerm = this._search.term;
+	        }
+	    };
+	    /**
+	     * onControlClick (arrow of select control)
+	     * @param $event
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.onControlClick = function ($event) {
+	        $event.preventDefault();
+	        $event.stopPropagation();
+	        if (this.hasChoices()) {
+	            this._isHidden = !this._isHidden;
+	        }
+	        else {
+	            this._childDataServiceChoices.choices();
+	        }
+	    };
+	    /**
+	     * onChoiceClick event
+	     * @param $event
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.onChoiceClick = function ($event) {
+	        $event.preventDefault();
+	        var $target = $($event.target), choiceIndex = $target.data('index');
+	        if (typeof choiceIndex != 'undefined') {
+	            var choice = this._choices[choiceIndex];
+	            if (choice && (this._object[this.field] != choice['id'])) {
+	                this._object[this.field] = choice['id'];
+	                this._lastSelectedChoice = { id: choice.id, label: choice.label };
+	                this.setLabel();
+	                this.setControlMode();
+	                this.onChange.emit(choice['id']);
+	            }
+	        }
+	    };
+	    /**
+	     * Get more objects (pagination)
+	     * @param $event
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.getMoreObjects = function ($event) {
+	        $event.preventDefault();
+	        $event.stopPropagation();
+	        this._childDataServiceChoices.choices();
+	    };
+	    /**
+	     * Trigger action
+	     * @param $event
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.triggerAction = function ($event) {
+	        if ($event === void 0) { $event = null; }
+	        if ($event) {
+	            $event.preventDefault();
+	        }
+	        switch (this._controlMode) {
+	            case 'save':
+	                this._formService.saveAndNewAction(); // Save and add a new object
+	                break;
+	            case 'edit':
+	            case 'add':
+	                this.openPopup(this._controlMode);
+	                break;
+	        }
+	    };
+	    /**
+	     * Open popup
+	     * @param popupType
+	     * @returns {FieldTypeAutoCompleteComponent}
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.openPopup = function (popupType) {
+	        var _this = this;
+	        if (popupType === void 0) { popupType = data_box_component_1.PopupTypes.edit; }
+	        var that = this;
+	        // Inject object to edit in child DataService
+	        if (this._object[this.field]) {
+	            // Simulate object
+	            var object = { id: this._object[this.field] };
+	            this._childDataServicePopup.setObjects([object]);
+	            this._childDataServicePopup.selectObject(0).then(function (data) {
+	                that.loadPopup(popupType);
+	                return _this;
+	            }, function (errors) { console.log(errors); return _this; });
+	        }
+	        else {
+	            // Create a new object in child DataService
+	            this._childDataServicePopup.newObject().then(function (data) { that.loadPopup(popupType); return _this; }, function (errors) { console.log(errors); return _this; });
+	        }
+	        return this;
+	    };
+	    /**
+	     * Load popup
+	     * @param popupType
+	     * @returns {FieldTypeAutoCompleteComponent}
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.loadPopup = function (popupType) {
+	        if (popupType === void 0) { popupType = data_box_component_1.PopupTypes.edit; }
+	        popupType = (data_box_component_1.PopupTypes[popupType] || data_box_component_1.PopupTypes.edit);
+	        var popup = (this._provider.popups[popupType] || this._provider.popups);
+	        this._modalService.popup(popup, this._childInjector).then(function (data) { return; }, function (errors) { console.log(errors); return; });
+	        return this;
+	    };
+	    /**
+	     * Set control mode
+	     * @returns {FieldTypeAutoCompleteComponent}
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.setControlMode = function () {
+	        switch (this._provider.control) {
+	            case 'edit':
+	                if (this._object[this.field]) {
+	                    this._controlMode = 'edit';
+	                }
+	                else {
+	                    this._controlMode = 'add';
+	                }
+	                break;
+	            case 'save':
+	                this._controlMode = this._provider.control;
+	                break;
+	            default:
+	                this._controlMode = null;
+	        }
+	        return this;
+	    };
+	    /**
+	     * Set input label
+	     * @returns {FieldTypeAutoCompleteComponent}
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.setLabel = function () {
+	        if (this._object[this.field] == this._lastSelectedChoice['id']) {
+	            this._label = this._lastSelectedChoice['label'];
+	        }
+	        else {
+	            this._label = this._search.term;
+	        }
+	        return this;
+	    };
+	    /**
+	     * check if has choices
+	     * @returns {any|boolean}
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.hasChoices = function () {
+	        return (this._choices && (this._choices.length > 0));
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.ngOnInit = function () {
+	        // Initialize values
+	        this._provider = (this._autoCompleteProviders[this.field] || null);
+	        this._fieldInView = (this._dataService.getProviderAttr('fields')['metadata'][this.field]['fieldInView'] || null);
+	        this.reset();
+	        // Dependency conf previously saved in provider
+	        if (this._provider.childInjector) {
+	            this._childInjector = this._provider.childInjector;
+	            this.init();
+	            return;
+	        }
+	        // Dependency conf for first time
+	        var that = this;
+	        that._postService.post(this._provider.urlConf, null).then(function (data) {
+	            // Notice that both DataService share the same DataServiceProvider! It needs to be fixed.
+	            var dataServiceProvider = that._helperService.getDataServiceProvider(data);
+	            dataServiceProvider['pin'] = true;
+	            // Set child injector
+	            var resolvedProviders = core_1.ReflectiveInjector.resolve([
+	                { provide: 'DataServiceChoices', useClass: data_service_1.DataService },
+	                { provide: 'DataService', useClass: data_service_1.DataService },
+	                { provide: 'DataServiceProvider', useValue: dataServiceProvider },
+	                { provide: 'Provider', useValue: that._helperService.getDataBoxProvider(data) }
+	            ]);
+	            that._childInjector = core_1.ReflectiveInjector.fromResolvedProviders(resolvedProviders, that._injector);
+	            // Save childInjector (check out the context in the provider definition)
+	            that._provider.childInjector = that._childInjector;
+	            that.init();
+	            // Add parameter to action route
+	            if (that._provider.urlChoicesParams) {
+	                that._childDataServiceChoices.setRoute('choices', (that._childDataServiceChoices.getRoute('choices') + that._provider.urlChoicesParams));
+	            }
+	        }, function (errors) { console.log(errors); return; });
+	    };
+	    /**
+	     * Initialize variables and dependencies.
+	     * @returns {FieldTypeAutoCompleteComponent}
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.init = function () {
+	        var _this = this;
+	        this._childDataServicePopup = this._childInjector.get('DataService');
+	        this._childDataServiceChoices = this._childInjector.get('DataServiceChoices');
+	        this._onChildObjectsChangeSubscription = this._childDataServiceChoices.getOnObjectsChangeEmitter()
+	            .subscribe(function (object) { return _this.resetChoices(); });
+	        this._childCandidateSearch = this._childDataServiceChoices.getCandidateSearch(); // To filter objects
+	        return this;
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    FieldTypeAutoCompleteComponent.prototype.ngOnDestroy = function () {
+	        this._onObjectChangeSubscription.unsubscribe();
+	        this._onChildObjectsChangeSubscription.unsubscribe();
+	    };
+	    return FieldTypeAutoCompleteComponent;
+	}());
+	__decorate([
+	    core_1.Input(),
+	    __metadata("design:type", String)
+	], FieldTypeAutoCompleteComponent.prototype, "field", void 0);
+	__decorate([
+	    core_1.Input(),
+	    __metadata("design:type", Boolean)
+	], FieldTypeAutoCompleteComponent.prototype, "selfReference", void 0);
+	__decorate([
+	    core_1.Input(),
+	    __metadata("design:type", String)
+	], FieldTypeAutoCompleteComponent.prototype, "placeholder", void 0);
+	__decorate([
+	    core_1.Output(),
+	    __metadata("design:type", Object)
+	], FieldTypeAutoCompleteComponent.prototype, "onChange", void 0);
+	FieldTypeAutoCompleteComponent = __decorate([
+	    core_1.Component({
+	        selector: 'js_autoComplete',
+	        template: "\n    <div class=\"auto-complete\">\n        <div class=\"input-group\">\n            <span class=\"control\">\n                <input class=\"form-control\"\n                       (click)=\"onInputClick($event)\"\n                       (input)=\"onEnterKey($event)\"\n                       [ngModel]=\"_label\"\n                       [class.error]=\"_formService.getErrors()[field] && (_formService.getErrors()[field].length > 0)\"\n                       type=\"text\"\n                       [placeholder]=\"placeholder\">\n                <a (click)=\"onControlClick($event)\"><i class=\"fa fa-angle-down\"></i></a>\n            </span>\n            <span class=\"input-group-btn\" *ngIf=\"_controlMode\">\n                <button (click)=\"triggerAction($event)\"\n                        class=\"btn btn-primary\"\n                        type=\"button\"><i class=\"fa\"\n                                         [class.fa-check]=\"_controlMode == 'save'\"\n                                         [class.fa-plus]=\"_controlMode == 'add'\"\n                                         [class.fa-pencil]=\"_controlMode == 'edit'\"></i></button>\n            </span>\n        </div>\n        <div class=\"choices\">\n            <ul [hidden]=\"_isHidden\"\n                (click)=\"onChoiceClick($event)\">\n                <template [ngIf]=\"selfReference\"><template ngFor let-choice [ngForOf]=\"_choices\" let-choiceIndex=\"index\">\n                    <li *ngIf=\"choice['id'] != _object['id']\"\n                        [attr.data-index]=\"choiceIndex\">{{choice['label']}}</li>\n                </template></template>\n                <template [ngIf]=\"!selfReference\">\n                    <li *ngFor=\"let choice of _choices; let choiceIndex = index\"\n                        [attr.data-index]=\"choiceIndex\">{{choice['label']}}</li>\n                </template>\n                <li *ngIf=\"_childCandidateSearch && _childCandidateSearch.hasMore\"\n                    (click)=\"getMoreObjects($event)\"\n                    class=\"-pagination\"\n                    title=\"Load more results...\"><span>...</span></li>\n            </ul>\n        </div>\n    </div>\n    ",
+	        host: {
+	            '(document:click)': 'onDocumentClick($event)',
+	        }
+	    }),
+	    __param(2, core_1.Inject('DataService')),
+	    __param(5, core_1.Inject('AutoCompleteProviders')),
+	    __param(6, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [post_service_1.PostService,
+	        modal_service_1.ModalService, Object, form_service_1.FormService,
+	        core_1.Injector, Object, Object])
+	], FieldTypeAutoCompleteComponent);
+	exports.FieldTypeAutoCompleteComponent = FieldTypeAutoCompleteComponent;
+
+
+/***/ },
+/* 77 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var core_1 = __webpack_require__(3);
+	var form_service_1 = __webpack_require__(59);
+	// Component
+	var FieldTypePasswordComponent = (function () {
+	    function FieldTypePasswordComponent(_formService) {
+	        this._formService = _formService;
+	        this._fields = { password: null, confirm: null };
+	    }
+	    /**
+	     * Validate fields
+	     * @param $event
+	     */
+	    FieldTypePasswordComponent.prototype.validateAction = function ($event) {
+	        if ($event === void 0) { $event = null; }
+	        var isValid = (this._fields.password == this._fields.confirm);
+	        this._formService.getObject()[this.field] = (isValid ? this._fields.password : null);
+	        this._formService.getErrors()[this.field] = (isValid ? null : ["Password confirmation does not match"]);
+	    };
+	    /**
+	     * Reset
+	     * @param $event
+	     */
+	    FieldTypePasswordComponent.prototype.resetAction = function ($event) {
+	        if ($event === void 0) { $event = null; }
+	        if (this._fields.password != this._fields.confirm) {
+	            this._fields.confirm = null;
+	            this.validateAction(null);
+	        }
+	    };
+	    return FieldTypePasswordComponent;
+	}());
+	__decorate([
+	    core_1.Input(),
+	    __metadata("design:type", String)
+	], FieldTypePasswordComponent.prototype, "field", void 0);
+	FieldTypePasswordComponent = __decorate([
+	    core_1.Component({
+	        selector: 'js_password',
+	        template: "\n    <input (blur)=\"resetAction($event)\"\n           class=\"form-control\"\n           [class.error]=\"_formService.getErrors()[field] && (_formService.getErrors()[field].length > 0)\"\n           type=\"password\"\n           placeholder=\"Password\"\n           [(ngModel)]=\"_fields.password\">\n    <input (keyup)=\"validateAction($event)\"\n           class=\"form-control m-t\"\n           [class.error]=\"_formService.getErrors()[field] && (_formService.getErrors()[field].length > 0)\"\n           type=\"password\"\n           placeholder=\"Confirm password\"\n           [(ngModel)]=\"_fields.confirm\">\n    "
+	    }),
+	    __metadata("design:paramtypes", [form_service_1.FormService])
+	], FieldTypePasswordComponent);
+	exports.FieldTypePasswordComponent = FieldTypePasswordComponent;
+
+
+/***/ },
+/* 78 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var core_1 = __webpack_require__(3);
+	var form_service_1 = __webpack_require__(59);
+	/**
+	 * Handles with multiple checkbox select control
+	 */
+	var FieldTypeMultiCheckboxDirective = (function () {
+	    function FieldTypeMultiCheckboxDirective(_elementRef, _formService) {
+	        var _this = this;
+	        this._elementRef = _elementRef;
+	        this._formService = _formService;
+	        // Object change event subscription
+	        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
+	            .subscribe(function (object) { return _this.reset(object); });
+	    }
+	    FieldTypeMultiCheckboxDirective.prototype.onMouseClick = function ($event) {
+	        var value = $event.target.value;
+	        if (value) {
+	            if (value) {
+	                if (value in this._controlObj) {
+	                    delete this._controlObj[value]; // Remove
+	                }
+	                else {
+	                    this._controlObj[value] = value; // Add
+	                }
+	            }
+	        }
+	    };
+	    /**
+	     * Reset object
+	     * @param object
+	     * @returns {FieldTypeMultiCheckboxDirective}
+	     */
+	    FieldTypeMultiCheckboxDirective.prototype.reset = function (object) {
+	        if (object === void 0) { object = null; }
+	        this._controlObj = this._formService.getObject()[this.field];
+	        // Init the controlObj (when creates a new object)
+	        if (!this._controlObj) {
+	            this._controlObj = {};
+	        }
+	        // Set "selected" property
+	        var $elements = $(this._elementRef.nativeElement).find('input');
+	        if ($elements.length > 0) {
+	            for (var _i = 0, $elements_1 = $elements; _i < $elements_1.length; _i++) {
+	                var el = $elements_1[_i];
+	                var $el = $(el);
+	                $el.prop('checked', ($el.val() in this._controlObj));
+	            }
+	        }
+	        return this;
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    FieldTypeMultiCheckboxDirective.prototype.ngOnInit = function () {
+	        this.reset();
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    FieldTypeMultiCheckboxDirective.prototype.ngOnDestroy = function () {
+	        this._onObjectChangeSubscription.unsubscribe();
+	    };
+	    return FieldTypeMultiCheckboxDirective;
+	}());
+	__decorate([
+	    core_1.Input('multiCheckbox'),
+	    __metadata("design:type", String)
+	], FieldTypeMultiCheckboxDirective.prototype, "field", void 0);
+	__decorate([
+	    core_1.HostListener('click', ['$event']),
+	    __metadata("design:type", Function),
+	    __metadata("design:paramtypes", [Object]),
+	    __metadata("design:returntype", void 0)
+	], FieldTypeMultiCheckboxDirective.prototype, "onMouseClick", null);
+	FieldTypeMultiCheckboxDirective = __decorate([
+	    core_1.Directive({
+	        selector: '[multiCheckbox]'
+	    }),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        form_service_1.FormService])
+	], FieldTypeMultiCheckboxDirective);
+	exports.FieldTypeMultiCheckboxDirective = FieldTypeMultiCheckboxDirective;
+
+
+/***/ },
+/* 79 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var form_service_1 = __webpack_require__(59);
+	/**
+	 * Handles with html select box
+	 */
+	var FieldTypeHtmlSelectDirective = (function () {
+	    function FieldTypeHtmlSelectDirective(_elementRef, _formService, _dataService) {
+	        var _this = this;
+	        this._elementRef = _elementRef;
+	        this._formService = _formService;
+	        this._dataService = _dataService;
+	        // Object change event subscription
+	        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
+	            .subscribe(function (object) { return _this.reset(); });
+	    }
+	    FieldTypeHtmlSelectDirective.prototype.onMouseClick = function ($event) {
+	        $event.preventDefault();
+	        $event.stopPropagation();
+	        this._$choices.toggle();
+	        var $target = $($event.target), value = $target.data('value');
+	        if (value) {
+	            this._formService.getObject()[this.field] = value;
+	            this._$label.html($target.html());
+	        }
+	    };
+	    /**
+	     * Reset
+	     * @returns {FieldTypeHtmlSelectDirective}
+	     */
+	    FieldTypeHtmlSelectDirective.prototype.reset = function () {
+	        var value = (this._formService.getObject()[this.field]), normalizedValue = '';
+	        if (value) {
+	            normalizedValue = ((this._fieldInView
+	                && this._dataService.getNormalizedObject()
+	                && this._dataService.getNormalizedObject()[this._fieldInView])
+	                ? this._dataService.getNormalizedObject()[this._fieldInView]
+	                : value);
+	        }
+	        this._$label.html(normalizedValue);
+	        return this;
+	    };
+	    /**
+	     * Host event
+	     * @param $event
+	     */
+	    FieldTypeHtmlSelectDirective.prototype.onDocumentClick = function ($event) {
+	        this._$choices.hide();
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    FieldTypeHtmlSelectDirective.prototype.ngOnInit = function () {
+	        this._$choices = $(this._elementRef.nativeElement).find('.js_choices');
+	        this._$label = $(this._elementRef.nativeElement).find('.js_label');
+	        this._$choices.hide();
+	        this._fieldInView = (this._dataService.getProviderAttr('fields')['metadata'][this.field]['fieldInView'] || null);
+	        this.reset();
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    FieldTypeHtmlSelectDirective.prototype.ngOnDestroy = function () {
+	        this._onObjectChangeSubscription.unsubscribe();
+	    };
+	    return FieldTypeHtmlSelectDirective;
+	}());
+	__decorate([
+	    core_1.Input('htmlSelect'),
+	    __metadata("design:type", String)
+	], FieldTypeHtmlSelectDirective.prototype, "field", void 0);
+	__decorate([
+	    core_1.HostListener('click', ['$event']),
+	    __metadata("design:type", Function),
+	    __metadata("design:paramtypes", [Object]),
+	    __metadata("design:returntype", void 0)
+	], FieldTypeHtmlSelectDirective.prototype, "onMouseClick", null);
+	FieldTypeHtmlSelectDirective = __decorate([
+	    core_1.Directive({
+	        selector: '[htmlSelect]',
+	        host: {
+	            '(document:click)': 'onDocumentClick($event)',
+	        }
+	    }),
+	    __param(2, core_1.Inject('DataService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        form_service_1.FormService, Object])
+	], FieldTypeHtmlSelectDirective);
+	exports.FieldTypeHtmlSelectDirective = FieldTypeHtmlSelectDirective;
+
+
+/***/ },
+/* 80 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var form_service_1 = __webpack_require__(59);
+	var FieldTypeDatePickerDirective = (function () {
+	    function FieldTypeDatePickerDirective(_elementRef, _formService, _dataService) {
+	        var _this = this;
+	        this._elementRef = _elementRef;
+	        this._formService = _formService;
+	        this._dataService = _dataService;
+	        // Determines if the skip rules control value is inverted (using negation "!")
+	        this._skipRulesControlInverseValue = false;
+	        // Object change event subscription
+	        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
+	            .subscribe(function (object) { return _this.reset(); });
+	    }
+	    /**
+	     * Reset
+	     */
+	    FieldTypeDatePickerDirective.prototype.reset = function () {
+	        this.setControlConf();
+	    };
+	    /**
+	     * Host event
+	     * @param $event
+	     */
+	    FieldTypeDatePickerDirective.prototype.onDocumentClick = function ($event) {
+	        // It can't be used, because prevent all events (checkbox, etc.)
+	        //$event.preventDefault();
+	        // The click is inside of this data picker
+	        if (this._elementRef.nativeElement.contains($event.target)) {
+	            var isDropDown = ($($event.target).parents('.dropdown-menu').length > 0);
+	            // Let run the default behavior
+	            if (isDropDown) {
+	                return;
+	            }
+	            this.setControlConf(); // Set/Refresh conf (data picker will be opened or closed)
+	            this.control.toggle(); // Toggle data picker drop-down
+	        }
+	        else {
+	            // The click is outside of this data picker (close it)
+	            this.control.close();
+	        }
+	    };
+	    /**
+	     * Set/Refresh control configuration
+	     */
+	    FieldTypeDatePickerDirective.prototype.setControlConf = function () {
+	        // Apply rules
+	        if (this._fieldMetadata['typeDetail'] && this._fieldMetadata['typeDetail']['rules']) {
+	            var skipRules = ((this._skipRulesControl
+	                && (this._skipRulesControl in (this._formService.getObject() || {})))
+	                ? (this._skipRulesControlInverseValue
+	                    ? !this._formService.getObject()[this._skipRulesControl]
+	                    : this._formService.getObject()[this._skipRulesControl])
+	                : false);
+	            var _loop_1 = function (rule) {
+	                switch (rule['expr']) {
+	                    case 'range':
+	                        if (skipRules && rule['allowSkip']) {
+	                            // Skip rule
+	                            this_1.control['markDisabled'] = null;
+	                            break;
+	                        }
+	                        // Limit available dates to ranges
+	                        var dateRanges_1 = (this_1._dataService.getProviderAttr('localData')[rule['value']] || []);
+	                        // Function to check if date is valid (is in range)
+	                        this_1.control['markDisabled'] = function (date) {
+	                            var dateToCheck = new Date(date.year, date.month - 1, date.day);
+	                            for (var _i = 0, dateRanges_2 = dateRanges_1; _i < dateRanges_2.length; _i++) {
+	                                var dateRange = dateRanges_2[_i];
+	                                var dateFrom = new Date(dateRange['startDate']), dateTo = new Date(dateRange['endDate']);
+	                                if ((dateToCheck.getTime() >= dateFrom.getTime())
+	                                    && (dateToCheck.getTime() <= dateTo.getTime())) {
+	                                    return false;
+	                                }
+	                            }
+	                            return true;
+	                        };
+	                        break;
+	                    case 'min':
+	                    case 'max':
+	                        if (skipRules && rule['allowSkip']) {
+	                            // Skip rule
+	                            this_1.control[rule['expr'] + 'Date'] = null;
+	                            break;
+	                        }
+	                        this_1.control[rule['expr'] + 'Date'] = this_1._formService.getObject()[rule['value']];
+	                        break;
+	                }
+	            };
+	            var this_1 = this;
+	            for (var _i = 0, _a = this._fieldMetadata['typeDetail']['rules']; _i < _a.length; _i++) {
+	                var rule = _a[_i];
+	                _loop_1(rule);
+	            }
+	        }
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    FieldTypeDatePickerDirective.prototype.ngOnInit = function () {
+	        this._fieldMetadata = this._dataService.getProviderAttr('fields')['metadata'][this.field];
+	        this._skipRulesControl = ((this._fieldMetadata['typeDetail']
+	            && this._fieldMetadata['typeDetail']['skipRulesControl'])
+	            ? this._fieldMetadata['typeDetail']['skipRulesControl']
+	            : null);
+	        // Check how skip rules value should be used
+	        if (this._skipRulesControl && (this._skipRulesControl.substring(0, 1) == '!')) {
+	            // Value should be inverse, using negation (!)
+	            this._skipRulesControlInverseValue = true;
+	            this._skipRulesControl = this._skipRulesControl.substring(1); // Remove operator from control name
+	        }
+	        this.reset();
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    FieldTypeDatePickerDirective.prototype.ngOnDestroy = function () {
+	        this._onObjectChangeSubscription.unsubscribe();
+	    };
+	    return FieldTypeDatePickerDirective;
+	}());
+	__decorate([
+	    core_1.Input('datePicker'),
+	    __metadata("design:type", String)
+	], FieldTypeDatePickerDirective.prototype, "field", void 0);
+	__decorate([
+	    core_1.Input('control'),
+	    __metadata("design:type", Object)
+	], FieldTypeDatePickerDirective.prototype, "control", void 0);
+	FieldTypeDatePickerDirective = __decorate([
+	    core_1.Directive({
+	        selector: '[datePicker]',
+	        host: {
+	            '(document:click)': 'onDocumentClick($event)',
+	        }
+	    }),
+	    __param(2, core_1.Inject('DataService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        form_service_1.FormService, Object])
+	], FieldTypeDatePickerDirective);
+	exports.FieldTypeDatePickerDirective = FieldTypeDatePickerDirective;
+
+
+/***/ },
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";

@@ -50,38 +50,53 @@ class BaseCurrentAccountRepository extends BaseEntityRepository
             return self::$metadata;
         }
         return self::$metadata = self::processMetadata(array(
-            'id' => array('label' => 'Id', 'type' => 'number', 'acl' => 'read'),
+            'id' => array('label' => 'Id', 'type' => 'none', 'acl' => 'read'),
             'storeObj' => array('label' => 'Store', 'type' => 'object', 'acl' => 'read', 'typeDetail' => array(
                 'table' => 'store', 'bundle' => 'admin', 'type' => 'none')),
-            'number' => array('label' => 'Number', 'type' => 'code', 'acl' => 'read'),
-            'description' => array('label' => 'Description', 'type' => 'text', 'acl' => 'edit'),
+            'code' => array('label' => 'Number', 'type' => 'code', 'acl' => 'read'),
             'date' => array('label' => 'Date', 'type' => 'date', 'acl' => 'edit', 'view' => array(
-                'typeDetail' => array('rules' => array(array('expr' => 'max', 'value' => 'dueDate')))
+                'typeDetail' => array('rules' => array(
+                    array('expr' => 'max', 'value' => 'dueDate'),
+                    array('expr' => 'range', 'value' => 'dateRange'),
+                ))
             )),
             'dueDate' => array('label' => 'Due Date', 'type' => 'date', 'acl' => 'edit', 'view' => array(
                 'typeDetail' => array('rules' => array(array('expr' => 'min', 'value' => 'date')))
             )),
-            'storeLegalName' => array('label' => 'Legal Name', 'type' => 'text', 'acl' => 'read'),
-            'storeTaxNumber' => array('label' => 'Tax Number', 'type' => 'text', 'acl' => 'read'),
-            'storeStreet1' => array('label' => 'Street 1/2', 'type' => 'text', 'acl' => 'read'),
-            'storeStreet2' => array('label' => 'Street 2/2', 'type' => 'text', 'acl' => 'read'),
-            'storeCity' => array('label' => 'City', 'type' => 'text', 'acl' => 'read'),
-            'storePostCode' => array('label' => 'Post Code', 'type' => 'text', 'acl' => 'read'),
-            'storeRegion' => array('label' => 'Region', 'type' => 'text', 'acl' => 'read'),
-            'storeCountry' => array('label' => 'Country', 'type' => 'text', 'acl' => 'read'),
-            'entityLegalName' => array('label' => 'Legal Name', 'type' => 'text', 'acl' => 'edit'),
-            'entityTaxNumber' => array('label' => 'Tax Number', 'type' => 'text', 'acl' => 'edit'),
-            'entityStreet1' => array('label' => 'Street 1/2', 'type' => 'text', 'acl' => 'edit'),
-            'entityStreet2' => array('label' => 'Street 2/2', 'type' => 'text', 'acl' => 'edit'),
-            'entityCity' => array('label' => 'City', 'type' => 'text', 'acl' => 'edit'),
-            'entityPostCode' => array('label' => 'Post Code', 'type' => 'text', 'acl' => 'edit'),
-            'entityRegion' => array('label' => 'Region', 'type' => 'text', 'acl' => 'edit'),
-            'entityCountry' => array('label' => 'Country', 'type' => 'text', 'acl' => 'edit'),
-            'total' => array('label' => 'Total', 'type' => 'monetary', 'acl' => 'read'),
-            'totalVat' => array('label' => 'Total VAT', 'type' => 'monetary', 'acl' => 'read'),
-            'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
-            'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
+            'comments' => array('label' => 'Comments', 'type' => 'textarea', 'acl' => 'edit', 'isRequired' => false,
+                'attr' => array('rows' => '3')
+            ),
+            'storeLegalName' => array('label' => 'Legal Name', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'storeTaxNumber' => array('label' => 'Tax Number', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'storeStreet1' => array('label' => 'Street 1/2', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'storeStreet2' => array('label' => 'Street 2/2', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'storePostCode' => array('label' => 'Post Code', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'storeCity' => array('label' => 'City', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'storeRegion' => array('label' => 'Region', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'storeCountry' => array('label' => 'Country', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'entityLegalName' => array('label' => 'Legal Name', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'entityTaxNumber' => array('label' => 'Tax Number', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'entityStreet1' => array('label' => 'Street 1/2', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'entityStreet2' => array('label' => 'Street 2/2', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'entityPostCode' => array('label' => 'Post Code', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'entityCity' => array('label' => 'City', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'entityRegion' => array('label' => 'Region', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'entityCountry' => array('label' => 'Country', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'subTotal' => array('label' => 'Sub Total', 'type' => 'monetary', 'acl' => 'edit',
+                'attr' => array('readonly' => 'readonly'), 'form' => array('type' => 'number'), 'isRequired' => false
+            ),
+            'totalVat' => array('label' => 'Total VAT', 'type' => 'monetary', 'acl' => 'edit',
+                'attr' => array('readonly' => 'readonly'), 'form' => array('type' => 'number'), 'isRequired' => false
+            ),
+            'total' => array('label' => 'Total', 'type' => 'monetary', 'acl' => 'edit',
+                'field' => '(clientCurrentAccount.subTotal + clientCurrentAccount.totalVat)', 'table' => '',
+                'attr' => array('readonly' => 'readonly'), 'isRequired' => false,
+                'form' => array('type' => 'number', 'isMapped' => false),
+                'normalizer' => array('method' => 'getTotal')
+            ),
+            'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'none', 'acl' => 'edit', 'default' => true)
         ));
     }
 }

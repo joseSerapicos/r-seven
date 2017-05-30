@@ -12,6 +12,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 
 abstract class BaseType extends AbstractType
@@ -19,6 +20,7 @@ abstract class BaseType extends AbstractType
     protected $entityClass;
     protected $entityRepositoryClass;
     protected $entityDatabase;
+    protected $entityMetadata; // Can be predefined in local "init()" if you need special conditions
 
     /**
      * Initialization of variables. Implemented by child.
@@ -37,7 +39,7 @@ abstract class BaseType extends AbstractType
         $this->init();
 
         $repositoryClass = $this->entityRepositoryClass;
-        $entityFields = $repositoryClass::getMetadata();
+        $entityFields = (empty($this->entityMetadata) ? $repositoryClass::getMetadata() : $this->entityMetadata);
 
         foreach ($entityFields as $field => $fieldMetadata) {
             // Remove common fields (already exists in the original merge entity)
@@ -76,14 +78,12 @@ abstract class BaseType extends AbstractType
 
         // Base attributes
         $baseAttrs = array(
-            'attr' => array_merge(
-                array(
-                    'placeholder' => $placeholder
-                ),
-                (is_array($attr) ? $attr : array())
-            ),
+            'attr' => (is_array($attr) ? $attr : array()),
             'mapped' => $isMapped
         );
+        if ($placeholder) {
+            $baseAttrs['attr']['placeholder'] = $placeholder;
+        }
 
         // Required. Symfony cannot guess 'nullable' in some cases (not mapped fields and entity type)
         $isRequired = $repositoryClass::getFieldMetadata($field, 'isRequired');
@@ -164,6 +164,9 @@ abstract class BaseType extends AbstractType
                 break;
             case 'embed':
                 $formBuilder->add($field, $metadata['typeDetail']['formClass']);
+                break;
+            case 'textarea':
+                $formBuilder->add($field, TextareaType::class, $baseAttrs);
                 break;
             default:
                 $formBuilder->add($field, null, $baseAttrs);

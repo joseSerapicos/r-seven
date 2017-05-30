@@ -17,6 +17,11 @@ class StorePhone extends BasePhone {
     protected $storeObj;
 
     /**
+     * @ORM\Column(name="forDocuments", type="boolean", nullable=true, unique=false, options={"default":0, "comment":"Determines if the link is added to documents"})
+     */
+    protected $forDocuments;
+
+    /**
      * Set storeObj
      * @param \AdminBundle\Entity\Store $storeObj
      * @return StorePhone
@@ -34,5 +39,25 @@ class StorePhone extends BasePhone {
     public function getStoreObj()
     {
         return $this->storeObj;
+    }
+
+    /**
+     * Set forDocuments
+     * @param boolean $forDocuments
+     * @return $this
+     */
+    public function setForDocuments($forDocuments)
+    {
+        $this->forDocuments = $forDocuments;
+        return $this;
+    }
+
+    /**
+     * Get forDocuments
+     * @return boolean
+     */
+    public function getForDocuments()
+    {
+        return $this->forDocuments;
     }
 }

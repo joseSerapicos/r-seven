@@ -116,7 +116,11 @@ class UserGroupAclMenuController extends BaseEntityChildController
         $form->handleRequest($request);
 
         // Check if is submitted
-        if($form->isSubmitted() && $form->isValid()) {
+        if($form->isSubmitted()) {
+            if (!$this->validateForm($form)) {
+                return $this->getResponse(true);
+            }
+
             // Get request data
             $data = $this->getRequestData($request);
 

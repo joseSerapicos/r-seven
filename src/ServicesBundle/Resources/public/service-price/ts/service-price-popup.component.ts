@@ -16,18 +16,16 @@ export class ServicePricePopupComponent extends PriceFormPopupComponent
         renderer: Renderer,
         @Inject('Provider') provider: FormProvider,
         formService: FormService,
-        @Inject('DataService') dataService: any
+        @Inject('DataService') dataService: any,
+        @Inject('HelperService') helperService: any
     ) {
         super(
             elementRef,
             renderer,
             provider,
             formService,
-            dataService
+            dataService,
+            helperService
         );
-
-        this.costDecimalIterator = Math.pow(10, this.costDecimals);
-        this.marginDecimalIterator = Math.pow(10, this.marginDecimals);
-        this.sellDecimalIterator = Math.pow(10, this.sellDecimals);
     }
 }

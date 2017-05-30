@@ -61,7 +61,7 @@ class StoreRepositddddory extends BaseEntityRepository
                 ),
                 'form' => array('type' => 'select')
             ),
-            'formalName' => array('label' => 'Formal Name', 'type' => 'text', 'acl' => 'edit'),
+            'legalName' => array('label' => 'Formal Name', 'type' => 'text', 'acl' => 'edit'),
             'taxNumber' => array('label' => 'Tax Number', 'type' => 'text', 'acl' => 'edit'),
             'storeAddressObj' => array('label' => 'Address', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array(

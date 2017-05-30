@@ -94,7 +94,44 @@ class VatCodeController extends BaseEntityController
      */
     public function editAction(Request $request, $id)
     {
-        return parent::editAction($request, $id);
+        // Set configuration
+        $this->flags['hasForm'] = true;
+        $this->init($request);
+
+        // Get object
+        $obj = $this->getObject($id);
+        $oldPercentage = $obj->getPercentage(); // Save old percentage to check if percentage is edited
+
+        // Build form
+        $form = $this->buildForm($request, $obj);
+
+        // Handle request
+        $form->handleRequest($request);
+
+        // Check if is submitted
+        if($form->isSubmitted()) {
+            if ($oldPercentage != $obj->getPercentage()) {
+                // Check if there are documents using this VAT code, if then, percentage can't be edited
+                if ($this->getLocalRepositoryService()->execute('isInUseByDocuments', array($obj))) {
+                    $this->responseConf['status'] = 0;
+                    $this->addFlashMessage(
+                        'Percentage cannot be edited. It is in use by documents.',
+                        'Data not persisted!',
+                        'error'
+                    );
+                    return $this->getResponse(true);
+                }
+            }
+
+            $this->saveForm($form, $obj);
+            return $this->getResponse(true);
+        }
+
+        // Render form
+        return $this->render($this->localConf['templates']['edit'], array(
+            '_conf' => $this->templateConf,
+            '_form' => $form->createView()
+        ));
     }
 
     /**

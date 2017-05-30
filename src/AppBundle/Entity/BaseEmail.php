@@ -85,4 +85,40 @@ class BaseEmail extends BaseEntity {
     {
         return $this->isDefault;
     }
+
+    /**
+     * Overrides parent method.
+     * @return mixed
+     */
+    public function __toString()
+    {
+        return $this->__customToString();
+    }
+
+    /**
+     * Customizable string
+     * @param bool $hasIcon
+     * @param bool $hasName
+     * @param bool $hasEmail
+     * @return string
+     */
+    public function __customToString($hasIcon = true, $hasName = true, $hasEmail = true)
+    {
+        $output = '';
+
+        if ($hasIcon) {
+            $output .= ('<i class="fa fa-at"></i> ');
+        }
+        if ($hasName && $this->name) {
+            $output .= $this->name;
+        }
+        if ($hasEmail) {
+            if ($hasName && $this->name) {
+                $output .= ': ';
+            }
+            $output .= $this->email;
+        }
+
+        return $output;
+    }
 }

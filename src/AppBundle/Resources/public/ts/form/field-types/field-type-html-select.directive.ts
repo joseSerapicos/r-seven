@@ -1,4 +1,4 @@
-import {Directive, ElementRef, HostListener, Input, Host, Inject} from '@angular/core';
+import {Directive, ElementRef, HostListener, Input, Output, Host, Inject, EventEmitter} from '@angular/core';
 import {FormService} from '../form.service';
 
 /**
@@ -29,6 +29,8 @@ export class FieldTypeHtmlSelectDirective {
 
     @Input('htmlSelect') field: string;
 
+    @Output() onChange = new EventEmitter();
+
     @HostListener('click', ['$event']) onMouseClick($event) {
         $event.preventDefault();
         $event.stopPropagation();
@@ -41,6 +43,7 @@ export class FieldTypeHtmlSelectDirective {
         if (value) {
             this._formService.getObject()[this.field] = value;
             this._$label.html($target.html());
+            this.onChange.emit(value);
         }
     }
 

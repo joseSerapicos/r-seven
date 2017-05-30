@@ -17,6 +17,11 @@ class EntityAddress extends BaseAddress {
     protected $entityObj;
 
     /**
+     * @ORM\Column(name="forDocuments", type="boolean", nullable=true, unique=false, options={"default":0, "comment":"Determines if the address is to use in documents"})
+     */
+    protected $forDocuments;
+
+    /**
      * Set entityObj
      *
      * @param \EntitiesBundle\Entity\Entity $entityObj
@@ -38,5 +43,25 @@ class EntityAddress extends BaseAddress {
     public function getEntityObj()
     {
         return $this->entityObj;
+    }
+
+    /**
+     * Set forDocuments
+     * @param boolean $forDocuments
+     * @return $this
+     */
+    public function setForDocuments($forDocuments)
+    {
+        $this->forDocuments = $forDocuments;
+        return $this;
+    }
+
+    /**
+     * Get forDocuments
+     * @return boolean
+     */
+    public function getForDocuments()
+    {
+        return $this->forDocuments;
     }
 }

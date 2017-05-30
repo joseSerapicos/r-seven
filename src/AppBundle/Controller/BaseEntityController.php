@@ -15,6 +15,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use AppBundle\Service\HelperService;
 
 
@@ -257,7 +258,7 @@ abstract class BaseEntityController extends BaseController
                 array('field' => 'isEnabled', 'expr' => 'eq', 'value' => 1)
             ),
             'orderBy' => array(
-                array('field' => $orderByField, 'value' => 'ASC')
+                array('field' => $orderByField, 'value' => 'DESC')
             ),
             'limit' => 12, // Is good for pagination, allow alignment with it multiples (1, 2, 3, 4, ...)
             'offset' => 0,
@@ -352,6 +353,26 @@ abstract class BaseEntityController extends BaseController
     /**
      * DEFINE ROUTE HERE
      *
+     * Action to get a new object
+     * @param Request $request
+     * @return mixed
+     */
+    public function newAction(Request $request)
+    {
+        // Set configuration
+        $this->flags['storage'] = 'session'; // Use session storage, object is not persisted by user yet
+        $this->init($request);
+
+        // Set and save a new object in session to preserve default values
+        $newObj = $this->newObject();
+        $this->saveObjectToSS($newObj, true);
+
+        return $this->getResponse(true);
+    }
+
+    /**
+     * DEFINE ROUTE HERE
+     *
      * Action to get a list/array of compact objects from the search configuration
      * or a regular object if the "id" is provided
      * @param Request $request
@@ -366,7 +387,10 @@ abstract class BaseEntityController extends BaseController
         if(!empty($id)) {
             // Process request
             $this->getRequestData($request); // Token is not validate, because this action is called directly without data
-            $this->responseConf['object'] = $this->normalizeObject($this->getObject($id));
+
+            $object = $this->getObject($id);
+
+            $this->responseConf['object'] = $this->normalizeObject($object);
             return $this->getResponse(true);
         }
         
@@ -616,13 +640,60 @@ abstract class BaseEntityController extends BaseController
      * Save object
      * @param $object
      * @param $hasFlush (it determines if should be executed the flush method to persist data in database)
+     * @param $addToResponse (determines if object should be added to response)
      * @return $this
      */
-    protected function saveObject(&$object, $hasFlush = true)
+    protected function saveObject(&$object, $hasFlush = true, $addToResponse = false)
     {
         // Validate object
         //$errors = $this->validateObject($object); // Nor necessary, form validates object
 
+        switch ($this->flags['storage']) {
+            case 'session':
+                return $this->saveObjectToSS($object, $addToResponse);
+            default:
+                return $this->saveObjectToDb($object, $hasFlush, $addToResponse);
+        }
+    }
+
+    /**
+     * Save object to session storage
+     * @param $object
+     * @param $addToResponse (determines if object should be added to response)
+     * @return $this
+     */
+    protected function saveObjectToSS(&$object, $addToResponse = false)
+    {
+        if (!$this->container->get('app.service.session_storage')->save($object, $this->flags['parent'])) {
+            // Config response
+            $this->responseConf['status'] = 0;
+            // Flash messages to display to user
+            $this->addFlashMessage(
+                'Please restart the process.',
+                'The data has expired.',
+                'warning'
+            );
+        }
+
+        // If configure response is enabled, then set object to response
+        if ($addToResponse) {
+            if ($this->responseConf['hasObject']) {
+                $this->responseConf['object'] = $this->normalizeObject($object); // Object updated
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Save object to database
+     * @param $object
+     * @param $hasFlush (it determines if should be executed the flush method to persist data in database)
+     * @param $addToResponse (determines if object should be added to response)
+     * @return $this
+     */
+    protected function saveObjectToDb(&$object, $hasFlush = true, $addToResponse = false)
+    {
         // Persist object in Entity Manager
         if ($object /*&& !$errors*/) {
             $entityManager = $this->getLocalEntityManager();
@@ -638,31 +709,102 @@ abstract class BaseEntityController extends BaseController
             $entityManager->persist($object);
 
             // Generates code for object (only after persisted, to avoid jumping numbers when persist fail)
-            if (method_exists($object, 'setCode') && empty($object->getCode())) {
-                $setting = (empty($this->flags['setting']) ? array() : $this->flags['setting']);
-                $this->get('app.service.code_generator')
-                    ->generateCode(
-                        $this->getLocalRepositoryService(),
-                        (empty($setting['entity']) ?
-                            ($this->localConf['Bundle'].':'.$this->localConf['entity'].'Setting')
-                            : ($this->localConf['Bundle'].':'.$setting['entity'])
-                        ),
-                        ($this->localConf['Bundle'].':'.$this->localConf['entity']),
-                        $object,
-                        (empty($setting['criteria']) ? array() : $setting['criteria'])
-                    );
+            if (isset($this->localConf['entityFields']['code'])) {
+                $fieldMetadata = $this->localConf['entityFields']['code'];
+                // Choice dependency (parent object)
+                $dependency = (isset($fieldMetadata['dependency'])
+                    ? $fieldMetadata['dependency']
+                    : null
+                );
+                $objContainer = ($dependency
+                    ? $this->getDependencyObjectContainer($object, $dependency)
+                    : $object
+                );
+                if (method_exists($objContainer, 'setCode') && empty($objContainer->getCode())) {
+                    $setting = (empty($this->flags['setting']) ? array() : $this->flags['setting']);
+                    $settingBundle = (empty($setting['Bundle']) ? $this->localConf['Bundle'] : $setting['Bundle']);
+                    $settingEntity = (empty($setting['entity']) ? ($this->localConf['entity'] . 'Setting') : $setting['entity']);
+                    $localBundle = $localEntity = null;
+                    if ($dependency && isset($this->localConf['entityFields'][$dependency]['typeDetail'])) {
+                        $localBundle = $this->localConf['entityFields'][$dependency]['typeDetail']['Bundle'];
+                        $localEntity = $this->localConf['entityFields'][$dependency]['typeDetail']['entity'];
+                    } else {
+                        $localBundle = $this->localConf['Bundle'];
+                        $localEntity = $this->localConf['entity'];
+                    }
+                    $this->get('app.service.code_generator')
+                        ->generateCode(
+                            $this->getLocalRepositoryService(),
+                            ($settingBundle . ':' . $settingEntity),
+                            ($localBundle . ':' . $localEntity),
+                            $objContainer,
+                            (empty($setting['criteria']) ? array() : $setting['criteria'])
+                        );
+                }
             }
 
             // Persist object in database
             if ($hasFlush) {
                 $this->flushEm();
+
+                // If persisted in database with success and configure response is enabled, then set object to response
+                if ($addToResponse && ($this->responseConf['status'] == 1)) {
+                    if ($this->responseConf['hasObject']) {
+                        $this->responseConf['object'] = $this->normalizeObject($object); // Object updated
+                    }
+                }
             }
-        } else {
+        } /* else {
             $this->responseConf['status'] = 0;
             $this->responseConf['errors'] = $errors;
-        }
+        }*/
 
         return $this;
+    }
+
+    /**
+     * Get Surrounding Objects.
+     * @param $code
+     * @return null
+     */
+    protected function getSurroundingObjects($code) {
+        if (isset($this->localConf['entityFields']['code'])) {
+            $fieldMetadata = $this->localConf['entityFields']['code'];
+            // Choice dependency (parent object)
+            $dependency = (isset($fieldMetadata['dependency'])
+                ? $fieldMetadata['dependency']
+                : null
+            );
+            $entityClass = (($dependency && isset($this->localConf['entityFields'][$dependency]['typeDetail']) && isset($this->localConf['entityFields'][$dependency]['typeDetail']['entityClass']))
+                ? $this->localConf['entityFields'][$dependency]['typeDetail']['entityClass']
+                : $this->localConf['entityClass']
+            );
+
+            if (method_exists($entityClass, 'setCode')) {
+                $setting = (empty($this->flags['setting']) ? array() : $this->flags['setting']);
+                $settingBundle = (empty($setting['Bundle']) ? $this->localConf['Bundle'] : $setting['Bundle']);
+                $settingEntity = (empty($setting['entity']) ? ($this->localConf['entity'] . 'Setting') : $setting['entity']);
+                $localBundle = $localEntity = null;
+                if ($dependency && isset($this->localConf['entityFields'][$dependency]['typeDetail'])) {
+                    $localBundle = $this->localConf['entityFields'][$dependency]['typeDetail']['Bundle'];
+                    $localEntity = $this->localConf['entityFields'][$dependency]['typeDetail']['entity'];
+                } else {
+                    $localBundle = $this->localConf['Bundle'];
+                    $localEntity = $this->localConf['entity'];
+                }
+
+                return $this->get('app.service.code_generator')
+                    ->getSurroundingObjects(
+                        $code,
+                        $this->getLocalRepositoryService(),
+                        ($settingBundle . ':' . $settingEntity),
+                        ($localBundle . ':' . $localEntity),
+                        (empty($setting['criteria']) ? array() : $setting['criteria'])
+                    );
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -672,6 +814,37 @@ abstract class BaseEntityController extends BaseController
      * @return $this
      */
     protected function deleteObject($object, $hasFlush = true)
+    {
+        switch ($this->flags['storage']) {
+            case 'session':
+                return $this->deleteObjectFromSS($object->getId());
+            default:
+                return $this->deleteObjectFromDb($object, $hasFlush);
+        }
+    }
+
+    /**
+     * Delete object from session storage
+     * @param $objectId
+     * @return $this
+     */
+    protected function deleteObjectFromSS($objectId)
+    {
+        // Delete object from session
+        if (!empty($objectId)) {
+            $this->container->get('app.service.session_storage')->delete($objectId, $this->flags['parent']);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Delete object from database
+     * @param $object
+     * @param $hasFlush (it determines if should be executed the flush method to persist data in database)
+     * @return $this
+     */
+    protected function deleteObjectFromDb($object, $hasFlush = true)
     {
         $entityManager = $this->getLocalEntityManager();
 
@@ -856,7 +1029,9 @@ abstract class BaseEntityController extends BaseController
                         ),
                         'label' => 'Save and Enter'
                     ));
-                } else {
+                }
+                // If AddAction is defined, then there are different forms to add and edit, else the same form is used
+                elseif (empty($this->templateConf['actions']['add'])) {
                     $formBuilder->add('saveAndNew', ButtonType::class, array(
                         'attr' => array(
                             'class' => 'btn btn-primary',
@@ -910,6 +1085,44 @@ abstract class BaseEntityController extends BaseController
     }
 
     /**
+     * Handle Form Errors
+     * @param $form
+     * @return $this
+     */
+    protected function handleFormErrors($form) {
+        $this->responseConf['status'] = 0;
+        $this->responseConf['errors'] = array();
+        $flashMessage = ''; // Flash message to display to user
+
+        // General errors (are shown to used through the flash message)
+        foreach($form->getErrors() as $error) {
+            $errorMessage = $error->getMessage();
+            $flashMessage .= ('- ' . $errorMessage . '<br/>');
+
+            // @TODO translate messages
+            // $this->container->get('translator')->trans($error->getMessage(), array(), 'validators');
+        }
+
+        // Field errors
+        foreach($form->all() as $field => $formField) {
+            foreach($formField->getErrors() as $error) {
+                $this->responseConf['errors'][$field][] = $error->getMessage();
+
+                // @TODO translate messages
+                // $this->container->get('translator')->trans($error->getMessage(), array(), 'validators');
+            }
+        }
+
+        // Set flash message
+        if (empty($flashMessage)) {
+            $flashMessage = 'Please check errors.';
+        }
+        $this->addFlashMessage($flashMessage, 'Fail to persist object', 'error');
+
+        return $this;
+    }
+
+    /**
      * Add control to form
      * @param $formBuilder
      * @param $field
@@ -929,14 +1142,12 @@ abstract class BaseEntityController extends BaseController
 
         // Base attributes
         $baseAttrs = array(
-            'attr' => array_merge(
-                array(
-                    'placeholder' => $placeholder
-                ),
-                (is_array($attr) ? $attr : array())
-            ),
+            'attr' => (is_array($attr) ? $attr : array()),
             'mapped' => $isMapped
         );
+        if ($placeholder) {
+            $baseAttrs['attr']['placeholder'] = $placeholder;
+        }
 
         // Required. Symfony cannot guess 'nullable' in some cases (not mapped fields and entity type)
         $isRequired = $this->getFieldMetadata($field, 'isRequired');
@@ -1012,6 +1223,9 @@ abstract class BaseEntityController extends BaseController
                 // Use the static field 'file'
                 $formBuilder->add('file', FileType::class, $baseAttrs);
                 break;
+            case 'textarea':
+                $formBuilder->add($field, TextareaType::class, $baseAttrs);
+                break;
             case 'embed':
                 $formBuilder->add($field, $this->localConf['entityFields'][$field]['typeDetail']['formClass']);
                 // Remove field to avoid to show the id in template
@@ -1039,72 +1253,81 @@ abstract class BaseEntityController extends BaseController
      * @param $form
      * @param $object
      * @param $hasValidation
+     * @param $hasFlush (it determines if should be executed the flush method to persist data in database)
      * @return $this
      */
-    protected function saveForm($form, $object, $hasValidation = true)
+    protected function saveForm($form, $object, $hasValidation = true, $hasFlush = true)
+    {
+        switch ($this->flags['storage']) {
+            case 'session':
+                return $this->saveFormToSS($object);
+            default:
+                return $this->saveFormToDb($form, $object, $hasValidation, $hasFlush);
+        }
+    }
+
+    /**
+     * Save form to Session Storage
+     * @param $object
+     * @return $this
+     */
+    protected function saveFormToSS($object)
+    {
+        $this->saveObjectToSS($object, true);
+
+        return $this;
+    }
+
+    /**
+     * Save form
+     * @param $form
+     * @param $object
+     * @param $hasValidation
+     * @param $hasFlush (it determines if should be executed the flush method to persist data in database)
+     * @return $this
+     */
+    protected function saveFormToDb($form, $object, $hasValidation = true, $hasFlush = true)
     {
         // Check if form is valid
-        if(!$hasValidation || ($hasValidation && $form->isValid())) {
-            $this->saveObject($object);
-            if ($this->responseConf['status'] === 1) {
-                // Refresh to update fields choices
-                $this->refreshConf();
+        if ($hasValidation && !$this->validateForm($form)) {
+            return $this;
+        }
 
-                // Config response
-                if ($this->responseConf['hasObject']) {
-                    $this->responseConf['object'] = $this->normalizeObject($object); // Object updated
-                }
-                $this->addFlashMessage( // Flash messages to display to user
-                    'The data has been updated',
-                    'Success',
-                    'success'
-                );
-            }
-        } else {
-            $this->responseConf['status'] = 0;
-            $this->responseConf['errors'] = $this->getFormErrors($form);
+        // Persist object in entity manager
+        $this->saveObjectToDb($object, $hasFlush, true);
 
-            // Flash message to display to user
-            $errorMessage = '';
-            if (isset($this->responseConf['errors'][0]) && (count($this->responseConf['errors'][0]) > 0)) {
-                // General errors
-                foreach ($this->responseConf['errors'][0] as $generalError) {
-                    $errorMessage .= ('- ' . $generalError . '<br/>');
-                }
-            } else {
-                // Fields errors
-                $errorMessage = 'Please check errors.';
-            }
-            $this->addFlashMessage($errorMessage, 'Fail to persist object', 'error');
+        // Success
+        if (($this->responseConf['status'] == 1)
+            && $object->getId() // Id needs to be defined,
+            // otherwise the flush method was not called and the object has not yet persisted in database,
+            // this procedure is used when we have many operations in the same "flush" (transaction)
+        ) {
+            // Refresh to update fields choices
+            $this->refreshConf();
+
+            // Flash messages to display to user
+            $this->addFlashMessage(
+                'The data has been updated',
+                'Success',
+                'success'
+            );
         }
 
         return $this;
     }
 
     /**
-     * Get form errors
+     * Validate form
      * @param $form
-     * @return array
+     * @return bool
      */
-    protected function getFormErrors($form)
-    {
-        $errors = array();
-
-        // General errors (used "0" index for general errors)
-        foreach($form->getErrors() as $error) {
-            $errors[0][] = $error->getMessage();
-            // $this->container->get('translator')->trans($error->getMessage(), array(), 'validators');
+    protected function validateForm($form) {
+        if ($form->isValid()) {
+            return true;
         }
 
-        // Field errors
-        foreach($form->all() as $field => $formField) {
-            foreach($formField->getErrors() as $error) {
-                $errors[$field][] = $error->getMessage();
-                // $this->container->get('translator')->trans($error->getMessage(), array(), 'validators');
-            }
-        }
-
-        return $errors;
+        $this->handleFormErrors($form);
+        return false;
     }
 
     /**
@@ -1137,12 +1360,11 @@ abstract class BaseEntityController extends BaseController
             $options['limit']++; // Used to control the pagination
         }
 
+        // Try get from database
         $objects = $this->getLocalRepositoryService()
             ->execute(
                 'getObjects',
-                array(
-                    $options
-                )
+                array($options)
             );
 
         if (!empty($options['limit'])) { // Pagination enabled
@@ -1170,7 +1392,6 @@ abstract class BaseEntityController extends BaseController
 
         foreach ($this->localConf['entityFields'] as $field => $metadata) {
             $normalizerConf = $this->getFieldMetadata($field, 'normalizer');
-            $objContainer = $object;
 
             // Exception for foreign fields merged is this entity/object,
             // whose data is in your parent entity/object (ie: client, supplier, etc.)
@@ -1181,25 +1402,10 @@ abstract class BaseEntityController extends BaseController
                     : null
                 )
             );
-            if(!empty($dependency)) {
-                // Get dependencies recursively
-                $dependencyArr = array();
-                while ($dependency) {
-                    array_unshift($dependencyArr, $this->getFieldMetadata($dependency, 'field'));
-                    $dependency = (empty($this->localConf['entityFields'][$dependency]['dependency'])
-                        ? false
-                        : $this->localConf['entityFields'][$dependency]['dependency']
-                    );
-                }
-
-                // Get field value recursively
-                foreach($dependencyArr as $dependency) {
-                    $methodName = ('get' . ucfirst($dependency));
-                    if (method_exists($objContainer, $methodName)) {
-                        $objContainer = $objContainer->$methodName();
-                    }
-                }
-            }
+            $objContainer = ($dependency
+                ? $this->getDependencyObjectContainer($object, $dependency)
+                : $object
+            );
 
             // Field name in database (index can be an alias, used in icon)
             $fieldName = $this->getFieldMetadata($field, 'field');
@@ -1262,22 +1468,91 @@ abstract class BaseEntityController extends BaseController
     }
 
     /**
+     * Get Dependency Object Container
+     * Used to determines the object container of foreign fields merged is the entity/object,
+     * whose data is in your parent entity/object (ie: client, supplier, etc.)
+     * @param $object
+     * @param $dependency
+     * @return mixed
+     */
+    protected function getDependencyObjectContainer($object, $dependency) {
+        $objContainer = $object;
+
+        // Get dependencies recursively
+        $dependencyArr = array();
+        while ($dependency) {
+            array_unshift($dependencyArr, $this->getFieldMetadata($dependency, 'field'));
+            $dependency = (empty($this->localConf['entityFields'][$dependency]['dependency'])
+                ? false
+                : $this->localConf['entityFields'][$dependency]['dependency']
+            );
+        }
+
+        // Get field value recursively
+        foreach($dependencyArr as $dependency) {
+            $methodName = ('get' . ucfirst($dependency));
+            if (method_exists($objContainer, $methodName)) {
+                $objContainer = $objContainer->$methodName();
+            }
+        }
+
+        return $objContainer;
+    }
+
+    /**
      * Get object
      * @param $id
      * @return object
      */
-    protected function getObject($id)
+    protected function getObject($id = null)
     {
-        // Retrieve object
+        $obj = null;
+
         if(!empty($id)) {
-            $obj = $this->getLocalRepositoryService()->execute('findOneById', array($id));
-            if ($obj instanceof $this->localConf['entityClass']) {
+            // Default storage
+            if ($this->flags['storage'] == 'db') {
+                $obj = $this->getObjectFromDb($id);
+                if ($obj) {
+                    return $obj;
+                }
+            }
+
+            // Alternative storage ('session')
+            $obj = $this->getObjectFromSS($id);
+            if ($obj) {
+                $this->flags['storage'] = 'session';
                 return $obj;
             }
         }
 
         // New object
         return $this->newObject();
+    }
+
+    /**
+     * Get object from Session Storage
+     * @param $id
+     * @return object
+     */
+    protected function getObjectFromSS($id)
+    {
+        if(empty($id)) {
+            return null;
+        }
+        return $this->container->get('app.service.session_storage')->get($id);
+    }
+
+    /**
+     * Get object from database
+     * @param $id
+     * @return object
+     */
+    protected function getObjectFromDb($id)
+    {
+        if(empty($id)) {
+            return null;
+        }
+        return $this->getLocalRepositoryService()->execute('findOneById', array($id));
     }
 
     /**
@@ -1539,7 +1814,7 @@ abstract class BaseEntityController extends BaseController
         }
 
         // 'storeObj' is mandatory to handle with code in view (to show the correct color)
-        if (method_exists($this->localConf['entityClass'], 'getCode')
+        if (isset($this->localConf['entityFields']['code'])
             && isset($this->localConf['entityFields']['storeObj'])
             && !in_array('storeObj', $search['fields'])
         ) {
@@ -1562,7 +1837,7 @@ abstract class BaseEntityController extends BaseController
         $data = parent::getAndProcessRequestData($request, $checkCsrfToken);
 
         // Process search
-        if ($hasSearch && isset($data['search'])) {
+        if ($hasSearch && !empty($data['search'])) {
             // Normalize search array
             if (is_array($data['search'])) {
                 $this->setSearch($data['search']);
@@ -1602,6 +1877,10 @@ abstract class BaseEntityController extends BaseController
         // Add object
         if ($this->responseConf['hasObject'] && $this->responseConf['object']) {
             $data['object'] = $this->responseConf['object'];
+            // Set session storage object flag to be handled by template
+            if ($this->responseConf['addObjectSessionStorageFlag'] && ($this->flags['storage'] == 'session')) {
+                $data['object']['_isSessionStorage'] = true;
+            }
         }
 
         // Add mandatory conf if is not configured to send
@@ -1609,7 +1888,6 @@ abstract class BaseEntityController extends BaseController
             $data['fieldsChoices'] = $this->templateConf['fieldsChoices'];
         }
 
-        // Return array
         return parent::getResponse($isJson, array_merge($data, $extraData));
     }
 

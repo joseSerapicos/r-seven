@@ -90,4 +90,40 @@ class BaseLink extends BaseEntity {
     {
         return $this->link;
     }
+
+    /**
+     * Overrides parent method.
+     * @return mixed
+     */
+    public function __toString()
+    {
+        return $this->__customToString();
+    }
+
+    /**
+     * Customizable string
+     * @param bool $hasIcon
+     * @param bool $hasName
+     * @param bool $hasLink
+     * @return string
+     */
+    public function __customToString($hasIcon = true, $hasName = true, $hasLink = true)
+    {
+        $output = '';
+
+        if ($hasIcon && $this->appIconObj) {
+            $output .= ('<i class="fa ' .$this->appIconObj->getIcon() . '"></i> ');
+        }
+        if ($hasName && $this->name) {
+            $output .= $this->name;
+        }
+        if ($hasLink) {
+            if ($hasName && $this->name) {
+                $output .= ': ';
+            }
+            $output .= $this->link;
+        }
+
+        return $output;
+    }
 }

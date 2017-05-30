@@ -100,8 +100,8 @@ class BaseBookingServiceController extends BaseEntityChildController
             $this->flags['hasForm'] = true;
             $this->initChild($request, array($booking));
             $this->templateConf['fields']['form'] = array(
-                'id', 'icon', 'name', 'description', 'supplierObj', 'reference',
-                'insertTime', 'insertUser', 'isEnabled'
+                'icon', 'name', 'description', 'supplierObj', 'reference',
+                'isEnabled'
             );
         }
 
@@ -117,7 +117,7 @@ class BaseBookingServiceController extends BaseEntityChildController
         // Check if is submitted
         if($form->isSubmitted()) {
             $this->saveForm($form, $obj);
-            $this->onSaveObject($obj, 'addDetail');
+            $this->postSaveObject($obj, 'addDetail');
             return $this->getResponse(true);
         }
 
@@ -185,7 +185,7 @@ class BaseBookingServiceController extends BaseEntityChildController
 
             if ($this->responseConf['status'] == 0) {
                 $this->addFlashMessage(
-                    'Invalid data range.',
+                    'Invalid date range.',
                     'Data not persisted',
                     'error'
                 );
@@ -317,10 +317,10 @@ class BaseBookingServiceController extends BaseEntityChildController
             $this->flags['hasForm'] = true;
             $this->initChild($request, array($booking));
             $this->templateConf['fields']['form'] = array(
-                'id', 'icon', 'name', 'description', 'supplierObj', 'reference',
+                'icon', 'name', 'description', 'supplierObj', 'reference',
                 'startDate', 'endDate',
                 'quantity', 'confirmationStatus',
-                'insertTime', 'insertUser', 'isEnabled');
+                'isEnabled');
         }
 
         $obj = $this->getObject($id);
@@ -377,10 +377,9 @@ class BaseBookingServiceController extends BaseEntityChildController
 
             $this->saveForm($form, $obj);
             // Update all dependencies, values can be changed or service "isEnabled" may have been changed
-            $this->onSaveObject($obj, 'edit');
+            $this->postSaveObject($obj, 'edit');
             $this->setDependenciesConfirmation();
             $this->setDependenciesDates();
-            $this->setDependenciesTotals($obj);
 
             return $this->getResponse(true);
         }
@@ -464,13 +463,14 @@ class BaseBookingServiceController extends BaseEntityChildController
             // Default allot is not validated and allocated at all,
             // if no allot are available, then user needs to validate and allocate correctly the allot
             $object->setIsAutoAllot(false);
-            $object->setTotalCost(0);
+            $object->setConfirmationStatus("NO");
+            $object->setTotalVatCost(0);
+            $object->setTotalVatSell(0);
+            $object->setSubTotalCost(0);
+            $object->setSubTotalSell(0);
             $object->setTotalMargin(0);
             $object->setTotalMarkup(0);
             $object->setTotalProfit(0);
-            $object->setTotalSell(0);
-            $object->setInvoiceStatus("NO");
-            $object->setConfirmationStatus("NO");
 
             parent::setObjectDefaultValues($object);
         }
@@ -620,195 +620,266 @@ class BaseBookingServiceController extends BaseEntityChildController
      * @return $this
      */
     protected function setPriceDefaultValues($object) {
-        $quantity = $object->getQuantity();
-        $startDate = $object->getStartDate();
-        $endDate = $object->getEndDate();
+
         $serviceObj = $object->getServiceObj();
         $priceDebug = array();
 
         // Check if price is enabled
-        if ($serviceObj && $serviceObj->getIsEnabledPrice()) {
-            $groupedPriceArr = array(); // It contents the price grouped by different entries (id).
-
-            $date = $startDate->format('Y-m-d');
-            $endTime = strtotime($endDate->format('Y-m-d'));
-            while (strtotime($date) <= $endTime) {
-                $priceDetail = array();
-                // First price occurrence used as base price in price exceptions
-                $isDefinedBasePrice = false;
-                $baseCostValue = 0;
-                $baseSellValue = 0;
-
-                ////////
-                // Regular price
-                ////////////////////////////////
-                $options = array('fields' => array(
-                    'id', 'description', 'costValue', 'marginMethod', 'marginValue', 'sellValue', 'userFieldTyped'
-                ));
-                $priceArr = $this->getRepositoryService('ServicePrice', 'ServicesBundle')->execute(
-                    'getCurrentPriceByDate',
-                    array(
-                        $serviceObj,
-                        $date,
-                        $options
-                    )
-                );
-                foreach ($priceArr as $price) {
-                    // Define base price for price exception
-                    if (!$isDefinedBasePrice) {
-                        $isDefinedBasePrice = true;
-                        $baseCostValue = $price['costValue'];
-                        $baseSellValue = $price['sellValue'];
-                    }
-
-                    $priceDetail[] = array(
-                        'description' => $price['description'],
-                        'costValue' => round($price['costValue'], 4),
-                        'sellValue' => round($price['sellValue'], 4)
-                    );
-
-                    // Grouped price
-                    if (isset($groupedPriceArr[$price['id']])) {
-                        $groupedPriceArr[$price['id']]['quantity']++;
-                        $groupedPriceArr[$price['id']]['costValue'] += $price['costValue'];
-                        $groupedPriceArr[$price['id']]['sellValue'] += $price['sellValue'];
-                    } else {
-                        $groupedPriceArr[$price['id']] = array(
-                            'description' => $price['description'],
-                            'postingType' => 'DEBIT',
-                            'costValue' => $price['costValue'],
-                            'marginMethod' => $price['marginMethod'],
-                            'marginValue' => $price['marginValue'],
-                            'sellValue' => $price['sellValue'],
-                            'userFieldTyped' => $price['userFieldTyped'],
-                            'quantity' => 1
-                        );
-                    }
-                }
-
-                ////////
-                // Price exceptions (supplements and discounts) (if credit subtract value, else some)
-                ////////////////////////////////
-                $options = array('fields' => array(
-                    'id', 'description', 'postingType', 'costBaseValue', 'costMethod', 'costValue',
-                    'marginMethod', 'marginBaseValue', 'marginValue'
-                ));
-                $priceArr = $this->getRepositoryService('ServicePriceException', 'ServicesBundle')->execute(
-                    'getCurrentPriceExceptionByDate',
-                    array(
-                        $serviceObj,
-                        $date,
-                        $options
-                    )
-                );
-                foreach ($priceArr as $price) {
-                    // Determines cost price
-                    $costValue = 0;
-                    switch ($price['costBaseValue']) {
-                        case 'BASE_COST':
-                            $costValue = $baseCostValue;
-                            break;
-                    }
-                    switch ($price['costMethod']) {
-                        case 'PERCENT':
-                            $costValue = round($costValue * ($price['costValue']/100), 4);
-                            break;
-                        case 'FIXED':
-                            $costValue = round($costValue + $price['costValue'], 4);
-                            break;
-                    }
-                    // Determines sell price
-                    $sellValue = 0;
-                    $baseForPercentMultiplier = 1;
-                    switch ($price['marginBaseValue']) {
-                        case 'COST':
-                            $sellValue = $costValue;
-                            break;
-                        case 'BASE_SELL':
-                            $sellValue = $baseSellValue;
-                            $baseForPercentMultiplier = 0;
-                            break;
-                    }
-                    switch ($price['marginMethod']) {
-                        case 'MARGIN': // Note: Only used for cost based
-                            $marginValue = (($price['marginValue'] < 100) ? $price['marginValue'] : 99.9999);
-                            $sellValue = round($costValue / (1 - ($marginValue/100)), 4);
-                            break;
-                        case 'MARKUP': // Note: NOnly used for cost based
-                            $sellValue = round($costValue * (1 + ($price['marginValue']/100)), 4);
-                            break;
-                        case 'FIXED':
-                            $sellValue = round($sellValue + $price['marginValue'], 4);
-                            break;
-                        case 'PERCENT':
-                            $sellValue = round($sellValue * ($baseForPercentMultiplier + $price['marginValue']/100), 4);
-                            break;
-                    }
-
-                    $priceDetail[] = array(
-                        'description' => $price['description'],
-                        'costValue' => (($price['postingType'] == 'CREDIT') ? ($costValue * (-1)) : $costValue),
-                        'sellValue' => (($price['postingType'] == 'CREDIT') ? ($sellValue * (-1)) : $sellValue)
-                    );
-
-                    // Grouped price.
-                    $priceIndex = ('pe_' . $price['id']); //  "pe_": price exception to distinct of the regular price index
-                    if (isset($groupedPriceArr[$priceIndex])) {
-                        $groupedPriceArr[$priceIndex]['quantity']++;
-                        $groupedPriceArr[$priceIndex]['costValue'] += $costValue;
-                        $groupedPriceArr[$priceIndex]['sellValue'] += $sellValue;
-                    } else {
-                        $groupedPriceArr[$priceIndex] = array(
-                            'description' => $price['description'],
-                            'postingType' => $price['postingType'],
-                            'costValue' => $costValue,
-                            'marginMethod' => '', // Should be empty, because cost value is not a related value to sell
-                            'marginValue' => '0.0000',
-                            'sellValue' => $sellValue,
-                            'userFieldTyped' => 'COST',
-                            'quantity' => 1
-                        );
-                    }
-                }
-
-                ////////
-                // Add to debug
-                ////////////////////////////////
-                $priceDebug[] = array(
-                    'date' => $date,
-                    'status' => ((count($priceDetail) > 0) ? 'YES' : 'NO'),
-                    'price' => $priceDetail
-                );
-
-                $date = date("Y-m-d", strtotime("+1 day", strtotime($date)));
-            }
-
-            foreach ($groupedPriceArr as $groupedPrice) {
-                $servicePriceEntityClass = ($this->localConf['entityClass'] . 'Price');
-                $setBookingServiceObjMethod = ('set' . $this->localConf['entity'] . 'Obj');
-
-                $servicePriceObj = new $servicePriceEntityClass();
-                $servicePriceObj->$setBookingServiceObjMethod($object);
-                $servicePriceObj->setDescription($groupedPrice['description'] . ' (' . $groupedPrice['quantity'] . ' Days)');
-                $servicePriceObj->setPostingType($groupedPrice['postingType']);
-                $servicePriceObj->setQuantity($quantity);
-                $servicePriceObj->setCostValue($groupedPrice['costValue']);
-                $servicePriceObj->setMarginMethod($groupedPrice['marginMethod']);
-                $servicePriceObj->setMarginValue($groupedPrice['marginValue']);
-                $servicePriceObj->setSellValue($groupedPrice['sellValue']);
-                $servicePriceObj->setTotalCost(round($groupedPrice['costValue'] * $quantity, 2));
-                $servicePriceObj->setTotalSell(round($groupedPrice['sellValue'] * $quantity, 2));
-                $servicePriceObj->setUserFieldTyped($groupedPrice['userFieldTyped']);
-                parent::setObjectDefaultValues($servicePriceObj);
-                $this->saveObject($servicePriceObj, false);
-            }
-
-            // Save on database
-            $this->flushEm();
-
-            // Update service and booking totals
-            $this->setDependenciesTotals($object);
+        if (!$serviceObj || !$serviceObj->getIsEnabledPrice()) {
+            $this->responseConf['localData']['priceDebug'] = $priceDebug;
+            return $this;
         }
+
+        // Set vars
+        $startDate = $object->getStartDate();
+        $endDate = $object->getEndDate();
+        $vatCodeObj = $serviceObj->getVatCodeObj();
+        $vatCodePercentage = $vatCodeObj->getPercentage();
+        $quantity = $object->getQuantity();
+
+        // Price service to make calculus
+        $priceService = $this->get('app.service.price');
+
+        // Contents the price daily sum grouped by different entries (id - price and price exceptions).
+        $groupedPriceArr = array();
+
+        // Get price for each day
+        $date = $startDate->format('Y-m-d');
+        $endTime = strtotime($endDate->format('Y-m-d'));
+        while (strtotime($date) <= $endTime) {
+            // Base price to use to determine price exceptions
+            // (first occurrence is used, because can have more occurrences)
+            $basePrice = null;
+
+            // Detail of price debug
+            $priceDebugDetail = array();
+
+            ////////
+            // Price
+            ////////////////////////////////
+            $options = array('fields' => array(
+                'id', 'description', 'isVatIncluded', 'costValue',
+                'marginMethod', 'marginValue', 'sellValue', 'userFieldTyped'
+            ));
+            $priceArr = $this->getRepositoryService('ServicePrice', 'ServicesBundle')->execute(
+                'getCurrentPriceByDate',
+                array(
+                    $serviceObj,
+                    $date,
+                    $options
+                )
+            );
+            foreach ($priceArr as $price) {
+                // Set values
+                $splitTotalUnitCost = $priceService->splitTotalUnit($price['costValue'], $vatCodePercentage, $price['isVatIncluded']);
+                $splitTotalUnitSell = $priceService->splitTotalUnit($price['sellValue'], $vatCodePercentage, $price['isVatIncluded']);
+
+                // Define base price for price exception
+                if (!$basePrice) {
+                    $basePrice = array(
+                        'costValue' => $splitTotalUnitCost['value'],
+                        'sellValue' => $splitTotalUnitSell['value']
+                    );
+                }
+
+                $priceDebugDetail[] = array(
+                    'description' => $price['description'],
+                    'costValue' => (
+                        $splitTotalUnitCost['totalUnit']
+                        . ' ('.$splitTotalUnitCost['value'].' + '.$splitTotalUnitCost['vatValue'].' VAT)'
+                    ),
+                    'sellValue' => (
+                        $splitTotalUnitSell['totalUnit']
+                        . ' ('.$splitTotalUnitSell['value'].' + '.$splitTotalUnitSell['vatValue'].' VAT)'
+                    ),
+                );
+
+                // Grouped price
+                if (isset($groupedPriceArr[$price['id']])) {
+                    $groupedPriceArr[$price['id']]['numDays']++;
+                } else {
+                    $groupedPriceArr[$price['id']] = array(
+                        'description' => $price['description'],
+                        'postingType' => 'DEBIT',
+                        'marginMethod' => $price['marginMethod'],
+                        'marginValue' => $price['marginValue'],
+                        'userFieldTyped' => $price['userFieldTyped'],
+                        'numDays' => 1,
+                        'costValue' => $splitTotalUnitCost['value'],
+                        'sellValue' => $splitTotalUnitSell['value'],
+                        'vatValueCost' => $splitTotalUnitCost['vatValue'],
+                        'vatValueSell' => $splitTotalUnitSell['vatValue']
+                    );
+                }
+            }
+
+            ////////
+            // Price exception (supplements and discounts) (if credit subtract value, else some)
+            ////////////////////////////////
+            $options = array('fields' => array(
+                'id', 'description', 'postingType', 'isVatIncluded',
+                'costMethod', 'costBaseValue', 'costValue',
+                'marginMethod', 'marginBaseValue', 'marginValue'
+            ));
+            $priceArr = $this->getRepositoryService('ServicePriceException', 'ServicesBundle')->execute(
+                'getCurrentPriceExceptionByDate',
+                array(
+                    $serviceObj,
+                    $date,
+                    $options
+                )
+            );
+            foreach ($priceArr as $price) {
+                // Determines cost price
+                $costValue = 0;
+                switch ($price['costBaseValue']) {
+                    case 'BASE_COST':
+                        $costValue = $basePrice['costValue'];
+                        break;
+                }
+                switch ($price['costMethod']) {
+                    case 'PERCENT':
+                        $costValue = round($costValue * ($price['costValue']/100), 2);
+                        break;
+                    case 'FIXED':
+                        $splitTotalUnitCost = $priceService->splitTotalUnit($price['costValue'], $vatCodePercentage, $price['isVatIncluded']);
+                        $costValue = round($costValue + $splitTotalUnitCost['value'], 2);
+                        break;
+                }
+                // Determines sell price
+                $sellValue = 0;
+                // To get base value + percentage of base value (when we want one percent over cost, is this case we
+                // never get the value bellow than the base value, that is the cost)
+                $baseForPercentMultiplier = 1;
+                switch ($price['marginBaseValue']) {
+                    case 'COST':
+                        $sellValue = $costValue;
+                        break;
+                    case 'BASE_SELL':
+                        $sellValue = $basePrice['sellValue'];
+                        // To get only a percentage of base value (when we want one percent over sell, ie: 50% is half
+                        // of base value, 150% is the base value + half of base value, so we can values bellow or above
+                        // of base value)
+                        $baseForPercentMultiplier = 0;
+                        break;
+                }
+                switch ($price['marginMethod']) {
+                    case 'MARGIN': // Note: Only used for cost based
+                        $marginValue = (($price['marginValue'] < 100) ? $price['marginValue'] : 99.9999);
+                        $sellValue = round($costValue / (1 - ($marginValue/100)), 2);
+                        break;
+                    case 'MARKUP': // Note: Only used for cost based
+                        $sellValue = round($costValue * (1 + ($price['marginValue']/100)), 2);
+                        break;
+                    case 'FIXED':
+                        $splitTotalUnitSell = $priceService->splitTotalUnit($price['marginValue'], $vatCodePercentage, $price['isVatIncluded']);
+                        $sellValue = ($sellValue + $splitTotalUnitSell['value']);
+                        break;
+                    case 'PERCENT':
+                        $sellValue = round($sellValue * ($baseForPercentMultiplier + $price['marginValue']/100), 2);
+                        break;
+                }
+
+                // Get values base on unit
+                $splitTotalUnitCost = $priceService->splitTotalUnit($costValue, $vatCodePercentage, false);
+                $splitTotalUnitSell = $priceService->splitTotalUnit($sellValue, $vatCodePercentage, false);
+
+                $priceDebugDetail[] = array(
+                    'description' => $price['description'],
+                    'costValue' => (
+                        $splitTotalUnitCost['totalUnit']
+                        . ' ('.$splitTotalUnitCost['value'].' + '.$splitTotalUnitCost['vatValue'].' VAT)'
+                    ),
+                    'sellValue' => (
+                        $splitTotalUnitSell['totalUnit']
+                        . ' ('.$splitTotalUnitSell['value'].' + '.$splitTotalUnitSell['vatValue'].' VAT)'
+                    ),
+                );
+
+                // Grouped price.
+                $priceIndex = ('pe_' . $price['id']); //  "pe_": price exception to distinct of the regular price index
+                if (isset($groupedPriceArr[$priceIndex])) {
+                    $groupedPriceArr[$priceIndex]['numDays']++;
+                } else {
+                    $groupedPriceArr[$priceIndex] = array(
+                        'description' => $price['description'],
+                        'postingType' => $price['postingType'],
+                        'marginMethod' => '', // Should be empty, because cost value is not a related value to sell
+                        'marginValue' => '0.00',
+                        'userFieldTyped' => 'COST',
+                        'numDays' => 1,
+                        'costValue' => $splitTotalUnitCost['value'],
+                        'sellValue' => $splitTotalUnitSell['value'],
+                        'vatValueCost' => $splitTotalUnitCost['vatValue'],
+                        'vatValueSell' => $splitTotalUnitSell['vatValue']
+                    );
+                }
+            }
+
+            ////////
+            // Add to debug
+            ////////////////////////////////
+            $priceDebug[] = array(
+                'date' => $date,
+                'status' => ((count($priceDebugDetail) > 0) ? 'YES' : 'NO'),
+                'price' => $priceDebugDetail
+            );
+
+            // Update date to next day
+            $date = date("Y-m-d", strtotime("+1 day", strtotime($date)));
+        }
+
+        foreach ($groupedPriceArr as $groupedPrice) {
+            // Set values
+            $totalUnitCost = round($groupedPrice['costValue'] + $groupedPrice['vatValueCost'], 2);
+            $totalUnitSell = round($groupedPrice['sellValue'] + $groupedPrice['vatValueSell'], 2);
+            $totalVatCost = $priceService->calcTotal($groupedPrice['vatValueCost'], $quantity);
+            $totalVatSell = $priceService->calcTotal($groupedPrice['vatValueSell'], $quantity);
+            // Do not use "subTotal" nor "totalVat" to get the "total", because this values are already rounded,
+            // and in some cases the sum of 2 rounded values cause inquiries.
+            // Before multiply round the sum to get a coherent total unit value
+            $totalCost = $priceService->calcTotal($totalUnitCost, $quantity);
+            $totalSell = $priceService->calcTotal($totalUnitSell, $quantity);
+            // Sub total is determined in this way, because in some cases the sum of "subTotal" and "totalVat"
+            // rounded does not match with the correct total, given that this values are rounded to 2 decimals
+            // and lost precision, so in this way we keep the calculus with coherence giving preference to keep
+            // "totalVat" untouched (legal values).
+            $subTotalCost = round($totalCost - $totalVatCost, 2);
+            $subTotalSell = round($totalSell - $totalVatSell, 2);
+
+            $servicePriceEntityClass = ($this->localConf['entityClass'] . 'Price');
+            $servicePriceObj = new $servicePriceEntityClass();
+            parent::setObjectDefaultValues($servicePriceObj);
+
+            $servicePriceObj->setBookingServiceObj($object);
+            $servicePriceObj->setVatCodeObj($vatCodeObj);
+            $servicePriceObj->setDescription($groupedPrice['description']);
+            $servicePriceObj->setPostingType($groupedPrice['postingType']);
+            // We need to keep unit value original, so we can use this value to recalculate all values like VAT
+            // without inquiries, so the days multiplied with quantity instead of unit value and keep the original
+            // quantity
+            $servicePriceObj->setQuantity($quantity * $groupedPrice['numDays']);
+            $servicePriceObj->setMarginMethod($groupedPrice['marginMethod']);
+            $servicePriceObj->setMarginValue($groupedPrice['marginValue']);
+            $servicePriceObj->setUserFieldTyped($groupedPrice['userFieldTyped']);
+            $servicePriceObj->setCostValue($groupedPrice['costValue']);
+            $servicePriceObj->setSellValue($groupedPrice['sellValue']);
+            $servicePriceObj->setVatValueCost($groupedPrice['vatValueCost']);
+            $servicePriceObj->setVatValueSell($groupedPrice['vatValueSell']);
+            $servicePriceObj->setSubTotalCost($subTotalCost);
+            $servicePriceObj->setSubTotalSell($subTotalSell);
+            $servicePriceObj->setTotalVatCost($totalVatCost);
+            $servicePriceObj->setTotalVatSell($totalVatSell);
+
+            $this->saveObject($servicePriceObj, false);
+        }
+
+        // Save on database
+        $this->flushEm();
+
+        // Update service and booking totals
+        $this->setDependenciesTotals($object);
+        $this->setDependenciesInvoice();
 
         $this->responseConf['localData']['priceDebug'] = $priceDebug;
 
@@ -843,6 +914,7 @@ class BaseBookingServiceController extends BaseEntityChildController
 
                 // Update service and booking totals
                 $this->setDependenciesTotals($object);
+                $this->setDependenciesInvoice();
             }
         }
 
@@ -851,7 +923,7 @@ class BaseBookingServiceController extends BaseEntityChildController
 
     /**
      * Set totals for dependencies
-     * @param $object (is optional because service object may have been removed)
+     * @param $object (is optional because object may have been removed)
      * @return $this
      */
     protected function setDependenciesTotals($object = null) {
@@ -913,6 +985,28 @@ class BaseBookingServiceController extends BaseEntityChildController
                     'setBookingDates',
                     array($bookingObj)
                 );
+            parent::saveObject($bookingObj);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set invoice for dependencies
+     * @return $this
+     */
+    protected function setDependenciesInvoice() {
+        // Check if there are no errors in previous updates and we work with real data (database storage)
+        if (($this->responseConf['status'] == 1) && ($this->flags['storage'] == 'db')) {
+            // Update booking invoice status
+            $parentConf = reset($this->parentConf);
+            $bookingObj = $parentConf['obj'];
+            $this->getRepositoryService('TravelBookingClientCurrentAccount', 'BookingBundle')
+                ->execute(
+                    'setBookingInvoiceStatus',
+                    array($bookingObj)
+                );
+
             parent::saveObject($bookingObj);
         }
 

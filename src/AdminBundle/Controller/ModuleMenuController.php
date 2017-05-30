@@ -279,14 +279,14 @@ class ModuleMenuController extends BaseEntityChildController
      * @param $form
      * @param $object
      * @param $hasValidation
+     * @param $hasFlush (it determines if should be executed the flush method to persist data in database)
      * @return $this
      */
-    protected function saveForm($form, $object, $hasValidation = true)
+    protected function saveForm($form, $object, $hasValidation = true, $hasFlush = true)
     {
-        parent::saveForm($form, $object);
+        parent::saveForm($form, $object, $hasValidation);
 
         if($this->responseConf['status'] === 1) {
-            $session = $this->get('session');
             $store = $this->getStoreAttr('id');
 
             // Reinitialize app to update session with new data

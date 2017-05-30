@@ -37,7 +37,7 @@ class Service extends BaseEntity
     protected $name;
 
     /**
-     * @ORM\Column(name="type", type="string", length=16, nullable=true, unique=false, options={"comment":"Type od service"})
+     * @ORM\Column(name="type", type="string", length=16, nullable=true, unique=false, options={"comment":"Type of service"})
      */
     protected $type; // [TRAVEL]
 

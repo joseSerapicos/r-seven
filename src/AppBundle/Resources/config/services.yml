@@ -14,9 +14,17 @@ services:
         class: AppBundle\Service\DatabaseService
         arguments: ["@service_container"]
 
+    app.service.local_repository:
+        class: AppBundle\Service\LocalRepositoryService
+        arguments: ["@doctrine.orm.local_database_entity_manager"]
+
     app.service.app:
         class: AppBundle\Service\AppService
         arguments: ["@service_container"]
+
+    app.service.session_storage:
+        class: AppBundle\Service\SessionStorageService
+        arguments: ["@session", "@app.service.local_repository"]
 
     app.service.code_generator:
         class: AppBundle\Service\CodeGeneratorService

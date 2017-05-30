@@ -1,0 +1,59 @@
+.document-table tbody > tr > td:last-child,
+.document-table tbody > tr > td:nth-child(4),
+.document-table tbody > tr > td:nth-child(3),
+.document-table tbody > tr > td:nth-child(2) {
+  text-align: right;
+}
+.document-table thead > tr > th:last-child,
+.document-table thead > tr > th:nth-child(4),
+.document-table thead > tr > th:nth-child(3),
+.document-table thead > tr > th:nth-child(2) {
+  text-align: right;
+}
+.document-total > tbody > tr > td,
+.document-dates > tbody > tr > td {
+  text-align: right;
+  border: 0 none;
+  vertical-align: middle;
+  padding: 10px 0 10px 5px;
+}
+.document-total > tbody > tr > td:first-child {
+  white-space: nowrap;
+}
+.document-total > tbody > tr > td:last-child > input {
+  text-align: right;
+}
+.document-dates > tbody > tr > td:last-child {
+  position: relative; // To align the error
+  width: 40%;
+}
+.document-number > * {
+  display: inline-block;
+}
+.document-entity > * {
+  display: table-cell;
+  vertical-align: top;
+}
+.document-total > tbody > tr > td > label,
+.document-dates > tbody > tr > td > label,
+.document-comments > label {
+  position: absolute; // To align the error
+  left: 0;
+}
+.document-comments {
+  position: relative; // To align the error
+  padding: 1px;
+
+  > textarea {
+    border: none 0;
+  }
+}
+.document-tax-resume {
+  padding: 6px 12px;
+  background-color: #fff;
+
+  > .table > tbody > tr > th,
+  > .table > tbody > tr > td {
+    border: 0 none;
+  }
+}

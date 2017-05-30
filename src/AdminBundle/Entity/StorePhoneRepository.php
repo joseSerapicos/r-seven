@@ -55,9 +55,27 @@ class StorePhoneRepository extends BaseEntityRepository
                 'table' => 'store', 'bundle' => 'admin', 'type' => 'none')),
             'name' => array('label' => 'Name / Description', 'type' => 'text', 'acl' => 'edit'),
             'phone' => array('label' => 'Phone', 'type' => 'text', 'acl' => 'edit'),
+            'forDocuments' => array('label' => 'For Documents', 'type' => 'boolean', 'acl' => 'edit'),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
             'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
         ));
+    }
+
+    /**
+     * @param $storeObj
+     * @return mixed
+     */
+    public function getForDocumentsByStore($storeObj)
+    {
+        $output = array();
+
+        $objArr = $this->findBy(array('storeObj' => $storeObj, 'forDocuments' => true, 'isEnabled' => true));
+
+        foreach ($objArr as $obj) {
+            $output[] = $obj->__customToString(true, false, true);
+        }
+
+        return $output;
     }
 }

@@ -26,12 +26,35 @@ class ClientCurrentAccountRepository extends BaseCurrentAccountRepository
         $parentMetadata = parent::getMetadata();
 
         $localMetadata = self::processMetadata(array(
-            'clientDocumentTypeObj' => array('label' => 'Document Type', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(
-                'table' => 'clientDocumentType', 'bundle' => 'accounting', 'type' => 'select')),
+            'clientDocumentTypeObj' => array('label' => 'Document Type', 'type' => 'object', 'acl' => 'edit',
+                'typeDetail' => array('table' => 'clientDocumentType', 'bundle' => 'accounting', 'type' => 'none'),
+                'form' => array('type' => 'select')
+            ),
+            'clientDocumentType_name' => array('table' => 'clientDocumentType', 'field' => 'name', 'label' => 'Doc. Type',
+                'type' => 'text', 'acl' => 'read', 'dependency' => 'clientDocumentTypeObj',
+                'form' => array('type' => 'none')
+            ),
             'clientObj' => array('label' => 'Client', 'type' => 'object', 'acl' => 'edit',
                 'typeDetail' => array(
-                    'table' => 'client', 'fieldInView' => 'client_name', 'bundle' => 'entities', 'type' => 'none'),
+                    'table' => 'client', 'fieldInView' => 'entity_name', 'bundle' => 'entities', 'type' => 'none'),
                 'form' => array('type' => 'auto-complete')
+            ),
+            'entityObj' => array('table' => 'client', 'field' => 'entityObj', 'label' => 'nd',
+                'type' => 'object', 'acl' => 'read', 'dependency' => 'clientObj', 'typeDetail' => array(
+                    'table' => 'entity', 'tableAlias' => 'entity', 'bundle' => 'entities', 'type' => 'none')
+            ),
+            'entity_avatar' => array('table' => 'entity', 'field' => 'avatar', 'label' => 'Client',
+                'type' => 'avatar', 'acl' => 'read', 'dependency' => 'entityObj', 'form' => array('type' => 'none')),
+            'entity_name' => array('table' => 'entity', 'field' => 'name', 'label' => 'Client Name',
+                'type' => 'text', 'acl' => 'read', 'dependency' => 'entityObj', 'form' => array('type' => 'none')),
+            'entityAddressObj' => array('label' => 'Address', 'type' => 'object', 'acl' => 'edit',
+                'attr' => array(
+                    '(onChange)' => 'onEntityAddressChange($event)',
+                    '[placeholder]' => "'Address'"
+                ),
+                'typeDetail' => array(
+                    'table' => 'entityAddress', 'bundle' => 'entities', 'type' => 'none'),
+                'form' => array('type' => 'auto-complete', 'isMapped' => false), 'isRequired' => false
             )
         ));
 

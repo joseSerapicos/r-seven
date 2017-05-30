@@ -65,7 +65,7 @@ class TravelBookingServiceController extends BaseBookingServiceController
         $this->templateConf['search']['fields'] = array(
             'icon', 'name', 'reference', 'place_iata', 'placeTo_iata', 'startDate', 'endDate',
             'quantity', 'totalCost', 'totalSell', 'totalMarkup',
-            'invoiceStatus', 'confirmationStatus', 'isAutoAllot'
+            'confirmationStatus', 'isAutoAllot'
         );
         $this->templateConf['search']['orderBy'] = array(
             array('field' => 'startDate', 'value' => 'ASC'),
@@ -141,8 +141,8 @@ class TravelBookingServiceController extends BaseBookingServiceController
         $this->flags['hasForm'] = true;
         $this->initChild($request, array($travelBooking));
         $this->templateConf['fields']['form'] = array(
-            'id', 'icon', 'name', 'description', 'supplierObj', 'reference', 'placeObj', 'placeToObj',
-            'insertTime', 'insertUser', 'isEnabled'
+            'icon', 'name', 'description', 'supplierObj', 'reference', 'placeObj', 'placeToObj',
+            'isEnabled'
         );
 
         return parent::addDetailAction($request, $travelBooking, $id);
@@ -200,10 +200,10 @@ class TravelBookingServiceController extends BaseBookingServiceController
         $this->flags['hasForm'] = true;
         $this->initChild($request, array($travelBooking));
         $this->templateConf['fields']['form'] = array(
-            'id', 'icon', 'name', 'description', 'supplierObj', 'reference', 'placeObj', 'placeToObj',
+            'icon', 'name', 'description', 'supplierObj', 'reference', 'placeObj', 'placeToObj',
             'startDate', 'endDate',
             'quantity', 'confirmationStatus',
-            'insertTime', 'insertUser', 'isEnabled');
+            'isEnabled');
 
         return parent::editLocalChildAction($request, $travelBooking, $id);
     }
@@ -303,7 +303,7 @@ class TravelBookingServiceController extends BaseBookingServiceController
      * @param $context (context to determine actions)
      * @return $this
      */
-    protected function onSaveObject($object, $context = null) {
+    protected function postSaveObject($object, $context = null) {
         switch ($context) {
             case 'addDetail':
             case 'edit':

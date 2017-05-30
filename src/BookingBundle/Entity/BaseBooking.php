@@ -1,7 +1,7 @@
 <?php
 namespace BookingBundle\Entity;
 
-use AppBundle\Entity\BasePriceTotals;
+use AppBundle\Entity\BasePriceResume;
 use Doctrine\ORM\Mapping as ORM;
 use AppBundle\Service\HelperService;
 
@@ -13,7 +13,8 @@ use AppBundle\Service\HelperService;
  * This entity should not have entries by itself, but always from a booking type.
  * This class is not abstract because we can use this class for reports and quick information about all booking types.
  */
-class BaseBooking extends BasePriceTotals {
+class BaseBooking extends BasePriceResume
+{
     /**
      * @ORM\Column(name="code", type="string", length=24, nullable=false, unique=true, options={"comment":"Code"})
      */
@@ -291,5 +292,15 @@ class BaseBooking extends BasePriceTotals {
         }
 
         return $this;
+    }
+
+
+    /**
+     * Representation of object for dropdown (name/label for object)
+     * @return mixed
+     */
+    public function __toString()
+    {
+        return ($this->getCode());
     }
 }

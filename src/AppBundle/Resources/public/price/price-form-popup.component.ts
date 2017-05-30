@@ -16,21 +16,18 @@ export {FormProvider};
 export class PriceFormPopupComponent extends FormPopupExtensionComponent
 {
     // Configure number of decimals to use and to round
-    protected costDecimals: number = 4;
-    protected marginDecimals: number = 4;
-    protected sellDecimals: number = 4;
+    protected decimalConf: any;
 
     // Iterator for round calc
-    protected costDecimalIterator: number;
-    protected marginDecimalIterator: number;
-    protected sellDecimalIterator: number;
+    protected decimalIteratorConf: any;
 
     constructor(
         elementRef: ElementRef,
         renderer: Renderer,
         @Inject('Provider') provider: FormProvider,
         formService: FormService,
-        @Inject('DataService') dataService: any
+        @Inject('DataService') dataService: any,
+        @Inject('HelperService') protected _helperService: any
     ) {
         super();
         super.initFormPopupExtensionComponent(
@@ -41,9 +38,7 @@ export class PriceFormPopupComponent extends FormPopupExtensionComponent
             dataService
         );
 
-        this.costDecimalIterator = Math.pow(10, this.costDecimals);
-        this.marginDecimalIterator = Math.pow(10, this.marginDecimals);
-        this.sellDecimalIterator = Math.pow(10, this.sellDecimals);
+        this.decimalConf = this._helperService.getDecimalConf();
     }
 
     /**
@@ -88,23 +83,25 @@ export class PriceFormPopupComponent extends FormPopupExtensionComponent
 
     /**
      * Set cost price
+     * @param costField
+     * @param sellField
      * @returns {PriceFormPopupComponent}
      */
-    protected setCostValue(): PriceFormPopupComponent
+    protected setCostValue(costField = 'costValue', sellField = 'sellValue'): PriceFormPopupComponent
     {
         let obj = this._formService.getObject();
 
         let sell = (Math.round(
-                    parseFloat(obj['sellValue'] || '0') * this.sellDecimalIterator) / this.sellDecimalIterator
-            ).toFixed(this.sellDecimals),
+                    parseFloat(obj[sellField] || '0') * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+            ).toFixed(this.decimalConf.unit.value),
             margin = (Math.round(
-                    parseFloat(obj['marginValue'] || '0') * this.marginDecimalIterator) / this.marginDecimalIterator
-            ).toFixed(this.marginDecimals),
+                    parseFloat(obj['marginValue'] || '0') * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+            ).toFixed(this.decimalConf.unit.value),
             sellFloat = parseFloat(sell),
             marginFloat = parseFloat(margin);
 
         // Update inputs with rounded values
-        obj['sellValue'] = sell;
+        obj[sellField] = sell;
         obj['marginValue'] = margin;
         obj['userFieldTyped'] = 'SELL';
 
@@ -112,19 +109,19 @@ export class PriceFormPopupComponent extends FormPopupExtensionComponent
             case 'MARGIN':
                 // Avoid that margin exceed the limit (100)
                 marginFloat = ((marginFloat < 100) ? marginFloat : 99.9999); // Avoid division by zero
-                obj['costValue'] = (Math.round(
-                    (sellFloat * (1 - (marginFloat / 100))) * this.costDecimalIterator) / this.costDecimalIterator
-                ).toFixed(this.costDecimals);
+                obj[costField] = (Math.round(
+                    (sellFloat * (1 - (marginFloat / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                ).toFixed(this.decimalConf.unit.value);
                 break;
             case 'MARKUP':
-                obj['costValue'] = (Math.round(
-                    (sellFloat / (1 + (marginFloat / 100))) * this.costDecimalIterator) / this.costDecimalIterator
-                ).toFixed(this.costDecimals);
+                obj[costField] = (Math.round(
+                    (sellFloat / (1 + (marginFloat / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                ).toFixed(this.decimalConf.unit.value);
                 break;
             case 'FIXED':
-                obj['costValue'] = (Math.round(
-                    (sellFloat - marginFloat) * this.costDecimalIterator) / this.costDecimalIterator
-                ).toFixed(this.costDecimals);
+                obj[costField] = (Math.round(
+                    (sellFloat - marginFloat) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                ).toFixed(this.decimalConf.unit.value);
                 break;
         }
 
@@ -132,24 +129,26 @@ export class PriceFormPopupComponent extends FormPopupExtensionComponent
     }
 
     /**
-     * Set sell price
+     * Set cost price
+     * @param costField
+     * @param sellField
      * @returns {PriceFormPopupComponent}
      */
-    protected setSellValue(): PriceFormPopupComponent
+    protected setSellValue(costField = 'costValue', sellField = 'sellValue'): PriceFormPopupComponent
     {
         let obj = this._formService.getObject();
 
         let cost = (Math.round(
-                parseFloat(obj['costValue'] || '0') * this.costDecimalIterator) / this.costDecimalIterator
-            ).toFixed(this.costDecimals),
+                parseFloat(obj[costField] || '0') * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+        ).toFixed(this.decimalConf.unit.value),
             margin = (Math.round(
-                parseFloat(obj['marginValue'] || '0') * this.marginDecimalIterator) / this.marginDecimalIterator
-            ).toFixed(this.marginDecimals),
+                parseFloat(obj['marginValue'] || '0') * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+            ).toFixed(this.decimalConf.unit.value),
             costFloat = parseFloat(cost),
             marginFloat = parseFloat(margin);
 
         // Update inputs with rounded values
-        obj['costValue'] = cost;
+        obj[costField] = cost;
         obj['marginValue'] = margin;
         obj['userFieldTyped'] = 'COST';
 
@@ -157,19 +156,19 @@ export class PriceFormPopupComponent extends FormPopupExtensionComponent
             case 'MARGIN':
                 // Avoid that margin exceed the limit (100)
                 marginFloat = ((marginFloat < 100) ? marginFloat : 99.9999); // Avoid division by zero
-                obj['sellValue'] = (Math.round(
-                    (costFloat / (1 - (marginFloat / 100))) * this.sellDecimalIterator) / this.sellDecimalIterator
-                ).toFixed(this.sellDecimals);
+                obj[sellField] = (Math.round(
+                    (costFloat / (1 - (marginFloat / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                ).toFixed(this.decimalConf.unit.value);
                 break;
             case 'MARKUP':
-                obj['sellValue'] = (Math.round(
-                    (costFloat * (1 + (marginFloat / 100))) * this.sellDecimalIterator) / this.sellDecimalIterator
-                ).toFixed(this.sellDecimals);
+                obj[sellField] = (Math.round(
+                    (costFloat * (1 + (marginFloat / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                ).toFixed(this.decimalConf.unit.value);
                 break;
             case 'FIXED':
-                obj['sellValue'] = (Math.round(
-                    (costFloat + marginFloat) * this.sellDecimalIterator) / this.sellDecimalIterator
-                ).toFixed(this.sellDecimals);
+                obj[sellField] = (Math.round(
+                    (costFloat + marginFloat) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                ).toFixed(this.decimalConf.unit.value);
                 break;
         }
 

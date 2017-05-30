@@ -5,10 +5,10 @@ import {FlashMessageService, FlashMessageTypes} from './flash-message.service';
 
 // Interface PostResponse (template for post response)
 export interface PostResponse {
-    status: number,
-    data: any,
-    errors: any,
-    flashMessages: any
+    status?: number,
+    data?: any,
+    errors?: any,
+    flashMessages?: any
 }
 
 // Service
@@ -33,6 +33,13 @@ export class PostService {
                 url,
                 data,
                 postResponse => {
+                    // Unknown response, generally html responses (debug, exceptions, etc.)
+                    if (!postResponse || (typeof postResponse !== 'object')) {
+                        that.handleFlashMessages({});
+                        return reject({});
+                    }
+
+                    // Regular response
                     that.handleFlashMessages(postResponse);
                     let isSuccess = (postResponse.status == 1);
                     delete postResponse.status; // Is no more necessary
@@ -52,9 +59,11 @@ export class PostService {
                         }
                     }
                     return reject(errors);
-
                 }
-            );
+            ).fail(errors => {
+                that.handleFlashMessages({});
+                return reject({});
+            });
         });
 
         /*let headers = new Headers();

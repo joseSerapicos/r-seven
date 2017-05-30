@@ -148,4 +148,17 @@ class TravelBookingController extends BaseBookingController
     {
         return parent::detailTabsAction();
     }
+
+    /**
+     * @Route("/booking/travel-booking/current-accounts-menus",
+     *     name="_booking__travel_booking__current_accounts_menus"
+     * )
+     *
+     * Overrides parent method
+     * @return mixed
+     */
+    public function currentAccountsMenusAction()
+    {
+        return parent::currentAccountsMenusAction();
+    }
 }

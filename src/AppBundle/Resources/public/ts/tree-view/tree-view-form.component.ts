@@ -18,7 +18,7 @@ export class TreeViewFormComponent extends TreeViewComponent
 {
     protected _$form = null; // Object form
     protected _nodes: any; // Copy of objects to control user changes
-    protected _onObjectsChangeSubscription: any; // To get notify about changes on objects over the service
+    protected _onObjectsRefreshSubscription: any; // To get notify about changes on objects over the service
 
     constructor(
         viewContainerRef: ViewContainerRef,
@@ -43,7 +43,7 @@ export class TreeViewFormComponent extends TreeViewComponent
             injector
         );
         this.setNodes();
-        this._onObjectsChangeSubscription = this._dataService.getOnObjectsChangeEmitter()
+        this._onObjectsRefreshSubscription = this._dataService.getOnObjectsRefreshEmitter()
             .subscribe(objects => this.setNodes(objects));
     }
 
@@ -175,6 +175,6 @@ export class TreeViewFormComponent extends TreeViewComponent
      */
     ngOnDestroy()
     {
-        this._onObjectsChangeSubscription.unsubscribe();
+        this._onObjectsRefreshSubscription.unsubscribe();
     }
 }

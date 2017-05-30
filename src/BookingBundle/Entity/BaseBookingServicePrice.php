@@ -1,7 +1,7 @@
 <?php
 namespace BookingBundle\Entity;
 
-use AppBundle\Entity\BasePriceAndPriceTotals;
+use AppBundle\Entity\BasePriceWithVat;
 use Doctrine\ORM\Mapping as ORM;
 
 
@@ -9,7 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\MappedSuperclass(repositoryClass="BookingBundle\Entity\BaseBookingServicePriceRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class BaseBookingServicePrice extends BasePriceAndPriceTotals {
+class BaseBookingServicePrice extends BasePriceWithVat
+{
     /**
      * @ORM\Column(name="description", type="string", length=256, nullable=true, unique=false, options={"comment":"Description"})
      *

@@ -1,7 +1,7 @@
 <?php
 namespace BookingBundle\Entity;
 
-use AppBundle\Entity\BasePriceTotals;
+use AppBundle\Entity\BasePriceResume;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -10,7 +10,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\MappedSuperclass(repositoryClass="BookingBundle\Entity\BaseBookingServiceRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class BaseBookingService extends BasePriceTotals {
+class BaseBookingService extends BasePriceResume
+{
     /**
      * @ORM\ManyToOne(targetEntity="\ServicesBundle\Entity\Service")
      * @ORM\JoinColumn(name="fk_service", referencedColumnName="id", nullable=false, unique=false, onDelete="RESTRICT")
@@ -70,11 +71,6 @@ class BaseBookingService extends BasePriceTotals {
      * @ORM\Column(name="confirmationStatus", type="string", length=8, nullable=false, unique=false, options={"default":"NO", "comment":"Confirmation status"})
      */
     protected $confirmationStatus; // [NO, PARTIAL, YES]
-
-    /**
-     * @ORM\Column(name="invoiceStatus", type="string", length=8, nullable=false, unique=false, options={"default":"NO", "comment":"Invoice status"})
-     */
-    protected $invoiceStatus; // [NO, PARTIAL, YES]
 
     /**
      * @ORM\Column(name="priority", type="smallint", nullable=false, unique=false, options={"unsigned":true, "default":0, "comment":"Priority. Determines the order."})
@@ -262,33 +258,6 @@ class BaseBookingService extends BasePriceTotals {
     public function getConfirmationStatusManual()
     {
         return $this->getConfirmationStatus();
-    }
-
-    /**
-     * Set invoiceStatus
-     *
-     * @param string $invoiceStatus
-     *
-     * @return $this
-     */
-    public function setInvoiceStatus($invoiceStatus)
-    {
-        if (!empty($invoiceStatus) && !in_array($invoiceStatus, array("NO", "PARTIAL", "YES"))) {
-            throw new \InvalidArgumentException("Invalid invoice status");
-        }
-        $this->invoiceStatus = $invoiceStatus;
-
-        return $this;
-    }
-
-    /**
-     * Get invoiceStatus
-     *
-     * @return string
-     */
-    public function getInvoiceStatus()
-    {
-        return $this->invoiceStatus;
     }
 
     /**

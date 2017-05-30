@@ -27,9 +27,9 @@ class Store extends BaseEntity {
     protected $fallbackStoreObj;
 
     /**
-     * @ORM\Column(name="formalName", type="string", length=64, nullable=true, unique=false, options={"comment":"Formal name"})
+     * @ORM\Column(name="legalName", type="string", length=64, nullable=true, unique=false, options={"comment":"Formal name"})
      */
-    protected $formalName;
+    protected $legalName;
 
     /**
      * @ORM\Column(name="color", type="string", length=7, nullable=true, unique=false, options={"comment":"Color"})
@@ -123,29 +123,29 @@ class Store extends BaseEntity {
     }
 
     /**
-     * Set formalName
-     * @param string $formalName
+     * Set legalName
+     * @param string $legalName
      * @return Store
      */
-    public function setFormalName($formalName)
+    public function setLegalName($legalName)
     {
-        $this->formalName = $formalName;
+        $this->legalName = $legalName;
         return $this;
     }
 
     /**
-     * Get formalName
+     * Get legalName
      * @param bool $useFallback (Use fallback to force a non empty return)
      * @return string
      */
-    public function getFormalName($useFallback = false)
+    public function getLegalName($useFallback = false)
     {
-        return ((empty($this->formalName) && $useFallback)
+        return ((empty($this->legalName) && $useFallback)
             ? (empty($this->fallbackStoreObj)
                 ? $this->name
-                : $this->fallbackStoreObj->getFormalName()
+                : $this->fallbackStoreObj->getLegalName()
             )
-            : $this->formalName
+            : $this->legalName
         );
     }
 

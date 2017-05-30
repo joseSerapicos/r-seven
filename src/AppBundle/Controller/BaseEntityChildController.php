@@ -167,6 +167,21 @@ abstract class BaseEntityChildController extends BaseEntityController
     /**
      * DEFINE ROUTE HERE
      *
+     * Overrides parent method
+     * @param Request $request
+     * @param $parents
+     * @return mixed
+     */
+    public function newChildAction(Request $request, $parents)
+    {
+        // Set configuration
+        $this->initChild($request, $parents);
+        return parent::newAction($request);
+    }
+
+    /**
+     * DEFINE ROUTE HERE
+     *
      * Action to get a list/array of compact objects from the search configuration or a regular object if the "id" is provided
      * @param Request $request
      * @param $parents
@@ -178,6 +193,21 @@ abstract class BaseEntityChildController extends BaseEntityController
         // Set configuration
         $this->initChild($request, $parents);
         return parent::getAction($request, $id);
+    }
+
+    /**
+     * DEFINE ROUTE HERE
+     *
+     * Action to get a list/array of objects to use as choices
+     * @param Request $request
+     * @param $parents
+     * @return mixed
+     */
+    public function choicesChildAction(Request $request, $parents)
+    {
+        // Set configuration
+        $this->initChild($request, $parents);
+        return parent::choicesAction($request);
     }
 
     /**
@@ -269,7 +299,7 @@ abstract class BaseEntityChildController extends BaseEntityController
      */
     protected function getParentConf($parentKey = null)
     {
-        return ($parentKey ? $this->parentConf[$parentKey] : current($this->parentConf));
+        return ($parentKey ? $this->parentConf[$parentKey] : reset($this->parentConf));
     }
 
     /**
@@ -287,13 +317,60 @@ abstract class BaseEntityChildController extends BaseEntityController
         $parentConf = $this->getParentConf($parentKey);
 
         if (!empty($parentId)) {
+            // Try always to get from database (default) first, even if $flags['storage'] = 'session',
+            // because the child object can be work with session storage, but the parent is in database
             $obj = $this->getParentRepositoryService($parentKey)
                 ->execute('findOneById', array($parentId));
-        } else if (($parentId != 0) && !($obj instanceof $parentConf['entityClass'])) {
+
+            // Try to get from session storage (alternative)
+            if(empty($obj)) {
+                // If parent is not in database, so all objects have to be in session
+                $this->flags['storage'] = 'session';
+                $this->flags['parent'] = $parentId;
+                $obj = $this->getObjectFromSS($parentId);
+
+                // Parent defined storage as session, so objects do not be marked as session storage,
+                // this child objects are like a database objects for parent,
+                // generally this occurs during parent definition like wizard forms
+                $this->responseConf['addObjectSessionStorageFlag'] = false;
+            }
+        }
+
+        if (($parentId != 0) && !($obj instanceof $parentConf['entityClass'])) {
             throw new \Exception('Configuration cannot be set, missing arguments (parent)!');
         }
 
         return $obj;
+    }
+
+    /**
+     * Overrides parent method
+     * @return null
+     */
+    protected function getObjectsBySearch() {
+        // Try get from database
+        $objects = parent::getObjectsBySearch();
+
+        // Try get from session storage
+        if (empty($objects)) {
+            // Get parent id
+            $parentConf = $this->getParentConf();
+            $parentId = (!empty($parentConf['obj']) ? $parentConf['obj']->getId() : null);
+
+            if ($parentId) {
+                $childObjects = $this->container->get('app.service.session_storage')->getChildObjects(
+                    $parentId,
+                    $this->localConf['entity']
+                );
+
+                $objects = array();
+                foreach ($childObjects as $childObj) {
+                    $childObj = $this->getObjectFromSS($childObj->getId());
+                    $objects[] = $this->normalizeObject($childObj);
+                }
+            }
+        }
+        return $objects;
     }
 
     /**
@@ -320,22 +397,40 @@ abstract class BaseEntityChildController extends BaseEntityController
     }
 
     /**
+     * Get object
+     * @param $id
+     * @return object
+     */
+    protected function getObject($id = null)
+    {
+        $object = parent::getObject($id);
+        return $object;
+    }
+
+    /**
      * New object
      * @return object
      */
     protected function newObject()
     {
         $obj = parent::newObject();
+        return $this->setObjectParents($obj);
+    }
 
-        // Set parents objects
+    /**
+     * Set parents objects
+     * @param $object
+     * @return mixed
+     */
+    protected function setObjectParents($object) {
         foreach ($this->parentConf as $parentKey => $parentConf) {
             if ($parentConf['obj']) {
                 $method = ('set' . ucfirst($parentConf['fieldObj']));
-                $obj->$method($parentConf['obj']);
+                $object->$method($parentConf['obj']);
             }
         }
 
-        return $obj;
+        return $object;
     }
 
     /**
@@ -357,12 +452,22 @@ abstract class BaseEntityChildController extends BaseEntityController
     ////////////////////////////////
 
     /**
-     * On save object event. Use this function to handle event.
+     * Pre (before) save object event. Use this function to handle event.
      * @param $object
      * @param $context (context to help to determine actions)
      * @return $this
      */
-    protected function onSaveObject($object, $context = null) {
+    protected function preSaveObject($object, $context = null) {
+        return $this;
+    }
+
+    /**
+     * Post (after) save object event. Use this function to handle event.
+     * @param $object
+     * @param $context (context to help to determine actions)
+     * @return $this
+     */
+    protected function postSaveObject($object, $context = null) {
         return $this;
     }
 }
