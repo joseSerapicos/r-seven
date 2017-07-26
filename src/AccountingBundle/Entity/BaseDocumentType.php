@@ -20,6 +20,11 @@ class BaseDocumentType extends BaseEntity {
     protected $prefix;
 
     /**
+     * @ORM\Column(name="type", type="string", length=16, nullable=false, unique=false, options={"comment":"Nature of document"})
+     */
+    protected $type; // [INVOICE, RECEIPT]
+
+    /**
      * @ORM\Column(name="operation", type="string", length=16, nullable=false, unique=false, options={"comment":"Nature of operations"})
      */
     protected $operation; // [DEBIT, CREDIT, NONE]
@@ -100,6 +105,33 @@ class BaseDocumentType extends BaseEntity {
     public function getOperation()
     {
         return $this->operation;
+    }
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     *
+     * @return $this
+     */
+    public function setType($type)
+    {
+        if (!empty($type) && !in_array($type, array("INVOICE", "RECEIPT", "RECTIFICATION"))) {
+            throw new \InvalidArgumentException("Invalid document nature");
+        }
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**

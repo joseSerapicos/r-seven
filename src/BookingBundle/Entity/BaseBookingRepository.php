@@ -24,10 +24,14 @@ class BaseBookingRepository extends BasePriceResumeRepository
             return self::$metadata;
         }
 
+        $localTable = lcfirst(substr(strrchr(get_called_class(), '\\'), 1, -10));
         $parentMetadata = parent::getMetadata();
 
         $localMetadata = self::$metadata = self::processMetadata(array(
-            'code' => array('label' => 'Code', 'type' => 'code', 'acl' => 'read'),
+            'code' => array('label' => 'Code', 'field' => 'CONCAT('.$localTable.'.codePrefix, '.$localTable.'.codeNumber)',
+                'table' => '', 'type' => 'code', 'acl' => 'read',
+                'normalizer' => array('method' => 'getCode')
+            ),
             'storeObj' => array('label' => 'Store', 'type' => 'object', 'acl' => 'read', 'typeDetail' => array(
                 'table' => 'store', 'bundle' => 'admin', 'type' => 'none')),
             'userObj' => array('label' => 'User/Operator', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(

@@ -1,0 +1,11 @@
+{% extends 'AppBundle:data-box:base-popup.html.twig' %}
+
+{% block body %}
+    <div class="-merge-view">
+    {% embed 'AppBundle:data-box:base.html.twig' %}
+        {% block body_container %}{% include 'AppBundle:tree-view:node.html.twig' %}{% endblock %}
+    {% endembed %}
+    </div>
+{% endblock %}
+{% block footer_container %}{% endblock %}
+{% block after_container %}{% endblock %}

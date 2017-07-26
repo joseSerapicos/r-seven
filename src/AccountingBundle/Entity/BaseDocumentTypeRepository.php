@@ -53,6 +53,15 @@ class BaseDocumentTypeRepository extends BaseEntityRepository
             'id' => array('label' => 'Id', 'type' => 'number', 'acl' => 'read'),
             'name' => array('label' => 'Name', 'type' => 'text', 'acl' => 'edit'),
             'prefix' => array('label' => 'Prefix', 'type' => 'text', 'acl' => 'edit'),
+            'type' => array('label' => 'Type', 'type' => 'enum', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'type' => 'text', 'choices' => array(
+                        'value' => array(
+                            'Invoice' => 'INVOICE', 'Receipt' => 'RECEIPT', 'Rectification' => "RECTIFICATION"
+                        )
+                    )),
+                'form' => array('type' => 'select')
+            ),
             'operation' => array('label' => 'Operation', 'type' => 'enum', 'acl' => 'edit',
                 'typeDetail' => array(
                     'type' => 'text', 'choices' => array(

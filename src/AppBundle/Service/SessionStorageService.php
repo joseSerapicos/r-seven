@@ -115,6 +115,7 @@ class SessionStorageService
                                 'findOneById',
                                 array($objContainer->$getMethodName()->getId())
                             );
+
                             // Set again dependency object (choice, now loaded and recognized by entity manager)
                             $objContainer->$setMethodName($dependencyObj);
                         }
@@ -199,14 +200,15 @@ class SessionStorageService
     }
 
     /**
-     * Clear session storage (old data stored more than 2 hours ago will be removed)
+     * Clear session storage (old data stored more than '$limit' hours ago will be removed)
+     * @param $limit (hhmmssuuuuuu)
      * @return $this
      */
-    public function clear() {
+    public function clear($limit = 20000000000) { // Default 2 hours
         $storage = $this->session->get('_storage');
 
         $now = $this->generateId();
-        $limitTime = ($now - 20000000000); // hhmmssuuuuuu
+        $limitTime = ($now - $limit); // hhmmssuuuuuu
 
         foreach ($storage as $time => $value) {
             if (($time < $limitTime) // All entries saved more than 2 hours (until 0h to $now-2h)

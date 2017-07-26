@@ -49,11 +49,17 @@ class EntityRepository extends BaseEntityRepository
         if (self::$metadata) {
             return self::$metadata;
         }
+
+        $localTable = lcfirst(substr(strrchr(get_called_class(), '\\'), 1, -10));
+
         return self::$metadata = self::processMetadata(array(
             'id' => array('label' => 'Id', 'type' => 'none', 'acl' => 'read'),
             'storeObj' => array('label' => 'Store', 'type' => 'object', 'acl' => 'read', 'typeDetail' => array(
                 'table' => 'store', 'bundle' => 'admin', 'type' => 'none')),
-            'code' => array('label' => 'Code', 'type' => 'code', 'acl' => 'read'),
+            'code' => array('label' => 'Code', 'field' => 'CONCAT('.$localTable.'.codePrefix, '.$localTable.'.codeNumber)',
+                'table' => '', 'type' => 'code', 'acl' => 'read',
+                'normalizer' => array('method' => 'getCode')
+            ),
             'avatar' => array('label' => 'Avatar', 'type' => 'avatar', 'acl' => 'read'),
             'title' => array('label' => 'Title', 'type' => 'enum', 'acl' => 'edit',
                 'typeDetail' => array(

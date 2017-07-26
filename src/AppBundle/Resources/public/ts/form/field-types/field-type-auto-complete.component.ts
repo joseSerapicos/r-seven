@@ -14,6 +14,7 @@ export interface AutoCompleteProviders {
      [field: string]: {
          urlConf: string, // To get dependency conf
          urlChoicesParams?: string, // Parameters to add to choices url
+         field?: string, // Field to use to filter in search (default is "name")
          control?: string, // Control to use ('save', 'edit', 'none')
          popups?: Popups | Popup, // Popups to add or edit objects from dependency (necessary when control = edit)
          // Used only by FieldTypeAutoCompleteComponent to avoid create new instances of classes (services, etc.),
@@ -90,6 +91,7 @@ export class FieldTypeAutoCompleteComponent {
     protected _fieldInView: string; // Field that represents the object in template/view, to use as label of selected choice
     protected _choices: any[] = [];
     protected _search: {term: string, lastTerm: string} = {term: '', lastTerm: null};
+    protected _searchField: string = 'name';
 
     // Dependency data
     protected _childInjector: Injector;
@@ -192,7 +194,7 @@ export class FieldTypeAutoCompleteComponent {
             && (this._search.term.length % 3 === 0) // Only submit with multiples of three
         ) {
             this._childCandidateSearch['criteria'] = [{
-                'field': 'name',
+                'field': this._searchField,
                 'expr': 'lrlike',
                 'value': this._search.term
             }];
@@ -375,6 +377,9 @@ export class FieldTypeAutoCompleteComponent {
     {
         // Initialize values
         this._provider = (this._autoCompleteProviders[this.field] || null);
+        if (this._provider.field) {
+            this._searchField = this._provider.field;
+        }
         this._fieldInView = (this._dataService.getProviderAttr('fields')['metadata'][this.field]['fieldInView'] || null);
         this.reset();
 
@@ -413,7 +418,7 @@ export class FieldTypeAutoCompleteComponent {
                 if (that._provider.urlChoicesParams) {
                     that._childDataServiceChoices.setRoute(
                         'choices',
-                        (that._childDataServiceChoices.getRoute('choices') + that._provider.urlChoicesParams)
+                        (that._childDataServiceChoices.getRoute('choices') + '/' + that._provider.urlChoicesParams)
                     );
                 }
             },

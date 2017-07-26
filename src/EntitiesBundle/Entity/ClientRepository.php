@@ -49,9 +49,15 @@ class ClientRepository extends BaseEntityRepository
         if (self::$metadata) {
             return self::$metadata;
         }
+
+        $localTable = lcfirst(substr(strrchr(get_called_class(), '\\'), 1, -10));
+
         return self::$metadata = self::processMetadata(array(
             'id' => array('label' => 'Id', 'type' => 'none', 'acl' => 'read'),
-            'code' => array('label' => 'Code', 'type' => 'code', 'acl' => 'read'),
+            'code' => array('label' => 'Code', 'field' => 'CONCAT('.$localTable.'.codePrefix, '.$localTable.'.codeNumber)',
+                'table' => '', 'type' => 'code', 'acl' => 'read',
+                'normalizer' => array('method' => 'getCode')
+            ),
             'entityObj' => array('label' => 'Entity', 'type' => 'object', 'acl' => 'edit',
                 'typeDetail' => array(
                     'table' => 'entity', 'bundle' => 'entities', 'type' => 'none', 'fieldInView' => 'name',

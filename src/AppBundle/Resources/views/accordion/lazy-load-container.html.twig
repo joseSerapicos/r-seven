@@ -7,7 +7,7 @@
         <div *ngIf="_navManagerService.getComponentRef({{key}}) && _navManagerService.getComponentRef({{key}}).instance._actionsService"
              class="actions no-user-select txt-align-r valign-table-component valign-table-component-middle">
             <template [ngIf]="_navManagerService.getComponentRef({{key}}).instance._actionsService.getActionAttr('search', 'isEnabled')">
-                <js_search [injector]="_navManagerService.getComponentRef({{key}}).instance._injector || null"></js_search>
+                <js_search [injector]="_navManagerService.getComponentRef({{key}}).instance._injector || null" class="search"></js_search>
             </template>
             <div (click)="_navManagerService.getComponentRef({{key}}).instance.triggerAction($event)">
                 <template ngFor let-action [ngForOf]="_navManagerService.getComponentRef({{key}}).instance._actionsService.getHeadActions()">

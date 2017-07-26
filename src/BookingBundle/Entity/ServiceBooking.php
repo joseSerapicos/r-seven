@@ -7,7 +7,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="BookingBundle\Entity\ServiceBookingRepository")
- * @ORM\Table(name="serviceBooking")
+ * @ORM\Table(name="serviceBooking",
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="unq_serviceBooking_code", columns={"codePrefix", "codeNumber"})})
  */
 class ServiceBooking extends BaseBooking {
     /**

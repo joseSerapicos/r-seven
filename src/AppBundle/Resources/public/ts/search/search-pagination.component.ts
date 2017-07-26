@@ -5,9 +5,9 @@ import {DataService} from '../data-service/data.service';
 @Component({
     selector: 'js_searchPagination',
     template: `
-    <div *ngIf="(_dataService.getProviderAttr('objects') || []).length > 0"
+    <div *ngIf="_dataService.countObjects() > 0"
          class="search-pagination no-user-select">
-        <span>{{(_dataService.getProviderAttr('objects').length)}} Results</span>
+        <span>{{_dataService.countObjects()}} Results</span>
         <a class="search-has-more -note"
            *ngIf="_dataService.getProviderAttr('search')['hasMore']"
            (click)="getMoreObjects($event)"
@@ -20,6 +20,7 @@ export class SearchPaginationComponent {
 
     constructor(
         @Inject('DataService') protected _dataService: any,
+        @Inject('HelperService') protected _helperService: any
     ) {}
 
     /**

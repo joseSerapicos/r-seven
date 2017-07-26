@@ -230,6 +230,23 @@ abstract class BaseEntityChildController extends BaseEntityController
     /**
      * DEFINE ROUTE HERE
      *
+     * Overrides parent method
+     * @param Request $request
+     * @param $parents
+     * @param $id
+     * @return mixed
+     */
+    public function disableChildAction(Request $request, $parents, $id)
+    {
+        // Set configuration
+        $this->initChild($request, $parents);
+
+        return parent::disableAction($request, $id);
+    }
+
+    /**
+     * DEFINE ROUTE HERE
+     *
      * Action to delete object or list of objects
      * @param Request $request
      * @param $parents
@@ -240,6 +257,7 @@ abstract class BaseEntityChildController extends BaseEntityController
     {
         // Set configuration
         $this->initChild($request, $parents);
+
         return parent::deleteAction($request, $id);
     }
 
@@ -444,30 +462,5 @@ abstract class BaseEntityChildController extends BaseEntityController
             $ids = array($ids);
         }
         return array_combine(array_keys($this->parentConf), $ids);
-    }
-
-
-    ////////
-    // Events/Callbacks
-    ////////////////////////////////
-
-    /**
-     * Pre (before) save object event. Use this function to handle event.
-     * @param $object
-     * @param $context (context to help to determine actions)
-     * @return $this
-     */
-    protected function preSaveObject($object, $context = null) {
-        return $this;
-    }
-
-    /**
-     * Post (after) save object event. Use this function to handle event.
-     * @param $object
-     * @param $context (context to help to determine actions)
-     * @return $this
-     */
-    protected function postSaveObject($object, $context = null) {
-        return $this;
     }
 }

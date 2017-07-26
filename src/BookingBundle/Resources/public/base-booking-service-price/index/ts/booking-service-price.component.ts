@@ -8,7 +8,7 @@ import {Helper} from '../../../../../../AppBundle/Resources/public/ts/helper';
 // Component
 @Component({
     selector: '.js_bookingServicePrice',
-    templateUrl: Helper.getGlobalVar('route') + 'template/index/base-current-account-detail/accounting'
+    templateUrl: Helper.getGlobalVar('route') + 'template/index/base-document-invoice-detail/accounting'
 })
 export class BookingServicePriceComponent extends DataBoxExtensionComponent
 {

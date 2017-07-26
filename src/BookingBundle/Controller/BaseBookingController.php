@@ -203,4 +203,43 @@ class BaseBookingController extends BaseEntityController
         }
         return $this;
     }
+
+    /**
+     * Set booking invoice status
+     * @param $controller
+     * @param $documentObj
+     * @param $bookingContext <travelBooking, serviceBooking, etc>
+     * @param $entityContext <client, supplier>
+     * @return mixed
+     */
+    static function setBookingInvoiceStatus($controller, $documentObj, $bookingContext, $entityContext) {
+        $BookingContext = ucfirst($bookingContext);
+        $EntityContext = ucfirst($entityContext);
+
+        // Check if there are no errors in previous updates and we work with real data (database storage)
+        if (($controller->responseConf['status'] == 1) && ($controller->flags['storage'] == 'db')) {
+            $bookingDocumentObj = $controller->getRepositoryService($BookingContext . $EntityContext . 'Document', 'BookingBundle')
+                ->execute(
+                    'findOneBy' . $EntityContext . 'DocumentObj',
+                    array($documentObj)
+                );
+
+            // Check if there are a booking dependency to update
+            if (empty($bookingDocumentObj)) {
+                return $controller;
+            }
+
+            // Update booking invoice status
+            $bookingObj = $bookingDocumentObj->getBookingObj();
+            $controller->getRepositoryService($BookingContext . $EntityContext . 'Document', 'BookingBundle')
+                ->execute(
+                    'setBookingInvoiceStatus',
+                    array($bookingObj)
+                );
+
+            parent::saveObject($bookingObj);
+        }
+
+        return $controller;
+    }
 }

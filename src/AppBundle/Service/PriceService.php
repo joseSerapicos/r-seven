@@ -145,4 +145,17 @@ class PriceService
 
         return (abs($float1 - $float2) < $epsilon);
     }
+
+    /**
+     * Is greater (compare float values)
+     * @param $float1
+     * @param $float2
+     * @return bool
+     */
+    public function isGreater($float1, $float2) {
+        // 5 Digits of precision, it is need to avoid the php float compare issue
+        $epsilon = 0.00001;
+
+        return (($float1 - $float2) > $epsilon);
+    }
 }

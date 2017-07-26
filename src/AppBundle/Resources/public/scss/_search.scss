@@ -1,6 +1,11 @@
 @import "variables";
 
 .search {
+    border: solid 1px $link_color_primary;
+    border-radius: 4px;
+    display: inline-block;
+    padding: 0 1px 1px 0;
+
     &-criteria,
     &-order-by {
         position: absolute;

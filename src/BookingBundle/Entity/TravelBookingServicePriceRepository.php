@@ -80,8 +80,8 @@ class TravelBookingServicePriceRepository extends BaseBookingServicePriceReposit
                 . "ELSE ((" . $localTable . ".subTotalSell + " . $localTable . ".totalVatSell) * -1) END) "
                 . " - "
                 . "(CASE WHEN (clientDocumentType.operation IS NOT NULL) THEN (SUM(CASE WHEN (clientDocumentType.operation = 'DEBIT') "
-                . "THEN (clientCurrentAccountDetail.subTotal + clientCurrentAccountDetail.totalVat) "
-                . "ELSE ((clientCurrentAccountDetail.subTotal + clientCurrentAccountDetail.totalVat) * -1) END)) ELSE (0) END)) AS notInvoicedValue"
+                . "THEN (clientDocumentInvoiceDetail.subTotal + clientDocumentInvoiceDetail.totalVat) "
+                . "ELSE ((clientDocumentInvoiceDetail.subTotal + clientDocumentInvoiceDetail.totalVat) * -1) END)) ELSE (0) END)) AS notInvoicedValue"
             ),
             'criteria' => array_merge(
                 (isset($options['criteria']) ? $options['criteria'] : array()),
@@ -99,28 +99,28 @@ class TravelBookingServicePriceRepository extends BaseBookingServicePriceReposit
         $qb = $this->queryBuilder($options, false);
 
         // Get booking client current account detail
-        $qb->leftJoin('BookingBundle\Entity\\' . $bookingEntity . 'ClientCurrentAccountDetail',
-            'bookingClientCurrentAccountDetail',
+        $qb->leftJoin('BookingBundle\Entity\\' . $bookingEntity . 'ClientDocumentInvoiceDetail',
+            'bookingClientDocumentInvoiceDetail',
             'WITH',
-            ('bookingClientCurrentAccountDetail.' . $localTable . 'Obj = ' . $localTable . '.id')
+            ('bookingClientDocumentInvoiceDetail.' . $localTable . 'Obj = ' . $localTable . '.id')
         );
 
         // Get client current account detail
-        $qb->leftJoin('bookingClientCurrentAccountDetail.clientCurrentAccountDetailObj',
-            'clientCurrentAccountDetail',
+        $qb->leftJoin('bookingClientDocumentInvoiceDetail.clientDocumentInvoiceDetailObj',
+            'clientDocumentInvoiceDetail',
             'WITH',
-            'clientCurrentAccountDetail.isEnabled = 1'
+            'clientDocumentInvoiceDetail.isEnabled = 1'
         );
 
         // Get client current account
-        $qb->leftJoin('clientCurrentAccountDetail.clientCurrentAccountObj',
-            'clientCurrentAccount',
+        $qb->leftJoin('clientDocumentInvoiceDetail.clientDocumentObj',
+            'clientDocument',
             'WITH',
-            'clientCurrentAccount.isEnabled = 1'
+            'clientDocument.isEnabled = 1'
         );
 
         // Get document type
-        $qb->leftJoin('clientCurrentAccount.clientDocumentTypeObj',
+        $qb->leftJoin('clientDocument.clientDocumentTypeObj',
             'clientDocumentType'
         );
 

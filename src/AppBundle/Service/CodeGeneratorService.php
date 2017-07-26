@@ -41,73 +41,37 @@ class CodeGeneratorService
      */
     public function generateCode($repositoryService, $settingRepository, $entityRepository, $object, $criteria = array())
     {
-        if (method_exists($object, 'setCode') && empty($object->getCode())) {
+        if (method_exists($object, 'getCodeNumber') && empty($object->getCodeNumber())) {
             $store = $this->session->get('_app.store');
 
             if ($store) {
-                // Get specific setting for store
-                $settingObj = $repositoryService->setEntityRepository($settingRepository)
-                    ->execute(
-                        'queryBuilder',
-                        array(
-                            array('criteria' => array_merge(
-                                $criteria,
-                                array(
-                                    array('field' => 'storeObj', 'expr' => 'eq', 'value' => $store),
-                                    array('field' => 'isEnabled', 'expr' => 'eq', 'value' => true)
-                                )
-                            )),
-                            true,
-                            'getResult'
-                        )
-                    );
-                $settingObj = reset($settingObj);
-
-                // Get general setting
-                if (empty($settingObj)) {
-                    $settingObj = $repositoryService->execute(
-                        'queryBuilder',
-                        array(
-                            array('criteria' => array_merge(
-                                $criteria,
-                                array(
-                                    array('field' => 'storeObj', 'expr' => 'isNull', 'value' => null),
-                                    array('field' => 'isEnabled', 'expr' => 'eq', 'value' => true)
-                                )
-                            )),
-                            true,
-                            'getResult'
-                        )
-                    );
-                    $settingObj = reset($settingObj);
-                }
+                $settingObj = $this->getObjectSetting($repositoryService, $settingRepository, $store, $criteria);
 
                 // Generate new code
                 if (!empty($settingObj)) {
+                    // Prefix of code
+                    $prefix = $settingObj->getSeriesPrefix();
+                    $prefix = ($prefix ? $prefix : '');
+
                     // Try to set code multiple times (can be useful in case of codes already in use)
                     for ($i = 0; $i < 1000; $i++) {
                         // Update the new number in settings table as soon as possible to avoid concurrent processes
                         $number = $settingObj->getSeriesNumber();
                         $number = ($number ? ($number + 1) : 1);
                         $settingObj->setSeriesNumber($number);
-                        $this->entityManager
-                            ->persist($settingObj);
-
-                        // Update code in entity table
-                        $prefix = $settingObj->getSeriesPrefix();
-                        $prefix = ($prefix ? $prefix : '');
+                        $this->entityManager->persist($settingObj);
 
                         // Check if code is already in use
                         $ObjectUsingCode = $repositoryService->setEntityRepository($entityRepository)
                             ->execute(
-                                'findOneByCode',
-                                array($prefix . $number)
+                                'findBy',
+                                array(array('codePrefix' => $prefix, 'codeNumber' => $number))
                             );
 
                         if (empty($ObjectUsingCode)) {
-                            $object->setCode($prefix . $number);
-                            $this->entityManager
-                                ->persist($object);
+                            $object->setCodePrefix($prefix);
+                            $object->setCodeNumber($number);
+                            $this->entityManager->persist($object);
                             break;
                         }
                     }
@@ -120,106 +84,119 @@ class CodeGeneratorService
 
     /**
      * Get Surrounding Objects
-     * @param $code
+     * @param $object
      * @param $repositoryService
      * @param $settingRepository
      * @param $entityRepository
      * @param array $criteria
      * @return null
      */
-    public function getSurroundingObjects($code, $repositoryService, $settingRepository, $entityRepository, $criteria = array())
+    public function getSurroundingObjects($object, $repositoryService, $settingRepository, $entityRepository, $criteria = array())
     {
         $store = $this->session->get('_app.store');
 
         if ($store) {
             $surroundingObjects = array('prev' => null, 'next' => null);
-            // Get specific setting for store
-            $settingObj = $repositoryService->setEntityRepository($settingRepository)
-                ->execute(
-                    'queryBuilder',
-                    array(
-                        array('criteria' => array_merge(
-                            $criteria,
-                            array(
-                                array('field' => 'storeObj', 'expr' => 'eq', 'value' => $store),
-                                array('field' => 'isEnabled', 'expr' => 'eq', 'value' => true)
-                            )
-                        )),
-                        true,
-                        'getResult'
-                    )
-                );
-            $settingObj = reset($settingObj);
 
-            // Get general setting
-            if (empty($settingObj)) {
-                $settingObj = $repositoryService->execute(
-                    'queryBuilder',
-                    array(
-                        array('criteria' => array_merge(
-                            $criteria,
-                            array(
-                                array('field' => 'storeObj', 'expr' => 'isNull', 'value' => null),
-                                array('field' => 'isEnabled', 'expr' => 'eq', 'value' => true)
-                            )
-                        )),
-                        true,
-                        'getResult'
-                    )
-                );
-                $settingObj = reset($settingObj);
-            }
-
-            if (empty($code)) {
+            if (empty($object) || empty($object->getCodeNumber())) {
                 // Get last code
+                $settingObj = $this->getObjectSetting($repositoryService, $settingRepository, $store, $criteria);
+
                 if (!empty($settingObj)) {
-                    // Try to get the code until it is guaranteed that it is the really last code
-                    for ($i = 0; $i < 1000; $i++) {
-                        // Determines
-                        $number = ($settingObj->getSeriesNumber() + $i);
-                        $prefix = $settingObj->getSeriesPrefix();
-                        $prefix = ($prefix ? $prefix : '');
+                    // Prefix of code
+                    $prefix = $settingObj->getSeriesPrefix();
+                    $prefix = ($prefix ? $prefix : '');
 
-                        // Check if code is already in use
-                        $ObjectUsingCode = $repositoryService->setEntityRepository($entityRepository)
-                            ->execute(
-                                'findOneByCode',
-                                array($prefix . $number)
-                            );
+                    $number = ($settingObj->getSeriesNumber());
 
-                        if (empty($ObjectUsingCode)) {
-                            return $surroundingObjects;
-                            break;
-                        } else {
-                            $surroundingObjects['prev'] = $ObjectUsingCode;
-                        }
-                    }
+                    $prevObj = $repositoryService->setEntityRepository($entityRepository)
+                        ->execute(
+                            'findBy',
+                            array(array('codePrefix' => $prefix, 'codeNumber' => $number - 1))
+                        );
+                    $prevObj = reset($prevObj);
+
+                    $surroundingObjects['prev'] = $prevObj;
+
+                    return $surroundingObjects;
                 }
             } else {
-                $splitChars = 0; // Number of chars to split the number of the prefix
-                $number = 0;
-                while (intval($number) < 1) { // While $number is = 0, we need to check the previous value
-                    $splitChars++;
-                    $number = substr($code, -$splitChars); // Get only the last characters (numbers)
-                }
-                $prefix = substr($code, 0, -$splitChars); // Remove only the last characters (numbers)
+                $prefix = $object->getCodePrefix();
+                $number = $object->getCodeNumber();
 
-                $surroundingObjects['prev'] = $repositoryService->setEntityRepository($entityRepository)
+                $prevObj = $repositoryService->setEntityRepository($entityRepository)
                     ->execute(
-                        'findOneByCode',
-                        array($prefix . (intval($number) - 1))
+                        'findBy',
+                        array(array('codePrefix' => $prefix, 'codeNumber' => $number - 1))
                     );
+                $prevObj = reset($prevObj);
 
-                $surroundingObjects['next'] = $repositoryService->setEntityRepository($entityRepository)
+                $nextObj = $repositoryService->setEntityRepository($entityRepository)
                     ->execute(
-                        'findOneByCode',
-                        array($prefix . (intval($number) + 1))
+                        'findBy',
+                        array(array('codePrefix' => $prefix, 'codeNumber' => $number + 1))
                     );
+                $nextObj = reset($nextObj);
+
+                $surroundingObjects = array(
+                    'prev' => $prevObj,
+                    'next' => $nextObj
+                );
 
                 return $surroundingObjects;
             }
         }
 
         throw new \InvalidArgumentException("Error determining the object 'Code'. Maximum number of attempts reached. Please try again.");
+    }
+
+    /**
+     * Get object setting
+     * @param $repositoryService
+     * @param $settingRepository
+     * @param $store
+     * @param $settingCriteria
+     * @return mixed|null
+     */
+    protected function getObjectSetting($repositoryService, $settingRepository, $store, $settingCriteria)
+    {
+        // Get specific setting for store
+        $settingObj = $repositoryService->setEntityRepository($settingRepository)
+            ->execute(
+                'queryBuilder',
+                array(
+                    array('criteria' => array_merge(
+                        $settingCriteria,
+                        array(
+                            array('field' => 'storeObj', 'expr' => 'eq', 'value' => $store),
+                            array('field' => 'isEnabled', 'expr' => 'eq', 'value' => true)
+                        )
+                    )),
+                    true,
+                    'getResult'
+                )
+            );
+        $settingObj = reset($settingObj);
+
+        // Get general setting
+        if (empty($settingObj)) {
+            $settingObj = $repositoryService->execute(
+                'queryBuilder',
+                array(
+                    array('criteria' => array_merge(
+                        $settingCriteria,
+                        array(
+                            array('field' => 'storeObj', 'expr' => 'isNull', 'value' => null),
+                            array('field' => 'isEnabled', 'expr' => 'eq', 'value' => true)
+                        )
+                    )),
+                    true,
+                    'getResult'
+                )
+            );
+            $settingObj = reset($settingObj);
+        }
+
+        return (empty($settingObj) ? null : $settingObj);
     }
 }

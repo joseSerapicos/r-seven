@@ -4781,6 +4781,15 @@ a.compose-mail {
 .mail-ontact {
   width: 23%;
 }
+/* FORM */
+.form-group.-multiple-field > div > * {
+  display: inline-block;
+  margin-right: 5px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
 /* PROJECTS */
 .project-people,
 .project-actions {

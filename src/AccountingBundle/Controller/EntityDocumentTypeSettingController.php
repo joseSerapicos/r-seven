@@ -126,4 +126,49 @@ class EntityDocumentTypeSettingController extends BaseEntityController
     {
         return parent::dataAction($request);
     }
+
+    /**
+     * Overrides parent function
+     * @param $object
+     * @param $data
+     * @param null $context
+     * @return bool
+     */
+    protected function preSaveObject($object, $data, $context = null) {
+        $documentTypeObj = $object->getEntityDocumentTypeObj();
+        $prefix = $object->getSeriesPrefix();
+        $prefix = ($prefix ? $prefix : '');
+        $number = ($object->getSeriesNumber());
+
+        $object = $this->getRepositoryService("EntityDocument", 'AccountingBundle')
+            ->execute(
+                'queryBuilder',
+                array(
+                    array(
+                        'fields' => array(
+                            'id'
+                        ),
+                        'criteria' => array(
+                            array('field' => 'entityDocumentTypeObj', 'expr' => 'eq', 'value' => $documentTypeObj),
+                            array('field' => 'entityDocument.codePrefix', 'expr' => 'eq', 'value' => $prefix),
+                            array('field' => 'entityDocument.codeNumber', 'expr' => 'gt', 'value' => $number)
+                        ),
+                        'limit' => 1
+                    )
+                )
+            );
+
+        if (empty($object)) {
+            return true;
+        }
+
+        $this->responseConf['status'] = 0;
+        $this->addFlashMessage(
+            'This series is already in use.',
+            'Data not persisted',
+            'error'
+        );
+
+        return false;
+    }
 }

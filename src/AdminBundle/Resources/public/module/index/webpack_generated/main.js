@@ -4747,6 +4747,17 @@ webpackJsonp([1],[
 	    function Helper() {
 	    }
 	    /**
+	     * Get decimal configuration
+	     * @returns {{unit: {value: number, iterator: number}, total: {value: number, iterator: number}}}
+	     */
+	    Helper.getDecimalConf = function () {
+	        // Configure number of decimals to use and to round
+	        var decimalConf = { unit: { value: 4, iterator: 0 }, total: { value: 2, iterator: 0 } };
+	        decimalConf.unit.iterator = Math.pow(10, decimalConf.unit.value);
+	        decimalConf.total.iterator = Math.pow(10, decimalConf.total.value);
+	        return decimalConf;
+	    };
+	    /**
 	     * Get object length
 	     * @param object
 	     * @returns {number}
@@ -4782,6 +4793,14 @@ webpackJsonp([1],[
 	     */
 	    Helper.isEqualObject = function (object1, object2) {
 	        return (JSON.stringify(object1) === JSON.stringify(object2));
+	    };
+	    /**
+	     * Var Count (count only is a reserved word)
+	     * @param variable
+	     * @returns {number}
+	     */
+	    Helper.varCount = function (variable) {
+	        return Object.keys(variable || {}).length;
 	    };
 	    /**
 	     * Cast to boolean
@@ -4889,7 +4908,7 @@ webpackJsonp([1],[
 	        return Helper;
 	    };
 	    /**
-	     * Get data-box service provider
+	     * Get data service provider
 	     * @param data
 	     * @returns any
 	     */
@@ -4906,16 +4925,45 @@ webpackJsonp([1],[
 	        };
 	    };
 	    /**
+	     * Get tree-view data service provider
+	     * @param data
+	     * @returns any
+	     */
+	    Helper.getTreeViewDataServiceProvider = function (data) {
+	        return Helper.mergeObjects(Helper.getDataServiceProvider(data), {
+	            localParentField: (data.treeView.localParentField)
+	        });
+	    };
+	    /**
+	     * Normalize tree-view form data provider
+	     * Normalizes data provider to use in tree-view form context
+	     * @param data
+	     * @returns any
+	     */
+	    Helper.normalizeTreeViewFormDataProvider = function (data) {
+	        // Create another object, otherwise the merge affects the original data object
+	        data = Helper.cloneObject(data, true);
+	        var dataProvider = Helper.mergeObjects(data, (data.treeView.form || {}) // Specific data to override original data explicit for form
+	        );
+	        // Remove objects (this abjects is for parent not for form)
+	        dataProvider.objects = {};
+	        return dataProvider;
+	    };
+	    /**
 	     * Get tree-view provider
 	     * @param data
 	     * @returns any
 	     */
 	    Helper.getTreeViewProvider = function (data) {
-	        return Helper.mergeObjects(Helper.getDataBoxProvider(data), {
-	            iconDefault: (data.treeView.iconDefault || null),
-	            iconField: (data.treeView.iconField || null),
-	            iconFieldMap: (data.treeView.iconFieldMap || {})
-	        });
+	        if (data.treeView) {
+	            return Helper.mergeObjects(Helper.getDataBoxProvider(data), {
+	                iconDefault: (data.treeView.iconDefault || null),
+	                iconField: (data.treeView.iconField || null),
+	                iconFieldMap: (data.treeView.iconFieldMap || {}),
+	                parentTargetField: (data.treeView.parentTargetField || 'id')
+	            });
+	        }
+	        return Helper.getDataBoxProvider(data);
 	    };
 	    /**
 	     * Get image provider
@@ -5033,6 +5081,14 @@ webpackJsonp([1],[
 	        }
 	        return path;
 	    };
+	    /**
+	     * Upper case first
+	     * @param string
+	     * @returns {string}
+	     */
+	    Helper.uCFirst = function (string) {
+	        return string.charAt(0).toUpperCase() + string.slice(1);
+	    };
 	    return Helper;
 	}());
 	// Object to use in angular component at runtime.
@@ -5071,6 +5127,12 @@ webpackJsonp([1],[
 	        var that = this;
 	        return new Promise(function (resolve, reject) {
 	            return $.post(url, data, function (postResponse) {
+	                // Unknown response, generally html responses (debug, exceptions, etc.)
+	                if (!postResponse || (typeof postResponse !== 'object')) {
+	                    that.handleFlashMessages({});
+	                    return reject({});
+	                }
+	                // Regular response
 	                that.handleFlashMessages(postResponse);
 	                var isSuccess = (postResponse.status == 1);
 	                delete postResponse.status; // Is no more necessary
@@ -5090,6 +5152,9 @@ webpackJsonp([1],[
 	                    }
 	                }
 	                return reject(errors);
+	            }).fail(function (errors) {
+	                that.handleFlashMessages({});
+	                return reject({});
 	            });
 	        });
 	        /*let headers = new Headers();
@@ -5773,28 +5838,28 @@ webpackJsonp([1],[
 	var modal_service_1 = __webpack_require__(36);
 	var helper_1 = __webpack_require__(34);
 	var FormService = (function () {
-	    function FormService(_modalService, formBuilder, _dataService, _helperService) {
+	    function FormService(_modalService, formBuilder, _dataService, _helperService, _provider) {
 	        var _this = this;
 	        this._modalService = _modalService;
 	        this._dataService = _dataService;
 	        this._helperService = _helperService;
+	        this._provider = _provider;
 	        this._originalObject = {}; // Original object to compare changes and reset object in DataService
-	        this._originalNormalizedObject = {}; // Original normalized object to compare changes and reset object in form
+	        this._originalNormalizedObject = {}; // Original normalized (for form) object to compare changes and reset object in form
 	        this._object = {}; // Object used by form
 	        this._$form = null; // DOM form
 	        this._errors = {}; // Form errors validation
-	        // Used to force form to submit,
-	        // generally when you need that user confirm the date, but the data has no changes.
-	        this._forceSubmit = false;
-	        // Controls if the form is on "save" mode (waiting to finish the save process). It's useful to control the
-	        // save action (avoid multiples clicks on button) and to recognize the object change after saved by DataService.
-	        this._isOnSave = false;
-	        // Confirm object override by user to prevent data loss (when the object is changed in DataService)
-	        this._preventObjectOverride = true;
+	        // Set default values for provider
+	        if (!this._provider) {
+	            this._provider = {};
+	        }
 	        this._onObjectChangeEmitter = new core_1.EventEmitter();
 	        // Object change event subscription
 	        this._onObjectChangeSubscription = this._dataService.getOnObjectChangeEmitter()
 	            .subscribe(function (object) { return _this.onObjectChangeSubscription(object); });
+	        this._forceSubmit = false;
+	        this._isOnSave = false;
+	        this._preventObjectOverride = true;
 	        // Set object, if it has not been setted before open the form
 	        if (!this._dataService.getObject()) {
 	            // If object is not setted, create a new
@@ -5815,7 +5880,8 @@ webpackJsonp([1],[
 	     * @returns {FormService}
 	     */
 	    FormService.prototype.buildForm = function (formBuilder) {
-	        var formControls = {}, fields = (this._dataService.getFields('form') || []).concat(this._helperService.objectKeys(this._dataService.getProviderExtraDataAttr('fields')));
+	        var formControls = {}, fields = (this._provider.fields || this._dataService.getFields('form') || []).concat(this._helperService.objectKeys(this._dataService.getProviderExtraDataAttr('fields')));
+	        // Set form controls
 	        for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
 	            var field = fields_1[_i];
 	            formControls[field] = [this._object[field] || null];
@@ -5849,8 +5915,9 @@ webpackJsonp([1],[
 	     * @param object
 	     */
 	    FormService.prototype.onObjectChangeSubscription = function (object) {
-	        // Set object only if is different
-	        if (object != this._originalObject) {
+	        if ((object != this._originalObject) // Set object only if is different
+	            && !this._isOnSave // If form is on save object will be setted by the save method when there are some correct procedures
+	        ) {
 	            if (
 	            // Form is waiting for save process, this is the saved object,
 	            // it's not necessary any confirmation, if you need more security in this process, add a token.
@@ -5911,10 +5978,8 @@ webpackJsonp([1],[
 	            this._object = helper_1.Helper.cloneObject(this._originalNormalizedObject, true);
 	            // Reset errors
 	            this._errors = {};
-	            if (this._dataService.getObjectIndex() == null) {
-	                // If no index is defined, it's a new object
-	                this._forceSubmit = true;
-	            }
+	            // This object is saved in session and needs to be confirmed by user before save them in database
+	            this._forceSubmit = (object['_isSessionStorage'] ? true : false);
 	            this._onObjectChangeEmitter.emit(this._object); // Object as changed to the original, notify subscribers
 	        }
 	        return this;
@@ -5971,11 +6036,18 @@ webpackJsonp([1],[
 	        return this._object;
 	    };
 	    /**
+	     * Get originalObject
+	     * @returns any
+	     */
+	    FormService.prototype.getOriginalObject = function () {
+	        return this._originalNormalizedObject;
+	    };
+	    /**
 	     * Check if the object has changes from user
-	     * @returns boolean
+	     * @returns {boolean|Boolean}
 	     */
 	    FormService.prototype.hasChanges = function () {
-	        return !this._helperService.isEqualObject(this._object, this._originalNormalizedObject);
+	        return (!this._helperService.isEqualObject(this._object, this._originalNormalizedObject));
 	    };
 	    /**
 	     * Get form
@@ -6055,10 +6127,10 @@ webpackJsonp([1],[
 	                var id = that._object['id'] ? that._object['id'] : null;
 	                // Save form
 	                that._dataService.save(data, id, route).then(function (object) {
-	                    // Update form after save with saved object
-	                    that.setObject(object);
 	                    // Force submit is reset, each activation is valid  only once
 	                    that._forceSubmit = false;
+	                    // Update form after save with saved object
+	                    that.setObject(object);
 	                    return resolve(true);
 	                }, function (errors) {
 	                    if (errors) {
@@ -6109,7 +6181,7 @@ webpackJsonp([1],[
 	    FormService.prototype.newObject = function () {
 	        var that = this;
 	        return new Promise(function (resolve, reject) {
-	            this._dataService.newObject().then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
+	            that._dataService.newObject().then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
 	        });
 	    };
 	    /**
@@ -6175,10 +6247,12 @@ webpackJsonp([1],[
 	    };
 	    /**
 	     * Set forceSubmit
+	     * @param forceSubmit
 	     * @returns {FormService}
 	     */
-	    FormService.prototype.setForceSubmit = function () {
-	        this._forceSubmit = true;
+	    FormService.prototype.setForceSubmit = function (forceSubmit) {
+	        if (forceSubmit === void 0) { forceSubmit = true; }
+	        this._forceSubmit = forceSubmit;
 	        return this;
 	    };
 	    return FormService;
@@ -6187,8 +6261,9 @@ webpackJsonp([1],[
 	    core_1.Injectable(),
 	    __param(2, core_1.Inject('DataService')),
 	    __param(3, core_1.Inject('HelperService')),
+	    __param(4, core_1.Optional()), __param(4, core_1.Inject('FormServiceProvider')),
 	    __metadata("design:paramtypes", [modal_service_1.ModalService,
-	        forms_1.FormBuilder, Object, Object])
+	        forms_1.FormBuilder, Object, Object, Object])
 	], FormService);
 	exports.FormService = FormService;
 
@@ -6283,7 +6358,7 @@ webpackJsonp([1],[
 	        if (index == null) {
 	            index = this._currentIndex;
 	        }
-	        return this._llComponentRefArr[index];
+	        return (this._llComponentRefArr[index] || null);
 	    };
 	    /**
 	     * Unset componentRef of current index (if index is not provided)
@@ -6293,8 +6368,10 @@ webpackJsonp([1],[
 	    NavManagerService.prototype.unsetComponentRef = function (index) {
 	        if (index === void 0) { index = null; }
 	        index = (index || this._currentIndex);
-	        this._llComponentRefArr[index].destroy();
-	        this._llComponentRefArr[index] = null;
+	        if (this._llComponentRefArr[index]) {
+	            this._llComponentRefArr[index].destroy();
+	            this._llComponentRefArr[index] = null;
+	        }
 	        return this;
 	    };
 	    /**
@@ -6382,7 +6459,9 @@ webpackJsonp([1],[
 	        var viewContainerRef = this._llViewContainerRefArr[lazyLoadViewIndex];
 	        var injector = null;
 	        if (providers) {
-	            injector = core_1.ReflectiveInjector.fromResolvedProviders(core_1.ReflectiveInjector.resolve(providers), this._injector);
+	            injector = core_1.ReflectiveInjector.fromResolvedProviders(core_1.ReflectiveInjector.resolve(providers), 
+	            // Use in firs instance the injector of the component (is more refined)
+	            (this._component['_injector'] || this._injector));
 	        }
 	        var that = this;
 	        return this._dynamicComponentLoaderService.load(lazyLoadData.module, lazyLoadData.component, viewContainerRef, injector).then(function (componentRef) {
@@ -6417,6 +6496,9 @@ webpackJsonp([1],[
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
 	var core_1 = __webpack_require__(3);
 	var nav_manager_service_1 = __webpack_require__(45);
 	/**
@@ -6429,10 +6511,15 @@ webpackJsonp([1],[
 	 * so the template has been rendered.
 	 */
 	var WizardManagerService = (function () {
-	    function WizardManagerService(_navManagerService) {
+	    function WizardManagerService(_navManagerService, _provider) {
 	        this._navManagerService = _navManagerService;
+	        this._provider = _provider;
 	        // Local variables
 	        this._component = null; // Parent component that uses and implement this service
+	        // Set default values for provider
+	        if (!this._provider) {
+	            this._provider = {};
+	        }
 	    }
 	    /**
 	     * Initialization of service.
@@ -6468,7 +6555,12 @@ webpackJsonp([1],[
 	        if ($event) {
 	            $event.preventDefault();
 	        }
-	        this._navManagerService.navTo(this._navManagerService.getIndex() + 1).then(function (data) { return; }, function (errors) { return; });
+	        var nextIndex = (this._navManagerService.getIndex() + 1);
+	        // Force to rebuild all components
+	        if (this._provider.rebuildNextStepComponents) {
+	            this._navManagerService.unsetComponentRef(nextIndex);
+	        }
+	        this._navManagerService.navTo(nextIndex).then(function (data) { return; }, function (errors) { return; });
 	    };
 	    /**
 	     * Previous action.
@@ -6526,7 +6618,8 @@ webpackJsonp([1],[
 	}());
 	WizardManagerService = __decorate([
 	    core_1.Injectable(),
-	    __metadata("design:paramtypes", [nav_manager_service_1.NavManagerService])
+	    __param(1, core_1.Optional()), __param(1, core_1.Inject('WizardManagerServiceProvider')),
+	    __metadata("design:paramtypes", [nav_manager_service_1.NavManagerService, Object])
 	], WizardManagerService);
 	exports.WizardManagerService = WizardManagerService;
 
@@ -6575,6 +6668,7 @@ webpackJsonp([1],[
 	            this.pinProvider();
 	        }
 	        this._onObjectChangeEmitter = new core_1.EventEmitter();
+	        this._onObjectsRefreshEmitter = new core_1.EventEmitter();
 	        this._onObjectsChangeEmitter = new core_1.EventEmitter();
 	        this.setObjects(this._provider.objects || []);
 	        // Initialize the search
@@ -6589,6 +6683,13 @@ webpackJsonp([1],[
 	    DataService.prototype.pinProvider = function () {
 	        this._provider = this._helperService.cloneObject(this._provider, true);
 	        return this;
+	    };
+	    /**
+	     * Count objects (used in pagination)
+	     * @returns {number}
+	     */
+	    DataService.prototype.countObjects = function () {
+	        return this._helperService.varCount(this._provider.objects || []);
 	    };
 	    /**
 	     * Get object
@@ -6626,7 +6727,14 @@ webpackJsonp([1],[
 	        return this._onObjectChangeEmitter;
 	    };
 	    /**
-	     * Get on objects change emitter to tell all subscribers about changes
+	     * Get on objects refresh emitter to tell all subscribers about changes
+	     * @returns {EventEmitter<any>}
+	     */
+	    DataService.prototype.getOnObjectsRefreshEmitter = function () {
+	        return this._onObjectsRefreshEmitter;
+	    };
+	    /**
+	     * Get on objects change emitter to tell all subscribers about changes (add, refresh, delete, etc)
 	     * @returns {EventEmitter<any>}
 	     */
 	    DataService.prototype.getOnObjectsChangeEmitter = function () {
@@ -6664,6 +6772,10 @@ webpackJsonp([1],[
 	        if (id) {
 	            var that_1 = this, route = (this._provider.route['get']['url'] + '/' + id);
 	            this.post(route, this.getRequestData(null, false, false)).then(function (data) {
+	                // Local data (do not override, merge data)
+	                if (data['localData']) {
+	                    that_1._provider.localData = that_1._helperService.mergeObjects(that_1._provider.localData, data['localData']);
+	                }
 	                var obj = (data.object || null);
 	                // Refresh object
 	                if (obj) {
@@ -6685,6 +6797,11 @@ webpackJsonp([1],[
 	            if (index != that._objectIndex) {
 	                var objectsProvider = (that._objectsProvider || that._provider.objects);
 	                that._postService.post(that._provider.route['get']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData(null, false, false)).then(function (data) {
+	                    // Local data (do not override, merge data)
+	                    if (data['localData']) {
+	                        that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
+	                    }
+	                    // Object
 	                    that._objectIndex = index; // The index of original object that was selected
 	                    that.setLocalObject(data.object);
 	                    // Now object has all of fields with the values, is not limited to the search selected field,
@@ -6712,7 +6829,7 @@ webpackJsonp([1],[
 	            this._normalizedObject = this._helperService.cloneObject(object, true);
 	            this.normalizeObjectsToTemplate([this._normalizedObject]);
 	            // Objects stored in session does not be considered really objects.
-	            if (!object['_isSessionStorage']) {
+	            if (object['id'] && !object['_isSessionStorage']) {
 	                var objectsProvider = (this._objectsProvider || this._provider.objects);
 	                // Refresh objects array
 	                if ((index != null) && objectsProvider[index]) {
@@ -6720,6 +6837,8 @@ webpackJsonp([1],[
 	                    this._objectIndex = index;
 	                    objectsProvider[index] = this._normalizedObject;
 	                    this._normalizedObject['_isEdited'] = true; // Flag to use in template
+	                    // Emmit changes (object has been edited)
+	                    this._onObjectsChangeEmitter.emit(null);
 	                }
 	                else {
 	                    // Add new object at first of array (to best user experience)
@@ -6843,7 +6962,7 @@ webpackJsonp([1],[
 	            this.pushToObjects(objects);
 	        }
 	        // Emmit changes
-	        this._onObjectsChangeEmitter.emit(objects);
+	        this._onObjectsRefreshEmitter.emit(objects);
 	        return this;
 	    };
 	    /**
@@ -6879,10 +6998,8 @@ webpackJsonp([1],[
 	                this._objectsIds.push(parseInt(obj['id']));
 	            }
 	        }
-	        // Emmit changes
-	        /*if (hasChanges) {
-	            this._onObjectsChangeEmitter.emit(objects);
-	        }*/
+	        // Emmit changes (object has been added)
+	        this._onObjectsChangeEmitter.emit(null);
 	        return this;
 	    };
 	    /**
@@ -6899,6 +7016,8 @@ webpackJsonp([1],[
 	        if ((index = this._helperService.arraySearch(objId, this._newObjectsIds)) != null) {
 	            this._newObjectsIds.splice(index, 1);
 	        }
+	        // Emmit changes (object has been deleted)
+	        this._onObjectsChangeEmitter.emit(null);
 	        return this;
 	    };
 	    /**
@@ -7155,10 +7274,9 @@ webpackJsonp([1],[
 	                // Create by server action
 	                if (that._provider.route['new']) {
 	                    return that._postService.post(that._provider.route['new']['url'], that.getRequestData()).then(function (data) {
-	                        // Local data (Do not override, merge data)
+	                        // Local data (do not override, merge data)
 	                        if (data['localData']) {
-	                            that._provider.localData =
-	                                that._helperService.mergeObjects(that._provider.localData, data['localData']);
+	                            that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
 	                        }
 	                        // Object
 	                        that.setNewObject(data.object);
@@ -7223,10 +7341,9 @@ webpackJsonp([1],[
 	                if (data.fieldsChoices) {
 	                    that.setFieldsChoices(data.fieldsChoices);
 	                }
-	                // Local data (Do not override, merge data)
+	                // Local data (do not override, merge data)
 	                if (data['localData']) {
-	                    that._provider.localData =
-	                        that._helperService.mergeObjects(that._provider.localData, data['localData']);
+	                    that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
 	                }
 	                var obj = (data.object || null);
 	                // Refresh object
@@ -7235,10 +7352,9 @@ webpackJsonp([1],[
 	                }
 	                return resolve(obj);
 	            }, function (errors) {
-	                // Local data (Do not override, merge data). Exception in errors list used in some cases.
+	                // Local data (do not override, merge data). Exception in errors list used in some cases.
 	                if (errors['localData']) {
-	                    that._provider.localData =
-	                        that._helperService.mergeObjects(that._provider.localData, errors['localData']);
+	                    that._provider.localData = that._helperService.mergeObjects(that._provider.localData, errors['localData']);
 	                    delete errors['localData']; // It's no more necessary
 	                }
 	                // Refresh object
@@ -7297,46 +7413,22 @@ webpackJsonp([1],[
 	     */
 	    DataService.prototype.choices = function () {
 	        var that = this, noReset = true;
-	        // Only search if parameters have changed
-	        if (!this._helperService.isEqualObject(this._provider['search'], this._candidateSearch)) {
+	        // Only search if parameters have changed (only criteria is changed)
+	        if (!this._helperService.isEqualObject(this._provider['search']['criteria'], this._candidateSearch['criteria'])) {
 	            // Update search
-	            this._provider['search'] = this._helperService.cloneObject(this._candidateSearch, true);
+	            this._provider['search']['criteria'] = this._helperService.cloneObject(this._candidateSearch['criteria'], true);
 	            // Reset pagination for new search
 	            this.resetPagination();
 	            // To reset objects
 	            noReset = false;
 	        }
+	        // No field is necessary, is returned the choices pattern (minimizes data sent)
+	        this._provider['search']['fields'] = [];
 	        this.post(this._provider.route['choices']['url'], this.getRequestData(null, noReset)).then(function (data) {
 	            // Update list of objects
 	            that.setObjects(data.objects || [], noReset);
 	        }, function (errors) { console.log(errors); });
 	        return this;
-	    };
-	    /**
-	     * Delete object.
-	     * @param index
-	     * @returns {Promise}
-	     */
-	    DataService.prototype.delete = function (index) {
-	        var that = this, objectsProvider = (this._objectsProvider || this._provider.objects);
-	        return new Promise(function (resolve, reject) {
-	            var _this = this;
-	            that.post(that._provider.route['delete']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
-	                // Refresh all objects
-	                if (data.objects) {
-	                    that.setObjects(data.objects);
-	                }
-	                // Refresh fields choices
-	                if (data.fieldsChoices) {
-	                    that.setFieldsChoices(data.fieldsChoices);
-	                }
-	                // Refresh objects array
-	                that.pullFromObjects(index);
-	                // Reset object index
-	                _this._objectIndex = null;
-	                return resolve(true);
-	            }, function (errors) { console.log(errors); return resolve(false); });
-	        });
 	    };
 	    /**
 	     * Order object (change priority value).
@@ -7377,20 +7469,45 @@ webpackJsonp([1],[
 	        return this;
 	    };
 	    /**
+	     * Delete object.
+	     * @param index
+	     * @returns {Promise}
+	     */
+	    DataService.prototype.delete = function (index) {
+	        var that = this, objectsProvider = (this._objectsProvider || this._provider.objects);
+	        return new Promise(function (resolve, reject) {
+	            that.post(that._provider.route['delete']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
+	                // Refresh all objects
+	                if (data.objects) {
+	                    that.setObjects(data.objects);
+	                }
+	                // Refresh fields choices
+	                if (data.fieldsChoices) {
+	                    that.setFieldsChoices(data.fieldsChoices);
+	                }
+	                // Refresh objects array
+	                that.pullFromObjects(index);
+	                // Reset object index
+	                that._objectIndex = null;
+	                return resolve(true);
+	            }, function (errors) { console.log(errors); return reject(false); });
+	        });
+	    };
+	    /**
 	     * Delete objects from array by index.
-	     * @param data
+	     * @param indexes
 	     * @returns {DataService}
 	     */
-	    DataService.prototype.deleteArray = function (data) {
+	    DataService.prototype.deleteArray = function (indexes) {
 	        var that = this;
 	        var objects = this._provider.objects;
-	        var idArr = [], indexArr = [];
-	        if (objects && data && (data.length > 0)) {
-	            for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
-	                var obj = data_1[_i];
-	                if (objects[obj.value]) {
-	                    idArr.push(objects[obj.value]['id']);
-	                    indexArr.push(obj.value);
+	        var idArr = [];
+	        if (objects && indexes && (indexes.length > 0)) {
+	            for (var _i = 0, indexes_1 = indexes; _i < indexes_1.length; _i++) {
+	                var index = indexes_1[_i];
+	                index = index.value;
+	                if (objects[index]) {
+	                    idArr.push(objects[index]['id']);
 	                }
 	            }
 	        }
@@ -7402,10 +7519,13 @@ webpackJsonp([1],[
 	            // Refresh objects array
 	            // Correction for index (each time you remove an index, all indices needs to be corrected)
 	            var indexCorrection = 0;
-	            for (var _i = 0, indexArr_1 = indexArr; _i < indexArr_1.length; _i++) {
-	                var index = indexArr_1[_i];
-	                that.pullFromObjects(index - indexCorrection);
-	                indexCorrection++;
+	            for (var _i = 0, indexes_2 = indexes; _i < indexes_2.length; _i++) {
+	                var index = indexes_2[_i];
+	                index = index.value;
+	                if (objects[index]) {
+	                    that.pullFromObjects(index - indexCorrection);
+	                    indexCorrection++;
+	                }
 	            }
 	        }, function (errors) { console.log(errors); });
 	        return this;
@@ -7434,13 +7554,59 @@ webpackJsonp([1],[
 	     * Run/Execute action. Execute action directly.
 	     * @param route
 	     * @param data
+	     * @param updateData
 	     * @returns {Promise}
 	     */
-	    DataService.prototype.runAction = function (route, data) {
+	    DataService.prototype.runAction = function (route, data, updateData) {
 	        if (data === void 0) { data = null; }
+	        if (updateData === void 0) { updateData = false; }
 	        var that = this;
 	        return new Promise(function (resolve, reject) {
-	            return that.post(route, that.getRequestData(data, false, false)).then(function (data) { return resolve(data); }, function (errors) { console.log(errors); return reject(errors); });
+	            return that.post(route, that.getRequestData(data, false, false)).then(function (data) {
+	                if (updateData) {
+	                    // Local data (do not override, merge data)
+	                    if (data['localData']) {
+	                        that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
+	                    }
+	                    // Refresh object
+	                    if (data['object']) {
+	                        that.setObject(data.object, that._objectIndex);
+	                    }
+	                }
+	                return resolve(data);
+	            }, function (errors) { console.log(errors); return reject(errors); });
+	        });
+	    };
+	    /**
+	     * Submit indexes id
+	     * @param route
+	     * @param indexes
+	     * @param allowEmptySubmit (allow submit when data is empty,
+	     * some cases it is necessary to inform that the user does not select any choice)
+	     * @returns {Promise}
+	     */
+	    DataService.prototype.submitIndexesId = function (route, indexes, allowEmptySubmit) {
+	        if (allowEmptySubmit === void 0) { allowEmptySubmit = false; }
+	        var that = this;
+	        var objects = this._provider.objects;
+	        var idArr = [];
+	        return new Promise(function (resolve, reject) {
+	            if (objects && indexes && (indexes.length > 0)) {
+	                for (var _i = 0, indexes_3 = indexes; _i < indexes_3.length; _i++) {
+	                    var index = indexes_3[_i];
+	                    if (objects[index.value]) {
+	                        idArr.push(objects[index.value]['id']);
+	                    }
+	                }
+	            }
+	            if ((idArr.length > 0) || allowEmptySubmit) {
+	                // Submit to provided route
+	                return that.runAction(route, { id: idArr }).then(function (data) { return resolve(data); }, function (errors) { console.log(errors); return reject(errors); });
+	            }
+	            else {
+	                // No indexes to submit
+	                return resolve(null);
+	            }
 	        });
 	    };
 	    /**
@@ -8268,8 +8434,9 @@ webpackJsonp([1],[
 	var core_1 = __webpack_require__(3);
 	// Component
 	var SearchPaginationComponent = (function () {
-	    function SearchPaginationComponent(_dataService) {
+	    function SearchPaginationComponent(_dataService, _helperService) {
 	        this._dataService = _dataService;
+	        this._helperService = _helperService;
 	    }
 	    /**
 	     * Get more objects (pagination)
@@ -8284,10 +8451,11 @@ webpackJsonp([1],[
 	SearchPaginationComponent = __decorate([
 	    core_1.Component({
 	        selector: 'js_searchPagination',
-	        template: "\n    <div *ngIf=\"(_dataService.getProviderAttr('objects') || []).length > 0\"\n         class=\"search-pagination no-user-select\">\n        <span>{{(_dataService.getProviderAttr('objects').length)}} Results</span>\n        <a class=\"search-has-more -note\"\n           *ngIf=\"_dataService.getProviderAttr('search')['hasMore']\"\n           (click)=\"getMoreObjects($event)\"\n           href=\"#\"\n           title=\"Load more results...\">...</a>\n    </div>\n    "
+	        template: "\n    <div *ngIf=\"_dataService.countObjects() > 0\"\n         class=\"search-pagination no-user-select\">\n        <span>{{_dataService.countObjects()}} Results</span>\n        <a class=\"search-has-more -note\"\n           *ngIf=\"_dataService.getProviderAttr('search')['hasMore']\"\n           (click)=\"getMoreObjects($event)\"\n           href=\"#\"\n           title=\"Load more results...\">...</a>\n    </div>\n    "
 	    }),
 	    __param(0, core_1.Inject('DataService')),
-	    __metadata("design:paramtypes", [Object])
+	    __param(1, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [Object, Object])
 	], SearchPaginationComponent);
 	exports.SearchPaginationComponent = SearchPaginationComponent;
 
@@ -8393,7 +8561,8 @@ webpackJsonp([1],[
 	     * @param popups
 	     * @param injector
 	     */
-	    DataBoxExtensionComponent.prototype.initDataBoxExtensionComponent = function (viewContainerRef, renderer, provider, dataService, actionsService, modalService, 
+	    DataBoxExtensionComponent.prototype.initDataBoxExtensionComponent = function (viewContainerRef, renderer, provider, dataService, // Any is used, otherwise you get an error "[Class] is not defined"
+	        actionsService, modalService, 
 	        // You can provide a popup by action:
 	        // provide('Popups', {useValue: {
 	        //     add: Popup,
@@ -8582,6 +8751,20 @@ webpackJsonp([1],[
 	                console.log(errors);
 	            });
 	        }
+	    };
+	    /**
+	     * Submit choices
+	     * @param route (route to submit choices)
+	     * @param allowEmptySubmit (allow submit when data is empty,
+	     * some cases it is necessary to inform that the user does not select any choice)
+	     * @returns {Promise}
+	     */
+	    DataBoxExtensionComponent.prototype.submitChoices = function (route, allowEmptySubmit) {
+	        if (allowEmptySubmit === void 0) { allowEmptySubmit = false; }
+	        var $form = $(this._elementRef.nativeElement).find('.ibox-content form'), data = $form.serializeArray(), that = this;
+	        return new Promise(function (resolve, reject) {
+	            return that._dataService.submitIndexesId(route, data, allowEmptySubmit).then(function (data) { return resolve(data); }, function (errors) { console.log(errors); return reject(errors); });
+	        });
 	    };
 	    /**
 	     * Detail action.
@@ -14698,6 +14881,7 @@ webpackJsonp([1],[
 	        this._lastSelectedChoice = { id: null, label: '' };
 	        this._choices = [];
 	        this._search = { term: '', lastTerm: null };
+	        this._searchField = 'name';
 	        this._childCandidateSearch = null;
 	        // Object change event subscription
 	        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
@@ -14765,7 +14949,7 @@ webpackJsonp([1],[
 	            && (this._search.term.length % 3 === 0) // Only submit with multiples of three
 	        ) {
 	            this._childCandidateSearch['criteria'] = [{
-	                    'field': 'name',
+	                    'field': this._searchField,
 	                    'expr': 'lrlike',
 	                    'value': this._search.term
 	                }];
@@ -14918,6 +15102,9 @@ webpackJsonp([1],[
 	    FieldTypeAutoCompleteComponent.prototype.ngOnInit = function () {
 	        // Initialize values
 	        this._provider = (this._autoCompleteProviders[this.field] || null);
+	        if (this._provider.field) {
+	            this._searchField = this._provider.field;
+	        }
 	        this._fieldInView = (this._dataService.getProviderAttr('fields')['metadata'][this.field]['fieldInView'] || null);
 	        this.reset();
 	        // Dependency conf previously saved in provider
@@ -14945,7 +15132,7 @@ webpackJsonp([1],[
 	            that.init();
 	            // Add parameter to action route
 	            if (that._provider.urlChoicesParams) {
-	                that._childDataServiceChoices.setRoute('choices', (that._childDataServiceChoices.getRoute('choices') + that._provider.urlChoicesParams));
+	                that._childDataServiceChoices.setRoute('choices', (that._childDataServiceChoices.getRoute('choices') + '/' + that._provider.urlChoicesParams));
 	            }
 	        }, function (errors) { console.log(errors); return; });
 	    };
@@ -14957,7 +15144,7 @@ webpackJsonp([1],[
 	        var _this = this;
 	        this._childDataServicePopup = this._childInjector.get('DataService');
 	        this._childDataServiceChoices = this._childInjector.get('DataServiceChoices');
-	        this._onChildObjectsChangeSubscription = this._childDataServiceChoices.getOnObjectsChangeEmitter()
+	        this._onChildObjectsChangeSubscription = this._childDataServiceChoices.getOnObjectsRefreshEmitter()
 	            .subscribe(function (object) { return _this.resetChoices(); });
 	        this._childCandidateSearch = this._childDataServiceChoices.getCandidateSearch(); // To filter objects
 	        return this;
@@ -15190,6 +15377,7 @@ webpackJsonp([1],[
 	        this._elementRef = _elementRef;
 	        this._formService = _formService;
 	        this._dataService = _dataService;
+	        this.onChange = new core_1.EventEmitter();
 	        // Object change event subscription
 	        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
 	            .subscribe(function (object) { return _this.reset(); });
@@ -15202,6 +15390,7 @@ webpackJsonp([1],[
 	        if (value) {
 	            this._formService.getObject()[this.field] = value;
 	            this._$label.html($target.html());
+	            this.onChange.emit(value);
 	        }
 	    };
 	    /**
@@ -15249,6 +15438,10 @@ webpackJsonp([1],[
 	    core_1.Input('htmlSelect'),
 	    __metadata("design:type", String)
 	], FieldTypeHtmlSelectDirective.prototype, "field", void 0);
+	__decorate([
+	    core_1.Output(),
+	    __metadata("design:type", Object)
+	], FieldTypeHtmlSelectDirective.prototype, "onChange", void 0);
 	__decorate([
 	    core_1.HostListener('click', ['$event']),
 	    __metadata("design:type", Function),
@@ -15355,7 +15548,8 @@ webpackJsonp([1],[
 	                            var dateToCheck = new Date(date.year, date.month - 1, date.day);
 	                            for (var _i = 0, dateRanges_2 = dateRanges_1; _i < dateRanges_2.length; _i++) {
 	                                var dateRange = dateRanges_2[_i];
-	                                var dateFrom = new Date(dateRange['startDate']), dateTo = new Date(dateRange['endDate']);
+	                                // ' 00:00:00' is necessary to get the expected behavior
+	                                var dateFrom = new Date(dateRange['startDate'] + ' 00:00:00'), dateTo = new Date(dateRange['endDate'] + ' 00:00:00');
 	                                if ((dateToCheck.getTime() >= dateFrom.getTime())
 	                                    && (dateToCheck.getTime() <= dateTo.getTime())) {
 	                                    return false;

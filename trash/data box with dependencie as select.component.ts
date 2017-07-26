@@ -3,7 +3,7 @@ import {DataService} from '../../../../../../AppBundle/Resources/public/ts/data-
 import {Helper} from '../../../../../../AppBundle/Resources/public/ts/helper';
 import {ModalService} from '../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
 import {FormService, IForm} from '../../../../../../AppBundle/Resources/public/ts/form/form.service';
-import {TreeViewFormComponent, TreeViewProvider} from '../../../../../../AppBundle/Resources/public/ts/tree-view/tree-view-form.component';
+import {TreeViewFormComponent, TreeViewProvider} from '../../../../../../AppBundle/Resources/public/tree-view/ts/tree-view-form.component';
 import {Actions, Popups, Popup} from '../../../../../../AppBundle/Resources/public/ts/data-box/data-box.component';
 
 

@@ -8,7 +8,8 @@
     <ul class="tree-view">
         <js_treeViewNode [nodes]="getNodes(0)"
                          [nodesIndex]="0"
-                         [parentComponent]="_parentComponent"></js_treeViewNode>
+                         [parentTargetField]="_provider['parentTargetField']"
+                         [treeViewComponent]="_treeViewComponent"></js_treeViewNode>
     </ul>
 {% endblock %}
 

@@ -41,6 +41,9 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
 
     /**
      * Get local metadata (it needs to be implemented by children to get static variable with local metadata from parent)
+     * We cannot use "static protected $metadata = null;" in this class, because this variable will be shared with all
+     * classes that extend this class, so this variable must be declared in the last child class (never in non final
+     * classes where you use variables to construct the metadata (dynamic metadata))
      * @return mixed
      */
     abstract protected function getLocalMetadata();
@@ -322,7 +325,7 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
             if ($hasFields) { $qb->select($select); }
         }
 
-        // WHERE
+        // WHERE/HAVING
         if (is_array($options['criteria'])) {
             $parameter = 0;
             foreach ($options['criteria'] as $criteria) {
@@ -331,15 +334,6 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                 $whereMethod = (empty($criteria['method']) ? 'and' : $criteria['method']);
                 $expression = (empty($criteria['expr']) ? 'eq' : $criteria['expr']);
                 $value = $criteria['value'];
-
-                // Determines where method according with option
-                switch ($whereMethod) {
-                    case 'or':
-                        $whereMethod = 'orWhere';
-                        break;
-                    default:
-                        $whereMethod = 'andWhere';
-                }
 
                 // Exception for some $expression, update variables according with.
                 switch ($expression) {
@@ -365,11 +359,26 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
 
                 // Full file name (table.field)
                 $table = $this->getFieldTable($field);
-                if ($table) {
+                if (!empty($table)) {
                     $field = ($table . '.' . $this->getLocalFieldMetadata($field, 'field', $metadata));
                     if (!empty($field2)) {
                         $field2 = ($table . '.' . $this->getLocalFieldMetadata($field2, 'field', $metadata));
                     }
+                }
+
+                // Determines where method according with option
+                switch ($whereMethod) {
+                    case 'or':
+                        $whereMethod = 'or';
+                        break;
+                    default:
+                        $whereMethod = 'and';
+                }
+                if (isset($table) && empty($table)) {
+                    // Table can be empty when the field is calculated (like SUM, CASE WHEN, CONCAT, etc.).
+                    $whereMethod .= 'Having';
+                } else {
+                    $whereMethod .= 'Where';
                 }
 
                 // Add expression according the $expression
@@ -500,7 +509,7 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                     if (empty($dbField)) { $dbField = $field; } // For fields without metadata like "COUNT(...) AS total"
 
                     $table = $this->getFieldTable($field);
-                    if ($table) {
+                    if (!empty($table)) {
                         // Add table (if table is not defined, field needs to be in format "table.field")
                         $dbField = ($table . '.' . $dbField);
                     }
@@ -588,16 +597,18 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
     /**
      * Debug query builder
      * @param $queryBuilder
-     * @return $this
+     * @param boolean $exit (exit application)
      */
-    public function debugQueryBuilder($queryBuilder)
+    static public function debugQueryBuilder($queryBuilder, $exit = true)
     {
         echo($queryBuilder->getQuery()->getSql());
         echo("<pre>");
         print_r($queryBuilder->getQuery()->getParameters());
         echo("</pre>");
 
-        return $this;
+        if ($exit) {
+            exit;
+        }
     }
 
     /**
@@ -605,7 +616,7 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
      * @param $data
      * @param boolean $exit (exit application)
      */
-    static protected function debugVar($data, $exit = false)
+    static protected function debugVar($data, $exit = true)
     {
         $endId = uniqid('debug-var-end-anchor-');
 

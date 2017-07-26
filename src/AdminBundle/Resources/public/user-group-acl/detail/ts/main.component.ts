@@ -14,7 +14,7 @@ let tmpTemplateUrl = Helper.getRuntimeVar('templateUrl');
 
 // UserGroupAclMenu
 Helper.setRuntimeVar('templateUrl', _app.dependency['userGroupAclMenu']['route']['edit']['url']);
-import {TreeViewFormAclExtensionModule} from '../../../../../../AppBundle/Resources/public/ts/tree-view/tree-view-form-acl.extension-module';
+import {TreeViewFormAclExtensionModule} from '../../../../../../AppBundle/Resources/public/tree-view/ts/tree-view-form-acl.extension-module';
 
 // UserGroupAclUser
 Helper.setRuntimeVar('templateUrl', _app.dependency['userGroupAclUser']['route']['edit']['url']);
@@ -93,18 +93,20 @@ export class MainComponent extends TabsComponent implements ITabs
             case 0:
                 providers = [
                     {provide: 'DataService', useClass: TreeViewDataService},
+                    {provide: 'DataServiceProvider', useValue: this._helperService.getTreeViewDataServiceProvider(data)},
                     {provide: 'Provider', useValue: this._helperService.getTreeViewProvider(data)}
                 ];
                 break;
             case 1:
                 providers = [
                     {provide: 'DataService', useClass: DataService},
+                    {provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data)},
                     FormService,
                     {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
                     {provide: 'AutoCompleteProviders', useValue: {
                         userObj: {
                             urlConf: (Helper.getGlobalVar('route') + 'admin/user/conf'),
-                            urlChoicesParams: '/1',
+                            urlChoicesParams: '1',
                             control: 'save'
                         }
                     }}
@@ -115,7 +117,6 @@ export class MainComponent extends TabsComponent implements ITabs
         providers = providers.concat([
             ActionsService,
             {provide: 'Popups', useValue: null},
-            {provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data)},
             {provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data)}
         ]);
 

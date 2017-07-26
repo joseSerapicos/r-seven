@@ -1,10 +1,11 @@
 import {Injectable, Inject, EventEmitter} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {PostService} from '../post.service';
-import {DataService, DataServiceProvider} from './data.service';
+import {DataService} from './data.service';
+import {TreeViewDataServiceProvider, Search} from './tree-view-data-service-provider';
 
 // Re-exports
-export {DataServiceProvider};
+export {TreeViewDataServiceProvider};
 
 
 /**
@@ -21,7 +22,7 @@ export class TreeViewDataService extends DataService
     constructor(
         postService: PostService,
         @Inject('HelperService') helperService: any,
-        @Inject('DataServiceProvider') provider: DataServiceProvider,
+        @Inject('DataServiceProvider') provider: TreeViewDataServiceProvider,
         sanitizer: DomSanitizer
     ) {
         super(
@@ -39,6 +40,30 @@ export class TreeViewDataService extends DataService
     public getObjectIndex(): any
     {
         return {'objIndex': this._objectIndex, 'parentNodeIndex': this._objectsProviderIndex};
+    }
+
+    /**
+     * Count objects (used in pagination)
+     * @returns {number}
+     */
+    public countObjects(): number
+    {
+        let objects = (this._provider.objects || {}),
+            includeRootIndex = false,
+            total = 0;
+
+        // Check if root nodes (at index 0) has id, if no is id provided, then this objects are not able to check
+        if (objects[0] && objects[0][0] && objects[0][0]['id']) {
+            includeRootIndex = true;
+        }
+
+        for (let index in objects) {
+            if ((parseInt(index, 10) != 0) || includeRootIndex) {
+                total += this._helperService.varCount(objects[index] || []);
+            }
+        }
+
+        return total;
     }
 
     /**
@@ -103,7 +128,7 @@ export class TreeViewDataService extends DataService
                             : null // Not defined
                     )
                 );
-                let newParentNodeIndex = (object[this._provider.extraData['treeView']['parentNodeField']] || 0);
+                let newParentNodeIndex = (object[this._provider['localParentField']] || 0);
 
                 // Create a new array entry for parent node, if not exist yet
                 if (!(newParentNodeIndex in this._provider.objects)) {
@@ -230,6 +255,92 @@ export class TreeViewDataService extends DataService
     protected resetObjects() {
         super.resetObjects();
         this._provider.objects = {};
+        return this;
+    }
+
+    /**
+     * Submit indexes id
+     * @param route
+     * @param indexes (index in the format "parentIndex::childIndex")
+     * @param allowEmptySubmit (allow submit when data is empty,
+     * some cases it is necessary to inform that the user does not select any choice)
+     * @returns {Promise}
+     */
+    public submitIndexesId(route: string, indexes: any, allowEmptySubmit: boolean = false): Promise<any>
+    {
+        let that = this;
+        let objects = this._provider.objects;
+        let idArr = [];
+
+        return new Promise(function(resolve, reject) {
+            if (objects && indexes && (indexes.length > 0)) {
+                for (let index of indexes) {
+                    let indexArr = index.value.split("::");
+                    if (objects[indexArr[0]] && objects[indexArr[0]][indexArr[1]]) {
+                        idArr.push(objects[indexArr[0]][indexArr[1]]['id']);
+                    }
+                }
+            }
+
+            if  ((idArr.length > 0) || allowEmptySubmit) {
+                // Submit to provided route
+                return that.runAction(route, {id: idArr}).then(
+                    data => { return resolve(data); },
+                    errors => { console.log(errors); return reject(errors); }
+                );
+            } else {
+                // No indexes to submit
+                return resolve(null);
+            }
+        });
+    }
+
+    /**
+     * Delete objects from array by index.
+     * @param indexes (index in the format "parentIndex::childIndex")
+     * @returns {DataService}
+     */
+    public deleteArray(indexes: any): DataService
+    {
+        let that = this;
+        let objects = this._provider.objects;
+        let idArr = [];
+
+        if (objects && indexes && (indexes.length > 0)) {
+            for (let index of indexes) {
+                let indexArr = index.value.split("::");
+                if (objects[indexArr[0]] && objects[indexArr[0]][indexArr[1]]) {
+                    idArr.push(objects[indexArr[0]][indexArr[1]]['id']);
+                }
+            }
+        }
+
+        this.post(
+            this._provider.route['delete']['url'],
+            this.getRequestData({id: idArr})
+        ).then(
+            data => {
+                // Refresh fields choices
+                if (data.fieldsChoices) {
+                    that.setFieldsChoices(data.fieldsChoices);
+                }
+
+                // Refresh objects array
+                // Correction for index (each time you remove an index, all indices needs to be corrected)
+                let indexCorrection = {};
+                for (let index of indexes) {
+                    let indexArr = index.value.split("::");
+                    if (objects[indexArr[0]] && objects[indexArr[0]][indexArr[1]]) {
+                        that._objectsProvider = that._provider.objects[indexArr[0]];
+                        indexCorrection[indexArr[0]] = (indexCorrection[indexArr[0]] || 0);
+                        that.pullFromObjects(indexArr[1] - indexCorrection[indexArr[0]]);
+                        indexCorrection[indexArr[0]]++;
+                    }
+                }
+            },
+            errors => { console.log(errors); }
+        );
+
         return this;
     }
 }

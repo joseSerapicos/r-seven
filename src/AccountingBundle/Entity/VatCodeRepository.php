@@ -73,20 +73,20 @@ class VatCodeRepository extends BaseEntityRepository {
 
         // Clients
         $qb = $this->queryBuilder($options, false);
-        $qb->innerJoin('AccountingBundle\Entity\ClientCurrentAccountDetail',
-            'clientCurrentAccountDetail',
+        $qb->innerJoin('AccountingBundle\Entity\ClientDocumentInvoiceDetail',
+            'clientDocumentInvoiceDetail',
             'WITH',
-            ('clientCurrentAccountDetail.vatCodeObj = ' . $object->getId())
+            ('clientDocumentInvoiceDetail.vatCodeObj = ' . $object->getId())
         );
         $result = $this->executeQueryBuilder($qb);
 
         /*if (empty($result)) { // @TODO ENABLE THIS CODE WHEN TABLES ARE DEFINED
             // Suppliers
             $qb = $this->queryBuilder($options, false);
-            $qb->innerJoin('AccountingBundle\Entity\SupplierCurrentAccountDetail',
-                'supplierCurrentAccountDetail',
+            $qb->innerJoin('AccountingBundle\Entity\SupplierDocumentInvoiceDetail',
+                'supplierDocumentInvoiceDetail',
                 'WITH',
-                ('supplierCurrentAccountDetail.vatCodeObj = ' . $object->getId())
+                ('supplierDocumentInvoiceDetail.vatCodeObj = ' . $object->getId())
             );
             $result = $this->executeQueryBuilder($qb);
         }
@@ -94,10 +94,10 @@ class VatCodeRepository extends BaseEntityRepository {
         if (empty($result)) {
             // Entities
             $qb = $this->queryBuilder($options, false);
-            $qb->innerJoin('AccountingBundle\Entity\EntityCurrentAccountDetail',
-                'entityCurrentAccountDetail',
+            $qb->innerJoin('AccountingBundle\Entity\EntityDocumentInvoiceDetail',
+                'entityDocumentInvoiceDetail',
                 'WITH',
-                ('entityCurrentAccountDetail.vatCodeObj = ' . $object->getId())
+                ('entityDocumentInvoiceDetail.vatCodeObj = ' . $object->getId())
             );
             $result = $this->executeQueryBuilder($qb);
         }*/

@@ -1,5 +1,5 @@
 import {DataServiceProvider} from './data-service/data-service-provider';
-import {TreeViewProvider} from './tree-view/tree-view-provider';
+import {TreeViewProvider} from '../tree-view/ts/tree-view-provider';
 import {DataBoxProvider} from './data-box/data-box-provider';
 import {ImageProvider} from './image/image-provider';
 import {BaseProvider} from './base/base-provider';
@@ -73,6 +73,16 @@ export class Helper {
     public static isEqualObject(object1: any, object2: any): boolean
     {
         return (JSON.stringify(object1) === JSON.stringify(object2));
+    }
+
+    /**
+     * Var Count (count only is a reserved word)
+     * @param variable
+     * @returns {number}
+     */
+    public static varCount(variable: any): number
+    {
+        return Object.keys(variable || {}).length;
     }
 
     /**
@@ -195,7 +205,7 @@ export class Helper {
     }
 
     /**
-     * Get data-box service provider
+     * Get data service provider
      * @param data
      * @returns any
      */
@@ -214,20 +224,62 @@ export class Helper {
     }
 
     /**
+     * Get tree-view data service provider
+     * @param data
+     * @returns any
+     */
+    public static getTreeViewDataServiceProvider(data: any): any
+    {
+        return Helper.mergeObjects(
+            Helper.getDataServiceProvider(data),
+            {
+                localParentField: (data.treeView.localParentField)
+            }
+        );
+    }
+
+    /**
+     * Normalize tree-view form data provider
+     * Normalizes data provider to use in tree-view form context
+     * @param data
+     * @returns any
+     */
+    public static normalizeTreeViewFormDataProvider(data: any): any
+    {
+        // Create another object, otherwise the merge affects the original data object
+        data = Helper.cloneObject(data, true);
+
+        let dataProvider = Helper.mergeObjects(
+            data,
+            (data.treeView.form || {}) // Specific data to override original data explicit for form
+        );
+
+        // Remove objects (this abjects is for parent not for form)
+        dataProvider.objects = {};
+
+        return dataProvider;
+    }
+
+    /**
      * Get tree-view provider
      * @param data
      * @returns any
      */
-    public static getTreeViewProvider(data: any): TreeViewProvider
+    public static getTreeViewProvider(data: any): any
     {
-        return Helper.mergeObjects(
-            Helper.getDataBoxProvider(data),
-            {
-                iconDefault: (data.treeView.iconDefault || null),
-                iconField: (data.treeView.iconField || null),
-                iconFieldMap: (data.treeView.iconFieldMap || {})
-            }
-        );
+        if (data.treeView) {
+            return Helper.mergeObjects(
+                Helper.getDataBoxProvider(data),
+                {
+                    iconDefault: (data.treeView.iconDefault || null),
+                    iconField: (data.treeView.iconField || null),
+                    iconFieldMap: (data.treeView.iconFieldMap || {}),
+                    parentTargetField: (data.treeView.parentTargetField || 'id')
+                }
+            );
+        }
+
+        return Helper.getDataBoxProvider(data);
     }
 
     /**
@@ -374,5 +426,14 @@ export class Helper {
             return (path.substring(path.indexOf("/upload/"), path.length));
         }
         return path;
+    }
+
+    /**
+     * Upper case first
+     * @param string
+     * @returns {string}
+     */
+    public static uCFirst(string: string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
     }
 }

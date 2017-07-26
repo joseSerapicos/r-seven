@@ -4,7 +4,7 @@
 
 {% block header_container %}
     <div class="actions no-user-select">
-        <template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search></js_search></template>
+        <template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search class="search"></js_search></template>
         <div (click)="triggerAction($event)">
             <template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
                 <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
@@ -18,13 +18,16 @@
 
 {# _dataService.getProviderAttr('objects')[0] // used to work with objects (tree-view) and arrays simultaneously #}
 {% block body %}
-    <template [ngIf]="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">{% block body_container %}{% endblock %}</template>
-    <p class="text-center" *ngIf="!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">No results.</p>
+    <template [ngIf]="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">
+    {% block body_container %}{% endblock %}
+    </template><p
+        class="text-center"
+        *ngIf="!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">No results.</p>
 {% endblock %}
 
 {% block footer %}
     <div class="ibox-footer"
-         *ngIf="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])"><js_searchPagination></js_searchPagination></div>
+         *ngIf="_dataService.countObjects() > 0"><js_searchPagination></js_searchPagination></div>
 {% endblock %}
 
 {% block after_container %}{% endblock %}

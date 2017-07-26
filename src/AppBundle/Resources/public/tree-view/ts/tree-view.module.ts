@@ -13,9 +13,9 @@ import {FlashMessageService} from '../../ts/flash-message.service';
 import {DynamicComponentLoaderService} from '../../ts/dynamic-component-loader.service';
 import {TreeViewDataService as DataService} from '../../ts/data-service/tree-view-data.service';
 import {ActionsService} from '../../ts/actions/actions.service';
-import {TreeViewControlActionsComponent} from '../../ts/tree-view/controls/tree-view-control-actions.component';
-import {TreeViewNodeComponent} from '../../ts/tree-view/tree-view-node.component';
-import {TreeViewComponent} from '../../ts/tree-view/tree-view.component';
+import {TreeViewControlActionsComponent} from './controls/tree-view-control-actions.component';
+import {TreeViewNodeComponent} from './node/tree-view-node.component';
+import {TreeViewComponent} from './tree-view.component';
 
 
 // Define templateUrl to component at runtime

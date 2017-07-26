@@ -54,7 +54,7 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
         viewContainerRef: ViewContainerRef,
         renderer: Renderer,
         provider: DataBoxProvider,
-        dataService: any,
+        dataService: any, // Any is used, otherwise you get an error "[Class] is not defined"
         actionsService: ActionsService,
         modalService: ModalService,
         // You can provide a popup by action:

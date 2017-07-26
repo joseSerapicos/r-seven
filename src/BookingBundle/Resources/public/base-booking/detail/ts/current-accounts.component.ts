@@ -15,20 +15,19 @@ let tmpTemplateUrl = Helper.getRuntimeVar('templateUrl');
 var parentId = Helper.getGlobalVar('conf')['object']['id'],
     parentController = Helper.getGlobalVar('conf')['localData']['controller']; // Determines the type of booking
 
-// ClientCurrentAccount
+// ClientDocument
 // Add
-Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account/add/' + parentId);
-import {ClientCurrentAccountAddFormPopupExtModule} from '../../../../../../AccountingBundle/Resources/public/client-current-account/add/ts/client-current-account-add-form-popup.ext-module';
+Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-document/add/' + parentId);
+import {ClientDocumentAddFormPopupExtModule} from '../../../../../../AccountingBundle/Resources/public/client-document/add/ts/client-document-add-form-popup.ext-module';
 // Edit
-Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account/edit/' + parentId);
-import {ClientCurrentAccountEditFormPopupExtModule} from '../../../../../../AccountingBundle/Resources/public/client-current-account/edit/ts/client-current-account-edit-form-popup.ext-module';
+import {ClientDocumentEditFormPopupExtModule} from '../../../../../../AccountingBundle/Resources/public/client-document/edit/ts/client-document-edit-form-popup.ext-module';
 // Auto-complete
 Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'entities/entity-address/edit/0'); // No parent defined
 import {EntityAddressPopupModule} from '../../../../../../EntitiesBundle/Resources/public/entity/detail/ts/entity-address-popup.module';
 
-// SupplierCurrentAccount
-Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'booking/' + parentController + '-supplier-current-account/edit/' + parentId);
-import {SupplierCurrentAccountFormPopupExtModule} from '../../../../../../AccountingBundle/Resources/public/supplier-current-account/ts/supplier-current-account-form-popup.ext-module';
+// SupplierDocument
+Helper.setRuntimeVar('templateUrl', Helper.getGlobalVar('route') + 'booking/' + parentController + '-supplier-document/edit/' + parentId);
+import {SupplierDocumentFormPopupExtModule} from '../../../../../../AccountingBundle/Resources/public/supplier-document/ts/supplier-document-form-popup.ext-module';
 
 // Restore last templateUrl
 Helper.setRuntimeVar('templateUrl', tmpTemplateUrl);
@@ -76,10 +75,10 @@ export class CurrentAccountsComponent extends AccordionComponent implements IAcc
 
         switch (index) {
             case 0:
-                data['urlProvider'] = (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account/data/' + parentId);
+                data['urlProvider'] = (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-client-document/data/' + parentId);
                 break;
             case 1:
-                data['urlProvider'] = (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-supplier-current-account/data/' + parentId);
+                data['urlProvider'] = (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-supplier-document/data/' + parentId);
                 break;
         }
 
@@ -129,8 +128,8 @@ export class CurrentAccountsComponent extends AccordionComponent implements IAcc
                 formProvider['preventObjectOverride'] = false;
                 providers.push({provide: 'Popups', useValue: {
                     add: {
-                        module: ClientCurrentAccountAddFormPopupExtModule,
-                        component: 'ClientCurrentAccountAddFormPopupComponent',
+                        module: ClientDocumentAddFormPopupExtModule,
+                        component: 'ClientDocumentAddFormPopupComponent',
                         providers: [
                             // Set field for wizard form first step
                             {provide: 'FormServiceProvider', useValue: {fields: ['clientDocumentTypeObj', 'clientObj']}},
@@ -143,8 +142,8 @@ export class CurrentAccountsComponent extends AccordionComponent implements IAcc
                         ]
                     },
                     edit: {
-                        module: ClientCurrentAccountEditFormPopupExtModule,
-                        component: 'ClientCurrentAccountEditFormPopupComponent',
+                        module: ClientDocumentEditFormPopupExtModule,
+                        component: 'ClientDocumentEditFormPopupComponent',
                         providers: [{provide: 'Provider', useValue: this._helperService.getFormProvider(data)}],
                         FormService
                     }
@@ -152,8 +151,8 @@ export class CurrentAccountsComponent extends AccordionComponent implements IAcc
                 break;
             case 1:
                 providers.push({provide: 'Popups', useValue: {
-                    module: SupplierCurrentAccountFormPopupExtModule,
-                    component: 'SupplierCurrentAccountFormPopupComponent',
+                    module: SupplierDocumentFormPopupExtModule,
+                    component: 'SupplierDocumentFormPopupComponent',
                     providers: [{provide: 'Provider', useValue: this._helperService.getFormProvider(data)}]
                 }});
                 break;

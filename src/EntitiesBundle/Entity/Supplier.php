@@ -7,7 +7,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="EntitiesBundle\Entity\SupplierRepository")
- * @ORM\Table(name="supplier")
+ * @ORM\Table(name="supplier",
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="unq_supplier_code", columns={"codePrefix", "codeNumber"})})
  */
 class Supplier extends BaseEntity {
     /**
@@ -17,30 +18,63 @@ class Supplier extends BaseEntity {
     protected $entityObj;
 
     /**
-     * @ORM\Column(name="code", type="string", length=24, nullable=false, unique=true, options={"comment":"Code"})
+     * @ORM\Column(name="codePrefix", type="string", length=8, nullable=true, unique=false, options={"comment":"Code prefix"})
      */
-    protected $code;
+    protected $codePrefix;
+
+    /**
+     * @ORM\Column(name="codeNumber", type="bigint", nullable=false, unique=false, options={"unsigned":true, "default":0, "comment":"Code number"})
+     */
+    protected $codeNumber;
 
 
     /**
-     * Set code
-     * @param string $code
+     * Set codePrefix
+     * @param $codePrefix
      * @return $this
      */
-    public function setCode($code)
+    public function setCodePrefix($codePrefix)
     {
-        $this->code = $code;
-
+        $this->codePrefix = $codePrefix;
         return $this;
     }
 
     /**
-     * Get code
+     * Get codePrefix
+     * @return string
+     */
+    public function getCodePrefix()
+    {
+        return $this->codePrefix;
+    }
+
+    /**
+     * Set codeNumber
+     * @param $codeNumber
+     * @return $this
+     */
+    public function setCodeNumber($codeNumber)
+    {
+        $this->codeNumber = $codeNumber;
+        return $this;
+    }
+
+    /**
+     * Get codeNumber
+     * @return int
+     */
+    public function getCodeNumber()
+    {
+        return $this->codeNumber;
+    }
+
+    /**
+     * Get code (return the code to use in view, in database queries use CONCAT)
      * @return string
      */
     public function getCode()
     {
-        return $this->code;
+        return ($this->codePrefix . $this->codeNumber);
     }
 
     /**

@@ -69,6 +69,15 @@ export class DataService {
     }
 
     /**
+     * Count objects (used in pagination)
+     * @returns {number}
+     */
+    public countObjects(): number
+    {
+        return this._helperService.varCount(this._provider.objects || []);
+    }
+
+    /**
      * Get object
      * @returns any
      */
@@ -817,6 +826,7 @@ export class DataService {
         let that = this;
 
         return new Promise(function(resolve, reject) {
+
             // Set route (if id is provided, use 'edit', else use 'add')
             if (!route) {
                 route = (id
@@ -953,15 +963,18 @@ export class DataService {
         let that = this,
             noReset = true;
 
-        // Only search if parameters have changed
-        if (!this._helperService.isEqualObject(this._provider['search'], this._candidateSearch)) {
+        // Only search if parameters have changed (only criteria is changed)
+        if (!this._helperService.isEqualObject(this._provider['search']['criteria'], this._candidateSearch['criteria'])) {
             // Update search
-            this._provider['search'] = this._helperService.cloneObject(this._candidateSearch, true);
+            this._provider['search']['criteria'] = this._helperService.cloneObject(this._candidateSearch['criteria'], true);
             // Reset pagination for new search
             this.resetPagination();
             // To reset objects
             noReset = false;
         }
+
+        // No field is necessary, is returned the choices pattern (minimizes data sent)
+        this._provider['search']['fields'] = [];
 
         this.post(
             this._provider.route['choices']['url'],
@@ -1072,21 +1085,20 @@ export class DataService {
 
     /**
      * Delete objects from array by index.
-     * @param data
+     * @param indexes
      * @returns {DataService}
      */
-    public deleteArray(data: any): DataService
+    public deleteArray(indexes: any): DataService
     {
         let that = this;
         let objects = this._provider.objects;
-        let idArr = [],
-            indexArr = [];
+        let idArr = [];
 
-        if (objects && data && (data.length > 0)) {
-            for (let obj of data) {
-                if (objects[obj.value]) {
-                    idArr.push(objects[obj.value]['id']);
-                    indexArr.push(obj.value);
+        if (objects && indexes && (indexes.length > 0)) {
+            for (let index of indexes) {
+                index = index.value;
+                if (objects[index]) {
+                    idArr.push(objects[index]['id']);
                 }
             }
         }
@@ -1104,9 +1116,12 @@ export class DataService {
                 // Refresh objects array
                 // Correction for index (each time you remove an index, all indices needs to be corrected)
                 let indexCorrection = 0;
-                for (let index of indexArr) {
-                    that.pullFromObjects(index - indexCorrection);
-                    indexCorrection++;
+                for (let index of indexes) {
+                    index = index.value;
+                    if (objects[index]) {
+                        that.pullFromObjects(index - indexCorrection);
+                        indexCorrection++;
+                    }
                 }
             },
             errors => { console.log(errors); }
@@ -1189,9 +1204,9 @@ export class DataService {
 
         return new Promise(function(resolve, reject) {
             if (objects && indexes && (indexes.length > 0)) {
-                for (let obj of indexes) {
-                    if (objects[obj.value]) {
-                        idArr.push(objects[obj.value]['id']);
+                for (let index of indexes) {
+                    if (objects[index.value]) {
+                        idArr.push(objects[index.value]['id']);
                     }
                 }
             }

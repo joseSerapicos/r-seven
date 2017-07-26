@@ -491,7 +491,13 @@ abstract class BaseEntityController extends BaseController
 
         // Check if is submitted
         if($form->isSubmitted()) {
-            $this->saveForm($form, $obj);
+            $data = $this->getRequestData($request);
+
+            $context = ((empty($id) || ($this->flags['storage'] == 'session')) ? 'add' : 'edit');
+            if ($this->preSaveObject($obj, $data, $context)) {
+                $this->saveForm($form, $obj);
+            }
+            $this->postSaveObject($obj, 'edit');
             return $this->getResponse(true);
         }
 
@@ -500,6 +506,31 @@ abstract class BaseEntityController extends BaseController
             '_conf' => $this->templateConf,
             '_form' => $form->createView()
         ));
+    }
+
+    /**
+     * DEFINE ROUTE HERE
+     *
+     * Action to disable and enable object (toggle the "isEnabled" field)
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function disableAction(Request $request, $id)
+    {
+        // Set configuration
+        $this->init($request);
+
+        // Get object
+        $obj = $this->getObject($id);
+
+        // Toggle field
+        $obj->setIsEnabled(!$obj->getIsEnabled());
+
+        // Save object
+        $this->saveObject($obj, true, true);
+
+        return $this->getResponse(true);
     }
 
     /**
@@ -641,18 +672,25 @@ abstract class BaseEntityController extends BaseController
      * @param $object
      * @param $hasFlush (it determines if should be executed the flush method to persist data in database)
      * @param $addToResponse (determines if object should be added to response)
-     * @return $this
+     * @return mixed
      */
     protected function saveObject(&$object, $hasFlush = true, $addToResponse = false)
     {
+        return self::saveObject_static($this, $object, $hasFlush, $addToResponse);
+    }
+    /**
+     * Static signature
+     */
+    static protected function saveObject_static($controller, &$object, $hasFlush = true, $addToResponse = false)
+    {
         // Validate object
-        //$errors = $this->validateObject($object); // Nor necessary, form validates object
+        //$errors = $controller->validateObject($object); // Nor necessary, form validates object
 
-        switch ($this->flags['storage']) {
+        switch ($controller->flags['storage']) {
             case 'session':
-                return $this->saveObjectToSS($object, $addToResponse);
+                return $controller->saveObjectToSS($object, $addToResponse);
             default:
-                return $this->saveObjectToDb($object, $hasFlush, $addToResponse);
+                return $controller->saveObjectToDb($object, $hasFlush, $addToResponse);
         }
     }
 
@@ -720,7 +758,7 @@ abstract class BaseEntityController extends BaseController
                     ? $this->getDependencyObjectContainer($object, $dependency)
                     : $object
                 );
-                if (method_exists($objContainer, 'setCode') && empty($objContainer->getCode())) {
+                if (method_exists($objContainer, 'getCodeNumber') && empty($objContainer->getCodeNumber())) {
                     $setting = (empty($this->flags['setting']) ? array() : $this->flags['setting']);
                     $settingBundle = (empty($setting['Bundle']) ? $this->localConf['Bundle'] : $setting['Bundle']);
                     $settingEntity = (empty($setting['entity']) ? ($this->localConf['entity'] . 'Setting') : $setting['entity']);
@@ -764,10 +802,10 @@ abstract class BaseEntityController extends BaseController
 
     /**
      * Get Surrounding Objects.
-     * @param $code
+     * @param $object
      * @return null
      */
-    protected function getSurroundingObjects($code) {
+    protected function getSurroundingObjects($object) {
         if (isset($this->localConf['entityFields']['code'])) {
             $fieldMetadata = $this->localConf['entityFields']['code'];
             // Choice dependency (parent object)
@@ -780,7 +818,7 @@ abstract class BaseEntityController extends BaseController
                 : $this->localConf['entityClass']
             );
 
-            if (method_exists($entityClass, 'setCode')) {
+            if (method_exists($entityClass, 'getCode')) {
                 $setting = (empty($this->flags['setting']) ? array() : $this->flags['setting']);
                 $settingBundle = (empty($setting['Bundle']) ? $this->localConf['Bundle'] : $setting['Bundle']);
                 $settingEntity = (empty($setting['entity']) ? ($this->localConf['entity'] . 'Setting') : $setting['entity']);
@@ -795,7 +833,7 @@ abstract class BaseEntityController extends BaseController
 
                 return $this->get('app.service.code_generator')
                     ->getSurroundingObjects(
-                        $code,
+                        $object,
                         $this->getLocalRepositoryService(),
                         ($settingBundle . ':' . $settingEntity),
                         ($localBundle . ':' . $localEntity),
@@ -885,14 +923,21 @@ abstract class BaseEntityController extends BaseController
     /**
      * Set default values to object
      * @param $object
-     * @return $this
+     * @return mixed
      */
     protected function setObjectDefaultValues($object)
+    {
+        return self::setObjectDefaultValues_static($this, $object);
+    }
+    /**
+     * Static signature
+     */
+    static protected function setObjectDefaultValues_static($controller, $object)
     {
         // Set default data
         if (empty($object->getId())) {
             $object->setInsertTime(new \DateTime());
-            $object->setInsertUser($this->get('session')
+            $object->setInsertUser($controller->get('session')
                 ->get('_app.user')['username']
             );
 
@@ -904,10 +949,10 @@ abstract class BaseEntityController extends BaseController
                 $object->setPriority(0);
             }
 
-            if (method_exists($object, 'setStoreObj') && $this->flags['handleStore']) {
-                $store = $this->getStoreAttr('id');
+            if (method_exists($object, 'setStoreObj') && $controller->flags['handleStore']) {
+                $store = $controller->getStoreAttr('id');
                 if ($store) {
-                    $storeObj = $this->getRepositoryService('Store', 'AdminBundle')
+                    $storeObj = $controller->getRepositoryService('Store', 'AdminBundle')
                         ->execute(
                             'findOneById',
                             array($store)
@@ -916,7 +961,8 @@ abstract class BaseEntityController extends BaseController
                 }
             }
         }
-        return $this;
+
+        return $controller;
     }
 
     /**
@@ -1356,6 +1402,7 @@ abstract class BaseEntityController extends BaseController
      */
     protected function getObjectsBySearch() {
         $options = $this->getSearch();
+
         if (!empty($options['limit'])) { // Pagination enabled
             $options['limit']++; // Used to control the pagination
         }
@@ -1830,7 +1877,6 @@ abstract class BaseEntityController extends BaseController
      * @param bool $checkCsrfToken
      * @param bool $hasSearch
      * @return mixed
-     * @throws AuthenticationException
      */
     protected function getAndProcessRequestData(Request $request, $checkCsrfToken = true, $hasSearch = true)
     {
@@ -1908,5 +1954,31 @@ abstract class BaseEntityController extends BaseController
                 return $this->getLocalRepositoryService()
                     ->execute('getFieldMetadata', array($field, $attribute, $this->localConf['entityFields'], $context));
         }
+    }
+
+
+    ////////
+    // Events/Callbacks
+    ////////////////////////////////
+
+    /**
+     * Pre (before) save object event. Use this function to handle event.
+     * @param $object
+     * @param $data
+     * @param $context (context to help to determine actions)
+     * @return boolean (true to continue, false to abort)
+     */
+    protected function preSaveObject($object, $data, $context = null) {
+        return true;
+    }
+
+    /**
+     * Post (after) save object event. Use this function to handle event.
+     * @param $object
+     * @param $context (context to help to determine actions)
+     * @return $this
+     */
+    protected function postSaveObject($object, $context = null) {
+        return $this;
     }
 }

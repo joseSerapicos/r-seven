@@ -1,9 +1,5 @@
 {% extends 'AppBundle:data-box:base.html.twig' %}
 {% block body_container %}
-    <ul class="tree-view">
-        <js_treeViewNode [nodes]="getNodes(0)"
-                         [nodesIndex]="0"
-                         [parentComponent]="_parentComponent"></js_treeViewNode>
-    </ul>
+    {% include 'AppBundle:tree-view:node.html.twig' %}
 {% endblock %}
 {% block footer %}{% endblock %}

@@ -1001,7 +1001,7 @@ class BaseBookingServiceController extends BaseEntityChildController
             // Update booking invoice status
             $parentConf = reset($this->parentConf);
             $bookingObj = $parentConf['obj'];
-            $this->getRepositoryService('TravelBookingClientCurrentAccount', 'BookingBundle')
+            $this->getRepositoryService('TravelBookingClientDocument', 'BookingBundle')
                 ->execute(
                     'setBookingInvoiceStatus',
                     array($bookingObj)

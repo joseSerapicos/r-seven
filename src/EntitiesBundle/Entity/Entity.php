@@ -8,15 +8,21 @@ use AppBundle\Service\HelperService;
 /**
  * @ORM\Entity(repositoryClass="EntitiesBundle\Entity\EntityRepository")
  * @ORM\Table(name="entity",
- *     indexes={@ORM\Index(name="idx_entity_fullName", columns={"name", "surname"})}
+ *     indexes={@ORM\Index(name="idx_entity_fullName", columns={"name", "surname"})},
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="unq_entity_code", columns={"codePrefix", "codeNumber"})}
  * )
  * @ORM\HasLifecycleCallbacks()
  */
 class Entity extends BaseEntity {
     /**
-     * @ORM\Column(name="code", type="string", length=24, nullable=false, unique=true, options={"comment":"Code"})
+     * @ORM\Column(name="codePrefix", type="string", length=8, nullable=true, unique=false, options={"comment":"Code prefix"})
      */
-    protected $code;
+    protected $codePrefix;
+
+    /**
+     * @ORM\Column(name="codeNumber", type="bigint", nullable=false, unique=false, options={"unsigned":true, "default":0, "comment":"Code number"})
+     */
+    protected $codeNumber;
 
     /**
      * @ORM\ManyToOne(targetEntity="\AdminBundle\Entity\Store")
@@ -67,24 +73,52 @@ class Entity extends BaseEntity {
 
 
     /**
-     * Set code
-     * @param string $code
+     * Set codePrefix
+     * @param $codePrefix
      * @return $this
      */
-    public function setCode($code)
+    public function setCodePrefix($codePrefix)
     {
-        $this->code = $code;
-
+        $this->codePrefix = $codePrefix;
         return $this;
     }
 
     /**
-     * Get code
+     * Get codePrefix
+     * @return string
+     */
+    public function getCodePrefix()
+    {
+        return $this->codePrefix;
+    }
+
+    /**
+     * Set codeNumber
+     * @param $codeNumber
+     * @return $this
+     */
+    public function setCodeNumber($codeNumber)
+    {
+        $this->codeNumber = $codeNumber;
+        return $this;
+    }
+
+    /**
+     * Get codeNumber
+     * @return int
+     */
+    public function getCodeNumber()
+    {
+        return $this->codeNumber;
+    }
+
+    /**
+     * Get code (return the code to use in view, in database queries use CONCAT)
      * @return string
      */
     public function getCode()
     {
-        return $this->code;
+        return ($this->codePrefix . $this->codeNumber);
     }
 
     /**

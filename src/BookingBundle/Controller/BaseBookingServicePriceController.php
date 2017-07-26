@@ -230,7 +230,7 @@ class BaseBookingServicePriceController extends BaseEntityChildController
             $parentConf = reset($this->parentConf);
             $bookingServiceObj = $parentConf['obj'];
             $bookingObj = $bookingServiceObj->getBookingObj();
-            $this->getRepositoryService('TravelBookingClientCurrentAccount', 'BookingBundle')
+            $this->getRepositoryService('TravelBookingClientDocument', 'BookingBundle')
                 ->execute(
                     'setBookingInvoiceStatus',
                     array($bookingObj)

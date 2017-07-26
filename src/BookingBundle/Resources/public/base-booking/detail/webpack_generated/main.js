@@ -64,14 +64,14 @@ webpackJsonp([1],[
 	var nav_manager_service_1 = __webpack_require__(55);
 	var main_component_1 = __webpack_require__(56);
 	// Dynamic entity detail
-	var entity_detail_module_1 = __webpack_require__(139);
+	var entity_detail_module_1 = __webpack_require__(175);
 	// Auto-complete
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/client/edit');
-	var local_form_popup_extension_module_1 = __webpack_require__(141);
+	var local_form_popup_extension_module_1 = __webpack_require__(177);
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/supplier/edit');
-	var local_form_popup_extension_module_2 = __webpack_require__(143);
+	var local_form_popup_extension_module_2 = __webpack_require__(179);
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/entity/edit');
-	var form_popup_extension_module_1 = __webpack_require__(145);
+	var form_popup_extension_module_1 = __webpack_require__(181);
 	var autoCompleteProviders = {
 	    clientObj: {
 	        urlConf: (helper_1.Helper.getGlobalVar('route') + 'entities/client/conf'),
@@ -112,7 +112,7 @@ webpackJsonp([1],[
 	};
 	// Form for popup
 	helper_1.Helper.setRuntimeVar('templateUrl', _app.conf.route['edit']['url'] + '/' + _app.conf.object['id']);
-	var booking_form_popup_extension_module_1 = __webpack_require__(147);
+	var booking_form_popup_extension_module_1 = __webpack_require__(183);
 	// Provider
 	var entityDetailProvider = helper_1.Helper.getEntityDetailProvider(_app.conf);
 	entityDetailProvider.popup = {
@@ -10707,6 +10707,14 @@ webpackJsonp([1],[
 	        return (JSON.stringify(object1) === JSON.stringify(object2));
 	    };
 	    /**
+	     * Var Count (count only is a reserved word)
+	     * @param variable
+	     * @returns {number}
+	     */
+	    Helper.varCount = function (variable) {
+	        return Object.keys(variable || {}).length;
+	    };
+	    /**
 	     * Cast to boolean
 	     * @param value
 	     * @returns {boolean}
@@ -10812,7 +10820,7 @@ webpackJsonp([1],[
 	        return Helper;
 	    };
 	    /**
-	     * Get data-box service provider
+	     * Get data service provider
 	     * @param data
 	     * @returns any
 	     */
@@ -10829,16 +10837,45 @@ webpackJsonp([1],[
 	        };
 	    };
 	    /**
+	     * Get tree-view data service provider
+	     * @param data
+	     * @returns any
+	     */
+	    Helper.getTreeViewDataServiceProvider = function (data) {
+	        return Helper.mergeObjects(Helper.getDataServiceProvider(data), {
+	            localParentField: (data.treeView.localParentField)
+	        });
+	    };
+	    /**
+	     * Normalize tree-view form data provider
+	     * Normalizes data provider to use in tree-view form context
+	     * @param data
+	     * @returns any
+	     */
+	    Helper.normalizeTreeViewFormDataProvider = function (data) {
+	        // Create another object, otherwise the merge affects the original data object
+	        data = Helper.cloneObject(data, true);
+	        var dataProvider = Helper.mergeObjects(data, (data.treeView.form || {}) // Specific data to override original data explicit for form
+	        );
+	        // Remove objects (this abjects is for parent not for form)
+	        dataProvider.objects = {};
+	        return dataProvider;
+	    };
+	    /**
 	     * Get tree-view provider
 	     * @param data
 	     * @returns any
 	     */
 	    Helper.getTreeViewProvider = function (data) {
-	        return Helper.mergeObjects(Helper.getDataBoxProvider(data), {
-	            iconDefault: (data.treeView.iconDefault || null),
-	            iconField: (data.treeView.iconField || null),
-	            iconFieldMap: (data.treeView.iconFieldMap || {})
-	        });
+	        if (data.treeView) {
+	            return Helper.mergeObjects(Helper.getDataBoxProvider(data), {
+	                iconDefault: (data.treeView.iconDefault || null),
+	                iconField: (data.treeView.iconField || null),
+	                iconFieldMap: (data.treeView.iconFieldMap || {}),
+	                parentTargetField: (data.treeView.parentTargetField || 'id')
+	            });
+	        }
+	        return Helper.getDataBoxProvider(data);
 	    };
 	    /**
 	     * Get image provider
@@ -10955,6 +10992,14 @@ webpackJsonp([1],[
 	            return (path.substring(path.indexOf("/upload/"), path.length));
 	        }
 	        return path;
+	    };
+	    /**
+	     * Upper case first
+	     * @param string
+	     * @returns {string}
+	     */
+	    Helper.uCFirst = function (string) {
+	        return string.charAt(0).toUpperCase() + string.slice(1);
 	    };
 	    return Helper;
 	}());
@@ -11744,6 +11789,13 @@ webpackJsonp([1],[
 	        return this;
 	    };
 	    /**
+	     * Count objects (used in pagination)
+	     * @returns {number}
+	     */
+	    DataService.prototype.countObjects = function () {
+	        return this._helperService.varCount(this._provider.objects || []);
+	    };
+	    /**
 	     * Get object
 	     * @returns any
 	     */
@@ -12465,15 +12517,17 @@ webpackJsonp([1],[
 	     */
 	    DataService.prototype.choices = function () {
 	        var that = this, noReset = true;
-	        // Only search if parameters have changed
-	        if (!this._helperService.isEqualObject(this._provider['search'], this._candidateSearch)) {
+	        // Only search if parameters have changed (only criteria is changed)
+	        if (!this._helperService.isEqualObject(this._provider['search']['criteria'], this._candidateSearch['criteria'])) {
 	            // Update search
-	            this._provider['search'] = this._helperService.cloneObject(this._candidateSearch, true);
+	            this._provider['search']['criteria'] = this._helperService.cloneObject(this._candidateSearch['criteria'], true);
 	            // Reset pagination for new search
 	            this.resetPagination();
 	            // To reset objects
 	            noReset = false;
 	        }
+	        // No field is necessary, is returned the choices pattern (minimizes data sent)
+	        this._provider['search']['fields'] = [];
 	        this.post(this._provider.route['choices']['url'], this.getRequestData(null, noReset)).then(function (data) {
 	            // Update list of objects
 	            that.setObjects(data.objects || [], noReset);
@@ -12545,19 +12599,19 @@ webpackJsonp([1],[
 	    };
 	    /**
 	     * Delete objects from array by index.
-	     * @param data
+	     * @param indexes
 	     * @returns {DataService}
 	     */
-	    DataService.prototype.deleteArray = function (data) {
+	    DataService.prototype.deleteArray = function (indexes) {
 	        var that = this;
 	        var objects = this._provider.objects;
-	        var idArr = [], indexArr = [];
-	        if (objects && data && (data.length > 0)) {
-	            for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
-	                var obj = data_1[_i];
-	                if (objects[obj.value]) {
-	                    idArr.push(objects[obj.value]['id']);
-	                    indexArr.push(obj.value);
+	        var idArr = [];
+	        if (objects && indexes && (indexes.length > 0)) {
+	            for (var _i = 0, indexes_1 = indexes; _i < indexes_1.length; _i++) {
+	                var index = indexes_1[_i];
+	                index = index.value;
+	                if (objects[index]) {
+	                    idArr.push(objects[index]['id']);
 	                }
 	            }
 	        }
@@ -12569,10 +12623,13 @@ webpackJsonp([1],[
 	            // Refresh objects array
 	            // Correction for index (each time you remove an index, all indices needs to be corrected)
 	            var indexCorrection = 0;
-	            for (var _i = 0, indexArr_1 = indexArr; _i < indexArr_1.length; _i++) {
-	                var index = indexArr_1[_i];
-	                that.pullFromObjects(index - indexCorrection);
-	                indexCorrection++;
+	            for (var _i = 0, indexes_2 = indexes; _i < indexes_2.length; _i++) {
+	                var index = indexes_2[_i];
+	                index = index.value;
+	                if (objects[index]) {
+	                    that.pullFromObjects(index - indexCorrection);
+	                    indexCorrection++;
+	                }
 	            }
 	        }, function (errors) { console.log(errors); });
 	        return this;
@@ -12639,10 +12696,10 @@ webpackJsonp([1],[
 	        var idArr = [];
 	        return new Promise(function (resolve, reject) {
 	            if (objects && indexes && (indexes.length > 0)) {
-	                for (var _i = 0, indexes_1 = indexes; _i < indexes_1.length; _i++) {
-	                    var obj = indexes_1[_i];
-	                    if (objects[obj.value]) {
-	                        idArr.push(objects[obj.value]['id']);
+	                for (var _i = 0, indexes_3 = indexes; _i < indexes_3.length; _i++) {
+	                    var index = indexes_3[_i];
+	                    if (objects[index.value]) {
+	                        idArr.push(objects[index.value]['id']);
 	                    }
 	                }
 	            }
@@ -13583,12 +13640,12 @@ webpackJsonp([1],[
 	var current_accounts_ext_module_1 = __webpack_require__(107);
 	// BookingObservation
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-observation/edit/' + parentId);
-	var observation_extension_module_1 = __webpack_require__(128);
-	var booking_observation_form_popup_extension_module_1 = __webpack_require__(130);
+	var observation_extension_module_1 = __webpack_require__(164);
+	var booking_observation_form_popup_extension_module_1 = __webpack_require__(166);
 	// BookingFile
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-file/edit/' + parentId);
-	var file_module_1 = __webpack_require__(132);
-	var booking_file_form_popup_extension_module_1 = __webpack_require__(134);
+	var file_module_1 = __webpack_require__(168);
+	var booking_file_form_popup_extension_module_1 = __webpack_require__(170);
 	/* /Import dependencies */
 	var MainComponent = (function (_super) {
 	    __extends(MainComponent, _super);
@@ -14730,8 +14787,9 @@ webpackJsonp([1],[
 	var core_1 = __webpack_require__(3);
 	// Component
 	var SearchPaginationComponent = (function () {
-	    function SearchPaginationComponent(_dataService) {
+	    function SearchPaginationComponent(_dataService, _helperService) {
 	        this._dataService = _dataService;
+	        this._helperService = _helperService;
 	    }
 	    /**
 	     * Get more objects (pagination)
@@ -14746,10 +14804,11 @@ webpackJsonp([1],[
 	SearchPaginationComponent = __decorate([
 	    core_1.Component({
 	        selector: 'js_searchPagination',
-	        template: "\n    <div *ngIf=\"(_dataService.getProviderAttr('objects') || []).length > 0\"\n         class=\"search-pagination no-user-select\">\n        <span>{{(_dataService.getProviderAttr('objects').length)}} Results</span>\n        <a class=\"search-has-more -note\"\n           *ngIf=\"_dataService.getProviderAttr('search')['hasMore']\"\n           (click)=\"getMoreObjects($event)\"\n           href=\"#\"\n           title=\"Load more results...\">...</a>\n    </div>\n    "
+	        template: "\n    <div *ngIf=\"_dataService.countObjects() > 0\"\n         class=\"search-pagination no-user-select\">\n        <span>{{_dataService.countObjects()}} Results</span>\n        <a class=\"search-has-more -note\"\n           *ngIf=\"_dataService.getProviderAttr('search')['hasMore']\"\n           (click)=\"getMoreObjects($event)\"\n           href=\"#\"\n           title=\"Load more results...\">...</a>\n    </div>\n    "
 	    }),
 	    __param(0, core_1.Inject('DataService')),
-	    __metadata("design:paramtypes", [Object])
+	    __param(1, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [Object, Object])
 	], SearchPaginationComponent);
 	exports.SearchPaginationComponent = SearchPaginationComponent;
 
@@ -14906,7 +14965,8 @@ webpackJsonp([1],[
 	     * @param popups
 	     * @param injector
 	     */
-	    DataBoxExtensionComponent.prototype.initDataBoxExtensionComponent = function (viewContainerRef, renderer, provider, dataService, actionsService, modalService, 
+	    DataBoxExtensionComponent.prototype.initDataBoxExtensionComponent = function (viewContainerRef, renderer, provider, dataService, // Any is used, otherwise you get an error "[Class] is not defined"
+	        actionsService, modalService, 
 	        // You can provide a popup by action:
 	        // provide('Popups', {useValue: {
 	        //     add: Popup,
@@ -15345,6 +15405,7 @@ webpackJsonp([1],[
 	        this._lastSelectedChoice = { id: null, label: '' };
 	        this._choices = [];
 	        this._search = { term: '', lastTerm: null };
+	        this._searchField = 'name';
 	        this._childCandidateSearch = null;
 	        // Object change event subscription
 	        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
@@ -15412,7 +15473,7 @@ webpackJsonp([1],[
 	            && (this._search.term.length % 3 === 0) // Only submit with multiples of three
 	        ) {
 	            this._childCandidateSearch['criteria'] = [{
-	                    'field': 'name',
+	                    'field': this._searchField,
 	                    'expr': 'lrlike',
 	                    'value': this._search.term
 	                }];
@@ -15565,6 +15626,9 @@ webpackJsonp([1],[
 	    FieldTypeAutoCompleteComponent.prototype.ngOnInit = function () {
 	        // Initialize values
 	        this._provider = (this._autoCompleteProviders[this.field] || null);
+	        if (this._provider.field) {
+	            this._searchField = this._provider.field;
+	        }
 	        this._fieldInView = (this._dataService.getProviderAttr('fields')['metadata'][this.field]['fieldInView'] || null);
 	        this.reset();
 	        // Dependency conf previously saved in provider
@@ -15592,7 +15656,7 @@ webpackJsonp([1],[
 	            that.init();
 	            // Add parameter to action route
 	            if (that._provider.urlChoicesParams) {
-	                that._childDataServiceChoices.setRoute('choices', (that._childDataServiceChoices.getRoute('choices') + that._provider.urlChoicesParams));
+	                that._childDataServiceChoices.setRoute('choices', (that._childDataServiceChoices.getRoute('choices') + '/' + that._provider.urlChoicesParams));
 	            }
 	        }, function (errors) { console.log(errors); return; });
 	    };
@@ -18039,19 +18103,18 @@ webpackJsonp([1],[
 	// Save last templateUrl
 	var tmpTemplateUrl = helper_1.Helper.getRuntimeVar('templateUrl');
 	var parentId = helper_1.Helper.getGlobalVar('conf')['object']['id'], parentController = helper_1.Helper.getGlobalVar('conf')['localData']['controller']; // Determines the type of booking
-	// ClientCurrentAccount
+	// ClientDocument
 	// Add
-	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account/add/' + parentId);
-	var client_current_account_add_form_popup_ext_module_1 = __webpack_require__(111);
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-document/add/' + parentId);
+	var client_document_add_form_popup_ext_module_1 = __webpack_require__(111);
 	// Edit
-	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account/edit/' + parentId);
-	var client_current_account_edit_form_popup_ext_module_1 = __webpack_require__(122);
+	var client_document_edit_form_popup_ext_module_1 = __webpack_require__(152);
 	// Auto-complete
 	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'entities/entity-address/edit/0'); // No parent defined
-	var entity_address_popup_module_1 = __webpack_require__(124);
-	// SupplierCurrentAccount
-	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-supplier-current-account/edit/' + parentId);
-	var supplier_current_account_form_popup_ext_module_1 = __webpack_require__(126);
+	var entity_address_popup_module_1 = __webpack_require__(160);
+	// SupplierDocument
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-supplier-document/edit/' + parentId);
+	var supplier_document_form_popup_ext_module_1 = __webpack_require__(162);
 	// Restore last templateUrl
 	helper_1.Helper.setRuntimeVar('templateUrl', tmpTemplateUrl);
 	/* /Import dependencies */
@@ -18075,10 +18138,10 @@ webpackJsonp([1],[
 	        };
 	        switch (index) {
 	            case 0:
-	                data['urlProvider'] = (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account/data/' + parentId);
+	                data['urlProvider'] = (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-client-document/data/' + parentId);
 	                break;
 	            case 1:
-	                data['urlProvider'] = (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-supplier-current-account/data/' + parentId);
+	                data['urlProvider'] = (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-supplier-document/data/' + parentId);
 	                break;
 	        }
 	        return data;
@@ -18124,8 +18187,8 @@ webpackJsonp([1],[
 	                formProvider['preventObjectOverride'] = false;
 	                providers.push({ provide: 'Popups', useValue: {
 	                        add: {
-	                            module: client_current_account_add_form_popup_ext_module_1.ClientCurrentAccountAddFormPopupExtModule,
-	                            component: 'ClientCurrentAccountAddFormPopupComponent',
+	                            module: client_document_add_form_popup_ext_module_1.ClientDocumentAddFormPopupExtModule,
+	                            component: 'ClientDocumentAddFormPopupComponent',
 	                            providers: [
 	                                // Set field for wizard form first step
 	                                { provide: 'FormServiceProvider', useValue: { fields: ['clientDocumentTypeObj', 'clientObj'] } },
@@ -18138,8 +18201,8 @@ webpackJsonp([1],[
 	                            ]
 	                        },
 	                        edit: {
-	                            module: client_current_account_edit_form_popup_ext_module_1.ClientCurrentAccountEditFormPopupExtModule,
-	                            component: 'ClientCurrentAccountEditFormPopupComponent',
+	                            module: client_document_edit_form_popup_ext_module_1.ClientDocumentEditFormPopupExtModule,
+	                            component: 'ClientDocumentEditFormPopupComponent',
 	                            providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }],
 	                            FormService: form_service_1.FormService
 	                        }
@@ -18147,8 +18210,8 @@ webpackJsonp([1],[
 	                break;
 	            case 1:
 	                providers.push({ provide: 'Popups', useValue: {
-	                        module: supplier_current_account_form_popup_ext_module_1.SupplierCurrentAccountFormPopupExtModule,
-	                        component: 'SupplierCurrentAccountFormPopupComponent',
+	                        module: supplier_document_form_popup_ext_module_1.SupplierDocumentFormPopupExtModule,
+	                        component: 'SupplierDocumentFormPopupComponent',
 	                        providers: [{ provide: 'Provider', useValue: this._helperService.getFormProvider(data) }]
 	                    } });
 	                break;
@@ -18295,22 +18358,22 @@ webpackJsonp([1],[
 	var forms_1 = __webpack_require__(30);
 	var ng_bootstrap_1 = __webpack_require__(34);
 	var field_types_extension_module_1 = __webpack_require__(74);
-	var client_current_account_add_form_popup_component_1 = __webpack_require__(112);
-	var ClientCurrentAccountAddFormPopupExtModule = (function () {
-	    function ClientCurrentAccountAddFormPopupExtModule() {
+	var client_document_add_form_popup_component_1 = __webpack_require__(112);
+	var ClientDocumentAddFormPopupExtModule = (function () {
+	    function ClientDocumentAddFormPopupExtModule() {
 	    }
-	    return ClientCurrentAccountAddFormPopupExtModule;
+	    return ClientDocumentAddFormPopupExtModule;
 	}());
-	ClientCurrentAccountAddFormPopupExtModule = __decorate([
+	ClientDocumentAddFormPopupExtModule = __decorate([
 	    core_1.NgModule({
 	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
 	        declarations: [
-	            client_current_account_add_form_popup_component_1.ClientCurrentAccountAddFormPopupComponent
+	            client_document_add_form_popup_component_1.ClientDocumentAddFormPopupComponent
 	        ],
-	        exports: [client_current_account_add_form_popup_component_1.ClientCurrentAccountAddFormPopupComponent]
+	        exports: [client_document_add_form_popup_component_1.ClientDocumentAddFormPopupComponent]
 	    })
-	], ClientCurrentAccountAddFormPopupExtModule);
-	exports.ClientCurrentAccountAddFormPopupExtModule = ClientCurrentAccountAddFormPopupExtModule;
+	], ClientDocumentAddFormPopupExtModule);
+	exports.ClientDocumentAddFormPopupExtModule = ClientDocumentAddFormPopupExtModule;
 
 
 /***/ },
@@ -18339,6 +18402,7 @@ webpackJsonp([1],[
 	var form_service_1 = __webpack_require__(54);
 	var helper_1 = __webpack_require__(42);
 	var data_service_1 = __webpack_require__(52);
+	var tree_view_data_service_1 = __webpack_require__(113);
 	var actions_service_1 = __webpack_require__(53);
 	var wizard_form_popup_component_1 = __webpack_require__(88);
 	var wizard_manager_service_1 = __webpack_require__(57);
@@ -18346,14 +18410,26 @@ webpackJsonp([1],[
 	// Parent id for dependencies
 	var parentId = helper_1.Helper.getGlobalVar('conf')['object']['id'], parentController = helper_1.Helper.getGlobalVar('conf')['localData']['controller']; // Determines the type of booking
 	// Default Detail
-	var booking_service_price_ext_module_1 = __webpack_require__(113);
+	// INVOICE
+	var booking_service_price_ext_module_1 = __webpack_require__(114);
+	// RECEIPT
+	var client_document_extension_module_1 = __webpack_require__(116);
+	// RECTIFICATION
+	var tree_view_ext_module_1 = __webpack_require__(118);
 	// Detail
-	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account/add-detail/' + parentId);
-	var client_current_account_add_detail_form_popup_ext_module_1 = __webpack_require__(115);
+	// INVOICE
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-document/add-invoice-detail/' + parentId);
+	var client_document_add_invoice_detail_form_popup_ext_module_1 = __webpack_require__(124);
+	// RECTIFICATION
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-document/add-invoice-detail/' + parentId); // Same form of invoice
+	var client_document_add_invoice_rectification_form_popup_ext_module_1 = __webpack_require__(131);
+	// RECEIPT
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-document/add-receipt-detail/' + parentId);
+	var client_document_add_receipt_detail_form_popup_ext_module_1 = __webpack_require__(141);
 	/* /Import dependencies */
-	var ClientCurrentAccountAddFormPopupComponent = (function (_super) {
-	    __extends(ClientCurrentAccountAddFormPopupComponent, _super);
-	    function ClientCurrentAccountAddFormPopupComponent(elementRef, renderer, provider, wizardManagerService, formService, _helperService, _dataService, _parentDataService, _injector) {
+	var ClientDocumentAddFormPopupComponent = (function (_super) {
+	    __extends(ClientDocumentAddFormPopupComponent, _super);
+	    function ClientDocumentAddFormPopupComponent(elementRef, renderer, provider, wizardManagerService, formService, _helperService, _dataService, _parentDataService, _injector) {
 	        var _this = 
 	        // Call parent
 	        _super.call(this, elementRef, renderer, provider, wizardManagerService, formService) || this;
@@ -18368,7 +18444,7 @@ webpackJsonp([1],[
 	     * @param index (index to validate)
 	     * @returns {Promise<boolean>}
 	     */
-	    ClientCurrentAccountAddFormPopupComponent.prototype.submitNav = function (index) {
+	    ClientDocumentAddFormPopupComponent.prototype.submitNav = function (index) {
 	        var that = this, route = null, componentRef = null;
 	        return new Promise(function (resolve, reject) {
 	            switch (index) {
@@ -18397,7 +18473,12 @@ webpackJsonp([1],[
 	                case 2:
 	                    // Save form
 	                    componentRef = that._wizardManagerService.getComponentRef(index);
-	                    route = (that._dataService.getRoute('add-detail'));
+	                    if (that._formService.getObject()['clientDocumentType_type'] == 'RECEIPT') {
+	                        route = (that._dataService.getRoute('add-receipt-detail'));
+	                    }
+	                    else {
+	                        route = (that._dataService.getRoute('add-invoice-detail'));
+	                    }
 	                    that._formService.setForceSubmit(false); // Disable force submit, at this time the user is finishing
 	                    // the process and submitting the form (this procedure avoid form to question the user when
 	                    // the saved object is returned, because we have two FormServices here using the same DataService)
@@ -18415,20 +18496,47 @@ webpackJsonp([1],[
 	     * @param index (index to load)
 	     * @returns NavData
 	     */
-	    ClientCurrentAccountAddFormPopupComponent.prototype.getNavData = function (index) {
+	    ClientDocumentAddFormPopupComponent.prototype.getNavData = function (index) {
 	        switch (index) {
 	            case 1:
-	                // @TODO Change module according with document type (receipt will be another)
-	                return {
-	                    module: booking_service_price_ext_module_1.BookingServicePriceExtModule,
-	                    component: 'BookingServicePriceComponent',
-	                    urlProvider: (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account-detail/data-for-invoice/' + parentId)
-	                };
+	                switch (this._formService.getObject()['clientDocumentType_type']) {
+	                    case 'RECEIPT':
+	                        return {
+	                            module: client_document_extension_module_1.ClientDocumentExtensionModule,
+	                            component: 'ClientDocumentComponent',
+	                            urlProvider: (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-client-document/data-for-receipt/' + parentId + '/' + this._formService.getObject()['entityObj'])
+	                        };
+	                    case 'RECTIFICATION':
+	                        return {
+	                            module: tree_view_ext_module_1.TreeViewExtModule,
+	                            component: 'TreeViewComponent',
+	                            urlProvider: (this._helperService.getGlobalVar('route') + 'accounting/client-document-invoice-rectification/data-for-rectification/' + this._formService.getObject()['clientDocumentObj'])
+	                        };
+	                    default:
+	                        return {
+	                            module: booking_service_price_ext_module_1.BookingServicePriceExtModule,
+	                            component: 'BookingServicePriceComponent',
+	                            urlProvider: (this._helperService.getGlobalVar('route') + 'booking/' + parentController + '-client-document-invoice-detail/data-for-invoice/' + parentId)
+	                        };
+	                }
 	            case 2:
-	                return {
-	                    module: client_current_account_add_detail_form_popup_ext_module_1.ClientCurrentAccountAddDetailFormPopupExtModule,
-	                    component: 'ClientCurrentAccountAddDetailFormPopupComponent',
-	                };
+	                switch (this._formService.getObject()['clientDocumentType_type']) {
+	                    case 'RECEIPT':
+	                        return {
+	                            module: client_document_add_receipt_detail_form_popup_ext_module_1.ClientDocumentAddReceiptDetailFormPopupExtModule,
+	                            component: 'ClientDocumentAddReceiptDetailFormPopupComponent',
+	                        };
+	                    case 'RECTIFICATION':
+	                        return {
+	                            module: client_document_add_invoice_rectification_form_popup_ext_module_1.ClientDocumentAddInvoiceRectificationFormPopupExtModule,
+	                            component: 'ClientDocumentAddInvoiceRectificationFormPopupComponent',
+	                        };
+	                    default:
+	                        return {
+	                            module: client_document_add_invoice_detail_form_popup_ext_module_1.ClientDocumentAddInvoiceDetailFormPopupExtModule,
+	                            component: 'ClientDocumentAddInvoiceDetailFormPopupComponent',
+	                        };
+	                }
 	        }
 	        return null;
 	    };
@@ -18438,18 +18546,31 @@ webpackJsonp([1],[
 	     * @param data (data to resolve all providers)
 	     * @returns {Array}
 	     */
-	    ClientCurrentAccountAddFormPopupComponent.prototype.getNavProviders = function (index, data) {
+	    ClientDocumentAddFormPopupComponent.prototype.getNavProviders = function (index, data) {
 	        if (data === void 0) { data = null; }
 	        switch (index) {
 	            case 1:
-	                return [
-	                    { provide: 'DataService', useClass: data_service_1.DataService },
+	                var providers = [];
+	                switch (this._formService.getObject()['clientDocumentType_type']) {
+	                    case 'RECTIFICATION':
+	                        providers = [
+	                            { provide: 'DataService', useClass: tree_view_data_service_1.TreeViewDataService },
+	                            { provide: 'DataServiceProvider', useValue: this._helperService.getTreeViewDataServiceProvider(data) },
+	                            { provide: 'Provider', useValue: this._helperService.getTreeViewProvider(data) },
+	                        ];
+	                        break;
+	                    default:
+	                        providers = [
+	                            { provide: 'DataService', useClass: data_service_1.DataService },
+	                            { provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data) },
+	                            { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
+	                        ];
+	                }
+	                return providers.concat([
 	                    actions_service_1.ActionsService,
-	                    { provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data) },
 	                    { provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data) },
-	                    { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
 	                    { provide: 'Popups', useValue: null }
-	                ];
+	                ]);
 	            case 2:
 	                return [
 	                    // Reset FormServiceProvider to use DataServiceProvider as default values
@@ -18459,16 +18580,16 @@ webpackJsonp([1],[
 	        }
 	        return null;
 	    };
-	    return ClientCurrentAccountAddFormPopupComponent;
+	    return ClientDocumentAddFormPopupComponent;
 	}(wizard_form_popup_component_1.WizardFormPopupComponent));
 	__decorate([
 	    core_1.ViewChildren('js_lazyLoadContainer', { read: core_1.ViewContainerRef }),
 	    __metadata("design:type", core_1.QueryList)
-	], ClientCurrentAccountAddFormPopupComponent.prototype, "lazyLoadViewContainerRefQL", void 0);
-	ClientCurrentAccountAddFormPopupComponent = __decorate([
+	], ClientDocumentAddFormPopupComponent.prototype, "lazyLoadViewContainerRefQL", void 0);
+	ClientDocumentAddFormPopupComponent = __decorate([
 	    core_1.Component({
-	        selector: '.js_clientCurrentAccountAddFormPopup',
-	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account/add/' + parentId
+	        selector: '.js_clientDocumentAddFormPopup',
+	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-document/add/' + parentId
 	    }),
 	    __param(2, core_1.Inject('Provider')),
 	    __param(5, core_1.Inject('HelperService')),
@@ -18477,12 +18598,310 @@ webpackJsonp([1],[
 	    __metadata("design:paramtypes", [core_1.ElementRef,
 	        core_1.Renderer, Object, wizard_manager_service_1.WizardManagerService,
 	        form_service_1.FormService, Object, Object, Object, core_1.Injector])
-	], ClientCurrentAccountAddFormPopupComponent);
-	exports.ClientCurrentAccountAddFormPopupComponent = ClientCurrentAccountAddFormPopupComponent;
+	], ClientDocumentAddFormPopupComponent);
+	exports.ClientDocumentAddFormPopupComponent = ClientDocumentAddFormPopupComponent;
 
 
 /***/ },
 /* 113 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var platform_browser_1 = __webpack_require__(21);
+	var post_service_1 = __webpack_require__(43);
+	var data_service_1 = __webpack_require__(52);
+	/**
+	 * This class handles with data in tree-view context.
+	 * Tree-view are a different objects array structure (hierarchical) than a regular DataService.
+	 */
+	var TreeViewDataService = (function (_super) {
+	    __extends(TreeViewDataService, _super);
+	    function TreeViewDataService(postService, helperService, provider, sanitizer) {
+	        var _this = _super.call(this, postService, helperService, provider, sanitizer) || this;
+	        // Index in _provider.objects that contents the partial _objectsProvider of _provider.objects
+	        // where the object is housed
+	        _this._objectsProviderIndex = null;
+	        return _this;
+	    }
+	    /**
+	     * Get object index
+	     * @returns any
+	     */
+	    TreeViewDataService.prototype.getObjectIndex = function () {
+	        return { 'objIndex': this._objectIndex, 'parentNodeIndex': this._objectsProviderIndex };
+	    };
+	    /**
+	     * Count objects (used in pagination)
+	     * @returns {number}
+	     */
+	    TreeViewDataService.prototype.countObjects = function () {
+	        var objects = (this._provider.objects || {}), includeRootIndex = false, total = 0;
+	        // Check if root nodes (at index 0) has id, if no is id provided, then this objects are not able to check
+	        if (objects[0] && objects[0][0] && objects[0][0]['id']) {
+	            includeRootIndex = true;
+	        }
+	        for (var index in objects) {
+	            if ((parseInt(index, 10) != 0) || includeRootIndex) {
+	                total += this._helperService.varCount(objects[index] || []);
+	            }
+	        }
+	        return total;
+	    };
+	    /**
+	     * Select object
+	     * @param index
+	     * @returns {Promise}
+	     */
+	    TreeViewDataService.prototype.selectObject = function (index) {
+	        var that = this, objIndex = (index ? index['objIndex'] : null), parentNodeIndex = (index ? index['parentNodeIndex'] : null);
+	        return new Promise(function (resolve, reject) {
+	            // Set only if object is different
+	            if ((objIndex != that._objectIndex) || (parentNodeIndex != that._objectsProviderIndex)) {
+	                var objectsProvider_1 = that._provider.objects[parentNodeIndex];
+	                that._postService.post(that._provider.route['get']['url'] + '/' + objectsProvider_1[objIndex]['id'], that.getRequestData()).then(function (data) {
+	                    // The index of original object that was selected
+	                    that._objectIndex = objIndex;
+	                    that._objectsProviderIndex = parentNodeIndex;
+	                    that.setLocalObject(data.object);
+	                    that._normalizedObject = objectsProvider_1[objIndex];
+	                    return resolve(true);
+	                }, function (errors) { console.log(errors); reject(false); });
+	            }
+	            else {
+	                return resolve(true);
+	            }
+	        });
+	    };
+	    /**
+	     * Set object (when the object is changed out of the objects array from _provider,
+	     * can be an external order)
+	     * @param object
+	     * @param index (can be only an index from DataService, or and object from out of service)
+	     * @returns any
+	     */
+	    TreeViewDataService.prototype.setObject = function (object, index) {
+	        if (index === void 0) { index = null; }
+	        if (object) {
+	            var objIndex = null;
+	            // Objects stored in session does not be considered really objects.
+	            if (!object['_isSessionStorage']) {
+	                objIndex = ((index && index['objIndex'])
+	                    ? index['objIndex'] // From out of service
+	                    : index // From DataService or not defined
+	                );
+	                var oldParentNodeIndex = ((index && index['parentNodeIndex'])
+	                    ? index['parentNodeIndex'] // From out of service
+	                    : ((index != null)
+	                        ? this._objectsProviderIndex // From DataService
+	                        : null // Not defined
+	                    ));
+	                var newParentNodeIndex = (object[this._provider['localParentField']] || 0);
+	                // Create a new array entry for parent node, if not exist yet
+	                if (!(newParentNodeIndex in this._provider.objects)) {
+	                    this._provider.objects[newParentNodeIndex] = [];
+	                }
+	                // Remove from old parent node
+	                if ((oldParentNodeIndex != null) && (oldParentNodeIndex != newParentNodeIndex)) {
+	                    this._objectsProvider = this._provider.objects[oldParentNodeIndex];
+	                    this.pullFromObjects(objIndex);
+	                    this._provider.objects[newParentNodeIndex].unshift(object); // Add new entry in new parent node
+	                    objIndex = 0; // Index of new entry in parent (to be marked as edited)
+	                }
+	                // Update objects provider
+	                this._objectsProviderIndex = newParentNodeIndex;
+	                this._objectsProvider = this._provider.objects[newParentNodeIndex];
+	            }
+	            _super.prototype.setObject.call(this, object, objIndex);
+	        }
+	        return this;
+	    };
+	    /**
+	     * Normalize objects to show in template
+	     * Detect fields that needs to be rendered to view/template
+	     * @param objects
+	     * @param fields
+	     * @returns any
+	     */
+	    TreeViewDataService.prototype.normalizeObjectsToTemplate = function (objects, fields) {
+	        if (objects === void 0) { objects = null; }
+	        if (fields === void 0) { fields = null; }
+	        objects = (objects || this._provider.objects);
+	        // Object with nodes
+	        if (typeof objects == 'object') {
+	            for (var _i = 0, objects_1 = objects; _i < objects_1.length; _i++) {
+	                var objNodes = objects_1[_i];
+	                _super.prototype.normalizeObjectsToTemplate.call(this, objNodes, fields);
+	            }
+	        }
+	        else {
+	            _super.prototype.normalizeObjectsToTemplate.call(this, objects, fields);
+	        }
+	        return this;
+	    };
+	    /**
+	     * New object (call this function to create a new object)
+	     * @param index
+	     * @returns {Promise}
+	     */
+	    TreeViewDataService.prototype.newObject = function (index) {
+	        if (index === void 0) { index = null; }
+	        var objIndex = (index ? index['objIndex'] : null), parentNodeIndex = (index ? index['parentNodeIndex'] : null);
+	        this._objectsProvider = ((parentNodeIndex != null) ? this._provider.objects[parentNodeIndex] : null);
+	        return _super.prototype.newObject.call(this, objIndex);
+	    };
+	    /**
+	     * Delete object.
+	     * @param index
+	     * @returns {Promise}
+	     */
+	    TreeViewDataService.prototype.delete = function (index) {
+	        var objIndex = (index ? index['objIndex'] : null), parentNodeIndex = (index ? index['parentNodeIndex'] : null);
+	        this._objectsProvider = ((parentNodeIndex != null) ? this._provider.objects[parentNodeIndex] : null);
+	        return _super.prototype.delete.call(this, objIndex);
+	    };
+	    /**
+	     * Detail object.
+	     * @param index
+	     */
+	    TreeViewDataService.prototype.detail = function (index) {
+	        if (index === void 0) { index = null; }
+	        var objIndex = (index ? index['objIndex'] : this._objectIndex), parentNodeIndex = (index ? index['parentNodeIndex'] : this._objectsProviderIndex);
+	        this._objectsProvider = ((parentNodeIndex != null) ? this._provider.objects[parentNodeIndex] : null);
+	        _super.prototype.detail.call(this, objIndex);
+	        return;
+	    };
+	    /**
+	     * Set objects
+	     * @param objects
+	     * @param isMerge (if true merge objects, otherwise replace them)
+	     * @returns any
+	     */
+	    TreeViewDataService.prototype.setObjects = function (objects, isMerge) {
+	        if (isMerge === void 0) { isMerge = false; }
+	        objects = (objects || {});
+	        this.normalizeObjectsToTemplate(objects);
+	        this.resetObjects();
+	        for (var objNodesIndex in objects) {
+	            this._objectsProvider = [];
+	            this.pushToObjects(objects[objNodesIndex]);
+	            this._provider.objects[objNodesIndex] = this._objectsProvider;
+	        }
+	        // Emmit changes
+	        this._onObjectsRefreshEmitter.emit(objects);
+	        return this;
+	    };
+	    /**
+	     * Reset objects
+	     * @returns {DataService}
+	     */
+	    TreeViewDataService.prototype.resetObjects = function () {
+	        _super.prototype.resetObjects.call(this);
+	        this._provider.objects = {};
+	        return this;
+	    };
+	    /**
+	     * Submit indexes id
+	     * @param route
+	     * @param indexes (index in the format "parentIndex::childIndex")
+	     * @param allowEmptySubmit (allow submit when data is empty,
+	     * some cases it is necessary to inform that the user does not select any choice)
+	     * @returns {Promise}
+	     */
+	    TreeViewDataService.prototype.submitIndexesId = function (route, indexes, allowEmptySubmit) {
+	        if (allowEmptySubmit === void 0) { allowEmptySubmit = false; }
+	        var that = this;
+	        var objects = this._provider.objects;
+	        var idArr = [];
+	        return new Promise(function (resolve, reject) {
+	            if (objects && indexes && (indexes.length > 0)) {
+	                for (var _i = 0, indexes_1 = indexes; _i < indexes_1.length; _i++) {
+	                    var index = indexes_1[_i];
+	                    var indexArr = index.value.split("::");
+	                    if (objects[indexArr[0]] && objects[indexArr[0]][indexArr[1]]) {
+	                        idArr.push(objects[indexArr[0]][indexArr[1]]['id']);
+	                    }
+	                }
+	            }
+	            if ((idArr.length > 0) || allowEmptySubmit) {
+	                // Submit to provided route
+	                return that.runAction(route, { id: idArr }).then(function (data) { return resolve(data); }, function (errors) { console.log(errors); return reject(errors); });
+	            }
+	            else {
+	                // No indexes to submit
+	                return resolve(null);
+	            }
+	        });
+	    };
+	    /**
+	     * Delete objects from array by index.
+	     * @param indexes (index in the format "parentIndex::childIndex")
+	     * @returns {DataService}
+	     */
+	    TreeViewDataService.prototype.deleteArray = function (indexes) {
+	        var that = this;
+	        var objects = this._provider.objects;
+	        var idArr = [];
+	        if (objects && indexes && (indexes.length > 0)) {
+	            for (var _i = 0, indexes_2 = indexes; _i < indexes_2.length; _i++) {
+	                var index = indexes_2[_i];
+	                var indexArr = index.value.split("::");
+	                if (objects[indexArr[0]] && objects[indexArr[0]][indexArr[1]]) {
+	                    idArr.push(objects[indexArr[0]][indexArr[1]]['id']);
+	                }
+	            }
+	        }
+	        this.post(this._provider.route['delete']['url'], this.getRequestData({ id: idArr })).then(function (data) {
+	            // Refresh fields choices
+	            if (data.fieldsChoices) {
+	                that.setFieldsChoices(data.fieldsChoices);
+	            }
+	            // Refresh objects array
+	            // Correction for index (each time you remove an index, all indices needs to be corrected)
+	            var indexCorrection = {};
+	            for (var _i = 0, indexes_3 = indexes; _i < indexes_3.length; _i++) {
+	                var index = indexes_3[_i];
+	                var indexArr = index.value.split("::");
+	                if (objects[indexArr[0]] && objects[indexArr[0]][indexArr[1]]) {
+	                    that._objectsProvider = that._provider.objects[indexArr[0]];
+	                    indexCorrection[indexArr[0]] = (indexCorrection[indexArr[0]] || 0);
+	                    that.pullFromObjects(indexArr[1] - indexCorrection[indexArr[0]]);
+	                    indexCorrection[indexArr[0]]++;
+	                }
+	            }
+	        }, function (errors) { console.log(errors); });
+	        return this;
+	    };
+	    return TreeViewDataService;
+	}(data_service_1.DataService));
+	TreeViewDataService = __decorate([
+	    core_1.Injectable(),
+	    __param(1, core_1.Inject('HelperService')),
+	    __param(2, core_1.Inject('DataServiceProvider')),
+	    __metadata("design:paramtypes", [post_service_1.PostService, Object, Object, platform_browser_1.DomSanitizer])
+	], TreeViewDataService);
+	exports.TreeViewDataService = TreeViewDataService;
+
+
+/***/ },
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18500,7 +18919,7 @@ webpackJsonp([1],[
 	var search_module_1 = __webpack_require__(61);
 	var expander_module_1 = __webpack_require__(62);
 	var search_pagination_module_1 = __webpack_require__(68);
-	var booking_service_price_component_1 = __webpack_require__(114);
+	var booking_service_price_component_1 = __webpack_require__(115);
 	var BookingServicePriceExtModule = (function () {
 	    function BookingServicePriceExtModule() {
 	    }
@@ -18526,7 +18945,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 114 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18567,7 +18986,7 @@ webpackJsonp([1],[
 	BookingServicePriceComponent = __decorate([
 	    core_1.Component({
 	        selector: '.js_bookingServicePrice',
-	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'template/index/base-current-account-detail/accounting'
+	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'template/index/base-document-invoice-detail/accounting'
 	    }),
 	    __param(2, core_1.Inject('Provider')),
 	    __param(3, core_1.Inject('DataService')),
@@ -18580,7 +18999,479 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 115 */
+/* 116 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	// This module doesn't use "ReactiveFormsModule", but it needs to import this class
+	// to provide "formBuilder" when inject dependencies in child modules (like form)
+	var forms_1 = __webpack_require__(30);
+	var search_module_1 = __webpack_require__(61);
+	var expander_module_1 = __webpack_require__(62);
+	var search_pagination_module_1 = __webpack_require__(68);
+	var client_document_component_1 = __webpack_require__(117);
+	var ClientDocumentExtensionModule = (function () {
+	    function ClientDocumentExtensionModule() {
+	    }
+	    return ClientDocumentExtensionModule;
+	}());
+	ClientDocumentExtensionModule = __decorate([
+	    core_1.NgModule({
+	        imports: [
+	            common_1.CommonModule,
+	            forms_1.FormsModule,
+	            forms_1.ReactiveFormsModule,
+	            search_module_1.SearchModule,
+	            search_pagination_module_1.SearchPaginationModule,
+	            expander_module_1.ExpanderModule
+	        ],
+	        declarations: [
+	            client_document_component_1.ClientDocumentComponent
+	        ],
+	        exports: [client_document_component_1.ClientDocumentComponent]
+	    })
+	], ClientDocumentExtensionModule);
+	exports.ClientDocumentExtensionModule = ClientDocumentExtensionModule;
+
+
+/***/ },
+/* 117 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var actions_service_1 = __webpack_require__(53);
+	var data_box_extension_component_1 = __webpack_require__(71);
+	var modal_service_1 = __webpack_require__(44);
+	var helper_1 = __webpack_require__(42);
+	// Component
+	var ClientDocumentComponent = (function (_super) {
+	    __extends(ClientDocumentComponent, _super);
+	    function ClientDocumentComponent(viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector, _parentDataService) {
+	        var _this = 
+	        // Call parent
+	        _super.call(this) || this;
+	        _this._parentDataService = _parentDataService;
+	        _super.prototype.initDataBoxExtensionComponent.call(_this, viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector);
+	        return _this;
+	    }
+	    /**
+	     * Overrides parent
+	     * @param $event
+	     * @param data
+	     */
+	    ClientDocumentComponent.prototype.deleteAction = function ($event, data) {
+	        if ($event) {
+	            $event.preventDefault();
+	        }
+	        var that = this;
+	        // Dialog message
+	        this._modalService.dialog('Are you sure to remove?').then(function (hasConfirm) {
+	            if (hasConfirm) {
+	                that._dataService.delete(data).then(function (data) {
+	                    that._parentDataService.refreshObject();
+	                    return;
+	                }, function (errors) { return; });
+	            }
+	            else {
+	                return;
+	            }
+	        }, function (errors) {
+	            console.log(errors);
+	        });
+	    };
+	    return ClientDocumentComponent;
+	}(data_box_extension_component_1.DataBoxExtensionComponent));
+	ClientDocumentComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_clientDocument',
+	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'template/default/data-box' // Personalize here the booking pax template
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('Popups')),
+	    __param(8, core_1.Inject('ParentDataService')),
+	    __metadata("design:paramtypes", [core_1.ViewContainerRef,
+	        core_1.Renderer, Object, Object, actions_service_1.ActionsService,
+	        modal_service_1.ModalService, Object, core_1.Injector, Object])
+	], ClientDocumentComponent);
+	exports.ClientDocumentComponent = ClientDocumentComponent;
+
+
+/***/ },
+/* 118 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	// This module doesn't use "ReactiveFormsModule", but it needs to import this class
+	// to provide "formBuilder" when inject dependencies in child modules (like form)
+	var forms_1 = __webpack_require__(30);
+	var search_module_1 = __webpack_require__(61);
+	var expander_module_1 = __webpack_require__(62);
+	var search_pagination_module_1 = __webpack_require__(68);
+	var tree_view_node_actions_ext_module_1 = __webpack_require__(119);
+	var tree_view_component_1 = __webpack_require__(122);
+	var TreeViewExtModule = (function () {
+	    function TreeViewExtModule() {
+	    }
+	    return TreeViewExtModule;
+	}());
+	TreeViewExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [
+	            common_1.CommonModule,
+	            forms_1.FormsModule,
+	            forms_1.ReactiveFormsModule,
+	            search_module_1.SearchModule,
+	            search_pagination_module_1.SearchPaginationModule,
+	            expander_module_1.ExpanderModule,
+	            tree_view_node_actions_ext_module_1.TreeViewNodeActionsExtModule
+	        ],
+	        declarations: [
+	            tree_view_component_1.TreeViewComponent
+	        ],
+	        exports: [tree_view_component_1.TreeViewComponent]
+	    })
+	], TreeViewExtModule);
+	exports.TreeViewExtModule = TreeViewExtModule;
+
+
+/***/ },
+/* 119 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	// This module doesn't use "ReactiveFormsModule", but it needs to import this class
+	// to provide "formBuilder" when inject dependencies in child modules (like form)
+	var forms_1 = __webpack_require__(30);
+	var search_module_1 = __webpack_require__(61);
+	var expander_module_1 = __webpack_require__(62);
+	var search_pagination_module_1 = __webpack_require__(68);
+	var tree_view_node_component_1 = __webpack_require__(120);
+	var tree_view_control_actions_component_1 = __webpack_require__(121);
+	var TreeViewNodeActionsExtModule = (function () {
+	    function TreeViewNodeActionsExtModule() {
+	    }
+	    return TreeViewNodeActionsExtModule;
+	}());
+	TreeViewNodeActionsExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [
+	            common_1.CommonModule,
+	            forms_1.FormsModule,
+	            forms_1.ReactiveFormsModule,
+	            search_module_1.SearchModule,
+	            search_pagination_module_1.SearchPaginationModule,
+	            expander_module_1.ExpanderModule
+	        ],
+	        declarations: [
+	            tree_view_node_component_1.TreeViewNodeComponent,
+	            tree_view_control_actions_component_1.TreeViewControlActionsComponent
+	        ],
+	        exports: [tree_view_node_component_1.TreeViewNodeComponent]
+	    })
+	], TreeViewNodeActionsExtModule);
+	exports.TreeViewNodeActionsExtModule = TreeViewNodeActionsExtModule;
+
+
+/***/ },
+/* 120 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var core_1 = __webpack_require__(3);
+	// Component
+	var TreeViewNodeComponent = (function () {
+	    function TreeViewNodeComponent() {
+	    }
+	    return TreeViewNodeComponent;
+	}());
+	__decorate([
+	    core_1.Input(),
+	    __metadata("design:type", Object)
+	], TreeViewNodeComponent.prototype, "nodes", void 0);
+	__decorate([
+	    core_1.Input(),
+	    __metadata("design:type", Number)
+	], TreeViewNodeComponent.prototype, "nodesIndex", void 0);
+	__decorate([
+	    core_1.Input(),
+	    __metadata("design:type", String)
+	], TreeViewNodeComponent.prototype, "parentTargetField", void 0);
+	__decorate([
+	    core_1.Input(),
+	    __metadata("design:type", Object)
+	], TreeViewNodeComponent.prototype, "treeViewComponent", void 0);
+	TreeViewNodeComponent = __decorate([
+	    core_1.Component({
+	        selector: 'js_treeViewNode',
+	        template: "\n    <li *ngFor=\"let obj of nodes; let objIndex = index\">\n        <a class=\"no-user-select\"\n           *ngIf=\"treeViewComponent.getNodes(obj[parentTargetField])\"\n           (click)=\"treeViewComponent.toggleExpanded(obj[parentTargetField])\"><i\n                [ngClass]=\"['fa', (treeViewComponent._expanded[obj[parentTargetField]] ? 'fa-angle-down' : 'fa-angle-right')]\"></i><i\n                    *ngIf=\"treeViewComponent.getIcon(obj)\"\n                    [ngClass]=\"['fa', treeViewComponent.getIcon(obj)]\"></i><span>{{obj['name']}}</span></a>\n        <span *ngIf=\"!treeViewComponent.getNodes(obj[parentTargetField])\"><i\n                    *ngIf=\"treeViewComponent.getIcon(obj)\"\n                    [ngClass]=\"['fa', treeViewComponent.getIcon(obj)]\"></i><span>{{obj['name']}}</span></span>\n        <js_treeViewControl [treeViewComponent]=\"treeViewComponent\" [objectIndex]=\"objIndex\" [nodesIndex]=\"nodesIndex\"></js_treeViewControl>\n        <ul *ngIf=\"treeViewComponent.getNodes(obj[parentTargetField]) && treeViewComponent._expanded[obj[parentTargetField]]\">\n            <js_treeViewNode [nodes]=\"treeViewComponent.getNodes(obj[parentTargetField])\"\n                             [nodesIndex]=\"obj[parentTargetField]\"\n                             [parentTargetField]=\"parentTargetField\"\n                             [treeViewComponent]=\"treeViewComponent\"></js_treeViewNode>\n        </ul>\n    </li>\n    "
+	    })
+	], TreeViewNodeComponent);
+	exports.TreeViewNodeComponent = TreeViewNodeComponent;
+
+
+/***/ },
+/* 121 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var tree_view_component_1 = __webpack_require__(122);
+	// Component
+	var TreeViewControlActionsComponent = (function () {
+	    function TreeViewControlActionsComponent(_dataService) {
+	        this._dataService = _dataService;
+	    }
+	    /**
+	     * Lifecycle callback
+	     */
+	    TreeViewControlActionsComponent.prototype.ngOnInit = function () {
+	        this._object = this._dataService.getProviderAttr('objects')[this.nodesIndex][this.objectIndex];
+	    };
+	    return TreeViewControlActionsComponent;
+	}());
+	__decorate([
+	    core_1.Input(),
+	    __metadata("design:type", Object)
+	], TreeViewControlActionsComponent.prototype, "objectIndex", void 0);
+	__decorate([
+	    core_1.Input(),
+	    __metadata("design:type", Number)
+	], TreeViewControlActionsComponent.prototype, "nodesIndex", void 0);
+	__decorate([
+	    core_1.Input(),
+	    __metadata("design:type", tree_view_component_1.TreeViewComponent)
+	], TreeViewControlActionsComponent.prototype, "treeViewComponent", void 0);
+	TreeViewControlActionsComponent = __decorate([
+	    core_1.Component({
+	        selector: 'js_treeViewControl',
+	        template: "\n    <span *ngIf=\"_object['_isNew']\" class=\"badge badge-info\">New</span>\n    <span *ngIf=\"_object['_isEdited']\" class=\"badge badge-info\">Edited</span>\n    <input *ngIf=\"treeViewComponent._actionsService.getActionAttr('checkAll', 'isEnabled') && treeViewComponent.getNodes(nodesIndex)[objectIndex]['id']\"\n           class=\"pull-right action js_checkAll\"\n           type=\"checkbox\"\n           name=\"index[]\"\n           value=\"{{nodesIndex}}::{{objectIndex}}\"\n           [ngModel]=\"treeViewComponent.checkAll\"/>\n    <div class=\"txt-align-r actions no-user-select\">\n        <template ngFor let-action [ngForOf]=\"treeViewComponent._actionsService.getDetailActions()\">\n            <a *ngIf=\"treeViewComponent._actionsService.getActionAttr(action, 'isEnabled')\"\n               (click)=\"treeViewComponent.triggerAction($event, action, {objIndex: objectIndex, parentNodeIndex: nodesIndex})\"\n               [ngClass]=\"[treeViewComponent._actionsService.getActionAttr(action, 'icon')]\"\n               class=\"fa\"></a>\n        </template>\n    </div>\n    "
+	    }),
+	    __param(0, core_1.Inject('DataService')),
+	    __metadata("design:paramtypes", [Object])
+	], TreeViewControlActionsComponent);
+	exports.TreeViewControlActionsComponent = TreeViewControlActionsComponent;
+
+
+/***/ },
+/* 122 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var actions_service_1 = __webpack_require__(53);
+	var modal_service_1 = __webpack_require__(44);
+	var helper_ts_1 = __webpack_require__(42);
+	var tree_view_ext_component_1 = __webpack_require__(123);
+	var TreeViewComponent = (function (_super) {
+	    __extends(TreeViewComponent, _super);
+	    function TreeViewComponent(viewContainerRef, renderer, provider, dataService, actionsService, modalService, popups, injector) {
+	        var _this = 
+	        // Call parent
+	        _super.call(this) || this;
+	        _super.prototype.initTreeViewExtComponent.call(_this, viewContainerRef, renderer, provider, dataService, actionsService, modalService, popups, injector);
+	        return _this;
+	    }
+	    return TreeViewComponent;
+	}(tree_view_ext_component_1.TreeViewExtComponent));
+	TreeViewComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_treeView',
+	        templateUrl: helper_ts_1.Helper.getGlobalVar('route') + 'template/default/tree-view'
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('Popups')),
+	    __metadata("design:paramtypes", [core_1.ViewContainerRef,
+	        core_1.Renderer, Object, Object, actions_service_1.ActionsService,
+	        modal_service_1.ModalService, Object, core_1.Injector])
+	], TreeViewComponent);
+	exports.TreeViewComponent = TreeViewComponent;
+
+
+/***/ },
+/* 123 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var data_box_extension_component_1 = __webpack_require__(71);
+	var TreeViewExtComponent = (function (_super) {
+	    __extends(TreeViewExtComponent, _super);
+	    function TreeViewExtComponent() {
+	        return _super.call(this) || this;
+	    }
+	    /**
+	     * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
+	     * @param viewContainerRef
+	     * @param renderer
+	     * @param provider
+	     * @param dataService
+	     * @param actionsService
+	     * @param modalService
+	     * @param popups
+	     * @param injector
+	     */
+	    TreeViewExtComponent.prototype.initTreeViewExtComponent = function (viewContainerRef, renderer, provider, dataService, // Any is used, otherwise you get an error "[Class] is not defined"
+	        actionsService, // Any is used, otherwise you get an error "[Class] is not defined"
+	        modalService, // Any is used, otherwise you get an error "[Class] is not defined"
+	        popups, injector) {
+	        _super.prototype.initDataBoxExtensionComponent.call(this, viewContainerRef, renderer, provider, dataService, actionsService, modalService, popups, injector);
+	        this._treeViewComponent = this;
+	        this._expanded = {};
+	    };
+	    /**
+	     * Get nodes
+	     * @param index
+	     * @returns {*|null}
+	     */
+	    TreeViewExtComponent.prototype.getNodes = function (index) {
+	        return (((index !== null)
+	            && this._dataService.getProviderAttr('objects')[index]
+	            && (this._dataService.getProviderAttr('objects')[index].length > 0))
+	            ? this._dataService.getProviderAttr('objects')[index]
+	            : null);
+	    };
+	    /**
+	     * Toggle expanded
+	     * @param index
+	     */
+	    TreeViewExtComponent.prototype.toggleExpanded = function (index) {
+	        this._expanded[index] = (this._expanded[index] ? false : true);
+	    };
+	    /**
+	     * Get icon
+	     * @param object
+	     * @returns {any}
+	     */
+	    TreeViewExtComponent.prototype.getIcon = function (object) {
+	        var iconField = this.getProviderAttr('iconField');
+	        if (iconField && object[iconField]) {
+	            var iconFieldMap = (this.getProviderAttr('iconFieldMap') || {});
+	            return (iconFieldMap[object[iconField]] || object[iconField]);
+	        }
+	        return (this.getProviderAttr('iconDefault') || null);
+	    };
+	    return TreeViewExtComponent;
+	}(data_box_extension_component_1.DataBoxExtensionComponent));
+	__decorate([
+	    __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('Popups')),
+	    __metadata("design:type", Function),
+	    __metadata("design:paramtypes", [core_1.ViewContainerRef,
+	        core_1.Renderer, Object, Object, Object, Object, Object, core_1.Injector]),
+	    __metadata("design:returntype", void 0)
+	], TreeViewExtComponent.prototype, "initTreeViewExtComponent", null);
+	TreeViewExtComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_treeView',
+	        templateUrl: ''
+	    }),
+	    __metadata("design:paramtypes", [])
+	], TreeViewExtComponent);
+	exports.TreeViewExtComponent = TreeViewExtComponent;
+
+
+/***/ },
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18595,26 +19486,26 @@ webpackJsonp([1],[
 	var forms_1 = __webpack_require__(30);
 	var ng_bootstrap_1 = __webpack_require__(34);
 	var field_types_extension_module_1 = __webpack_require__(74);
-	var client_current_account_add_detail_form_popup_component_1 = __webpack_require__(116);
-	var ClientCurrentAccountAddDetailFormPopupExtModule = (function () {
-	    function ClientCurrentAccountAddDetailFormPopupExtModule() {
+	var client_document_add_invoice_detail_form_popup_component_1 = __webpack_require__(125);
+	var ClientDocumentAddInvoiceDetailFormPopupExtModule = (function () {
+	    function ClientDocumentAddInvoiceDetailFormPopupExtModule() {
 	    }
-	    return ClientCurrentAccountAddDetailFormPopupExtModule;
+	    return ClientDocumentAddInvoiceDetailFormPopupExtModule;
 	}());
-	ClientCurrentAccountAddDetailFormPopupExtModule = __decorate([
+	ClientDocumentAddInvoiceDetailFormPopupExtModule = __decorate([
 	    core_1.NgModule({
 	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
 	        declarations: [
-	            client_current_account_add_detail_form_popup_component_1.ClientCurrentAccountAddDetailFormPopupComponent
+	            client_document_add_invoice_detail_form_popup_component_1.ClientDocumentAddInvoiceDetailFormPopupComponent
 	        ],
-	        exports: [client_current_account_add_detail_form_popup_component_1.ClientCurrentAccountAddDetailFormPopupComponent]
+	        exports: [client_document_add_invoice_detail_form_popup_component_1.ClientDocumentAddInvoiceDetailFormPopupComponent]
 	    })
-	], ClientCurrentAccountAddDetailFormPopupExtModule);
-	exports.ClientCurrentAccountAddDetailFormPopupExtModule = ClientCurrentAccountAddDetailFormPopupExtModule;
+	], ClientDocumentAddInvoiceDetailFormPopupExtModule);
+	exports.ClientDocumentAddInvoiceDetailFormPopupExtModule = ClientDocumentAddInvoiceDetailFormPopupExtModule;
 
 
 /***/ },
-/* 116 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18640,19 +19531,19 @@ webpackJsonp([1],[
 	var form_service_1 = __webpack_require__(54);
 	var dynamic_component_loader_service_1 = __webpack_require__(45);
 	var post_service_1 = __webpack_require__(43);
-	var base_client_current_account_form_popup_ext_component_1 = __webpack_require__(117);
-	var ClientCurrentAccountAddDetailFormPopupComponent = (function (_super) {
-	    __extends(ClientCurrentAccountAddDetailFormPopupComponent, _super);
-	    function ClientCurrentAccountAddDetailFormPopupComponent(elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
+	var base_client_invoice_document_form_popup_ext_component_1 = __webpack_require__(126);
+	var ClientDocumentAddInvoiceDetailFormPopupComponent = (function (_super) {
+	    __extends(ClientDocumentAddInvoiceDetailFormPopupComponent, _super);
+	    function ClientDocumentAddInvoiceDetailFormPopupComponent(elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
 	        var _this = _super.call(this) || this;
-	        _super.prototype.initBaseClientCurrentAccountFormPopupExtComponent.call(_this, elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService);
+	        _super.prototype.initBaseClientInvoiceDocumentFormPopupExtComponent.call(_this, elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService);
 	        return _this;
 	    }
-	    return ClientCurrentAccountAddDetailFormPopupComponent;
-	}(base_client_current_account_form_popup_ext_component_1.BaseClientCurrentAccountFormPopupExtComponent));
-	ClientCurrentAccountAddDetailFormPopupComponent = __decorate([
+	    return ClientDocumentAddInvoiceDetailFormPopupComponent;
+	}(base_client_invoice_document_form_popup_ext_component_1.BaseClientInvoiceDocumentFormPopupExtComponent));
+	ClientDocumentAddInvoiceDetailFormPopupComponent = __decorate([
 	    core_1.Component({
-	        selector: '.js_clientCurrentAccountAddDetailFormPopup',
+	        selector: '.js_clientDocumentAddInvoiceDetailFormPopup',
 	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
 	    }),
 	    __param(2, core_1.Inject('Provider')),
@@ -18662,12 +19553,12 @@ webpackJsonp([1],[
 	    __metadata("design:paramtypes", [core_1.ElementRef,
 	        core_1.Renderer, Object, form_service_1.FormService, Object, core_1.Injector, Object, Object, dynamic_component_loader_service_1.DynamicComponentLoaderService,
 	        post_service_1.PostService])
-	], ClientCurrentAccountAddDetailFormPopupComponent);
-	exports.ClientCurrentAccountAddDetailFormPopupComponent = ClientCurrentAccountAddDetailFormPopupComponent;
+	], ClientDocumentAddInvoiceDetailFormPopupComponent);
+	exports.ClientDocumentAddInvoiceDetailFormPopupComponent = ClientDocumentAddInvoiceDetailFormPopupComponent;
 
 
 /***/ },
-/* 117 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18696,19 +19587,19 @@ webpackJsonp([1],[
 	var parentController = helper_1.Helper.getGlobalVar('conf')['localData']['controller']; // Determines the type of booking
 	// Save last templateUrl
 	var tmpTemplateUrl = helper_1.Helper.getRuntimeVar('templateUrl');
-	// ClientCurrentAccountDetail
-	var client_current_account_detail_ext_module_1 = __webpack_require__(118);
-	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-current-account-detail/edit/0');
-	var client_current_account_detail_form_popup_ext_module_1 = __webpack_require__(120);
+	// ClientDocumentInvoiceDetail
+	var client_document_invoice_detail_ext_module_1 = __webpack_require__(127);
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-document-invoice-detail/edit/0');
+	var client_document_invoice_detail_form_popup_ext_module_1 = __webpack_require__(129);
 	// Restore last templateUrl
 	helper_1.Helper.setRuntimeVar('templateUrl', tmpTemplateUrl);
 	/* /Import dependencies */
-	var BaseClientCurrentAccountFormPopupExtComponent = (function (_super) {
-	    __extends(BaseClientCurrentAccountFormPopupExtComponent, _super);
-	    function BaseClientCurrentAccountFormPopupExtComponent() {
+	var BaseClientInvoiceDocumentFormPopupExtComponent = (function (_super) {
+	    __extends(BaseClientInvoiceDocumentFormPopupExtComponent, _super);
+	    function BaseClientInvoiceDocumentFormPopupExtComponent() {
 	        return _super.call(this) || this;
 	    }
-	    BaseClientCurrentAccountFormPopupExtComponent.prototype.initBaseClientCurrentAccountFormPopupExtComponent = function (elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
+	    BaseClientInvoiceDocumentFormPopupExtComponent.prototype.initBaseClientInvoiceDocumentFormPopupExtComponent = function (elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
 	        _super.prototype.initFormPopupExtensionComponent.call(this, elementRef, renderer, provider, formService, dataService);
 	        // Constructor vars
 	        this._injector = injector;
@@ -18724,9 +19615,9 @@ webpackJsonp([1],[
 	    /**
 	     * Update Entity Address Auto Complete Provider Choices Route
 	     * Set choices route according with the entity
-	     * @returns {ClientCurrentAccountEditFormPopupComponent}
+	     * @returns {ClientDocumentEditFormPopupComponent}
 	     */
-	    BaseClientCurrentAccountFormPopupExtComponent.prototype.updateEntityAddressAutoCompleteProviderChoicesRoute = function () {
+	    BaseClientInvoiceDocumentFormPopupExtComponent.prototype.updateEntityAddressAutoCompleteProviderChoicesRoute = function () {
 	        // Update entityAddress autoCompleteProvider choices route to the updated entity
 	        var autoCompleteProviders = this._injector.get('AutoCompleteProviders');
 	        if (autoCompleteProviders['entityAddressObj']['childInjector']) {
@@ -18745,7 +19636,7 @@ webpackJsonp([1],[
 	     * onEntityAddressChange
 	     * @param value
 	     */
-	    BaseClientCurrentAccountFormPopupExtComponent.prototype.onEntityAddressChange = function (value) {
+	    BaseClientInvoiceDocumentFormPopupExtComponent.prototype.onEntityAddressChange = function (value) {
 	        var _this = this;
 	        this._dataService.runAction((this._dataService.getRoute('edit-entity-address')
 	            + '\\'
@@ -18768,15 +19659,25 @@ webpackJsonp([1],[
 	        }, function (errors) { console.log(errors); return; });
 	    };
 	    /**
+	     * Overrides the parent method
+	     * @returns {Promise}
+	     */
+	    BaseClientInvoiceDocumentFormPopupExtComponent.prototype.save = function () {
+	        var that = this, route = this._dataService.getRoute('edit-invoice');
+	        return new Promise(function (resolve, reject) {
+	            that._formService.save(route).then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
+	        });
+	    };
+	    /**
 	     * Lifecycle callback
 	     */
-	    BaseClientCurrentAccountFormPopupExtComponent.prototype.ngAfterViewInit = function () {
+	    BaseClientInvoiceDocumentFormPopupExtComponent.prototype.ngAfterViewInit = function () {
 	        var _this = this;
 	        _super.prototype.ngAfterViewInit.call(this);
 	        // Load dependency
 	        var that = this, dependencyUrlProvider = (this._helperService.getGlobalVar('route')
-	            + 'booking/' + parentController + '-client-current-account-detail/data/'
-	            + this._formService.getObject()['clientCurrentAccountObj']);
+	            + 'booking/' + parentController + '-client-document-invoice-detail/data/'
+	            + this._formService.getObject()['clientDocumentObj']);
 	        this._postService.post(dependencyUrlProvider, null).then(function (data) {
 	            var providers = [
 	                { provide: 'DataService', useClass: data_service_1.DataService },
@@ -18785,8 +19686,8 @@ webpackJsonp([1],[
 	                { provide: 'ActionsServiceProvider', useValue: that._helperService.getActionsServiceProvider(data) },
 	                { provide: 'Provider', useValue: that._helperService.getDataBoxProvider(data) },
 	                { provide: 'Popups', useValue: {
-	                        module: client_current_account_detail_form_popup_ext_module_1.ClientCurrentAccountDetailFormPopupExtModule,
-	                        component: 'ClientCurrentAccountDetailFormPopupComponent',
+	                        module: client_document_invoice_detail_form_popup_ext_module_1.ClientDocumentInvoiceDetailFormPopupExtModule,
+	                        component: 'ClientDocumentInvoiceDetailFormPopupComponent',
 	                        providers: [
 	                            form_service_1.FormService,
 	                            { provide: 'Provider', useValue: _this._helperService.getFormProvider(data) }
@@ -18794,7 +19695,14 @@ webpackJsonp([1],[
 	                    } },
 	                { provide: 'ParentDataService', useValue: _this._dataService }
 	            ], injector = core_1.ReflectiveInjector.fromResolvedProviders(core_1.ReflectiveInjector.resolve(providers), that._injector);
-	            that._dynamicComponentLoaderService.load(client_current_account_detail_ext_module_1.ClientCurrentAccountDetailExtModule, 'ClientCurrentAccountDetailComponent', that.lazyLoadViewContainerRef, injector).then(function (componentRef) {
+	            var dependencyDataService = injector.get('DataService');
+	            that._onDependencyObjectsChangeSubscription
+	                = dependencyDataService.getOnObjectsChangeEmitter()
+	                    .subscribe(function (data) {
+	                    // Update local object
+	                    that._dataService.refreshObject();
+	                });
+	            that._dynamicComponentLoaderService.load(client_document_invoice_detail_ext_module_1.ClientDocumentInvoiceDetailExtModule, 'ClientDocumentInvoiceDetailComponent', that.lazyLoadViewContainerRef, injector).then(function (componentRef) {
 	                return true;
 	            }, function (errors) { console.log(errors); return null; });
 	        }, function (errors) { console.log(errors); return false; });
@@ -18802,7 +19710,11 @@ webpackJsonp([1],[
 	    /**
 	     * Lifecycle callback
 	     */
-	    BaseClientCurrentAccountFormPopupExtComponent.prototype.ngOnDestroy = function () {
+	    BaseClientInvoiceDocumentFormPopupExtComponent.prototype.ngOnDestroy = function () {
+	        // Check subscription (if component load fail, subscription may not exist)
+	        if (this._onDependencyObjectsChangeSubscription) {
+	            this._onDependencyObjectsChangeSubscription.unsubscribe();
+	        }
 	        // If object has no changes or "id" is not defined, popup was open and closed without save the object,
 	        // and if the flag '_isSessionStorage' is defined, the object was not saved in database,
 	        // so doesn't make sense refresh the objects
@@ -18813,24 +19725,24 @@ webpackJsonp([1],[
 	            this._parentDataService.refreshObject();
 	        }
 	    };
-	    return BaseClientCurrentAccountFormPopupExtComponent;
+	    return BaseClientInvoiceDocumentFormPopupExtComponent;
 	}(form_popup_extension_component_1.FormPopupExtensionComponent));
 	__decorate([
 	    core_1.ViewChild('js_lazyLoadContainer', { read: core_1.ViewContainerRef }),
 	    __metadata("design:type", core_1.ViewContainerRef)
-	], BaseClientCurrentAccountFormPopupExtComponent.prototype, "lazyLoadViewContainerRef", void 0);
-	BaseClientCurrentAccountFormPopupExtComponent = __decorate([
+	], BaseClientInvoiceDocumentFormPopupExtComponent.prototype, "lazyLoadViewContainerRef", void 0);
+	BaseClientInvoiceDocumentFormPopupExtComponent = __decorate([
 	    core_1.Component({
-	        selector: '.js_baseClientCurrentAccountFormPopup',
+	        selector: '.js_baseClientDocumentInvoiceFormPopup',
 	        template: ''
 	    }),
 	    __metadata("design:paramtypes", [])
-	], BaseClientCurrentAccountFormPopupExtComponent);
-	exports.BaseClientCurrentAccountFormPopupExtComponent = BaseClientCurrentAccountFormPopupExtComponent;
+	], BaseClientInvoiceDocumentFormPopupExtComponent);
+	exports.BaseClientInvoiceDocumentFormPopupExtComponent = BaseClientInvoiceDocumentFormPopupExtComponent;
 
 
 /***/ },
-/* 118 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18848,13 +19760,13 @@ webpackJsonp([1],[
 	var search_module_1 = __webpack_require__(61);
 	var expander_module_1 = __webpack_require__(62);
 	var search_pagination_module_1 = __webpack_require__(68);
-	var client_current_account_detail_component_1 = __webpack_require__(119);
-	var ClientCurrentAccountDetailExtModule = (function () {
-	    function ClientCurrentAccountDetailExtModule() {
+	var client_document_invoice_detail_component_1 = __webpack_require__(128);
+	var ClientDocumentInvoiceDetailExtModule = (function () {
+	    function ClientDocumentInvoiceDetailExtModule() {
 	    }
-	    return ClientCurrentAccountDetailExtModule;
+	    return ClientDocumentInvoiceDetailExtModule;
 	}());
-	ClientCurrentAccountDetailExtModule = __decorate([
+	ClientDocumentInvoiceDetailExtModule = __decorate([
 	    core_1.NgModule({
 	        imports: [
 	            common_1.CommonModule,
@@ -18865,16 +19777,16 @@ webpackJsonp([1],[
 	            expander_module_1.ExpanderModule
 	        ],
 	        declarations: [
-	            client_current_account_detail_component_1.ClientCurrentAccountDetailComponent
+	            client_document_invoice_detail_component_1.ClientDocumentInvoiceDetailComponent
 	        ],
-	        exports: [client_current_account_detail_component_1.ClientCurrentAccountDetailComponent]
+	        exports: [client_document_invoice_detail_component_1.ClientDocumentInvoiceDetailComponent]
 	    })
-	], ClientCurrentAccountDetailExtModule);
-	exports.ClientCurrentAccountDetailExtModule = ClientCurrentAccountDetailExtModule;
+	], ClientDocumentInvoiceDetailExtModule);
+	exports.ClientDocumentInvoiceDetailExtModule = ClientDocumentInvoiceDetailExtModule;
 
 
 /***/ },
-/* 119 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18901,31 +19813,23 @@ webpackJsonp([1],[
 	var modal_service_1 = __webpack_require__(44);
 	var helper_1 = __webpack_require__(42);
 	// Component
-	var ClientCurrentAccountDetailComponent = (function (_super) {
-	    __extends(ClientCurrentAccountDetailComponent, _super);
-	    function ClientCurrentAccountDetailComponent(viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector, _parentDataService // Used in view
+	var ClientDocumentInvoiceDetailComponent = (function (_super) {
+	    __extends(ClientDocumentInvoiceDetailComponent, _super);
+	    function ClientDocumentInvoiceDetailComponent(viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector, _parentDataService // Used in view
 	    ) {
 	        var _this = 
 	        // Call parent
 	        _super.call(this) || this;
 	        _this._parentDataService = _parentDataService; // Used in view
 	        _super.prototype.initDataBoxExtensionComponent.call(_this, viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector);
-	        _this._onObjectsChangeSubscription = _this._dataService.getOnObjectsChangeEmitter()
-	            .subscribe(function (data) { _this._parentDataService.refreshObject(); });
 	        return _this;
 	    }
-	    /**
-	     * Lifecycle callback
-	     */
-	    ClientCurrentAccountDetailComponent.prototype.ngOnDestroy = function () {
-	        this._onObjectsChangeSubscription.unsubscribe();
-	    };
-	    return ClientCurrentAccountDetailComponent;
+	    return ClientDocumentInvoiceDetailComponent;
 	}(data_box_extension_component_1.DataBoxExtensionComponent));
-	ClientCurrentAccountDetailComponent = __decorate([
+	ClientDocumentInvoiceDetailComponent = __decorate([
 	    core_1.Component({
-	        selector: '.js_clientCurrentAccountDetail',
-	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'template/index/base-current-account-detail/accounting'
+	        selector: '.js_clientDocumentInvoiceDetail',
+	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'template/index/base-document-invoice-detail/accounting'
 	    }),
 	    __param(2, core_1.Inject('Provider')),
 	    __param(3, core_1.Inject('DataService')),
@@ -18934,12 +19838,12 @@ webpackJsonp([1],[
 	    __metadata("design:paramtypes", [core_1.ViewContainerRef,
 	        core_1.Renderer, Object, Object, actions_service_1.ActionsService,
 	        modal_service_1.ModalService, Object, core_1.Injector, Object])
-	], ClientCurrentAccountDetailComponent);
-	exports.ClientCurrentAccountDetailComponent = ClientCurrentAccountDetailComponent;
+	], ClientDocumentInvoiceDetailComponent);
+	exports.ClientDocumentInvoiceDetailComponent = ClientDocumentInvoiceDetailComponent;
 
 
 /***/ },
-/* 120 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18954,26 +19858,26 @@ webpackJsonp([1],[
 	var forms_1 = __webpack_require__(30);
 	var ng_bootstrap_1 = __webpack_require__(34);
 	var field_types_extension_module_1 = __webpack_require__(74);
-	var client_current_account_detail_form_popup_component_1 = __webpack_require__(121);
-	var ClientCurrentAccountDetailFormPopupExtModule = (function () {
-	    function ClientCurrentAccountDetailFormPopupExtModule() {
+	var client_document_invoice_detail_form_popup_component_1 = __webpack_require__(130);
+	var ClientDocumentInvoiceDetailFormPopupExtModule = (function () {
+	    function ClientDocumentInvoiceDetailFormPopupExtModule() {
 	    }
-	    return ClientCurrentAccountDetailFormPopupExtModule;
+	    return ClientDocumentInvoiceDetailFormPopupExtModule;
 	}());
-	ClientCurrentAccountDetailFormPopupExtModule = __decorate([
+	ClientDocumentInvoiceDetailFormPopupExtModule = __decorate([
 	    core_1.NgModule({
 	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
 	        declarations: [
-	            client_current_account_detail_form_popup_component_1.ClientCurrentAccountDetailFormPopupComponent
+	            client_document_invoice_detail_form_popup_component_1.ClientDocumentInvoiceDetailFormPopupComponent
 	        ],
-	        exports: [client_current_account_detail_form_popup_component_1.ClientCurrentAccountDetailFormPopupComponent]
+	        exports: [client_document_invoice_detail_form_popup_component_1.ClientDocumentInvoiceDetailFormPopupComponent]
 	    })
-	], ClientCurrentAccountDetailFormPopupExtModule);
-	exports.ClientCurrentAccountDetailFormPopupExtModule = ClientCurrentAccountDetailFormPopupExtModule;
+	], ClientDocumentInvoiceDetailFormPopupExtModule);
+	exports.ClientDocumentInvoiceDetailFormPopupExtModule = ClientDocumentInvoiceDetailFormPopupExtModule;
 
 
 /***/ },
-/* 121 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -18998,9 +19902,9 @@ webpackJsonp([1],[
 	var helper_1 = __webpack_require__(42);
 	var form_popup_extension_component_1 = __webpack_require__(82);
 	var form_service_1 = __webpack_require__(54);
-	var ClientCurrentAccountDetailFormPopupComponent = (function (_super) {
-	    __extends(ClientCurrentAccountDetailFormPopupComponent, _super);
-	    function ClientCurrentAccountDetailFormPopupComponent(elementRef, renderer, provider, formService, dataService, _helperService) {
+	var ClientDocumentInvoiceDetailFormPopupComponent = (function (_super) {
+	    __extends(ClientDocumentInvoiceDetailFormPopupComponent, _super);
+	    function ClientDocumentInvoiceDetailFormPopupComponent(elementRef, renderer, provider, formService, dataService, _helperService) {
 	        var _this = _super.call(this) || this;
 	        _this._helperService = _helperService;
 	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
@@ -19011,7 +19915,7 @@ webpackJsonp([1],[
 	     * onServiceChange
 	     * @param value
 	     */
-	    ClientCurrentAccountDetailFormPopupComponent.prototype.onServiceChange = function (value) {
+	    ClientDocumentInvoiceDetailFormPopupComponent.prototype.onServiceChange = function (value) {
 	        var that = this;
 	        this._dataService.runAction((this._helperService.getGlobalVar('route')
 	            + 'services/service/get-vat-code-percentage/'
@@ -19027,7 +19931,7 @@ webpackJsonp([1],[
 	     * onQuantityEnterKey
 	     * @param value
 	     */
-	    ClientCurrentAccountDetailFormPopupComponent.prototype.onQuantityEnterKey = function (value) {
+	    ClientDocumentInvoiceDetailFormPopupComponent.prototype.onQuantityEnterKey = function (value) {
 	        this._formService.getObject()['quantity'] = value; // Value is not yet setted in object
 	        this.setTotals();
 	    };
@@ -19035,7 +19939,7 @@ webpackJsonp([1],[
 	     * onValueEnterKey
 	     * @param value
 	     */
-	    ClientCurrentAccountDetailFormPopupComponent.prototype.onValueEnterKey = function (value) {
+	    ClientDocumentInvoiceDetailFormPopupComponent.prototype.onValueEnterKey = function (value) {
 	        this._formService.getObject()['user_value'] = value;
 	        this.setTotals();
 	    };
@@ -19043,15 +19947,15 @@ webpackJsonp([1],[
 	     * onIsVatIncludedChange
 	     * @param value
 	     */
-	    ClientCurrentAccountDetailFormPopupComponent.prototype.onIsVatIncludedChange = function (value) {
+	    ClientDocumentInvoiceDetailFormPopupComponent.prototype.onIsVatIncludedChange = function (value) {
 	        this._formService.getObject()['isVatIncluded'] = value;
 	        this.setTotals();
 	    };
 	    /**
 	     * Set totals
-	     * @returns {ClientCurrentAccountDetailFormPopupComponent}
+	     * @returns {ClientDocumentInvoiceDetailFormPopupComponent}
 	     */
-	    ClientCurrentAccountDetailFormPopupComponent.prototype.setTotals = function () {
+	    ClientDocumentInvoiceDetailFormPopupComponent.prototype.setTotals = function () {
 	        var obj = this._formService.getObject(), quantity = parseFloat(obj['quantity'] || '0'), user_value = parseFloat(obj['user_value'] || '0'), isVatIncluded = obj['isVatIncluded'], vatPercentage = parseFloat(obj['vatCode_percentage'] || '0'), value = user_value, // Unit value without VAT
 	        vatValue = 0;
 	        // Calc VAT value and value
@@ -19090,11 +19994,11 @@ webpackJsonp([1],[
 	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
 	        return this;
 	    };
-	    return ClientCurrentAccountDetailFormPopupComponent;
+	    return ClientDocumentInvoiceDetailFormPopupComponent;
 	}(form_popup_extension_component_1.FormPopupExtensionComponent));
-	ClientCurrentAccountDetailFormPopupComponent = __decorate([
+	ClientDocumentInvoiceDetailFormPopupComponent = __decorate([
 	    core_1.Component({
-	        selector: '#js_clientCurrentAccountDetailFormPopup',
+	        selector: '#js_clientDocumentInvoiceDetailFormPopup',
 	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
 	    }),
 	    __param(2, core_1.Inject('Provider')),
@@ -19102,12 +20006,12 @@ webpackJsonp([1],[
 	    __param(5, core_1.Inject('HelperService')),
 	    __metadata("design:paramtypes", [core_1.ElementRef,
 	        core_1.Renderer, Object, form_service_1.FormService, Object, Object])
-	], ClientCurrentAccountDetailFormPopupComponent);
-	exports.ClientCurrentAccountDetailFormPopupComponent = ClientCurrentAccountDetailFormPopupComponent;
+	], ClientDocumentInvoiceDetailFormPopupComponent);
+	exports.ClientDocumentInvoiceDetailFormPopupComponent = ClientDocumentInvoiceDetailFormPopupComponent;
 
 
 /***/ },
-/* 122 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19122,26 +20026,26 @@ webpackJsonp([1],[
 	var forms_1 = __webpack_require__(30);
 	var ng_bootstrap_1 = __webpack_require__(34);
 	var field_types_extension_module_1 = __webpack_require__(74);
-	var client_current_account_edit_form_popup_component_1 = __webpack_require__(123);
-	var ClientCurrentAccountEditFormPopupExtModule = (function () {
-	    function ClientCurrentAccountEditFormPopupExtModule() {
+	var client_document_add_invoice_rectification_form_popup_component_1 = __webpack_require__(132);
+	var ClientDocumentAddInvoiceRectificationFormPopupExtModule = (function () {
+	    function ClientDocumentAddInvoiceRectificationFormPopupExtModule() {
 	    }
-	    return ClientCurrentAccountEditFormPopupExtModule;
+	    return ClientDocumentAddInvoiceRectificationFormPopupExtModule;
 	}());
-	ClientCurrentAccountEditFormPopupExtModule = __decorate([
+	ClientDocumentAddInvoiceRectificationFormPopupExtModule = __decorate([
 	    core_1.NgModule({
 	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
 	        declarations: [
-	            client_current_account_edit_form_popup_component_1.ClientCurrentAccountEditFormPopupComponent
+	            client_document_add_invoice_rectification_form_popup_component_1.ClientDocumentAddInvoiceRectificationFormPopupComponent
 	        ],
-	        exports: [client_current_account_edit_form_popup_component_1.ClientCurrentAccountEditFormPopupComponent]
+	        exports: [client_document_add_invoice_rectification_form_popup_component_1.ClientDocumentAddInvoiceRectificationFormPopupComponent]
 	    })
-	], ClientCurrentAccountEditFormPopupExtModule);
-	exports.ClientCurrentAccountEditFormPopupExtModule = ClientCurrentAccountEditFormPopupExtModule;
+	], ClientDocumentAddInvoiceRectificationFormPopupExtModule);
+	exports.ClientDocumentAddInvoiceRectificationFormPopupExtModule = ClientDocumentAddInvoiceRectificationFormPopupExtModule;
 
 
 /***/ },
-/* 123 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19167,19 +20071,19 @@ webpackJsonp([1],[
 	var form_service_1 = __webpack_require__(54);
 	var dynamic_component_loader_service_1 = __webpack_require__(45);
 	var post_service_1 = __webpack_require__(43);
-	var base_client_current_account_form_popup_ext_component_1 = __webpack_require__(117);
-	var ClientCurrentAccountEditFormPopupComponent = (function (_super) {
-	    __extends(ClientCurrentAccountEditFormPopupComponent, _super);
-	    function ClientCurrentAccountEditFormPopupComponent(elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
+	var base_client_invoice_rectification_document_form_popup_ext_component_1 = __webpack_require__(133);
+	var ClientDocumentAddInvoiceRectificationFormPopupComponent = (function (_super) {
+	    __extends(ClientDocumentAddInvoiceRectificationFormPopupComponent, _super);
+	    function ClientDocumentAddInvoiceRectificationFormPopupComponent(elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
 	        var _this = _super.call(this) || this;
-	        _super.prototype.initBaseClientCurrentAccountFormPopupExtComponent.call(_this, elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService);
+	        _super.prototype.initBaseClientInvoiceRectificationDocumentFormPopupExtComponent.call(_this, elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService);
 	        return _this;
 	    }
-	    return ClientCurrentAccountEditFormPopupComponent;
-	}(base_client_current_account_form_popup_ext_component_1.BaseClientCurrentAccountFormPopupExtComponent));
-	ClientCurrentAccountEditFormPopupComponent = __decorate([
+	    return ClientDocumentAddInvoiceRectificationFormPopupComponent;
+	}(base_client_invoice_rectification_document_form_popup_ext_component_1.BaseClientInvoiceRectificationDocumentFormPopupExtComponent));
+	ClientDocumentAddInvoiceRectificationFormPopupComponent = __decorate([
 	    core_1.Component({
-	        selector: '.js_clientCurrentAccountEditFormPopup',
+	        selector: '.js_clientDocumentAddInvoiceRectificationFormPopup',
 	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
 	    }),
 	    __param(2, core_1.Inject('Provider')),
@@ -19189,12 +20093,316 @@ webpackJsonp([1],[
 	    __metadata("design:paramtypes", [core_1.ElementRef,
 	        core_1.Renderer, Object, form_service_1.FormService, Object, core_1.Injector, Object, Object, dynamic_component_loader_service_1.DynamicComponentLoaderService,
 	        post_service_1.PostService])
-	], ClientCurrentAccountEditFormPopupComponent);
-	exports.ClientCurrentAccountEditFormPopupComponent = ClientCurrentAccountEditFormPopupComponent;
+	], ClientDocumentAddInvoiceRectificationFormPopupComponent);
+	exports.ClientDocumentAddInvoiceRectificationFormPopupComponent = ClientDocumentAddInvoiceRectificationFormPopupComponent;
 
 
 /***/ },
-/* 124 */
+/* 133 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_popup_extension_component_1 = __webpack_require__(82);
+	var data_service_1 = __webpack_require__(52);
+	var tree_view_data_service_1 = __webpack_require__(113);
+	var actions_service_1 = __webpack_require__(53);
+	var form_service_1 = __webpack_require__(54);
+	/* Import dependencies */
+	// Parent id of dependencies
+	var parentId = helper_1.Helper.getGlobalVar('conf')['object']['id'], parentController = helper_1.Helper.getGlobalVar('conf')['localData']['controller']; // Determines the type of booking
+	// Save last templateUrl
+	var tmpTemplateUrl = helper_1.Helper.getRuntimeVar('templateUrl');
+	// ClientDocumentInvoiceRectification
+	var client_document_invoice_rectification_ext_module_1 = __webpack_require__(134);
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'template/form-popup/tree-view');
+	var form_popup_ext_module_1 = __webpack_require__(136);
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'accounting/client-document-invoice-rectification/edit/0');
+	var client_document_invoice_rectification_form_popup_ext_module_1 = __webpack_require__(139);
+	// Restore last templateUrl
+	helper_1.Helper.setRuntimeVar('templateUrl', tmpTemplateUrl);
+	/* /Import dependencies */
+	var BaseClientInvoiceRectificationDocumentFormPopupExtComponent = (function (_super) {
+	    __extends(BaseClientInvoiceRectificationDocumentFormPopupExtComponent, _super);
+	    function BaseClientInvoiceRectificationDocumentFormPopupExtComponent() {
+	        return _super.call(this) || this;
+	    }
+	    BaseClientInvoiceRectificationDocumentFormPopupExtComponent.prototype.initBaseClientInvoiceRectificationDocumentFormPopupExtComponent = function (elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
+	        _super.prototype.initFormPopupExtensionComponent.call(this, elementRef, renderer, provider, formService, dataService);
+	        // Constructor vars
+	        this._injector = injector;
+	        this._parentDataService = parentDataService;
+	        this._helperService = helperService;
+	        this._dynamicComponentLoaderService = dynamicComponentLoaderService;
+	        this._postService = postService;
+	        // Save initial object to detect changes
+	        this._object = this._dataService.getObject();
+	        // Set choices route according with the entity
+	        this.updateEntityAddressAutoCompleteProviderChoicesRoute();
+	    };
+	    /**
+	     * Update Entity Address Auto Complete Provider Choices Route
+	     * Set choices route according with the entity
+	     * @returns {ClientDocumentEditFormPopupComponent}
+	     */
+	    BaseClientInvoiceRectificationDocumentFormPopupExtComponent.prototype.updateEntityAddressAutoCompleteProviderChoicesRoute = function () {
+	        // Update entityAddress autoCompleteProvider choices route to the updated entity
+	        var autoCompleteProviders = this._injector.get('AutoCompleteProviders');
+	        if (autoCompleteProviders['entityAddressObj']['childInjector']) {
+	            var choicesDataService = autoCompleteProviders['entityAddressObj']['childInjector'].get('DataServiceChoices'), choicesRoute = choicesDataService.getRoute('choices');
+	            choicesRoute = (choicesRoute.substr(0, choicesRoute.lastIndexOf('/') + 1)
+	                + this._formService.getObject()['entityObj']);
+	            choicesDataService.setRoute('choices', choicesRoute);
+	        }
+	        else {
+	            autoCompleteProviders['entityAddressObj']['urlConf'] = (autoCompleteProviders['entityAddressObj']['urlConf'].substr(0, (autoCompleteProviders['entityAddressObj']['urlConf'].lastIndexOf('/') + 1))
+	                + this._formService.getObject()['entityObj']);
+	        }
+	        return this;
+	    };
+	    /**
+	     * onEntityAddressChange
+	     * @param value
+	     */
+	    BaseClientInvoiceRectificationDocumentFormPopupExtComponent.prototype.onEntityAddressChange = function (value) {
+	        var _this = this;
+	        this._dataService.runAction((this._dataService.getRoute('edit-entity-address')
+	            + '\\'
+	            + this._formService.getObject()['id']), { entityAddressObj: value }).then(function (data) {
+	            if (data['object']) {
+	                // Copy values instead of set the updated object to avoid lost user changes like dates, comment, etc.
+	                var obj = _this._formService.getObject();
+	                var originalObj = _this._formService.getOriginalObject();
+	                for (var _i = 0, _a = ['entityAddressObj', 'entityStreet1', 'entityStreet2', 'entityPostCode', 'entityCity', 'entityRegion']; _i < _a.length; _i++) {
+	                    var field = _a[_i];
+	                    obj[field] = (data['object'][field] || null);
+	                    // Update original object yet, because this changes are already saved in database,
+	                    // otherwise user will be asked when close the form, because objects are different (have changes),
+	                    // and user can wrongly reset the object for the previous address when this procedure is no more
+	                    // possible because object is updated in database
+	                    originalObj[field] = obj[field];
+	                }
+	            }
+	            return;
+	        }, function (errors) { console.log(errors); return; });
+	    };
+	    /**
+	     * Overrides the parent method
+	     * @returns {Promise}
+	     */
+	    BaseClientInvoiceRectificationDocumentFormPopupExtComponent.prototype.save = function () {
+	        var that = this, route = this._dataService.getRoute('edit-rectification');
+	        return new Promise(function (resolve, reject) {
+	            that._formService.save(route).then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
+	        });
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    BaseClientInvoiceRectificationDocumentFormPopupExtComponent.prototype.ngAfterViewInit = function () {
+	        _super.prototype.ngAfterViewInit.call(this);
+	        // Load dependency
+	        var that = this, dependencyUrlProvider = (this._helperService.getGlobalVar('route')
+	            + 'accounting/client-document-invoice-rectification/data/'
+	            + this._formService.getObject()['clientDocumentObj']);
+	        this._postService.post(dependencyUrlProvider, null).then(function (data) {
+	            var treeViewFormDataProvider = that._helperService.normalizeTreeViewFormDataProvider(data);
+	            delete treeViewFormDataProvider['extraData']['template']['class']; // Remove class to get the "normal" view
+	            var providers = [
+	                { provide: 'DataService', useClass: data_service_1.DataService },
+	                { provide: 'TargetDataService', useExisting: 'DataService' },
+	                actions_service_1.ActionsService,
+	                { provide: 'DataServiceProvider', useValue: that._helperService.getDataServiceProvider(data) },
+	                { provide: 'ActionsServiceProvider', useValue: that._helperService.getActionsServiceProvider(data) },
+	                { provide: 'Provider', useValue: that._helperService.getDataBoxProvider(data) },
+	                { provide: 'Popups', useValue: {
+	                        add: {
+	                            module: form_popup_ext_module_1.FormPopupExtModule,
+	                            component: 'FormPopupComponent',
+	                            providers: [
+	                                { provide: 'DataService', useClass: tree_view_data_service_1.TreeViewDataService },
+	                                actions_service_1.ActionsService,
+	                                { provide: 'DataServiceProvider', useValue: that._helperService.getTreeViewDataServiceProvider(treeViewFormDataProvider) },
+	                                { provide: 'ActionsServiceProvider', useValue: that._helperService.getActionsServiceProvider(treeViewFormDataProvider) },
+	                                { provide: 'Provider', useValue: that._helperService.getTreeViewProvider(treeViewFormDataProvider) },
+	                                { provide: 'Popups', useValue: null }
+	                            ]
+	                        },
+	                        edit: {
+	                            module: client_document_invoice_rectification_form_popup_ext_module_1.ClientDocumentInvoiceRectificationFormPopupExtModule,
+	                            component: 'ClientDocumentInvoiceRectificationFormPopupComponent',
+	                            providers: [
+	                                form_service_1.FormService,
+	                                { provide: 'Provider', useValue: that._helperService.getFormProvider(data) }
+	                            ]
+	                        }
+	                    } },
+	                { provide: 'ParentDataService', useValue: that._dataService }
+	            ], injector = core_1.ReflectiveInjector.fromResolvedProviders(core_1.ReflectiveInjector.resolve(providers), that._injector);
+	            var dependencyDataService = injector.get('DataService');
+	            that._onDependencyObjectsChangeSubscription
+	                = dependencyDataService.getOnObjectsChangeEmitter()
+	                    .subscribe(function (data) {
+	                    // Update local object
+	                    that._dataService.refreshObject();
+	                });
+	            that._dynamicComponentLoaderService.load(client_document_invoice_rectification_ext_module_1.ClientDocumentInvoiceRectificationExtModule, 'ClientDocumentInvoiceRectificationComponent', that.lazyLoadViewContainerRef, injector).then(function (componentRef) {
+	                return true;
+	            }, function (errors) { console.log(errors); return null; });
+	        }, function (errors) { console.log(errors); return false; });
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    BaseClientInvoiceRectificationDocumentFormPopupExtComponent.prototype.ngOnDestroy = function () {
+	        // Check subscription (if component load fail, subscription may not exist)
+	        if (this._onDependencyObjectsChangeSubscription) {
+	            this._onDependencyObjectsChangeSubscription.unsubscribe();
+	        }
+	        // If object has no changes or "id" is not defined, popup was open and closed without save the object,
+	        // and if the flag '_isSessionStorage' is defined, the object was not saved in database,
+	        // so doesn't make sense refresh the objects
+	        if ((this._object != this._dataService.getObject())
+	            && (this._dataService.getObject()['id'])
+	            && (!this._dataService.getObject()['_isSessionStorage'])) {
+	            // Update object and parent object
+	            this._parentDataService.refreshObject();
+	        }
+	    };
+	    return BaseClientInvoiceRectificationDocumentFormPopupExtComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	__decorate([
+	    core_1.ViewChild('js_lazyLoadContainer', { read: core_1.ViewContainerRef }),
+	    __metadata("design:type", core_1.ViewContainerRef)
+	], BaseClientInvoiceRectificationDocumentFormPopupExtComponent.prototype, "lazyLoadViewContainerRef", void 0);
+	BaseClientInvoiceRectificationDocumentFormPopupExtComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_baseClientInvoiceRectificationDocumentFormPopup',
+	        template: ''
+	    }),
+	    __metadata("design:paramtypes", [])
+	], BaseClientInvoiceRectificationDocumentFormPopupExtComponent);
+	exports.BaseClientInvoiceRectificationDocumentFormPopupExtComponent = BaseClientInvoiceRectificationDocumentFormPopupExtComponent;
+
+
+/***/ },
+/* 134 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	// This module doesn't use "ReactiveFormsModule", but it needs to import this class
+	// to provide "formBuilder" when inject dependencies in child modules (like form)
+	var forms_1 = __webpack_require__(30);
+	var search_module_1 = __webpack_require__(61);
+	var expander_module_1 = __webpack_require__(62);
+	var search_pagination_module_1 = __webpack_require__(68);
+	var client_document_invoice_rectification_component_1 = __webpack_require__(135);
+	var ClientDocumentInvoiceRectificationExtModule = (function () {
+	    function ClientDocumentInvoiceRectificationExtModule() {
+	    }
+	    return ClientDocumentInvoiceRectificationExtModule;
+	}());
+	ClientDocumentInvoiceRectificationExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [
+	            common_1.CommonModule,
+	            forms_1.FormsModule,
+	            forms_1.ReactiveFormsModule,
+	            search_module_1.SearchModule,
+	            search_pagination_module_1.SearchPaginationModule,
+	            expander_module_1.ExpanderModule
+	        ],
+	        declarations: [
+	            client_document_invoice_rectification_component_1.ClientDocumentInvoiceRectificationComponent
+	        ],
+	        exports: [client_document_invoice_rectification_component_1.ClientDocumentInvoiceRectificationComponent]
+	    })
+	], ClientDocumentInvoiceRectificationExtModule);
+	exports.ClientDocumentInvoiceRectificationExtModule = ClientDocumentInvoiceRectificationExtModule;
+
+
+/***/ },
+/* 135 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var actions_service_1 = __webpack_require__(53);
+	var data_box_extension_component_1 = __webpack_require__(71);
+	var modal_service_1 = __webpack_require__(44);
+	var helper_1 = __webpack_require__(42);
+	// Component
+	var ClientDocumentInvoiceRectificationComponent = (function (_super) {
+	    __extends(ClientDocumentInvoiceRectificationComponent, _super);
+	    function ClientDocumentInvoiceRectificationComponent(viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector, _parentDataService // Used in view
+	    ) {
+	        var _this = 
+	        // Call parent
+	        _super.call(this) || this;
+	        _this._parentDataService = _parentDataService; // Used in view
+	        _super.prototype.initDataBoxExtensionComponent.call(_this, viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector);
+	        return _this;
+	    }
+	    return ClientDocumentInvoiceRectificationComponent;
+	}(data_box_extension_component_1.DataBoxExtensionComponent));
+	ClientDocumentInvoiceRectificationComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_clientDocumentInvoiceRectification',
+	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'template/index/base-document-invoice-rectification/accounting'
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('Popups')),
+	    __param(8, core_1.Inject('ParentDataService')),
+	    __metadata("design:paramtypes", [core_1.ViewContainerRef,
+	        core_1.Renderer, Object, Object, actions_service_1.ActionsService,
+	        modal_service_1.ModalService, Object, core_1.Injector, Object])
+	], ClientDocumentInvoiceRectificationComponent);
+	exports.ClientDocumentInvoiceRectificationComponent = ClientDocumentInvoiceRectificationComponent;
+
+
+/***/ },
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19207,7 +20415,1690 @@ webpackJsonp([1],[
 	var core_1 = __webpack_require__(3);
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
-	var entity_address_popup_component_1 = __webpack_require__(125);
+	var search_module_1 = __webpack_require__(61);
+	var expander_module_1 = __webpack_require__(62);
+	var search_pagination_module_1 = __webpack_require__(68);
+	var tree_view_node_actions_ext_module_1 = __webpack_require__(119);
+	var form_popup_component_1 = __webpack_require__(137);
+	var FormPopupExtModule = (function () {
+	    function FormPopupExtModule() {
+	    }
+	    return FormPopupExtModule;
+	}());
+	FormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [
+	            common_1.CommonModule,
+	            forms_1.FormsModule,
+	            search_module_1.SearchModule,
+	            search_pagination_module_1.SearchPaginationModule,
+	            expander_module_1.ExpanderModule,
+	            tree_view_node_actions_ext_module_1.TreeViewNodeActionsExtModule
+	        ],
+	        declarations: [
+	            form_popup_component_1.FormPopupComponent
+	        ],
+	        exports: [form_popup_component_1.FormPopupComponent]
+	    })
+	], FormPopupExtModule);
+	exports.FormPopupExtModule = FormPopupExtModule;
+
+
+/***/ },
+/* 137 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var actions_service_1 = __webpack_require__(53);
+	var modal_service_1 = __webpack_require__(44);
+	var helper_ts_1 = __webpack_require__(42);
+	var form_service_1 = __webpack_require__(54);
+	var form_popup_ext_component_1 = __webpack_require__(138);
+	var FormPopupComponent = (function (_super) {
+	    __extends(FormPopupComponent, _super);
+	    function FormPopupComponent(viewContainerRef, renderer, provider, dataService, // Any is used, otherwise you get an error "[Class] is not defined"
+	        actionsService, // Any is used, otherwise you get an error "[Class] is not defined"
+	        modalService, // Any is used, otherwise you get an error "[Class] is not defined"
+	        popups, injector, formService, // Any is used, otherwise you get an error "[Class] is not defined"
+	        targetDataService // Any is used, otherwise you get an error "[Class] is not defined"
+	    ) {
+	        var _this = 
+	        // Call parent
+	        _super.call(this) || this;
+	        _super.prototype.initFormPopupExtComponent.call(_this, viewContainerRef, renderer, provider, dataService, actionsService, modalService, popups, injector, formService, targetDataService);
+	        return _this;
+	    }
+	    return FormPopupComponent;
+	}(form_popup_ext_component_1.FormPopupExtComponent));
+	FormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_formPopup',
+	        templateUrl: helper_ts_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('Popups')),
+	    __param(9, core_1.Inject('TargetDataService')),
+	    __metadata("design:paramtypes", [core_1.ViewContainerRef,
+	        core_1.Renderer, Object, Object, actions_service_1.ActionsService,
+	        modal_service_1.ModalService, Object, core_1.Injector,
+	        form_service_1.FormService, Object])
+	], FormPopupComponent);
+	exports.FormPopupComponent = FormPopupComponent;
+
+
+/***/ },
+/* 138 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var tree_view_ext_component_1 = __webpack_require__(123);
+	var FormPopupExtComponent = (function (_super) {
+	    __extends(FormPopupExtComponent, _super);
+	    function FormPopupExtComponent() {
+	        var _this = _super.call(this) || this;
+	        // Modal parameters
+	        _this.onDismissEmitter = new core_1.EventEmitter();
+	        return _this;
+	    }
+	    /**
+	     * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
+	     * @param viewContainerRef
+	     * @param renderer
+	     * @param provider
+	     * @param dataService
+	     * @param actionsService
+	     * @param modalService
+	     * @param popups
+	     * @param injector
+	     * @param formService
+	     * @param targetDataService
+	     */
+	    FormPopupExtComponent.prototype.initFormPopupExtComponent = function (viewContainerRef, renderer, provider, dataService, // Any is used, otherwise you get an error "[Class] is not defined"
+	        actionsService, // Any is used, otherwise you get an error "[Class] is not defined"
+	        modalService, // Any is used, otherwise you get an error "[Class] is not defined"
+	        popups, injector, 
+	        // FormService of parent (not a new FormService)
+	        formService, // Any is used, otherwise you get an error "[Class] is not defined"
+	        targetDataService // Any is used, otherwise you get an error "[Class] is not defined"
+	    ) {
+	        // Call parent
+	        _super.prototype.initTreeViewExtComponent.call(this, viewContainerRef, renderer, provider, dataService, actionsService, modalService, popups, injector);
+	        // Constructor vars
+	        this._formService = formService;
+	        this._targetDataService = targetDataService;
+	        // Get first object for tree view
+	        this._dataService.getMoreObjects();
+	    };
+	    /**
+	     * Save object. Handle submit form.
+	     * This override add a closePopup behavior.
+	     * This method should be called from child component.
+	     * @returns {Promise}
+	     */
+	    FormPopupExtComponent.prototype.save = function () {
+	        var that = this;
+	        return new Promise(function (resolve, reject) {
+	            var route = that._dataService.getRoute('add');
+	            that.submitChoices(route).then(function (data) {
+	                that._targetDataService.refresh();
+	                return resolve(data);
+	            }, function (errors) { return reject(errors); });
+	        });
+	    };
+	    /**
+	     * Save and close popup action.
+	     * This method should be called from view/template.
+	     * @param $event
+	     */
+	    FormPopupExtComponent.prototype.saveAndCloseAction = function ($event) {
+	        var _this = this;
+	        if ($event === void 0) { $event = null; }
+	        if ($event) {
+	            $event.preventDefault();
+	        }
+	        this.save().then(function (data) { _this.closeAction(); return; }, function (errors) { return; });
+	    };
+	    /**
+	     * Cancel action.
+	     * This method should be called from view/template.
+	     * @param $event
+	     */
+	    FormPopupExtComponent.prototype.cancelAction = function ($event) {
+	        if ($event === void 0) { $event = null; }
+	        if ($event) {
+	            $event.preventDefault();
+	        }
+	        this.closeAction($event);
+	    };
+	    /**
+	     * Close action.
+	     * @param $event
+	     */
+	    FormPopupExtComponent.prototype.closeAction = function ($event) {
+	        if ($event === void 0) { $event = null; }
+	        if ($event) {
+	            $event.preventDefault();
+	        }
+	        this.onDismissEmitter.emit(null);
+	    };
+	    return FormPopupExtComponent;
+	}(tree_view_ext_component_1.TreeViewExtComponent));
+	__decorate([
+	    __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('Popups')),
+	    __param(9, core_1.Inject('TargetDataService')),
+	    __metadata("design:type", Function),
+	    __metadata("design:paramtypes", [core_1.ViewContainerRef,
+	        core_1.Renderer, Object, Object, Object, Object, Object, core_1.Injector, Object, Object]),
+	    __metadata("design:returntype", void 0)
+	], FormPopupExtComponent.prototype, "initFormPopupExtComponent", null);
+	FormPopupExtComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_formPopup',
+	        template: ''
+	    }),
+	    __metadata("design:paramtypes", [])
+	], FormPopupExtComponent);
+	exports.FormPopupExtComponent = FormPopupExtComponent;
+
+
+/***/ },
+/* 139 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(34);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var client_document_invoice_rectification_form_popup_component_1 = __webpack_require__(140);
+	var ClientDocumentInvoiceRectificationFormPopupExtModule = (function () {
+	    function ClientDocumentInvoiceRectificationFormPopupExtModule() {
+	    }
+	    return ClientDocumentInvoiceRectificationFormPopupExtModule;
+	}());
+	ClientDocumentInvoiceRectificationFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
+	        declarations: [
+	            client_document_invoice_rectification_form_popup_component_1.ClientDocumentInvoiceRectificationFormPopupComponent
+	        ],
+	        exports: [client_document_invoice_rectification_form_popup_component_1.ClientDocumentInvoiceRectificationFormPopupComponent]
+	    })
+	], ClientDocumentInvoiceRectificationFormPopupExtModule);
+	exports.ClientDocumentInvoiceRectificationFormPopupExtModule = ClientDocumentInvoiceRectificationFormPopupExtModule;
+
+
+/***/ },
+/* 140 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_popup_extension_component_1 = __webpack_require__(82);
+	var form_service_1 = __webpack_require__(54);
+	var ClientDocumentInvoiceRectificationFormPopupComponent = (function (_super) {
+	    __extends(ClientDocumentInvoiceRectificationFormPopupComponent, _super);
+	    function ClientDocumentInvoiceRectificationFormPopupComponent(elementRef, renderer, provider, formService, dataService, _helperService) {
+	        var _this = _super.call(this) || this;
+	        _this._helperService = _helperService;
+	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
+	        _this.decimalConf = _this._helperService.getDecimalConf();
+	        return _this;
+	    }
+	    /**
+	     * onServiceChange
+	     * @param value
+	     */
+	    ClientDocumentInvoiceRectificationFormPopupComponent.prototype.onServiceChange = function (value) {
+	        var that = this;
+	        this._dataService.runAction((this._helperService.getGlobalVar('route')
+	            + 'services/service/get-vat-code-percentage/'
+	            + value)).then(function (data) {
+	            if (data['localData']) {
+	                that._formService.getObject()['vatCode_percentage']
+	                    = (data['localData']['vatCodePercentage'] || null);
+	                that.setTotals();
+	            }
+	        }, function (errors) { console.log(errors); return; });
+	    };
+	    /**
+	     * onQuantityEnterKey
+	     * @param value
+	     */
+	    ClientDocumentInvoiceRectificationFormPopupComponent.prototype.onQuantityEnterKey = function (value) {
+	        this._formService.getObject()['quantity'] = value; // Value is not yet setted in object
+	        this.setTotals();
+	    };
+	    /**
+	     * onValueEnterKey
+	     * @param value
+	     */
+	    ClientDocumentInvoiceRectificationFormPopupComponent.prototype.onValueEnterKey = function (value) {
+	        this._formService.getObject()['user_value'] = value;
+	        this.setTotals();
+	    };
+	    /**
+	     * onIsVatIncludedChange
+	     * @param value
+	     */
+	    ClientDocumentInvoiceRectificationFormPopupComponent.prototype.onIsVatIncludedChange = function (value) {
+	        this._formService.getObject()['isVatIncluded'] = value;
+	        this.setTotals();
+	    };
+	    /**
+	     * Set totals
+	     * @returns {ClientDocumentInvoiceRectificationFormPopupComponent}
+	     */
+	    ClientDocumentInvoiceRectificationFormPopupComponent.prototype.setTotals = function () {
+	        var obj = this._formService.getObject(), quantity = parseFloat(obj['quantity'] || '0'), user_value = parseFloat(obj['user_value'] || '0'), isVatIncluded = obj['isVatIncluded'], vatPercentage = parseFloat(obj['vatCode_percentage'] || '0'), value = user_value, // Unit value without VAT
+	        vatValue = 0;
+	        // Calc VAT value and value
+	        if (vatPercentage > 0) {
+	            if (isVatIncluded) {
+	                value = parseFloat((Math.round((user_value / (1 + (vatPercentage / 100)))
+	                    * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value));
+	                vatValue = (user_value - value);
+	            }
+	            else {
+	                vatValue = parseFloat((Math.round((user_value * (vatPercentage / 100))
+	                    * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value));
+	            }
+	        }
+	        // Value (unit value without VAT)
+	        obj['value'] = value;
+	        // Total vat
+	        obj['totalVat'] = (Math.round((vatValue * quantity)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        var totalUnit = parseFloat((Math.round((value + vatValue)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value));
+	        // Total
+	        obj['total'] = (Math.round(
+	        // Do not use "subTotal" nor "totalVat" to get the "total", because this values are already rounded,
+	        // and in some cases the sum of 2 rounded values cause inquiries.
+	        // Before multiply round the sum to get a coherent total unit value
+	        (totalUnit * quantity)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        // Sub total
+	        obj['subTotal'] = (Math.round(
+	        // Sub total is determined in this way, because in some cases the sum of "subTotal" and "totalVat"
+	        // rounded does not match with the correct total, given that this values are rounded to 2 decimals
+	        // and lost precision, so in this way we keep the calculus with coherence giving preference to keep
+	        // "totalVat" untouched (legal values).
+	        (parseFloat(obj['total'] || '0') - parseFloat(obj['totalVat'] || '0'))
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        return this;
+	    };
+	    return ClientDocumentInvoiceRectificationFormPopupComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	ClientDocumentInvoiceRectificationFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '#js_clientDocumentInvoiceRectificationFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __param(5, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object, Object])
+	], ClientDocumentInvoiceRectificationFormPopupComponent);
+	exports.ClientDocumentInvoiceRectificationFormPopupComponent = ClientDocumentInvoiceRectificationFormPopupComponent;
+
+
+/***/ },
+/* 141 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(34);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var client_document_add_receipt_detail_form_popup_component_1 = __webpack_require__(142);
+	var ClientDocumentAddReceiptDetailFormPopupExtModule = (function () {
+	    function ClientDocumentAddReceiptDetailFormPopupExtModule() {
+	    }
+	    return ClientDocumentAddReceiptDetailFormPopupExtModule;
+	}());
+	ClientDocumentAddReceiptDetailFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
+	        declarations: [
+	            client_document_add_receipt_detail_form_popup_component_1.ClientDocumentAddReceiptDetailFormPopupComponent
+	        ],
+	        exports: [client_document_add_receipt_detail_form_popup_component_1.ClientDocumentAddReceiptDetailFormPopupComponent]
+	    })
+	], ClientDocumentAddReceiptDetailFormPopupExtModule);
+	exports.ClientDocumentAddReceiptDetailFormPopupExtModule = ClientDocumentAddReceiptDetailFormPopupExtModule;
+
+
+/***/ },
+/* 142 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_service_1 = __webpack_require__(54);
+	var dynamic_component_loader_service_1 = __webpack_require__(45);
+	var post_service_1 = __webpack_require__(43);
+	var base_client_receipt_document_form_popup_ext_component_1 = __webpack_require__(143);
+	var ClientDocumentAddReceiptDetailFormPopupComponent = (function (_super) {
+	    __extends(ClientDocumentAddReceiptDetailFormPopupComponent, _super);
+	    function ClientDocumentAddReceiptDetailFormPopupComponent(elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initBaseClientReceiptDocumentFormPopupExtComponent.call(_this, elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService);
+	        return _this;
+	    }
+	    return ClientDocumentAddReceiptDetailFormPopupComponent;
+	}(base_client_receipt_document_form_popup_ext_component_1.BaseClientReceiptDocumentFormPopupExtComponent));
+	ClientDocumentAddReceiptDetailFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_clientDocumentAddDetailFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('ParentDataService')),
+	    __param(7, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object, core_1.Injector, Object, Object, dynamic_component_loader_service_1.DynamicComponentLoaderService,
+	        post_service_1.PostService])
+	], ClientDocumentAddReceiptDetailFormPopupComponent);
+	exports.ClientDocumentAddReceiptDetailFormPopupComponent = ClientDocumentAddReceiptDetailFormPopupComponent;
+
+
+/***/ },
+/* 143 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_popup_extension_component_1 = __webpack_require__(82);
+	var data_service_1 = __webpack_require__(52);
+	var actions_service_1 = __webpack_require__(53);
+	var form_service_1 = __webpack_require__(54);
+	/* Import dependencies */
+	// Parent id of dependencies
+	var parentController = helper_1.Helper.getGlobalVar('conf')['localData']['controller'], // Determines the type of booking
+	parentId = helper_1.Helper.getGlobalVar('conf')['object']['id'], parentDocumentId = helper_1.Helper.getGlobalVar('conf')['object']['clientDocumentObj'];
+	// Save last templateUrl
+	var tmpTemplateUrl = helper_1.Helper.getRuntimeVar('templateUrl');
+	// ClientDocumentReceiptSettlement
+	var client_document_receipt_settlement_ext_module_1 = __webpack_require__(144);
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'accounting/client-document-receipt-settlement/edit/' + parentDocumentId + '/0');
+	var client_document_receipt_settlement_form_popup_ext_module_1 = __webpack_require__(146);
+	// ClientDocumentReceiptPayment
+	var client_document_receipt_payment_ext_module_1 = __webpack_require__(148);
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'accounting/client-document-receipt-payment/edit/' + parentDocumentId + '/0');
+	var client_document_receipt_payment_form_popup_ext_module_1 = __webpack_require__(150);
+	// Restore last templateUrl
+	helper_1.Helper.setRuntimeVar('templateUrl', tmpTemplateUrl);
+	/* /Import dependencies */
+	var BaseClientReceiptDocumentFormPopupExtComponent = (function (_super) {
+	    __extends(BaseClientReceiptDocumentFormPopupExtComponent, _super);
+	    function BaseClientReceiptDocumentFormPopupExtComponent() {
+	        var _this = _super.call(this) || this;
+	        _this._llViewContainerRefArr = [];
+	        // Data service of dependencies to calc the "diffControl" [settlement, payment]
+	        _this._dependencyDataServiceArr = [null, null];
+	        // To handle with dependencies objects changes to refresh the diffControl
+	        _this._onDependencyObjectsChangeSubscription = [null, null];
+	        return _this;
+	    }
+	    BaseClientReceiptDocumentFormPopupExtComponent.prototype.initBaseClientReceiptDocumentFormPopupExtComponent = function (elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
+	        _super.prototype.initFormPopupExtensionComponent.call(this, elementRef, renderer, provider, formService, dataService);
+	        // Constructor vars
+	        this._injector = injector;
+	        this._parentDataService = parentDataService;
+	        this._helperService = helperService;
+	        this._dynamicComponentLoaderService = dynamicComponentLoaderService;
+	        this._postService = postService;
+	        // Save initial object to detect changes
+	        //this._object = this._dataService.getObject(); // DISABLED BECAUSE PARENT OBJECT IS NOT UPDATED, CHECK BELOW
+	        // Set choices route according with the entity
+	        this.updateEntityAddressAutoCompleteProviderChoicesRoute();
+	    };
+	    /**
+	     * Update Entity Address Auto Complete Provider Choices Route
+	     * Set choices route according with the entity
+	     * @returns {Object}
+	     */
+	    BaseClientReceiptDocumentFormPopupExtComponent.prototype.updateEntityAddressAutoCompleteProviderChoicesRoute = function () {
+	        // Update entityAddress autoCompleteProvider choices route to the updated entity
+	        var autoCompleteProviders = this._injector.get('AutoCompleteProviders');
+	        if (autoCompleteProviders['entityAddressObj']['childInjector']) {
+	            var choicesDataService = autoCompleteProviders['entityAddressObj']['childInjector'].get('DataServiceChoices'), choicesRoute = choicesDataService.getRoute('choices');
+	            choicesRoute = (choicesRoute.substr(0, choicesRoute.lastIndexOf('/') + 1)
+	                + this._formService.getObject()['entityObj']);
+	            choicesDataService.setRoute('choices', choicesRoute);
+	        }
+	        else {
+	            autoCompleteProviders['entityAddressObj']['urlConf'] = (autoCompleteProviders['entityAddressObj']['urlConf'].substr(0, (autoCompleteProviders['entityAddressObj']['urlConf'].lastIndexOf('/') + 1))
+	                + this._formService.getObject()['entityObj']);
+	        }
+	        return this;
+	    };
+	    /**
+	     * onEntityAddressChange
+	     * @param value
+	     */
+	    BaseClientReceiptDocumentFormPopupExtComponent.prototype.onEntityAddressChange = function (value) {
+	        var _this = this;
+	        this._dataService.runAction((this._dataService.getRoute('edit-entity-address')
+	            + '\\'
+	            + this._formService.getObject()['id']), { entityAddressObj: value }).then(function (data) {
+	            if (data['object']) {
+	                // Copy values instead of set the updated object to avoid lost user changes like dates, comment, etc.
+	                var obj = _this._formService.getObject();
+	                var originalObj = _this._formService.getOriginalObject();
+	                for (var _i = 0, _a = ['entityAddressObj', 'entityStreet1', 'entityStreet2', 'entityPostCode', 'entityCity', 'entityRegion']; _i < _a.length; _i++) {
+	                    var field = _a[_i];
+	                    obj[field] = (data['object'][field] || null);
+	                    // Update original object yet, because this changes are already saved in database,
+	                    // otherwise user will be asked when close the form, because objects are different (have changes),
+	                    // and user can wrongly reset the object for the previous address when this procedure is no more
+	                    // possible because object is updated in database
+	                    originalObj[field] = obj[field];
+	                }
+	            }
+	            return;
+	        }, function (errors) { console.log(errors); return; });
+	    };
+	    /**
+	     * Refresh diff control
+	     * @returns {BaseClientDocumentReceiptFormPopupExtComponent}
+	     */
+	    BaseClientReceiptDocumentFormPopupExtComponent.prototype.refreshDiffControl = function () {
+	        if (!this._dependencyDataServiceArr[0] || !this._dependencyDataServiceArr[1]) {
+	            // Dependencies has not been loaded yet
+	            return this;
+	        }
+	        // [settlement, payment]
+	        var totals = [0, 0];
+	        for (var index in this._dependencyDataServiceArr) {
+	            var objects = this._dependencyDataServiceArr[index].getProviderAttr('objects');
+	            for (var _i = 0, objects_1 = objects; _i < objects_1.length; _i++) {
+	                var object = objects_1[_i];
+	                totals[index] += object['value'];
+	            }
+	        }
+	        this._$diffControl.val((Math.round((totals[0] - totals[1]) * 100) / 100).toFixed(2));
+	        return this;
+	    };
+	    /**
+	     * Load dependency
+	     * @param dependency
+	     * @param module
+	     * @param popup
+	     * @param viewContainerRef
+	     * @param providers
+	     * @returns {Object}
+	     */
+	    BaseClientReceiptDocumentFormPopupExtComponent.prototype.loadDependency = function (dependency, module, popup, viewContainerRef, providers) {
+	        var _this = this;
+	        if (providers === void 0) { providers = []; }
+	        // Load dependency
+	        var that = this, dependencyUC = this._helperService.uCFirst(dependency), // Upper Case
+	        dependencyUrlProvider = (this._helperService.getGlobalVar('route')
+	            + 'accounting/client-document-receipt-' + dependency + '/data/'
+	            + this._formService.getObject()['clientDocumentObj']);
+	        this._postService.post(dependencyUrlProvider, null).then(function (data) {
+	            providers = providers.concat([
+	                { provide: 'DataService', useClass: data_service_1.DataService },
+	                actions_service_1.ActionsService,
+	                { provide: 'DataServiceProvider', useValue: that._helperService.getDataServiceProvider(data) },
+	                { provide: 'ActionsServiceProvider', useValue: that._helperService.getActionsServiceProvider(data) },
+	                { provide: 'Provider', useValue: that._helperService.getDataBoxProvider(data) },
+	                { provide: 'Popups', useValue: {
+	                        module: popup,
+	                        component: 'ClientDocumentReceipt' + dependencyUC + 'FormPopupComponent',
+	                        providers: [
+	                            form_service_1.FormService,
+	                            { provide: 'Provider', useValue: _this._helperService.getFormProvider(data) }
+	                        ]
+	                    } },
+	                { provide: 'ParentDataService', useValue: _this._dataService }
+	            ]);
+	            var injector = core_1.ReflectiveInjector.fromResolvedProviders(core_1.ReflectiveInjector.resolve(providers), that._injector);
+	            var dependencyIndex = ((dependency == 'settlement') ? 0 : 1);
+	            that._dependencyDataServiceArr[dependencyIndex] = injector.get('DataService');
+	            that._onDependencyObjectsChangeSubscription[dependencyIndex]
+	                = that._dependencyDataServiceArr[dependencyIndex].getOnObjectsChangeEmitter()
+	                    .subscribe(function (data) { that.refreshDiffControl(); });
+	            that._dynamicComponentLoaderService.load(module, 'ClientDocumentReceipt' + dependencyUC + 'Component', viewContainerRef, injector).then(function (componentRef) {
+	                that.refreshDiffControl();
+	                return true;
+	            }, function (errors) { console.log(errors); return null; });
+	        }, function (errors) { console.log(errors); return false; });
+	        return this;
+	    };
+	    /**
+	     * Overrides the parent method
+	     * @returns {Promise}
+	     */
+	    BaseClientReceiptDocumentFormPopupExtComponent.prototype.save = function () {
+	        var that = this, route = this._dataService.getRoute('edit-receipt');
+	        return new Promise(function (resolve, reject) {
+	            that._formService.save(route).then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
+	        });
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    BaseClientReceiptDocumentFormPopupExtComponent.prototype.ngAfterViewInit = function () {
+	        _super.prototype.ngAfterViewInit.call(this);
+	        // Get array of ViewContainerRef
+	        this._llViewContainerRefArr = this.lazyLoadViewContainerRefQL.toArray();
+	        // Diff control
+	        this._$diffControl = $(this._elementRef.nativeElement).find('.js_diffControl');
+	        this.loadDependency('settlement', client_document_receipt_settlement_ext_module_1.ClientDocumentReceiptSettlementExtModule, client_document_receipt_settlement_form_popup_ext_module_1.ClientDocumentReceiptSettlementFormPopupExtModule, this._llViewContainerRefArr[0], [
+	            { provide: 'AutoCompleteProviders', useValue: {
+	                    invoiceClientDocumentObj: {
+	                        urlConf: (this._helperService.getGlobalVar('route') + 'booking/'
+	                            + parentController + '-client-document/conf/' + parentId),
+	                        urlChoicesParams: this._formService.getObject()['clientObj'] + '/INVOICE',
+	                        field: 'CONCAT(clientDocument.codePrefix, clientDocument.codeNumber)',
+	                        control: 'none'
+	                    }
+	                } }
+	        ]);
+	        this.loadDependency('payment', client_document_receipt_payment_ext_module_1.ClientDocumentReceiptPaymentExtModule, client_document_receipt_payment_form_popup_ext_module_1.ClientDocumentReceiptPaymentFormPopupExtModule, this._llViewContainerRefArr[1]);
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    BaseClientReceiptDocumentFormPopupExtComponent.prototype.ngOnDestroy = function () {
+	        // Check subscription (if component load fail, subscription may not exist)
+	        if (this._onDependencyObjectsChangeSubscription[0]) {
+	            this._onDependencyObjectsChangeSubscription[0].unsubscribe();
+	        }
+	        // Check subscription (if component load fail, subscription may not exist)
+	        if (this._onDependencyObjectsChangeSubscription[1]) {
+	            this._onDependencyObjectsChangeSubscription[1].unsubscribe();
+	        }
+	        // If object has no changes or "id" is not defined, popup was open and closed without save the object,
+	        // and if the flag '_isSessionStorage' is defined, the object was not saved in database,
+	        // so doesn't make sense refresh the objects
+	        /*if ((this._object != this._dataService.getObject())
+	            && (this._dataService.getObject()['id'])
+	            && (!this._dataService.getObject()['_isSessionStorage'])
+	        ) {
+	            // Update object and parent object
+	            this._parentDataService.refreshObject();
+	        }*/ // PARENT DON'T HAVE RECEIPT TOTALS, SO DON'T NEED TO BE UPDATED
+	    };
+	    return BaseClientReceiptDocumentFormPopupExtComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	__decorate([
+	    core_1.ViewChildren('js_lazyLoadContainer', { read: core_1.ViewContainerRef }),
+	    __metadata("design:type", core_1.QueryList)
+	], BaseClientReceiptDocumentFormPopupExtComponent.prototype, "lazyLoadViewContainerRefQL", void 0);
+	BaseClientReceiptDocumentFormPopupExtComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_baseClientDocumentReceiptFormPopup',
+	        template: ''
+	    }),
+	    __metadata("design:paramtypes", [])
+	], BaseClientReceiptDocumentFormPopupExtComponent);
+	exports.BaseClientReceiptDocumentFormPopupExtComponent = BaseClientReceiptDocumentFormPopupExtComponent;
+
+
+/***/ },
+/* 144 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	// This module doesn't use "ReactiveFormsModule", but it needs to import this class
+	// to provide "formBuilder" when inject dependencies in child modules (like form)
+	var forms_1 = __webpack_require__(30);
+	var search_module_1 = __webpack_require__(61);
+	var expander_module_1 = __webpack_require__(62);
+	var search_pagination_module_1 = __webpack_require__(68);
+	var client_document_receipt_settlement_component_1 = __webpack_require__(145);
+	var ClientDocumentReceiptSettlementExtModule = (function () {
+	    function ClientDocumentReceiptSettlementExtModule() {
+	    }
+	    return ClientDocumentReceiptSettlementExtModule;
+	}());
+	ClientDocumentReceiptSettlementExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [
+	            common_1.CommonModule,
+	            forms_1.FormsModule,
+	            forms_1.ReactiveFormsModule,
+	            search_module_1.SearchModule,
+	            search_pagination_module_1.SearchPaginationModule,
+	            expander_module_1.ExpanderModule
+	        ],
+	        declarations: [
+	            client_document_receipt_settlement_component_1.ClientDocumentReceiptSettlementComponent
+	        ],
+	        exports: [client_document_receipt_settlement_component_1.ClientDocumentReceiptSettlementComponent]
+	    })
+	], ClientDocumentReceiptSettlementExtModule);
+	exports.ClientDocumentReceiptSettlementExtModule = ClientDocumentReceiptSettlementExtModule;
+
+
+/***/ },
+/* 145 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var actions_service_1 = __webpack_require__(53);
+	var data_box_extension_component_1 = __webpack_require__(71);
+	var modal_service_1 = __webpack_require__(44);
+	var helper_1 = __webpack_require__(42);
+	// Component
+	var ClientDocumentReceiptSettlementComponent = (function (_super) {
+	    __extends(ClientDocumentReceiptSettlementComponent, _super);
+	    function ClientDocumentReceiptSettlementComponent(viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector, _parentDataService // Used in view
+	    ) {
+	        var _this = 
+	        // Call parent
+	        _super.call(this) || this;
+	        _this._parentDataService = _parentDataService; // Used in view
+	        _super.prototype.initDataBoxExtensionComponent.call(_this, viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector);
+	        return _this;
+	    }
+	    return ClientDocumentReceiptSettlementComponent;
+	}(data_box_extension_component_1.DataBoxExtensionComponent));
+	ClientDocumentReceiptSettlementComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_clientDocumentReceiptSettlement',
+	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'template/default/data-box'
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('Popups')),
+	    __param(8, core_1.Inject('ParentDataService')),
+	    __metadata("design:paramtypes", [core_1.ViewContainerRef,
+	        core_1.Renderer, Object, Object, actions_service_1.ActionsService,
+	        modal_service_1.ModalService, Object, core_1.Injector, Object])
+	], ClientDocumentReceiptSettlementComponent);
+	exports.ClientDocumentReceiptSettlementComponent = ClientDocumentReceiptSettlementComponent;
+
+
+/***/ },
+/* 146 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(34);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var client_document_receipt_settlement_form_popup_component_1 = __webpack_require__(147);
+	var ClientDocumentReceiptSettlementFormPopupExtModule = (function () {
+	    function ClientDocumentReceiptSettlementFormPopupExtModule() {
+	    }
+	    return ClientDocumentReceiptSettlementFormPopupExtModule;
+	}());
+	ClientDocumentReceiptSettlementFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
+	        declarations: [
+	            client_document_receipt_settlement_form_popup_component_1.ClientDocumentReceiptSettlementFormPopupComponent
+	        ],
+	        exports: [client_document_receipt_settlement_form_popup_component_1.ClientDocumentReceiptSettlementFormPopupComponent]
+	    })
+	], ClientDocumentReceiptSettlementFormPopupExtModule);
+	exports.ClientDocumentReceiptSettlementFormPopupExtModule = ClientDocumentReceiptSettlementFormPopupExtModule;
+
+
+/***/ },
+/* 147 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_popup_extension_component_1 = __webpack_require__(82);
+	var form_service_1 = __webpack_require__(54);
+	var ClientDocumentReceiptSettlementFormPopupComponent = (function (_super) {
+	    __extends(ClientDocumentReceiptSettlementFormPopupComponent, _super);
+	    function ClientDocumentReceiptSettlementFormPopupComponent(elementRef, renderer, provider, formService, dataService, _helperService) {
+	        var _this = _super.call(this) || this;
+	        _this._helperService = _helperService;
+	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
+	        _this.decimalConf = _this._helperService.getDecimalConf();
+	        return _this;
+	    }
+	    /**
+	     * onServiceChange
+	     * @param value
+	     */
+	    ClientDocumentReceiptSettlementFormPopupComponent.prototype.onServiceChange = function (value) {
+	        var that = this;
+	        this._dataService.runAction((this._helperService.getGlobalVar('route')
+	            + 'services/service/get-vat-code-percentage/'
+	            + value)).then(function (data) {
+	            if (data['localData']) {
+	                that._formService.getObject()['vatCode_percentage']
+	                    = (data['localData']['vatCodePercentage'] || null);
+	                that.setTotals();
+	            }
+	        }, function (errors) { console.log(errors); return; });
+	    };
+	    /**
+	     * onQuantityEnterKey
+	     * @param value
+	     */
+	    ClientDocumentReceiptSettlementFormPopupComponent.prototype.onQuantityEnterKey = function (value) {
+	        this._formService.getObject()['quantity'] = value; // Value is not yet setted in object
+	        this.setTotals();
+	    };
+	    /**
+	     * onValueEnterKey
+	     * @param value
+	     */
+	    ClientDocumentReceiptSettlementFormPopupComponent.prototype.onValueEnterKey = function (value) {
+	        this._formService.getObject()['user_value'] = value;
+	        this.setTotals();
+	    };
+	    /**
+	     * onIsVatIncludedChange
+	     * @param value
+	     */
+	    ClientDocumentReceiptSettlementFormPopupComponent.prototype.onIsVatIncludedChange = function (value) {
+	        this._formService.getObject()['isVatIncluded'] = value;
+	        this.setTotals();
+	    };
+	    /**
+	     * Set totals
+	     * @returns {ClientDocumentReceiptSettlementFormPopupComponent}
+	     */
+	    ClientDocumentReceiptSettlementFormPopupComponent.prototype.setTotals = function () {
+	        var obj = this._formService.getObject(), quantity = parseFloat(obj['quantity'] || '0'), user_value = parseFloat(obj['user_value'] || '0'), isVatIncluded = obj['isVatIncluded'], vatPercentage = parseFloat(obj['vatCode_percentage'] || '0'), value = user_value, // Unit value without VAT
+	        vatValue = 0;
+	        // Calc VAT value and value
+	        if (vatPercentage > 0) {
+	            if (isVatIncluded) {
+	                value = parseFloat((Math.round((user_value / (1 + (vatPercentage / 100)))
+	                    * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value));
+	                vatValue = (user_value - value);
+	            }
+	            else {
+	                vatValue = parseFloat((Math.round((user_value * (vatPercentage / 100))
+	                    * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value));
+	            }
+	        }
+	        // Value (unit value without VAT)
+	        obj['value'] = value;
+	        // Total vat
+	        obj['totalVat'] = (Math.round((vatValue * quantity)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        var totalUnit = parseFloat((Math.round((value + vatValue)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value));
+	        // Total
+	        obj['total'] = (Math.round(
+	        // Do not use "subTotal" nor "totalVat" to get the "total", because this values are already rounded,
+	        // and in some cases the sum of 2 rounded values cause inquiries.
+	        // Before multiply round the sum to get a coherent total unit value
+	        (totalUnit * quantity)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        // Sub total
+	        obj['subTotal'] = (Math.round(
+	        // Sub total is determined in this way, because in some cases the sum of "subTotal" and "totalVat"
+	        // rounded does not match with the correct total, given that this values are rounded to 2 decimals
+	        // and lost precision, so in this way we keep the calculus with coherence giving preference to keep
+	        // "totalVat" untouched (legal values).
+	        (parseFloat(obj['total'] || '0') - parseFloat(obj['totalVat'] || '0'))
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        return this;
+	    };
+	    return ClientDocumentReceiptSettlementFormPopupComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	ClientDocumentReceiptSettlementFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '#js_clientDocumentReceiptSettlementFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __param(5, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object, Object])
+	], ClientDocumentReceiptSettlementFormPopupComponent);
+	exports.ClientDocumentReceiptSettlementFormPopupComponent = ClientDocumentReceiptSettlementFormPopupComponent;
+
+
+/***/ },
+/* 148 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	// This module doesn't use "ReactiveFormsModule", but it needs to import this class
+	// to provide "formBuilder" when inject dependencies in child modules (like form)
+	var forms_1 = __webpack_require__(30);
+	var search_module_1 = __webpack_require__(61);
+	var expander_module_1 = __webpack_require__(62);
+	var search_pagination_module_1 = __webpack_require__(68);
+	var client_document_receipt_payment_component_1 = __webpack_require__(149);
+	var ClientDocumentReceiptPaymentExtModule = (function () {
+	    function ClientDocumentReceiptPaymentExtModule() {
+	    }
+	    return ClientDocumentReceiptPaymentExtModule;
+	}());
+	ClientDocumentReceiptPaymentExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [
+	            common_1.CommonModule,
+	            forms_1.FormsModule,
+	            forms_1.ReactiveFormsModule,
+	            search_module_1.SearchModule,
+	            search_pagination_module_1.SearchPaginationModule,
+	            expander_module_1.ExpanderModule
+	        ],
+	        declarations: [
+	            client_document_receipt_payment_component_1.ClientDocumentReceiptPaymentComponent
+	        ],
+	        exports: [client_document_receipt_payment_component_1.ClientDocumentReceiptPaymentComponent]
+	    })
+	], ClientDocumentReceiptPaymentExtModule);
+	exports.ClientDocumentReceiptPaymentExtModule = ClientDocumentReceiptPaymentExtModule;
+
+
+/***/ },
+/* 149 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var actions_service_1 = __webpack_require__(53);
+	var data_box_extension_component_1 = __webpack_require__(71);
+	var modal_service_1 = __webpack_require__(44);
+	var helper_1 = __webpack_require__(42);
+	// Component
+	var ClientDocumentReceiptPaymentComponent = (function (_super) {
+	    __extends(ClientDocumentReceiptPaymentComponent, _super);
+	    function ClientDocumentReceiptPaymentComponent(viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector, _parentDataService // Used in view
+	    ) {
+	        var _this = 
+	        // Call parent
+	        _super.call(this) || this;
+	        _this._parentDataService = _parentDataService; // Used in view
+	        _super.prototype.initDataBoxExtensionComponent.call(_this, viewContainerRef, renderer, dataBoxProvider, dataService, actionsService, modalService, popups, injector);
+	        return _this;
+	    }
+	    return ClientDocumentReceiptPaymentComponent;
+	}(data_box_extension_component_1.DataBoxExtensionComponent));
+	ClientDocumentReceiptPaymentComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_clientDocumentReceiptPayment',
+	        templateUrl: helper_1.Helper.getGlobalVar('route') + 'template/default/data-box'
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(3, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('Popups')),
+	    __param(8, core_1.Inject('ParentDataService')),
+	    __metadata("design:paramtypes", [core_1.ViewContainerRef,
+	        core_1.Renderer, Object, Object, actions_service_1.ActionsService,
+	        modal_service_1.ModalService, Object, core_1.Injector, Object])
+	], ClientDocumentReceiptPaymentComponent);
+	exports.ClientDocumentReceiptPaymentComponent = ClientDocumentReceiptPaymentComponent;
+
+
+/***/ },
+/* 150 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(34);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var client_document_receipt_payment_form_popup_component_1 = __webpack_require__(151);
+	var ClientDocumentReceiptPaymentFormPopupExtModule = (function () {
+	    function ClientDocumentReceiptPaymentFormPopupExtModule() {
+	    }
+	    return ClientDocumentReceiptPaymentFormPopupExtModule;
+	}());
+	ClientDocumentReceiptPaymentFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
+	        declarations: [
+	            client_document_receipt_payment_form_popup_component_1.ClientDocumentReceiptPaymentFormPopupComponent
+	        ],
+	        exports: [client_document_receipt_payment_form_popup_component_1.ClientDocumentReceiptPaymentFormPopupComponent]
+	    })
+	], ClientDocumentReceiptPaymentFormPopupExtModule);
+	exports.ClientDocumentReceiptPaymentFormPopupExtModule = ClientDocumentReceiptPaymentFormPopupExtModule;
+
+
+/***/ },
+/* 151 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_popup_extension_component_1 = __webpack_require__(82);
+	var form_service_1 = __webpack_require__(54);
+	var ClientDocumentReceiptPaymentFormPopupComponent = (function (_super) {
+	    __extends(ClientDocumentReceiptPaymentFormPopupComponent, _super);
+	    function ClientDocumentReceiptPaymentFormPopupComponent(elementRef, renderer, provider, formService, dataService, _helperService) {
+	        var _this = _super.call(this) || this;
+	        _this._helperService = _helperService;
+	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
+	        _this.decimalConf = _this._helperService.getDecimalConf();
+	        return _this;
+	    }
+	    /**
+	     * onServiceChange
+	     * @param value
+	     */
+	    ClientDocumentReceiptPaymentFormPopupComponent.prototype.onServiceChange = function (value) {
+	        var that = this;
+	        this._dataService.runAction((this._helperService.getGlobalVar('route')
+	            + 'services/service/get-vat-code-percentage/'
+	            + value)).then(function (data) {
+	            if (data['localData']) {
+	                that._formService.getObject()['vatCode_percentage']
+	                    = (data['localData']['vatCodePercentage'] || null);
+	                that.setTotals();
+	            }
+	        }, function (errors) { console.log(errors); return; });
+	    };
+	    /**
+	     * onQuantityEnterKey
+	     * @param value
+	     */
+	    ClientDocumentReceiptPaymentFormPopupComponent.prototype.onQuantityEnterKey = function (value) {
+	        this._formService.getObject()['quantity'] = value; // Value is not yet setted in object
+	        this.setTotals();
+	    };
+	    /**
+	     * onValueEnterKey
+	     * @param value
+	     */
+	    ClientDocumentReceiptPaymentFormPopupComponent.prototype.onValueEnterKey = function (value) {
+	        this._formService.getObject()['user_value'] = value;
+	        this.setTotals();
+	    };
+	    /**
+	     * onIsVatIncludedChange
+	     * @param value
+	     */
+	    ClientDocumentReceiptPaymentFormPopupComponent.prototype.onIsVatIncludedChange = function (value) {
+	        this._formService.getObject()['isVatIncluded'] = value;
+	        this.setTotals();
+	    };
+	    /**
+	     * Set totals
+	     * @returns {ClientDocumentReceiptPaymentFormPopupComponent}
+	     */
+	    ClientDocumentReceiptPaymentFormPopupComponent.prototype.setTotals = function () {
+	        var obj = this._formService.getObject(), quantity = parseFloat(obj['quantity'] || '0'), user_value = parseFloat(obj['user_value'] || '0'), isVatIncluded = obj['isVatIncluded'], vatPercentage = parseFloat(obj['vatCode_percentage'] || '0'), value = user_value, // Unit value without VAT
+	        vatValue = 0;
+	        // Calc VAT value and value
+	        if (vatPercentage > 0) {
+	            if (isVatIncluded) {
+	                value = parseFloat((Math.round((user_value / (1 + (vatPercentage / 100)))
+	                    * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value));
+	                vatValue = (user_value - value);
+	            }
+	            else {
+	                vatValue = parseFloat((Math.round((user_value * (vatPercentage / 100))
+	                    * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator).toFixed(this.decimalConf.unit.value));
+	            }
+	        }
+	        // Value (unit value without VAT)
+	        obj['value'] = value;
+	        // Total vat
+	        obj['totalVat'] = (Math.round((vatValue * quantity)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        var totalUnit = parseFloat((Math.round((value + vatValue)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value));
+	        // Total
+	        obj['total'] = (Math.round(
+	        // Do not use "subTotal" nor "totalVat" to get the "total", because this values are already rounded,
+	        // and in some cases the sum of 2 rounded values cause inquiries.
+	        // Before multiply round the sum to get a coherent total unit value
+	        (totalUnit * quantity)
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        // Sub total
+	        obj['subTotal'] = (Math.round(
+	        // Sub total is determined in this way, because in some cases the sum of "subTotal" and "totalVat"
+	        // rounded does not match with the correct total, given that this values are rounded to 2 decimals
+	        // and lost precision, so in this way we keep the calculus with coherence giving preference to keep
+	        // "totalVat" untouched (legal values).
+	        (parseFloat(obj['total'] || '0') - parseFloat(obj['totalVat'] || '0'))
+	            * this.decimalConf.total.iterator) / this.decimalConf.total.iterator).toFixed(this.decimalConf.total.value);
+	        return this;
+	    };
+	    return ClientDocumentReceiptPaymentFormPopupComponent;
+	}(form_popup_extension_component_1.FormPopupExtensionComponent));
+	ClientDocumentReceiptPaymentFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '#js_clientDocumentReceiptPaymentFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __param(5, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object, Object])
+	], ClientDocumentReceiptPaymentFormPopupComponent);
+	exports.ClientDocumentReceiptPaymentFormPopupComponent = ClientDocumentReceiptPaymentFormPopupComponent;
+
+
+/***/ },
+/* 152 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(34);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var client_document_edit_form_popup_component_1 = __webpack_require__(153);
+	var ClientDocumentEditFormPopupExtModule = (function () {
+	    function ClientDocumentEditFormPopupExtModule() {
+	    }
+	    return ClientDocumentEditFormPopupExtModule;
+	}());
+	ClientDocumentEditFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
+	        declarations: [
+	            client_document_edit_form_popup_component_1.ClientDocumentEditFormPopupComponent
+	        ],
+	        exports: [client_document_edit_form_popup_component_1.ClientDocumentEditFormPopupComponent]
+	    })
+	], ClientDocumentEditFormPopupExtModule);
+	exports.ClientDocumentEditFormPopupExtModule = ClientDocumentEditFormPopupExtModule;
+
+
+/***/ },
+/* 153 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var base_modal_popup_1 = __webpack_require__(48);
+	var helper_1 = __webpack_require__(42);
+	var dynamic_component_loader_service_1 = __webpack_require__(45);
+	var parentId = helper_1.Helper.getGlobalVar('conf')['object']['id'], parentController = helper_1.Helper.getGlobalVar('conf')['localData']['controller']; // Determines the type of booking
+	// INVOICE
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-document/edit-invoice/' + parentId);
+	var client_document_edit_invoice_form_popup_ext_module_1 = __webpack_require__(154);
+	// RECEIPT
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-document/edit-receipt/' + parentId);
+	var client_document_edit_receipt_form_popup_ext_module_1 = __webpack_require__(156);
+	// RECTIFICATION
+	helper_1.Helper.setRuntimeVar('templateUrl', helper_1.Helper.getGlobalVar('route') + 'booking/' + parentController + '-client-document/edit-invoice/' + parentId);
+	var client_document_edit_invoice_rectification_form_popup_ext_module_1 = __webpack_require__(158);
+	var ClientDocumentEditFormPopupComponent = (function (_super) {
+	    __extends(ClientDocumentEditFormPopupComponent, _super);
+	    function ClientDocumentEditFormPopupComponent(elementRef, renderer, _dynamicComponentLoaderService, _injector, _dataService) {
+	        var _this = _super.call(this, elementRef, renderer, null) || this;
+	        _this._dynamicComponentLoaderService = _dynamicComponentLoaderService;
+	        _this._injector = _injector;
+	        _this._dataService = _dataService;
+	        return _this;
+	    }
+	    /**
+	     * Lifecycle callback
+	     */
+	    ClientDocumentEditFormPopupComponent.prototype.ngAfterViewInit = function () {
+	        var that = this, documentType = (this._dataService.getObject()['clientDocumentType_type'] || null), module = null, component = null;
+	        // Determine context
+	        switch (documentType) {
+	            case 'RECEIPT':
+	                module = client_document_edit_receipt_form_popup_ext_module_1.ClientDocumentEditReceiptFormPopupExtModule;
+	                component = 'ClientDocumentEditReceiptFormPopupComponent';
+	                break;
+	            case 'RECTIFICATION':
+	                module = client_document_edit_invoice_rectification_form_popup_ext_module_1.ClientDocumentEditInvoiceRectificationFormPopupExtModule;
+	                component = 'ClientDocumentEditInvoiceRectificationFormPopupComponent';
+	                break;
+	            default:
+	                module = client_document_edit_invoice_form_popup_ext_module_1.ClientDocumentEditInvoiceFormPopupExtModule;
+	                component = 'ClientDocumentEditInvoiceFormPopupComponent';
+	        }
+	        // Load dependency
+	        this._dynamicComponentLoaderService.load(module, component, this.lazyLoadViewContainerRef, this._injector).then(function (componentRef) {
+	            that._onDependencyDismissSubscription = componentRef.instance.onDismissEmitter.subscribe(function (data) {
+	                // Close popup
+	                that.closeAction();
+	            });
+	            return true;
+	        }, function (errors) {
+	            console.log(errors);
+	            return null;
+	        });
+	    };
+	    /**
+	     * Lifecycle callback
+	     */
+	    ClientDocumentEditFormPopupComponent.prototype.ngOnDestroy = function () {
+	        // At this time, the component subscription is already destroyed, so does not need to unsubscribe.
+	        if (this._onDependencyDismissSubscription) {
+	            this._onDependencyDismissSubscription.unsubscribe();
+	        }
+	    };
+	    return ClientDocumentEditFormPopupComponent;
+	}(base_modal_popup_1.BaseModalPopup));
+	__decorate([
+	    core_1.ViewChild('js_lazyLoadContainer', { read: core_1.ViewContainerRef }),
+	    __metadata("design:type", core_1.ViewContainerRef)
+	], ClientDocumentEditFormPopupComponent.prototype, "lazyLoadViewContainerRef", void 0);
+	ClientDocumentEditFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_clientDocumentEditFormPopup',
+	        template: "<template #js_lazyLoadContainer></template>"
+	    }),
+	    __param(4, core_1.Inject('DataService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer,
+	        dynamic_component_loader_service_1.DynamicComponentLoaderService,
+	        core_1.Injector, Object])
+	], ClientDocumentEditFormPopupComponent);
+	exports.ClientDocumentEditFormPopupComponent = ClientDocumentEditFormPopupComponent;
+
+
+/***/ },
+/* 154 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(34);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var client_document_edit_invoice_form_popup_component_1 = __webpack_require__(155);
+	var ClientDocumentEditInvoiceFormPopupExtModule = (function () {
+	    function ClientDocumentEditInvoiceFormPopupExtModule() {
+	    }
+	    return ClientDocumentEditInvoiceFormPopupExtModule;
+	}());
+	ClientDocumentEditInvoiceFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
+	        declarations: [
+	            client_document_edit_invoice_form_popup_component_1.ClientDocumentEditInvoiceFormPopupComponent
+	        ],
+	        exports: [client_document_edit_invoice_form_popup_component_1.ClientDocumentEditInvoiceFormPopupComponent]
+	    })
+	], ClientDocumentEditInvoiceFormPopupExtModule);
+	exports.ClientDocumentEditInvoiceFormPopupExtModule = ClientDocumentEditInvoiceFormPopupExtModule;
+
+
+/***/ },
+/* 155 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_service_1 = __webpack_require__(54);
+	var dynamic_component_loader_service_1 = __webpack_require__(45);
+	var post_service_1 = __webpack_require__(43);
+	var base_client_invoice_document_form_popup_ext_component_1 = __webpack_require__(126);
+	var ClientDocumentEditInvoiceFormPopupComponent = (function (_super) {
+	    __extends(ClientDocumentEditInvoiceFormPopupComponent, _super);
+	    function ClientDocumentEditInvoiceFormPopupComponent(elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initBaseClientInvoiceDocumentFormPopupExtComponent.call(_this, elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService);
+	        return _this;
+	    }
+	    return ClientDocumentEditInvoiceFormPopupComponent;
+	}(base_client_invoice_document_form_popup_ext_component_1.BaseClientInvoiceDocumentFormPopupExtComponent));
+	ClientDocumentEditInvoiceFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_clientDocumentEditFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('ParentDataService')),
+	    __param(7, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object, core_1.Injector, Object, Object, dynamic_component_loader_service_1.DynamicComponentLoaderService,
+	        post_service_1.PostService])
+	], ClientDocumentEditInvoiceFormPopupComponent);
+	exports.ClientDocumentEditInvoiceFormPopupComponent = ClientDocumentEditInvoiceFormPopupComponent;
+
+
+/***/ },
+/* 156 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(34);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var client_document_edit_receipt_form_popup_component_1 = __webpack_require__(157);
+	var ClientDocumentEditReceiptFormPopupExtModule = (function () {
+	    function ClientDocumentEditReceiptFormPopupExtModule() {
+	    }
+	    return ClientDocumentEditReceiptFormPopupExtModule;
+	}());
+	ClientDocumentEditReceiptFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
+	        declarations: [
+	            client_document_edit_receipt_form_popup_component_1.ClientDocumentEditReceiptFormPopupComponent
+	        ],
+	        exports: [client_document_edit_receipt_form_popup_component_1.ClientDocumentEditReceiptFormPopupComponent]
+	    })
+	], ClientDocumentEditReceiptFormPopupExtModule);
+	exports.ClientDocumentEditReceiptFormPopupExtModule = ClientDocumentEditReceiptFormPopupExtModule;
+
+
+/***/ },
+/* 157 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_service_1 = __webpack_require__(54);
+	var dynamic_component_loader_service_1 = __webpack_require__(45);
+	var post_service_1 = __webpack_require__(43);
+	var base_client_receipt_document_form_popup_ext_component_1 = __webpack_require__(143);
+	var ClientDocumentEditReceiptFormPopupComponent = (function (_super) {
+	    __extends(ClientDocumentEditReceiptFormPopupComponent, _super);
+	    function ClientDocumentEditReceiptFormPopupComponent(elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initBaseClientReceiptDocumentFormPopupExtComponent.call(_this, elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService);
+	        return _this;
+	    }
+	    return ClientDocumentEditReceiptFormPopupComponent;
+	}(base_client_receipt_document_form_popup_ext_component_1.BaseClientReceiptDocumentFormPopupExtComponent));
+	ClientDocumentEditReceiptFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_clientDocumentEditFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('ParentDataService')),
+	    __param(7, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object, core_1.Injector, Object, Object, dynamic_component_loader_service_1.DynamicComponentLoaderService,
+	        post_service_1.PostService])
+	], ClientDocumentEditReceiptFormPopupComponent);
+	exports.ClientDocumentEditReceiptFormPopupComponent = ClientDocumentEditReceiptFormPopupComponent;
+
+
+/***/ },
+/* 158 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var ng_bootstrap_1 = __webpack_require__(34);
+	var field_types_extension_module_1 = __webpack_require__(74);
+	var client_document_edit_invoice_rectification_form_popup_component_1 = __webpack_require__(159);
+	var ClientDocumentEditInvoiceRectificationFormPopupExtModule = (function () {
+	    function ClientDocumentEditInvoiceRectificationFormPopupExtModule() {
+	    }
+	    return ClientDocumentEditInvoiceRectificationFormPopupExtModule;
+	}());
+	ClientDocumentEditInvoiceRectificationFormPopupExtModule = __decorate([
+	    core_1.NgModule({
+	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule, ng_bootstrap_1.NgbModule, field_types_extension_module_1.FieldTypesExtensionModule],
+	        declarations: [
+	            client_document_edit_invoice_rectification_form_popup_component_1.ClientDocumentEditInvoiceRectificationFormPopupComponent
+	        ],
+	        exports: [client_document_edit_invoice_rectification_form_popup_component_1.ClientDocumentEditInvoiceRectificationFormPopupComponent]
+	    })
+	], ClientDocumentEditInvoiceRectificationFormPopupExtModule);
+	exports.ClientDocumentEditInvoiceRectificationFormPopupExtModule = ClientDocumentEditInvoiceRectificationFormPopupExtModule;
+
+
+/***/ },
+/* 159 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(3);
+	var helper_1 = __webpack_require__(42);
+	var form_service_1 = __webpack_require__(54);
+	var dynamic_component_loader_service_1 = __webpack_require__(45);
+	var post_service_1 = __webpack_require__(43);
+	var base_client_invoice_rectification_document_form_popup_ext_component_1 = __webpack_require__(133);
+	var ClientDocumentEditInvoiceRectificationFormPopupComponent = (function (_super) {
+	    __extends(ClientDocumentEditInvoiceRectificationFormPopupComponent, _super);
+	    function ClientDocumentEditInvoiceRectificationFormPopupComponent(elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService) {
+	        var _this = _super.call(this) || this;
+	        _super.prototype.initBaseClientInvoiceRectificationDocumentFormPopupExtComponent.call(_this, elementRef, renderer, provider, formService, dataService, injector, parentDataService, helperService, dynamicComponentLoaderService, postService);
+	        return _this;
+	    }
+	    return ClientDocumentEditInvoiceRectificationFormPopupComponent;
+	}(base_client_invoice_rectification_document_form_popup_ext_component_1.BaseClientInvoiceRectificationDocumentFormPopupExtComponent));
+	ClientDocumentEditInvoiceRectificationFormPopupComponent = __decorate([
+	    core_1.Component({
+	        selector: '.js_clientDocumentEditFormPopup',
+	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
+	    }),
+	    __param(2, core_1.Inject('Provider')),
+	    __param(4, core_1.Inject('DataService')),
+	    __param(6, core_1.Inject('ParentDataService')),
+	    __param(7, core_1.Inject('HelperService')),
+	    __metadata("design:paramtypes", [core_1.ElementRef,
+	        core_1.Renderer, Object, form_service_1.FormService, Object, core_1.Injector, Object, Object, dynamic_component_loader_service_1.DynamicComponentLoaderService,
+	        post_service_1.PostService])
+	], ClientDocumentEditInvoiceRectificationFormPopupComponent);
+	exports.ClientDocumentEditInvoiceRectificationFormPopupComponent = ClientDocumentEditInvoiceRectificationFormPopupComponent;
+
+
+/***/ },
+/* 160 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var core_1 = __webpack_require__(3);
+	var common_1 = __webpack_require__(22);
+	var forms_1 = __webpack_require__(30);
+	var entity_address_popup_component_1 = __webpack_require__(161);
 	var EntityAddressPopupModule = (function () {
 	    function EntityAddressPopupModule() {
 	    }
@@ -19226,7 +22117,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 125 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19274,7 +22165,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 126 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19288,30 +22179,30 @@ webpackJsonp([1],[
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
 	var ng_bootstrap_1 = __webpack_require__(34);
-	var supplier_current_account_form_popup_component_1 = __webpack_require__(127);
+	var supplier_document_form_popup_component_1 = __webpack_require__(163);
 	var field_types_extension_module_1 = __webpack_require__(74);
-	var SupplierCurrentAccountFormPopupExtModule = (function () {
-	    function SupplierCurrentAccountFormPopupExtModule() {
+	var SupplierDocumentFormPopupExtModule = (function () {
+	    function SupplierDocumentFormPopupExtModule() {
 	    }
-	    return SupplierCurrentAccountFormPopupExtModule;
+	    return SupplierDocumentFormPopupExtModule;
 	}());
-	SupplierCurrentAccountFormPopupExtModule = __decorate([
+	SupplierDocumentFormPopupExtModule = __decorate([
 	    core_1.NgModule({
 	        imports: [common_1.CommonModule, forms_1.FormsModule, forms_1.ReactiveFormsModule,
 	            field_types_extension_module_1.FieldTypesExtensionModule,
 	            ng_bootstrap_1.NgbModule
 	        ],
 	        declarations: [
-	            supplier_current_account_form_popup_component_1.SupplierCurrentAccountFormPopupComponent
+	            supplier_document_form_popup_component_1.SupplierDocumentFormPopupComponent
 	        ],
-	        exports: [supplier_current_account_form_popup_component_1.SupplierCurrentAccountFormPopupComponent]
+	        exports: [supplier_document_form_popup_component_1.SupplierDocumentFormPopupComponent]
 	    })
-	], SupplierCurrentAccountFormPopupExtModule);
-	exports.SupplierCurrentAccountFormPopupExtModule = SupplierCurrentAccountFormPopupExtModule;
+	], SupplierDocumentFormPopupExtModule);
+	exports.SupplierDocumentFormPopupExtModule = SupplierDocumentFormPopupExtModule;
 
 
 /***/ },
-/* 127 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19336,30 +22227,30 @@ webpackJsonp([1],[
 	var helper_1 = __webpack_require__(42);
 	var form_popup_extension_component_1 = __webpack_require__(82);
 	var form_service_1 = __webpack_require__(54);
-	var SupplierCurrentAccountFormPopupComponent = (function (_super) {
-	    __extends(SupplierCurrentAccountFormPopupComponent, _super);
-	    function SupplierCurrentAccountFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
+	var SupplierDocumentFormPopupComponent = (function (_super) {
+	    __extends(SupplierDocumentFormPopupComponent, _super);
+	    function SupplierDocumentFormPopupComponent(elementRef, renderer, provider, formService, dataService) {
 	        var _this = _super.call(this) || this;
 	        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
 	        return _this;
 	    }
-	    return SupplierCurrentAccountFormPopupComponent;
+	    return SupplierDocumentFormPopupComponent;
 	}(form_popup_extension_component_1.FormPopupExtensionComponent));
-	SupplierCurrentAccountFormPopupComponent = __decorate([
+	SupplierDocumentFormPopupComponent = __decorate([
 	    core_1.Component({
-	        selector: '#js_supplierCurrentAccountFormPopup',
+	        selector: '#js_supplierDocumentFormPopup',
 	        templateUrl: helper_1.Helper.getRuntimeVar('templateUrl')
 	    }),
 	    __param(2, core_1.Inject('Provider')),
 	    __param(4, core_1.Inject('DataService')),
 	    __metadata("design:paramtypes", [core_1.ElementRef,
 	        core_1.Renderer, Object, form_service_1.FormService, Object])
-	], SupplierCurrentAccountFormPopupComponent);
-	exports.SupplierCurrentAccountFormPopupComponent = SupplierCurrentAccountFormPopupComponent;
+	], SupplierDocumentFormPopupComponent);
+	exports.SupplierDocumentFormPopupComponent = SupplierDocumentFormPopupComponent;
 
 
 /***/ },
-/* 128 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19377,7 +22268,7 @@ webpackJsonp([1],[
 	var search_module_1 = __webpack_require__(61);
 	var expander_module_1 = __webpack_require__(62);
 	var search_pagination_module_1 = __webpack_require__(68);
-	var observation_component_1 = __webpack_require__(129);
+	var observation_component_1 = __webpack_require__(165);
 	var ObservationExtensionModule = (function () {
 	    function ObservationExtensionModule() {
 	    }
@@ -19403,7 +22294,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 129 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19454,7 +22345,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 130 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19467,7 +22358,7 @@ webpackJsonp([1],[
 	var core_1 = __webpack_require__(3);
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
-	var booking_observation_form_popup_component_1 = __webpack_require__(131);
+	var booking_observation_form_popup_component_1 = __webpack_require__(167);
 	var BookingObservationFormPopupExtensionModule = (function () {
 	    function BookingObservationFormPopupExtensionModule() {
 	    }
@@ -19486,7 +22377,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 131 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19534,7 +22425,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 132 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19549,7 +22440,7 @@ webpackJsonp([1],[
 	var search_module_1 = __webpack_require__(61);
 	var search_pagination_module_1 = __webpack_require__(68);
 	var expander_module_1 = __webpack_require__(62);
-	var file_component_1 = __webpack_require__(133);
+	var file_component_1 = __webpack_require__(169);
 	var FileModule = (function () {
 	    function FileModule() {
 	    }
@@ -19571,7 +22462,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 133 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19633,7 +22524,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 134 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19646,7 +22537,7 @@ webpackJsonp([1],[
 	var core_1 = __webpack_require__(3);
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
-	var booking_file_form_popup_component_1 = __webpack_require__(135);
+	var booking_file_form_popup_component_1 = __webpack_require__(171);
 	var BookingFileFormPopupExtensionModule = (function () {
 	    function BookingFileFormPopupExtensionModule() {
 	    }
@@ -19665,7 +22556,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 135 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19688,7 +22579,7 @@ webpackJsonp([1],[
 	};
 	var core_1 = __webpack_require__(3);
 	var helper_1 = __webpack_require__(42);
-	var file_form_popup_component_1 = __webpack_require__(136);
+	var file_form_popup_component_1 = __webpack_require__(172);
 	var BookingFileFormPopupComponent = (function (_super) {
 	    __extends(BookingFileFormPopupComponent, _super);
 	    function BookingFileFormPopupComponent(elementRef, renderer, provider, dataService) {
@@ -19711,7 +22602,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 136 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -19732,7 +22623,7 @@ webpackJsonp([1],[
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var Dropzone = __webpack_require__(137);
+	var Dropzone = __webpack_require__(173);
 	var core_1 = __webpack_require__(3);
 	var modal_service_1 = __webpack_require__(44);
 	var helper_1 = __webpack_require__(42);
@@ -19774,7 +22665,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 137 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {
@@ -21545,10 +24436,10 @@ webpackJsonp([1],[
 	
 	}).call(this);
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(138)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(174)(module)))
 
 /***/ },
-/* 138 */
+/* 174 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -21564,7 +24455,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 139 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21578,7 +24469,7 @@ webpackJsonp([1],[
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
 	var expander_module_1 = __webpack_require__(62);
-	var entity_detail_component_1 = __webpack_require__(140);
+	var entity_detail_component_1 = __webpack_require__(176);
 	var EntityDetailModule = (function () {
 	    function EntityDetailModule() {
 	    }
@@ -21597,7 +24488,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 140 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21711,7 +24602,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 141 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21725,7 +24616,7 @@ webpackJsonp([1],[
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
 	var field_types_extension_module_1 = __webpack_require__(74);
-	var local_form_popup_component_1 = __webpack_require__(142);
+	var local_form_popup_component_1 = __webpack_require__(178);
 	var LocalFormPopupExtensionModule = (function () {
 	    function LocalFormPopupExtensionModule() {
 	    }
@@ -21744,7 +24635,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 142 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21792,7 +24683,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 143 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21806,7 +24697,7 @@ webpackJsonp([1],[
 	var common_1 = __webpack_require__(22);
 	var forms_1 = __webpack_require__(30);
 	var field_types_extension_module_1 = __webpack_require__(74);
-	var local_form_popup_component_1 = __webpack_require__(144);
+	var local_form_popup_component_1 = __webpack_require__(180);
 	var LocalFormPopupExtensionModule = (function () {
 	    function LocalFormPopupExtensionModule() {
 	    }
@@ -21825,7 +24716,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 144 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21873,7 +24764,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 145 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21888,7 +24779,7 @@ webpackJsonp([1],[
 	var forms_1 = __webpack_require__(30);
 	var ng_bootstrap_1 = __webpack_require__(34);
 	var field_types_extension_module_1 = __webpack_require__(74);
-	var form_popup_component_1 = __webpack_require__(146);
+	var form_popup_component_1 = __webpack_require__(182);
 	var FormPopupExtensionModule = (function () {
 	    function FormPopupExtensionModule() {
 	    }
@@ -21913,7 +24804,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 146 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21961,7 +24852,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 147 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21976,7 +24867,7 @@ webpackJsonp([1],[
 	var forms_1 = __webpack_require__(30);
 	var ng_bootstrap_1 = __webpack_require__(34);
 	var field_types_extension_module_1 = __webpack_require__(74);
-	var booking_form_popup_component_1 = __webpack_require__(148);
+	var booking_form_popup_component_1 = __webpack_require__(184);
 	var BookingFormPopupExtensionModule = (function () {
 	    function BookingFormPopupExtensionModule() {
 	    }
@@ -21995,7 +24886,7 @@ webpackJsonp([1],[
 
 
 /***/ },
-/* 148 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";

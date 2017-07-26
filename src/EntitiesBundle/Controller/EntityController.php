@@ -293,16 +293,18 @@ class EntityController extends BaseEntityController
 
     /**
      * @Route("/entities/entity/conf",
-     *     name="_entities__entity__conf"
+     *     name="_entities__entity__conf",
+     *     defaults={"context" = null},
      * )
      *
      * Action to get configuration
      * @param Request $request
+     * @param Request $context (context of conf, like index, choices, form)
      * @return mixed
      */
-    public function confAction(Request $request)
+    public function confAction(Request $request, $context = null)
     {
-        return parent::confAction($request);
+        return parent::confAction($request, $context);
     }
 
     /**
