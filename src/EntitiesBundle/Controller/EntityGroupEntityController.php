@@ -44,7 +44,6 @@ class EntityGroupEntityController extends BaseEntityChildController
         parent::initChild($request, $parents, $label);
 
         // Variables
-        $this->localConf['form']['buttons'] = 'none';
         $this->localConf['templates']['edit'] = 'EntitiesBundle:EntityGroupEntity:form.html.twig';
 
         // Search

@@ -51,6 +51,20 @@ class ModuleRepository extends BaseEntityRepository
         }
         return self::$metadata = self::processMetadata(array(
             'id' => array('label' => 'Id', 'type' => 'number', 'acl' => 'read'),
+            'appModuleObj' => array('label' => 'Parent Module', 'type' => 'object', 'acl' => 'edit', 'typeDetail' =>
+                array(
+                    'table' => 'app_module', 'tableAlias' => 'parentAppModule', 'bundle' => 'sysadmin', 'type' => 'none', 'isRequired' => false,
+                    'choices' => array(
+                        'autoRefresh' => true, 'selfReference' => true
+                    )
+                ),
+                'isRequired' => false,
+                'form' => array('type' => 'tree-view')
+            ),
+            'appModule_name' => array('table' => 'parentAppModule', 'field' => 'name', 'label' => 'Parent Module', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'appModuleObj', 'form' => array('type' => 'none')),
+            'icon' => array('table' => 'app_icon', 'field' => 'icon', 'label' => 'Icon', 'type' => 'icon',
+                'acl' => 'read', 'dependency' => 'appIconObj', 'form' => array('type' => 'none')),
             'name' => array('label' => 'Name', 'type' => 'text', 'acl' => 'edit'),
             'description' => array('label' => 'Description', 'type' => 'text', 'acl' => 'edit'),
             'priority' => array('label' => 'Priority', 'type' => 'number', 'acl' => 'edit'),
@@ -59,8 +73,6 @@ class ModuleRepository extends BaseEntityRepository
                 'choices' => array('query' => 'getChoices')), 'isRequired' => false,
                 'form' => array('type' => 'html-select')
             ),
-            'icon' => array('table' => 'app_icon', 'field' => 'icon', 'label' => 'Icon', 'type' => 'icon',
-                'acl' => 'read', 'dependency' => 'appIconObj', 'form' => array('type' => 'none')),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
             'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)

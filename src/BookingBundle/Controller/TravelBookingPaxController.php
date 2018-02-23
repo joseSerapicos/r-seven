@@ -20,9 +20,12 @@ class TravelBookingPaxController extends BaseEntityChildController
         // Set configuration only once
         if($this->isInitialized) { return $this; }
 
+        // Menu
+        $this->templateConf['selectedMenu']['route'] = '_booking__travel_booking__index';
+
         // Parent route
         $this->parentConf = array(
-            'travelBooking' => array('route' => '_booking__travel_booking__index')
+            'booking' => array('route' => '_booking__booking__index')
         );
 
         // Route
@@ -54,83 +57,83 @@ class TravelBookingPaxController extends BaseEntityChildController
     }
 
     /**
-     * @Route("/booking/travel-booking-pax/get/{travelBooking}/{id}",
+     * @Route("/booking/travel-booking-pax/get/{booking}/{id}",
      *     name="_booking__travel_booking_pax__get",
      *     defaults={"id" = null}
      * )
      *
      * Overrides parent method
      * @param Request $request
-     * @param $travelBooking
+     * @param $booking
      * @param $id
      * @return mixed
      */
-    public function getLocalChildAction(Request $request, $travelBooking, $id)
+    public function getLocalChildAction(Request $request, $booking, $id)
     {
-        return parent::getChildAction($request, array($travelBooking), $id);
+        return parent::getChildAction($request, array($booking), $id);
     }
 
     /**
-     * @Route("/booking/travel-booking-pax/edit/{travelBooking}/{id}",
+     * @Route("/booking/travel-booking-pax/edit/{booking}/{id}",
      *     name="_booking__travel_booking_pax__edit",
      *     defaults={"id" = null}
      * )
      *
      * Overrides parent method
      * @param Request $request
-     * @param $travelBooking
+     * @param $booking
      * @param $id
      * @return mixed
      */
-    public function editLocalChildAction(Request $request, $travelBooking, $id)
+    public function editLocalChildAction(Request $request, $booking, $id)
     {
-        return parent::editChildAction($request, array($travelBooking), $id);
+        return parent::editChildAction($request, array($booking), $id);
     }
 
     /**
-     * @Route("/booking/travel-booking-pax/delete/{travelBooking}/{id}",
+     * @Route("/booking/travel-booking-pax/delete/{booking}/{id}",
      *     name="_booking__travel_booking_pax__delete",
      *     defaults={"id" = null}
      * )
      *
      * Overrides parent method
      * @param Request $request
-     * @param $travelBooking
+     * @param $booking
      * @param $id
      * @return mixed
      */
-    public function deleteLocalChildAction(Request $request, $travelBooking, $id)
+    public function deleteLocalChildAction(Request $request, $booking, $id)
     {
-        return parent::deleteChildAction($request, array($travelBooking), $id);
+        return parent::deleteChildAction($request, array($booking), $id);
     }
 
     /**
-     * @Route("/booking/travel-booking-pax/data/{travelBooking}",
+     * @Route("/booking/travel-booking-pax/data/{booking}",
      *     name="_booking__travel_booking_pax__data"
      * )
      *
      * Overrides parent method
      * @param Request $request
-     * @param $travelBooking
+     * @param $booking
      * @return mixed
      */
-    public function dataLocalChildAction(Request $request, $travelBooking)
+    public function dataLocalChildAction(Request $request, $booking)
     {
-        return parent::dataChildAction($request, array($travelBooking));
+        return parent::dataChildAction($request, array($booking));
     }
 
     /**
-     * @Route("/booking/travel-booking-pax/conf/{travelBooking}",
+     * @Route("/booking/travel-booking-pax/conf/{booking}",
      *     name="_booking__travel_booking_pax__conf"
      * )
      *
      * Overrides parent method
      * @param Request $request
-     * @param $travelBooking
+     * @param $booking
      * @return mixed
      */
-    public function confLocalChildAction(Request $request, $travelBooking)
+    public function confLocalChildAction(Request $request, $booking)
     {
-        return parent::confChildAction($request, array($travelBooking));
+        return parent::confChildAction($request, array($booking));
     }
 }

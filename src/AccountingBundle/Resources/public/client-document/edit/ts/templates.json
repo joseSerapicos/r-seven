@@ -1,0 +1,7 @@
+{
+  "invoice-form-popup": "http://weboffice.whs.dev.com/app_dev.php/accounting/client-document/edit-invoice",
+  "invoice-rectification-form-popup": "http://weboffice.whs.dev.com/app_dev.php/accounting/client-document/edit-invoice",
+  "receipt-form-popup": "http://weboffice.whs.dev.com/app_dev.php/accounting/client-document/edit-receipt",
+  "receipt-payment-form-popup": "http://weboffice.whs.dev.com/app_dev.php/accounting/client-document/edit-payment",
+  "receipt-settlement-form-popup": "http://weboffice.whs.dev.com/app_dev.php/accounting/client-document/edit-receipt-settlement"
+}

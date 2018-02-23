@@ -1,4 +1,4 @@
-import {Component, ElementRef, Renderer} from '@angular/core';
+import {Component, ElementRef, Renderer, Optional} from '@angular/core';
 import {BaseProvider} from './base-provider';
 
 // Re-exports
@@ -19,11 +19,11 @@ export abstract class BaseComponent {
         protected _renderer: Renderer,
         // This provider can becomes any provider defined by your child
         // (don't need the "inject" because it's a static class, so will be provider by children components)
-        protected _provider: BaseProvider
+        @Optional() protected _provider: BaseProvider = {}
     ) {
         // Set defaults
         if (!this._provider) {
-            this._provider = [];
+            this._provider = {};
         }
 
         // Set main class

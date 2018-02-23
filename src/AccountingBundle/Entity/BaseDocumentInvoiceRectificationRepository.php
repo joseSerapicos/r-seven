@@ -14,10 +14,19 @@ use AppBundle\Service\HelperService;
 abstract class BaseDocumentInvoiceRectificationRepository extends BaseEntityRepository
 {
     /**
-     * Get context (it needs to be implemented by children to get the correct context <client, supplier, entity>)
-     * @return string
+     * Get Local Entity Context.
+     * @return mixed (lowerCamelCase)
      */
-    abstract protected function getContext();
+    abstract protected function getLocalEntityContext();
+
+    /**
+     * Get entity context (it needs to be implemented by children to get the correct context <client, supplier, entity>)
+     * @param $isUpperCase
+     * @return mixed (lowerCamelCase)
+     */
+    public function getEntityContext($isUpperCase = false) {
+        return ($isUpperCase ? ucfirst($this->getLocalEntityContext()) : $this->getLocalEntityContext());
+    }
 
     /**
      * Get local metadata (it needs to be implemented by children to get static variable with local metadata from parent)

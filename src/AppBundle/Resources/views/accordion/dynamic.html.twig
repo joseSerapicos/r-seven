@@ -1,0 +1,22 @@
+{# define panels in the follow way: "'panel1', 'panel2', 'paneln'" #}
+{% extends 'AppBundle:accordion:default.html.twig' %}
+
+{% block panels %}
+    <ng-template ngFor let-panel [ngForOf]="[{{panels}}]" let-index="index">
+        {% block panel_restriction_start %}{% endblock %}
+        <div (click)="_navManagerService.navToAction(index)"
+             class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse"
+                       data-parent="#accordion{{_id}}"
+                       href="#panel{% verbatim %}{{index}}{% endverbatim %}{{_id}}">{% block panel_label %}{% endblock %}</a>
+                </h4>
+            </div>
+            <div id="panel{% verbatim %}{{index}}{% endverbatim %}{{_id}}" class="panel-collapse collapse m-t-sm">
+                {% block panel_container %}{% endblock %}
+            </div>
+        </div>
+        {% block panel_restriction_end %}{% endblock %}
+    </ng-template>
+{% endblock %}

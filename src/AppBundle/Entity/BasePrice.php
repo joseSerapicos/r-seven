@@ -11,6 +11,11 @@ use Doctrine\ORM\Mapping as ORM;
 class BasePrice extends BaseEntity
 {
     /**
+     * @ORM\Column(name="isVatIncluded", type="boolean", nullable=true, unique=false, options={"default":0, "comment":"Controls how to return the fake fields user_..."})
+     */
+    protected $isVatIncluded;
+
+    /**
      * @ORM\Column(name="costValue", type="decimal", scale=4, nullable=false, unique=false, options={"default":"0", "comment":"Cost value"})
      */
     protected $costValue;
@@ -34,10 +39,31 @@ class BasePrice extends BaseEntity
     /**
      * @ORM\Column(name="userFieldTyped", type="string", length=6, nullable=false, unique=false, options={"comment":"Field typed by user (COST or SELL)"})
      *
-     * Field typed by user, is necessary to be able to check ans recalculate results.
+     * Field typed by user in form, it's necessary to be able to validate calc in back-office (remaking the same calc)
+     * and save in database if there is a need for an audit.
      */
     protected $userFieldTyped; // [COST, SELL]
 
+
+    /**
+     * Set isVatIncluded
+     * @param $isVatIncluded
+     * @return $this
+     */
+    public function setIsVatIncluded($isVatIncluded)
+    {
+        $this->isVatIncluded = $isVatIncluded;
+        return $this;
+    }
+
+    /**
+     * Get isVatIncluded
+     * @return \DateTime
+     */
+    public function getIsVatIncluded()
+    {
+        return $this->isVatIncluded;
+    }
 
     /**
      * Set costValue
@@ -124,7 +150,6 @@ class BasePrice extends BaseEntity
     public function setSellValue($sellValue)
     {
         $this->sellValue = $sellValue;
-
         return $this;
     }
 

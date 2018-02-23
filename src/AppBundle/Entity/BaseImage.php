@@ -103,8 +103,8 @@ class BaseImage extends BaseFile {
             $firstPartialPath = substr($path, 0, strripos($path, '.'));
             $lastPartialPath = substr($path, strripos($path, '.'));
 
-            if (file_exists($firstPartialPath . '.original' . $lastPartialPath)) { // Backup of original file
-                unlink($firstPartialPath . '.original' . $lastPartialPath);
+            if (file_exists($firstPartialPath . '.rectification' . $lastPartialPath)) { // Backup of original file
+                unlink($firstPartialPath . '.rectification' . $lastPartialPath);
             }
             if (file_exists($firstPartialPath . '.thumbnail-128' . $lastPartialPath)) { // Thumbnail of 128px of file
                 unlink($firstPartialPath . '.thumbnail-128' . $lastPartialPath);

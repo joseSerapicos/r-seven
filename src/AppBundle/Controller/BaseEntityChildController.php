@@ -236,12 +236,12 @@ abstract class BaseEntityChildController extends BaseEntityController
      * @param $id
      * @return mixed
      */
-    public function disableChildAction(Request $request, $parents, $id)
+    public function cancelChildAction(Request $request, $parents, $id)
     {
         // Set configuration
         $this->initChild($request, $parents);
 
-        return parent::disableAction($request, $id);
+        return parent::cancelAction($request, $id);
     }
 
     /**
@@ -347,6 +347,9 @@ abstract class BaseEntityChildController extends BaseEntityController
                 $this->flags['parent'] = $parentId;
                 $obj = $this->getObjectFromSS($parentId);
 
+                //var_dump($parentId);
+                //$this->container->get('app.service.session_storage')->debug();
+
                 // Parent defined storage as session, so objects do not be marked as session storage,
                 // this child objects are like a database objects for parent,
                 // generally this occurs during parent definition like wizard forms
@@ -443,8 +446,16 @@ abstract class BaseEntityChildController extends BaseEntityController
     protected function setObjectParents($object) {
         foreach ($this->parentConf as $parentKey => $parentConf) {
             if ($parentConf['obj']) {
+                // Parent can be a direct field or a foreign field (in case of merge tables)
+                $metadata = $this->localConf['entityFields'][$parentConf['fieldObj']];
+                $dependency = (isset($metadata['dependency']) ? $metadata['dependency'] : null);
+                $objContainer = ($dependency
+                    ? $this->getDependencyObjectContainer($object, $dependency)
+                    : $object
+                );
+
                 $method = ('set' . ucfirst($parentConf['fieldObj']));
-                $object->$method($parentConf['obj']);
+                $objContainer->$method($parentConf['obj']);
             }
         }
 

@@ -1,14 +1,6 @@
 {% extends 'AppBundle::base-popup.html.twig' %}
-{% block header_container %}Form&nbsp;{% verbatim %}{{getProviderAttr('label')}}{% endverbatim %}<small>&nbsp;({% verbatim %}{{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}}{% endverbatim %})</small>{% endblock %}
 {% block before_container %}{% endblock %}
-{% block body %}
-    {% include 'AppBundle:data-box:header.html.twig' %}
-
-    {% include 'AppBundle:data-box:body-start.html.twig' %}
-    {% block body_container %}{% endblock %}
-    {% include 'AppBundle:data-box:body-end.html.twig' %}
-
-    {% include 'AppBundle:data-box:footer.html.twig' %}
-{% endblock %}
+{% block header_container %}Form&nbsp;{% verbatim %}{{getProviderAttr('label')}}{% endverbatim %}<small>&nbsp;({% verbatim %}{{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}}{% endverbatim %})</small>{% endblock %}
+{% block body %}{% endblock %}
 {% block footer_container %}{% endblock %}
 {% block after_container %}{% endblock %}

@@ -18,7 +18,7 @@ class ClientDocumentInvoiceDetailRepository extends BaseDocumentInvoiceDetailRep
      * Defines parent method
      * @return string
      */
-    protected function getContext()
+    protected function getLocalEntityContext()
     {
         return 'client';
     }
@@ -56,16 +56,16 @@ class ClientDocumentInvoiceDetailRepository extends BaseDocumentInvoiceDetailRep
             'clientDocumentObj' => array('label' => '', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array('table' => 'clientDocument', 'bundle' => 'accounting', 'type' => 'none')),
             // Foreign fields (this fields are mandatory for search in add document invoice rectification (tree-view))
-            'clientDocument_code' => array('label' => 'Code', 'table' => '',
+            'document_code' => array('label' => 'Doc. Code', 'table' => '',
                 'field' => 'CONCAT(clientDocument.codePrefix, clientDocument.codeNumber)',
                 'dependency' => 'clientDocumentObj', 'type' => 'code', 'acl' => 'read',
                 'normalizer' => array('method' => 'getCode')
             ),
-            'clientDocument_date' => array('table' => 'clientDocument', 'field' => 'date', 'label' => 'Date',
+            'document_date' => array('table' => 'clientDocument', 'field' => 'date', 'label' => 'Doc. Date',
                 'type' => 'date', 'acl' => 'read', 'dependency' => 'clientDocumentObj',
                 'form' => array('type' => 'none')
             ),
-            'clientDocument_dueDate' => array('table' => 'clientDocument', 'field' => 'dueDate', 'label' => 'Due Date',
+            'document_dueDate' => array('table' => 'clientDocument', 'field' => 'dueDate', 'label' => 'Doc. Due Date',
                 'type' => 'date', 'acl' => 'read', 'dependency' => 'clientDocumentObj',
                 'form' => array('type' => 'none')
             ),
@@ -75,10 +75,11 @@ class ClientDocumentInvoiceDetailRepository extends BaseDocumentInvoiceDetailRep
                     'bundle' => 'accounting', 'type' => 'none'),
                 'dependency' => 'clientDocumentObj'
             ),
-            'clientDocumentType_name' => array('table' => 'clientDocumentType', 'field' => 'name',
-                'label' => 'Doc. Name',
-                'type' => 'text', 'acl' => 'read', 'dependency' => 'clientDocumentTypeObj'
-            ),
+            'documentType_name' => array('table' => 'clientDocumentType', 'field' => 'name',
+                'label' => 'Doc. Type',
+                'type' => 'text', 'acl' => 'read', 'dependency' => 'clientDocumentTypeObj',
+                'form' => array('type' => 'none')
+            )
         ));
 
         return self::$metadata = HelperService::pushIntoArray($parentMetadata, $localMetadata, 'id');

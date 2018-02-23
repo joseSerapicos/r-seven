@@ -12,7 +12,12 @@
                     </div>
                     {% block before_container %}{% endblock %}
                     <div class="ibox-content">{% block body %}{% endblock %}</div>
-                    {% block footer %}<div class="ibox-footer hide-on-empty">{% block footer_container %}{% endblock %}</div>{% endblock %}
+                    {% block footer %}<div class="ibox-footer hide-on-empty">{% block footer_container %}
+                        <div class="form-horizontal"><div class="form-group"><div class="col-sm-10 col-sm-offset-2">
+                            {#<button *ngIf="isDialog" class="btn btn-default" (click)="closeAction($event, false)">Cancel</button>#}
+                            <button class="btn btn-primary" (click)="closeAction($event, true)">Ok</button>
+                        </div></div></div>
+                    {% endblock %}</div>{% endblock %}
                     {% block after_container %}{% endblock %}
                 </div>
             </div>

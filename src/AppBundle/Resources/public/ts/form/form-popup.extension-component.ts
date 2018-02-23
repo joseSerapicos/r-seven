@@ -29,8 +29,8 @@ export abstract class FormPopupExtensionComponent extends FormExtensionComponent
      * @param dataService
      */
     public initFormPopupExtensionComponent(
-        elementRef: ElementRef,
-        renderer: Renderer,
+        elementRef: any,
+        renderer: any,
         provider: FormProvider,
         formService: any,
         dataService: any

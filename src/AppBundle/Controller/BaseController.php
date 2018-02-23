@@ -16,9 +16,11 @@ abstract class BaseController extends Controller
         'storage' => 'db', // Default storage
         'parent' => null // Parent id used in some features like SessionStorage
     );
+
     // Local configuration
     protected $localConf = array();
-    // Template/view configuration
+
+    // Template/view configuration to send from controller to template app (angular)
     protected $templateConf = array(
         // Initialized here to avoid "undefined index",
         // in some cases the definition of this indices in the code login can be not reached.
@@ -28,19 +30,25 @@ abstract class BaseController extends Controller
             'menu' => null,
             'acl' => null
         ),
-        'label' => null
+        'label' => null,
+        // Local specific custom data of controller to sent to template app (angular)
+        'localData' => array('template' => array(), 'data' => array())
     );
-    // Response to send after process request
+
+    // Response configuration to send after process request from controller to template/view (twig)
     protected $responseConf = array(
         'status' => 1, // [1: success, 0: error]
         'errors' => array(),
         'flashMessages' => array(), // (error, warning, info and success messages)
         'hasConf' => false,
-        'localData' => array(), // Local specific custom data of controller to sent to template
-        'addObjectSessionStorageFlag' => true // Mark session storage object with a flag to be identified by template
+        'addObjectSessionStorageFlag' => true, // Mark session storage object with a flag to be identified by template
+        // Local specific custom data of controller to sent to template/view (twig)
+        'localData' => array('template' => array(), 'data' => array()),
     );
+
     // Controls if controller has been initialized
     protected $isInitialized = false;
+
 
     /**
      * Initialization. Set all basic configuration
@@ -58,6 +66,14 @@ abstract class BaseController extends Controller
         HelperService::setGlobalVar('filesRepository', $this->get('session')->get('_app.system')['filesRepository']);
         HelperService::setGlobalVar('isAdmin', $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN'));
         HelperService::setGlobalVar('loggedUserId', $this->get('session')->get('_app.user')['id']);
+        // This parameter is used to generate the token. We need to use the same parameter value in forms,
+        // controllers and views, in order to generate always the same token regardless of the context
+        // (because static views).
+        // So we use the value defined in "./app/config/parameters.yml" "parameters:secret" for all contexts,
+        // to make it more generic and configurable.
+        // In twig this parameter is accessible trough the configured global parameter "csrf_token_id" (in config.yml).
+        $csrfTokenId = $this->container->getParameter('secret');
+        HelperService::setGlobalVar('csrfTokenId', $csrfTokenId);
 
         // Get request route
         $requestRoute = $request->attributes->get('_route');
@@ -86,7 +102,7 @@ abstract class BaseController extends Controller
         /* /Controller */
 
         /* Debug mode */
-        $this->templateConf['isDebug'] = $kernel = $this->get('kernel')->isDebug();
+        $this->templateConf['isDebug'] = $this->get('kernel')->isDebug();
         /* Debug mode */
 
         /* Selected Menu and ACL */
@@ -104,20 +120,22 @@ abstract class BaseController extends Controller
         // Find the module and menu by route (by session is faster than query database)
         $session = $this->get('session');
         $store = $this->getStoreAttr('id');
-        $modules = $session->get('_app.modules');
-        if ($store) {
-            $modules = array_merge($modules, $session->get('_app.stores')[$store]['modules']);
-        }
-        foreach ($modules as $module) {
-            foreach ($module['menus'] as $menu) {
-                if ($menu['route'] == $this->templateConf['selectedMenu']['route']) {
-                    $this->templateConf['selectedMenu']['module'] = $module['id'];
-                    $this->templateConf['selectedMenu']['menu'] = $menu['id'];
-                    $this->templateConf['selectedMenu']['acl'] = $menu['acl'];
-                    if (empty($this->templateConf['label'])) {
-                        $this->templateConf['label'] = $menu['name'];
+        $modules = ($store ? $session->get('_app.stores')[$store]['modules'] : $session->get('_app.modules'));
+        foreach ($modules as $childModules) { // First level module in tree view
+            foreach ($childModules as $module) { // Second level module in tree view
+                foreach ($module['menus'] as $menu) {
+                    if ($menu['route'] == $this->templateConf['selectedMenu']['route']) {
+                        $this->templateConf['selectedMenu']['module'] = array(
+                            (empty($module['parent']) ? $module['id'] : $module['parent']), // First level of tree view module
+                            $module['id'] // Second level of tree view module
+                        );
+                        $this->templateConf['selectedMenu']['menu'] = $menu['id'];
+                        $this->templateConf['selectedMenu']['acl'] = $menu['acl'];
+                        if (empty($this->templateConf['label'])) {
+                            $this->templateConf['label'] = $menu['name'];
+                        }
+                        break 2;
                     }
-                    break 2;
                 }
             }
         }
@@ -229,6 +247,16 @@ abstract class BaseController extends Controller
     }
 
     /**
+     * Clear flash messages
+     * @return $this
+     */
+    protected function clearFlashMessage()
+    {
+        $this->responseConf['flashMessages'] = array();
+        return $this;
+    }
+
+    /**
      * Debug variable
      * @param $data
      * @param boolean $exit (if true you can see the correct format when the final response is "json")
@@ -273,7 +301,7 @@ abstract class BaseController extends Controller
      */
     protected function checkCsrfToken($csrfToken)
     {
-        if (!$this->isCsrfTokenValid('request-data', $csrfToken)) {
+        if (!$this->isCsrfTokenValid(HelperService::getGlobalVar('csrfTokenId'), $csrfToken)) {
             throw new AuthenticationException('Invalid request');
         }
         return $this;
@@ -310,10 +338,10 @@ abstract class BaseController extends Controller
         // Add conf
         if ($this->responseConf['hasConf']) {
             $data = array_merge($data, $this->templateConf);
+        } else {
+            // Add mandatory conf if is not configured to send
+            $data['localData'] = $this->templateConf['localData'];
         }
-
-        // Add local specific custom data of controller to sent to template
-        $data['localData'] = $this->responseConf['localData'];
 
         // Return json response
         if ($isJson) {
@@ -341,7 +369,10 @@ abstract class BaseController extends Controller
         }
 
         // Return array
-        return array('_conf' => $data);
+        return array(
+            '_conf' => $data,
+            '_localData' => $this->responseConf['localData']
+        );
     }
 
     /**
@@ -414,13 +445,16 @@ abstract class BaseController extends Controller
         $storeAcl = array();
 
         if ($storeId && $resource) {
+            // Get store acl
             $storeAcl = $session->get('_app.stores')[$storeId]['acl'];
+
             $resource = explode(':', $resource);
             foreach ($resource as $resourceIndex) {
                 if (isset($storeAcl[$resourceIndex])) {
+                    // Go into acl array according with $resource array index
                     $storeAcl = $storeAcl[$resourceIndex];
                 } else {
-                    // If resource not found, return only the store itself.
+                    // Acl array index not found, return only the store itself.
                     $storeAcl = array($storeId);
                     break;
                 }

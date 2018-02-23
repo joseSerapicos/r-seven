@@ -123,4 +123,48 @@ class BookingSettingController extends BaseEntityController
     {
         return parent::dataAction($request);
     }
+
+    /**
+     * Overrides parent function
+     * @param $object
+     * @param $data (usually the form data)
+     * @return bool
+     */
+    protected function preSaveObject(&$object, $data) {
+        $prefix = $object->getSeriesPrefix();
+        $prefix = ($prefix ? $prefix : '');
+        $number = ($object->getSeriesNumber());
+
+        $results = $this->getRepositoryService("Booking", 'BookingBundle')
+            ->execute(
+                'queryBuilder',
+                array(
+                    array(
+                        'fields' => array(
+                            'id'
+                        ),
+                        'criteria' => array(
+                            array('field' => 'booking.codePrefix', 'expr' => 'eq', 'value' => $prefix),
+                            // There can not be a greater number than $number, otherwise $number can reach the greater
+                            // number and shuffle the series
+                            array('field' => 'booking.codeNumber', 'expr' => 'gt', 'value' => $number)
+                        ),
+                        'limit' => 1
+                    )
+                )
+            );
+
+        if (empty($results)) {
+            return true;
+        }
+
+        $this->responseConf['status'] = 0;
+        $this->addFlashMessage(
+            'This series is already in use.',
+            'Data not persisted',
+            'error'
+        );
+
+        return false;
+    }
 }

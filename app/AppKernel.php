@@ -28,6 +28,8 @@ class AppKernel extends Kernel
             new AccountingBundle\AccountingBundle(),
             new BookingBundle\BookingBundle(),
             new UserBundle\UserBundle(),
+            new CommonBundle\CommonBundle(),
+            new ManagementBundle\ManagementBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

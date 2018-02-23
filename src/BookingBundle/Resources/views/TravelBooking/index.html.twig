@@ -11,14 +11,16 @@
 {% block header %}{% endblock %}
 
 {% block body_container %}
+    <div class="js_appBasics"></div>
     <div class="js_dataBox"></div>
 {% endblock %}
 
 {% block local_javascripts %}
-    {% javascripts output="assets/booking/travel-booking/index/js/main.js"
-        '@BookingBundle/Resources/public/base-booking/index/webpack_generated/common.js'
-        '@BookingBundle/Resources/public/base-booking/index/webpack_generated/app.js'
-        '@BookingBundle/Resources/public/base-booking/index/webpack_generated/main.js'
+    {% javascripts output="assets/booking/travel-booking/index/js/local.js"
+        '@BookingBundle/Resources/public/travel-booking/index/ts/dist/inline.bundle.js'
+        '@BookingBundle/Resources/public/travel-booking/index/ts/dist/polyfills.bundle.js'
+        '@BookingBundle/Resources/public/travel-booking/index/ts/dist/vendor.bundle.js'
+        '@BookingBundle/Resources/public/travel-booking/index/ts/dist/main.bundle.js'
     %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}

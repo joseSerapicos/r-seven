@@ -26,8 +26,16 @@ class ClientDocumentTypeSettingRepository extends BaseDocumentTypeSettingReposit
         $parentMetadata = parent::getMetadata();
 
         $localMetadata = self::processMetadata(array(
-            'clientDocumentTypeObj' => array('label' => 'Document Type', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(
-                'table' => 'clientDocumentType', 'bundle' => 'accounting', 'type' => 'select'))
+            'clientDocumentTypeObj' => array('label' => 'Document Type', 'type' => 'object', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'table' => 'clientDocumentType', 'bundle' => 'accounting', 'type' => 'none'
+                ),
+                'form' => array('type' => 'select')
+            ),
+            'documentType_name' => array('field' => 'name', 'table' => 'clientDocumentType', 'label' => 'Document Type',
+                'type' => 'text', 'acl' => 'read', 'dependency' => 'clientDocumentTypeObj',
+                'form' => array('type' => 'none')
+            )
         ));
 
         return self::$metadata = HelperService::pushIntoArray($parentMetadata, $localMetadata, 'id');

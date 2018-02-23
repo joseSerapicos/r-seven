@@ -1,0 +1,17 @@
+{% extends 'AppBundle:form:form.html.twig' %}
+
+{% block fields %}
+    {% for field in fields['form'] %}
+
+        {% set fieldMetadata = fields['metadata'][field] %}
+
+        {% if (field == 'serviceObj') %}
+            <ng-template #js_step1Service></ng-template>
+            {% include 'AppBundle:form:field.html.twig' with {
+            'field': field,
+            'metadata': fieldMetadata,
+            'form': form
+            } %}
+        {% endif %}
+    {% endfor %}
+{% endblock %}

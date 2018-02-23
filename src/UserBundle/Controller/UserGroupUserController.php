@@ -41,7 +41,6 @@ class UserGroupUserController extends BaseEntityChildController
         parent::initChild($request, $parents, $label);
 
         // Variables
-        $this->localConf['form']['buttons'] = 'none';
         $this->localConf['templates']['edit'] = 'UserBundle:UserGroupUser:edit.html.twig';
 
         // Search

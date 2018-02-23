@@ -6,24 +6,36 @@
 
     {% if (form and fields) %}
         {% for field in fields['form'] %}
+
+            {% set fieldMetadata = fields['metadata'][field] %}
+
             {% if field == 'clientObj' %}
+
+                {% set formField = ((fieldMetadata['parent'] is defined and fieldMetadata['parent'] is not null)
+                    ? form[fieldMetadata['parent']][field]
+                    : ((form[field] is defined)
+                        ? form[field]
+                        : null
+                    )
+                ) %}
+
                 <div class="form-group">
                     {% include 'AppBundle:form:label.html.twig' with {
-                        'formField': form[field],
-                        'metadata': fields['metadata'][field]
+                        'formField': formField,
+                        'metadata': fieldMetadata
                     } %}
                     <div class="col-sm-10"><div class="row">
                         <div class="col-sm-8">
                             {% include 'AppBundle:form:input.html.twig' with {
                                 'field': field,
-                                'formField': form[field],
-                                'metadata': fields['metadata'][field]
+                                'formField': formField,
+                                'metadata': fieldMetadata
                             } %}
                         </div>
                         <div class="col-sm-4">
                             {% include 'AppBundle:form:input.html.twig' with {
                                 'field': 'clientIsPax',
-                                'formField': form['clientIsPax'],
+                                'formField': form['bookingObj']['clientIsPax'],
                                 'metadata': fields['metadata']['clientIsPax']
                             } %}
                         </div>

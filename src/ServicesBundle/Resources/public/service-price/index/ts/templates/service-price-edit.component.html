@@ -1,0 +1,213 @@
+<div class="modal-body">
+    <div class="form-wrapper gray-bg">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>
+                        <div class="txt-align-r actions">
+                            <a class="-round fa fa-times"
+                               (click)="closeAction($event)"></a>
+                        </div>
+                    </div>
+                        
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+                    <div class="ibox-content">        
+                                        
+
+                <div class="form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_description">Description</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_description" name="form[description]" maxlength="64" [(ngModel)]="_formService.getObject().description" formControlName="description" [class.error]="_formService.getErrors().description &amp;&amp; _formService.getErrors().description.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().description">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+                <div class="form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_startDate">Start Date</label>
+    
+            <div class="col-sm-10">
+                                        
+    <div class="input-group js_dataPicker"
+         [datePicker]="'startDate'"
+         #dpk_startDate="" [control]="dpk_startDate">
+        <input [(ngModel)]="_formService.getObject().startDate"
+               formControlName = startDate
+               name="form[startDate]"
+               required="required"               class="form-control"
+               [class.error]="_formService.getErrors()['startDate'] && (_formService.getErrors()['startDate'].length > 0)"
+               placeholder="yyyy-mm-dd"
+               ngbDatepicker #dpk_startDate="ngbDatepicker">
+        <a class="input-group-addon action dsp-table-cell fa fa-calendar"></a>
+    </div>
+    
+                <label class="error" *ngFor="let error of _formService.getErrors().startDate">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+                <div class="form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_endDate">End Date</label>
+    
+            <div class="col-sm-10">
+                                        
+    <div class="input-group js_dataPicker"
+         [datePicker]="'endDate'"
+         #dpk_endDate="" [control]="dpk_endDate">
+        <input [(ngModel)]="_formService.getObject().endDate"
+               formControlName = endDate
+               name="form[endDate]"
+               required="required"               class="form-control"
+               [class.error]="_formService.getErrors()['endDate'] && (_formService.getErrors()['endDate'].length > 0)"
+               placeholder="yyyy-mm-dd"
+               ngbDatepicker #dpk_endDate="ngbDatepicker">
+        <a class="input-group-addon action dsp-table-cell fa fa-calendar"></a>
+    </div>
+    
+                <label class="error" *ngFor="let error of _formService.getErrors().endDate">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+                <div class="form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_targetServiceObj">Target</label>
+    
+            <div class="col-sm-10">
+                                            <div [htmlSelect]="'targetServiceObj'"
+         class="html-select"
+                               >
+        <div class="form-control"
+             [class.error]="_formService.getErrors()['targetServiceObj'] && (_formService.getErrors()['targetServiceObj'].length > 0)">
+            <span class="control">
+                <span class="js_label"></span><a class="pull-right"><i class="fa fa-angle-down"></i></a>
+            </span>
+        </div>
+        <div class="choices js_choices">
+            <ul class="form-control-box">
+                                    <li data-value="7"><i class="fa fa-puzzle-piece"></i> Passeio BTT (7)</li>
+                                    <li data-value="8"><i class="fa fa-puzzle-piece"></i> Trekking Asturias (8)</li>
+                            </ul>
+        </div>
+    </div>
+    <input [(ngModel)]="_formService.getObject().targetServiceObj"
+           formControlName = targetServiceObj
+           name="form[targetServiceObj]"
+                      type="hidden">
+                    <label class="error" *ngFor="let error of _formService.getErrors().targetServiceObj">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+                <div class="form-group" >
+
+                        <label class="col-sm-2 control-label">VAT included</label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label><input type="checkbox" id="form_isVatIncluded" name="form[isVatIncluded]" (change)="onIsVatIncludedChange($event.target.checked)" [(ngModel)]="_formService.getObject().isVatIncluded" formControlName="isVatIncluded" [class.error]="_formService.getErrors().isVatIncluded &amp;&amp; _formService.getErrors().isVatIncluded.length &gt; 0" value="1" /> Is vat included</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().isVatIncluded">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+                                            <input type="hidden" id="form_costValue" name="form[costValue]" [(ngModel)]="_formService.getObject().costValue" formControlName="costValue" [class.error]="_formService.getErrors().costValue &amp;&amp; _formService.getErrors().costValue.length &gt; 0" />
+                <label class="error" *ngFor="let error of _formService.getErrors().costValue">{{error}}</label>
+                                                    
+
+                <div class="form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_user_costValue">Cost</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_user_costValue" name="form[user_costValue]" (input)="onCostValueEnterKey($event.target.value)" (focusout)="onCostValueEnterKey($event.target.value)" [(ngModel)]="_formService.getObject().user_costValue" formControlName="user_costValue" [class.error]="_formService.getErrors().user_costValue &amp;&amp; _formService.getErrors().user_costValue.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().user_costValue">{{error}}</label>
+            </div>
+        </div>
+                                                                    <div class="form-group">
+                                <label class="col-sm-2 control-label" for="form_marginValue">Margin</label>
+                        <div class="col-sm-10"><div class="row">
+                        <div class="col-sm-6">
+                                                    
+        <select id="form_marginMethod" name="form[marginMethod]" (change)="onMarginMethodChange($event.target.value)" [(ngModel)]="_formService.getObject().marginMethod" formControlName="marginMethod" [class.error]="_formService.getErrors().marginMethod &amp;&amp; _formService.getErrors().marginMethod.length &gt; 0" class="form-control"><option value=""></option>            <option value="MARGIN" >Margin</option>            <option value="MARKUP" >Markup</option>            <option value="FIXED" >Fixed</option></select>
+    <input [(ngModel)]="_formService.getObject().marginMethod"
+           formControlName = marginMethod
+                      type="hidden">
+
+                <label class="error" *ngFor="let error of _formService.getErrors().marginMethod">{{error}}</label>
+                        </div>
+                        <div class="col-sm-6">
+                                                        <input type="text" id="form_marginValue" name="form[marginValue]" (input)="onMarginValueEnterKey($event.target.value)" (focusout)="onMarginValueEnterKey($event.target.value)" [(ngModel)]="_formService.getObject().marginValue" formControlName="marginValue" [class.error]="_formService.getErrors().marginValue &amp;&amp; _formService.getErrors().marginValue.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().marginValue">{{error}}</label>
+                        </div>
+                    </div></div>
+                </div>
+                                                                    
+
+                                            <input type="hidden" id="form_sellValue" name="form[sellValue]" [(ngModel)]="_formService.getObject().sellValue" formControlName="sellValue" [class.error]="_formService.getErrors().sellValue &amp;&amp; _formService.getErrors().sellValue.length &gt; 0" />
+                <label class="error" *ngFor="let error of _formService.getErrors().sellValue">{{error}}</label>
+                                                    
+
+                <div class="form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_user_sellValue">Sell</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_user_sellValue" name="form[user_sellValue]" (input)="onSellValueEnterKey($event.target.value)" (focusout)="onSellValueEnterKey($event.target.value)" [(ngModel)]="_formService.getObject().user_sellValue" formControlName="user_sellValue" [class.error]="_formService.getErrors().user_sellValue &amp;&amp; _formService.getErrors().user_sellValue.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().user_sellValue">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+                                            <input type="hidden" id="form_userFieldTyped" name="form[userFieldTyped]" [(ngModel)]="_formService.getObject().userFieldTyped" formControlName="userFieldTyped" [class.error]="_formService.getErrors().userFieldTyped &amp;&amp; _formService.getErrors().userFieldTyped.length &gt; 0" />
+                <label class="error" *ngFor="let error of _formService.getErrors().userFieldTyped">{{error}}</label>
+                                                    
+
+                <div class="form-group" >
+
+                        <label class="col-sm-2 control-label">Enabled</label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().isEnabled">{{error}}</label>
+            </div>
+        </div>
+                            </div>
+                    <div class="ibox-footer hide-on-empty">    
+                    <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                                            <button                                     class="btn"
+                                    (click)="cancelAction($event)"
+                                        id="form_cancel"
+            name="form[cancel]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                                                <button                                     class="btn"
+                                    (click)="resetAction($event)"
+                                        id="form_reset"
+            name="form[reset]"
+            type="button"><i class="fa fa-ban"></i>&nbsp;Reset</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAction($event)"
+                                        id="form_save"
+            name="form[save]"
+            type="button"><i class="fa fa-check"></i>&nbsp;Save</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAndCloseAction($event)"
+                                        id="form_saveAndClose"
+            name="form[saveAndClose]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Save and Close</button>
+                                </div>
+        </div>
+    </div>                        
+    <input type="hidden" id="form__token" name="form[_token]" value="TcyNUc0ivaNc2Bzv96jY_ov6RXK7ED_ZXIRcdRl89Ag" /></form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

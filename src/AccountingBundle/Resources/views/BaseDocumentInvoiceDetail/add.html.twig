@@ -1,0 +1,7 @@
+{% extends 'AppBundle:wizard:popup.html.twig' %}
+
+{% block steps %}
+    {% include 'AppBundle:wizard:lazy-load-container.html.twig' with {'key': 0} %}
+
+    {% include 'AppBundle:wizard:lazy-load-container.html.twig' with {'key': 1} %}
+{% endblock %}

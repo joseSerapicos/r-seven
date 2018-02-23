@@ -13,6 +13,13 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Module extends BaseEntity {
     /**
+     * @ORM\ManyToOne(targetEntity="Module")
+     * @ORM\JoinColumn(name="fkApp_module", referencedColumnName="id", nullable=true, unique=false, onDelete="CASCADE")
+     * Self reference to parent object
+     */
+    protected $appModuleObj;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Icon")
      * @ORM\JoinColumn(name="fkApp_icon", referencedColumnName="id", nullable=true, unique=false, onDelete="SET NULL")
      */
@@ -32,6 +39,26 @@ class Module extends BaseEntity {
      * @ORM\Column(name="priority", type="smallint", nullable=false, unique=false, options={"unsigned":true, "default":0, "comment":"Priority for menu. Determines the order in the modules list"})
      */
     protected $priority;
+
+    /**
+     * Set appModuleObj
+     * @param integer $appModuleObj
+     * @return Module
+     */
+    public function setAppModuleObj($appModuleObj = null)
+    {
+        $this->appModuleObj = $appModuleObj;
+        return $this;
+    }
+
+    /**
+     * Get appModuleObj
+     * @return integer
+     */
+    public function getAppModuleObj()
+    {
+        return $this->appModuleObj;
+    }
 
     /**
      * Set appIconObj

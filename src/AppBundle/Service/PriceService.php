@@ -4,81 +4,79 @@ namespace AppBundle\Service;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Doctrine\ORM\EntityManager;
 
+/**
+ * Class PriceService
+ * This class has static methods to use it in anywhere,
+ * included out of controller like entity repository, etc.
+ * @package AppBundle\Service
+ */
 class PriceService
 {
     // Decimals to use in rounding
     const DECIMAL_CONF = array('unit' => 4, 'total' => 2);
 
     /**
-     * Calc cost price
-     * @param $data
-     * @return float|int
+     * Calc cost value from sell value
+     * @param $value
+     * @param $margin
+     * @param $method
+     * @return float
      */
-    public function calcCostValue($data)
+    public function calcCostValue($value, $margin, $method)
     {
         $result = 0;
 
-        switch ($data['marginMethod']) {
+        // Normalize decimals
+        $value = round($value, self::DECIMAL_CONF['unit']);
+        $margin = round($margin, self::DECIMAL_CONF['unit']);
+
+        switch ($method) {
             case 'MARGIN':
                 // Avoid that margin exceed the limit (100)
-                $marginValue = (($data['marginValue'] < 100) ? $data['marginValue'] : 99.9999); // Avoid division by zero
-                $result = ($data['sellValue'] * (1 - ($marginValue / 100)));
+                $margin = (($margin < 100) ? $margin : 99.9999); // Avoid division by zero
+                $result = ($value * (1 - ($margin / 100)));
                 break;
             case 'MARKUP':
-                $result = ($data['sellValue'] / (1 + ($data['marginValue'] / 100)));
+                $result = ($value / (1 + ($margin / 100)));
                 break;
             case 'FIXED':
-                $result = ($data['sellValue'] - $data['marginValue']);
+                $result = ($value - $margin);
                 break;
         }
-        return round($result, self::DECIMAL_CONF['total']);
+
+        return round($result, self::DECIMAL_CONF['unit']);
     }
 
     /**
-     * Calc sell price
-     * @param $data
-     * @return float|int
+     * Calc sell value from cost value
+     * @param $value
+     * @param $margin
+     * @param $method
+     * @return float
      */
-    public function calcSellValue($data)
+    public function calcSellValue($value, $margin, $method)
     {
         $result = 0;
 
-        switch ($data['marginMethod']) {
+        // Normalize decimals
+        $value = round($value, self::DECIMAL_CONF['unit']);
+        $margin = round($margin, self::DECIMAL_CONF['unit']);
+
+        switch ($method) {
             case 'MARGIN':
                 // Avoid that margin exceed the limit (100)
-                $marginValue = (($data['marginValue'] < 100) ? $data['marginValue'] : 99.9999); // Avoid division by zero
-                $result = ($data['costValue'] / (1 - ($marginValue / 100)));
+                $margin = (($margin < 100) ? $margin : 99.9999); // Avoid division by zero
+                $result = ($value / (1 - ($margin / 100)));
                 break;
             case 'MARKUP':
-                $result = ($data['costValue'] * (1 + ($data['marginValue'] / 100)));
+                $result = ($value * (1 + ($margin / 100)));
                 break;
             case 'FIXED':
-                $result = ($data['costValue'] + $data['marginValue']);
+                $result = ($value + $margin);
                 break;
         }
-        return round($result, self::DECIMAL_CONF['total']);
-    }
 
-    /**
-     * Calc total sell price
-     * @param $data
-     * @return float|int
-     */
-    public function calcTotalSell($data)
-    {
-        $quantity = (isset($data['quantity']) ? $data['quantity'] : 0);
-        return round($data['sellValue'] * $quantity, self::DECIMAL_CONF['total']);
-    }
-
-    /**
-     * Calc total cost price
-     * @param $data
-     * @return float|int
-     */
-    public function calcTotalCost($data)
-    {
-        $quantity = (isset($data['quantity']) ? $data['quantity'] : 0);
-        return round($data['costValue'] * $quantity, self::DECIMAL_CONF['total']);
+        return round($result, self::DECIMAL_CONF['unit']);
     }
 
     /**
@@ -104,32 +102,32 @@ class PriceService
     }
 
     /**
-     * Split Total Unit value
+     * Get Total Unit Value Detail
      * @param $unitValue
      * @param $vatPercentage
      * @param $vatIsIncluded (determines if VAT is included in value or not)
      * @return array
      */
-    public function splitTotalUnit($unitValue, $vatPercentage, $vatIsIncluded = true)
+    public static function getTotalUnitDetail($unitValue, $vatPercentage, $vatIsIncluded = true)
     {
         $value = array();
-        switch ($vatIsIncluded) {
-            case true:
-                $value['value'] = round($unitValue / (1 + ($vatPercentage / 100)), self::DECIMAL_CONF['unit']);
-
-                // We need to adjust the VAT value.
-                // Sometimes the rounded value can produce a different VAT value when it is calculated again
-                // based on the rounded value, since that all forms use the value (rounded without VAT) to make all
-                // calculus, this issue can cause inquiries between forms when try to calc the VAT value again, so we
-                // need to adjust the VAT value according with the rounded value
-                return $this->splitTotalUnit($value['value'], $vatPercentage, false, false);
-            case false:
-                $value['value'] = round($unitValue, self::DECIMAL_CONF['unit']);
-                $value['vatValue'] = round($unitValue * ($vatPercentage / 100), self::DECIMAL_CONF['unit']);
-                break;
+        if ($vatIsIncluded) {
+            // We need to adjust the VAT value.
+            // Sometimes the rounded value can produce a different VAT value when it is calculated again
+            // based on the rounded value, since that all forms use the value (rounded without VAT) to make all
+            // calculus, this issue can cause inquiries between forms when try to calc the VAT value again, so we
+            // need to adjust the VAT value according with the rounded value
+            $unitValue = round($unitValue / (1 + ($vatPercentage / 100)), self::DECIMAL_CONF['unit']);
         }
 
+        // Normalize value decimals
+        $value['value'] = round($unitValue, self::DECIMAL_CONF['unit']);
+
+        // Calculate VAT
+        $value['vatValue'] = round($unitValue * ($vatPercentage / 100), self::DECIMAL_CONF['unit']);
+
         $value['totalUnit'] = round($value['value'] + $value['vatValue'], self::DECIMAL_CONF['total']);
+
         return $value;
     }
 

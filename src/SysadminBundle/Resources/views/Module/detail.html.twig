@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block body_container %}
+    <div class="js_appBasics"></div>
     {{ render(controller(
         'SysadminBundle:ModuleMenu:indexLocalChild',
         { 'module': _conf['object']['id'] }
@@ -15,10 +16,11 @@
 {% endblock %}
 
 {% block local_javascripts %}
-    {% javascripts output="assets/app/data-box/js/local.js"
-        '@AppBundle/Resources/public/data-box/webpack_generated/common.js'
-        '@AppBundle/Resources/public/data-box/webpack_generated/app.js'
-        '@AppBundle/Resources/public/data-box/webpack_generated/main.js'
+    {% javascripts output="assets/sysadmin/module/detail/js/local.js"
+        '@SysadminBundle/Resources/public/module/detail/ts/dist/inline.bundle.js'
+        '@SysadminBundle/Resources/public/module/detail/ts/dist/polyfills.bundle.js'
+        '@SysadminBundle/Resources/public/module/detail/ts/dist/vendor.bundle.js'
+        '@SysadminBundle/Resources/public/module/detail/ts/dist/main.bundle.js'
     %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}

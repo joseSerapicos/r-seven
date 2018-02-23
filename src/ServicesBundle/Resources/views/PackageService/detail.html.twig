@@ -1,0 +1,53 @@
+{% extends 'ServicesBundle:BaseService:detail.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets filter="scssphp" output="assets/services/package-service/detail/css/all.css"
+        '@dropzone_css'
+        '@cropper_css'
+        '@AppBundle/Resources/public/scss/_gallery.scss'
+        '@AppBundle/Resources/public/css/image-crop.css'
+        '@AppBundle/Resources/public/css/wizard.css'
+        '@AppBundle/Resources/public/css/video-player.css'
+        '@AppBundle/Resources/public/scss/select-box.scss'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+
+    <link rel="stylesheet" href="{{ asset('assets/vendor/blueimp-gallery/css/blueimp-gallery.min.css') }}" />
+{% endblock %}
+
+{% block head_javascripts %}
+    {{ parent() }}
+
+    {% set parentId = _conf['object']['id'] %}
+
+    {% set packageServiceServiceData = render(controller(
+        'ServicesBundle:PackageServiceService:dataChild',
+        {'parents': {'packageService': parentId}}
+    )) %}
+
+    <script>
+        _app.dependency.packageServiceService = {{ packageServiceServiceData|raw }};
+    </script>
+{% endblock %}
+
+{% block vendor_javascripts %}
+    {{ parent() }}
+
+    {% javascripts output="assets/services/package-service/detail/js/vendor.js"
+        '@cropper_js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block local_javascripts %}
+    {% javascripts output="assets/services/package-service/detail/js/local.js"
+        '@ServicesBundle/Resources/public/package-service/detail/ts/dist/inline.bundle.js'
+        '@ServicesBundle/Resources/public/package-service/detail/ts/dist/polyfills.bundle.js'
+        '@ServicesBundle/Resources/public/package-service/detail/ts/dist/vendor.bundle.js'
+        '@ServicesBundle/Resources/public/package-service/detail/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

@@ -69,6 +69,11 @@
                 'formField': formField,
                 'field': field
             } %}
+        {% elseif (metadata['type'] == 'hidden-entity') %}
+            {% include 'AppBundle:form:field-types/hidden.html.twig' with {
+                'formField': formField,
+                'field': field
+            } %}
         {% else %}
             {% include 'AppBundle:form:field-types/default.html.twig' with {
                 'formField': formField,

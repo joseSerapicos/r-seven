@@ -11,14 +11,16 @@
 {% endblock %}
 
 {% block body_container %}
+    <div class="js_appBasics"></div>
     <div class="js_dataBox"></div>
 {% endblock %}
 
-{% block local_javascripts %}
-    {% javascripts output="assets/entities/client/index/js/main.js"
-        '@EntitiesBundle/Resources/public/client/index/webpack_generated/common.js'
-        '@EntitiesBundle/Resources/public/client/index/webpack_generated/app.js'
-        '@EntitiesBundle/Resources/public/client/index/webpack_generated/main.js'
+{%  block local_javascripts %}
+    {% javascripts output="assets/entities/client/index/js/local.js"
+        '@EntitiesBundle/Resources/public/client/index/ts/dist/inline.bundle.js'
+        '@EntitiesBundle/Resources/public/client/index/ts/dist/polyfills.bundle.js'
+        '@EntitiesBundle/Resources/public/client/index/ts/dist/vendor.bundle.js'
+        '@EntitiesBundle/Resources/public/client/index/ts/dist/main.bundle.js'
     %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}

@@ -1,4 +1,4 @@
-<template [ngIf]="_object && _object['id']">
+<ng-template [ngIf]="_object && _object['id']">
     <div class="row">
         <div class="col-sm-9">
             <h2 class="valign-div-container"><span [innerHTML]="_object['code'] || _object['id']"></span><span *ngIf="_object['name']">&nbsp;&nbsp;@&nbsp;&nbsp;{% verbatim %}{{ _object['name'] }}{% endverbatim %}</span><a
@@ -7,7 +7,7 @@
                     class="action valign-div-component valign-div-component-middle -round fa"
                     (click)="editAction($event, 'edit')"></a></h2>
             <div class="row m-l-xs">
-                <template ngFor let-field [ngForOf]="_fields">
+                <ng-template ngFor let-field [ngForOf]="_fields">
                     <div class="col-sm-6"
                          *ngIf="!_helperService.inArray(field, ['id', 'code', 'name', 'isEnabled', 'insertTime', 'insertUser']) && _object[field]">
                         <p *ngIf="_helperService.inArray(_fieldsMetadata[field]['type'], ['number', 'percentage', 'monetary', 'icon'])"><strong>{% verbatim %}{{ _fieldsMetadata[field]['label'] }}{% endverbatim %}</strong>:&nbsp;<span [innerHTML]="_object[field]"></span></p>
@@ -15,7 +15,7 @@
                         <p *ngIf="_helperService.inArray(_fieldsMetadata[field]['type'], ['avatar', 'img'])"><span [innerHTML]="_object[field]"></span></p>
                         <p *ngIf="!_helperService.inArray(_fieldsMetadata[field]['type'], ['number', 'percentage', 'monetary', 'status', 'icon', 'boolean', 'avatar', 'img'])"><strong>{% verbatim %}{{ _fieldsMetadata[field]['label'] }}{% endverbatim %}</strong><br/><span [innerHTML]="_object[field]"></span></p>
                     </div>
-                </template>
+                </ng-template>
             </div>
         </div>
         <div class="col-sm-3">
@@ -26,4 +26,4 @@
             </div>
         </div>
     </div>
-</template>
+</ng-template>

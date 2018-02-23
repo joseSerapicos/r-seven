@@ -1,0 +1,30 @@
+<li{% if (module['id'] == selectedModule) %} class="active"{% endif %}>
+
+    {% if (module['menus']|length > 1) or (modules[module['id']] is defined) %}
+        <a href="#" aria-expanded="{{ module['id'] == selectedModule }}"><i
+            class="fa {{ module['icon'] }}"></i><span class="nav-label">{{ module['name'] }}</span><span
+                class="fa arrow"></span></a>
+        <ul class="nav nav-{{ moduleLevel }}-level" aria-expanded="{{ module['id'] == selectedModule }}">
+
+            {% for menu in module['menus'] %}
+                <li{% if (menu['id'] == selectedMenu) %} class="active"{% endif %}>
+                    <a href="{{ menu['url'] }}">{{ menu['name'] }}</a></li>
+            {% endfor %}
+
+            {% if modules[module['id']] is defined %}
+                {% for module in modules[module['id']] %}
+                    {% include 'AppBundle:partial:navbar-module-menus.html.twig' with {
+                        module: module,
+                        selectedModule: _conf['selectedMenu']['module'][1],
+                        moduleLevel: 'third'
+                    } %}
+                {% endfor %}
+            {%  endif %}
+
+        </ul>
+    {% else %}
+        <a href="{{ module['menus'][0]['url'] }}"><i
+            class="fa {{ module['icon'] }}"></i><span class="nav-label">{{ module['name'] }}</span></a>
+    {% endif %}
+
+</li>

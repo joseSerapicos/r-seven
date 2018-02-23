@@ -26,8 +26,16 @@ class SupplierDocumentTypeSettingRepository extends BaseDocumentTypeSettingRepos
         $parentMetadata = parent::getMetadata();
 
         $localMetadata = self::processMetadata(array(
-            'supplierDocumentTypeObj' => array('label' => 'Document Type', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(
-                'table' => 'supplierDocumentType', 'bundle' => 'accounting', 'type' => 'select'))
+            'supplierDocumentTypeObj' => array('label' => 'Document Type', 'type' => 'object', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'table' => 'supplierDocumentType', 'bundle' => 'accounting', 'type' => 'none'
+                ),
+                'form' => array('type' => 'select')
+            ),
+            'documentType_name' => array('field' => 'name', 'table' => 'supplierDocumentType', 'label' => 'Document Type',
+                'type' => 'text', 'acl' => 'read', 'dependency' => 'supplierDocumentTypeObj',
+                'form' => array('type' => 'none')
+            )
         ));
 
         return self::$metadata = HelperService::pushIntoArray($parentMetadata, $localMetadata, 'id');

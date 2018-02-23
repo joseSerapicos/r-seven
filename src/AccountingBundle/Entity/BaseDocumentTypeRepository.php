@@ -57,7 +57,7 @@ class BaseDocumentTypeRepository extends BaseEntityRepository
                 'typeDetail' => array(
                     'type' => 'text', 'choices' => array(
                         'value' => array(
-                            'Invoice' => 'INVOICE', 'Receipt' => 'RECEIPT', 'Rectification' => "RECTIFICATION"
+                            'Invoice' => 'INVOICE', 'Rectification' => "RECTIFICATION", 'Receipt' => 'RECEIPT', 'Payment' => "PAYMENT", 'Settlement' => "SETTLEMENT"
                         )
                     )),
                 'form' => array('type' => 'select')
@@ -75,7 +75,16 @@ class BaseDocumentTypeRepository extends BaseEntityRepository
                 'typeDetail' => array(
                     'type' => 'text', 'choices' => array(
                         'value' => array(
-                            'Read' => '1', 'Edit' => '2', 'Remove' => '8'
+                            'Read' => '1', 'Edit' => '2', 'Cancel' => '4', 'All' => '7'
+                        )
+                    )),
+                'form' => array('type' => 'select')
+            ),
+            'aclTargetDocs' => array('label' => 'ACL For Docs.', 'type' => 'enum', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'type' => 'text', 'choices' => array(
+                        'value' => array(
+                            'Created' => 'CREATED', 'Not Accessed' => 'NOT_ACCESSED'
                         )
                     )),
                 'form' => array('type' => 'select')

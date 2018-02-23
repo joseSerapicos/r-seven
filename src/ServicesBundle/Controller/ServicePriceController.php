@@ -109,7 +109,7 @@ class ServicePriceController extends BaseEntityChildController
         $obj = $this->getObject($id);
 
         // Build form
-        $form = $this->buildForm($request, $obj);
+        $form = $this->createForm($this->localConf['formTypeClass'], $obj);
 
         // Handle request
         $form->handleRequest($request);
@@ -119,40 +119,51 @@ class ServicePriceController extends BaseEntityChildController
             // Get request data
             $data = $this->getRequestData($request);
 
+            $errorMessage = null;
+
             // Validate dates (dates can't be duplicated, it would generate inconsistency of data)
-            $datesOptions = array('fields' => array('id'));
-            if ($id) {
-                $datesOptions['criteria'] = array (
-                    array('field' => 'id', 'expr' => 'neq', 'value' => $id)
-                );
-            }
-            // Check "startDate" (if start data exist in any date interval already defined)
-            $dates = $this->getLocalRepositoryService()
-                ->execute(
-                    'getCurrentPriceByDate',
-                    array(
-                        $obj->getServiceObj(),
-                        $data['form']['startDate'],
-                        $datesOptions
-                    )
-                );
-            if (!is_array($dates) || (count($dates) < 1)) {
-                // Check "endDate" (if end data exist in any date interval already defined)
+            if ($data['form']['endDate'] < $data['form']['startDate']) {
+                $errorMessage = "End Date can not be < that Start Date.";
+            } else {
+                $datesOptions = array('fields' => array('id'));
+                if ($id) {
+                    $datesOptions['criteria'] = array(
+                        array('field' => 'id', 'expr' => 'neq', 'value' => $id)
+                    );
+                }
+                // Check "startDate" (if start data exist in any date interval already defined)
                 $dates = $this->getLocalRepositoryService()
                     ->execute(
                         'getCurrentPriceByDate',
                         array(
                             $obj->getServiceObj(),
-                            $data['form']['endDate'],
+                            $data['form']['startDate'],
                             $datesOptions
                         )
                     );
+                if (!is_array($dates) || (count($dates) < 1)) {
+                    // Check "endDate" (if end data exist in any date interval already defined)
+                    $dates = $this->getLocalRepositoryService()
+                        ->execute(
+                            'getCurrentPriceByDate',
+                            array(
+                                $obj->getServiceObj(),
+                                $data['form']['endDate'],
+                                $datesOptions
+                            )
+                        );
+                }
+                if (is_array($dates) && (count($dates) > 0)) {
+                    $errorMessage = 'The date interval is already defined, you can not duplicated it.';
+                }
             }
-            if (is_array($dates) && (count($dates) > 0)) {
+
+            // Set error
+            if ($errorMessage) {
                 $this->responseConf['status'] = 0;
                 $this->addFlashMessage(
-                    'Data not persisted! The date interval is already defined, you can not duplicated it.',
-                    'Error',
+                    $errorMessage,
+                    'Data not persisted',
                     'error'
                 );
                 return $this->getResponse(true);
@@ -164,11 +175,19 @@ class ServicePriceController extends BaseEntityChildController
             if (!empty($data['form']['marginMethod']) && ($data['form']['marginMethod'] != 'none')) {
                 switch ($data['form']['userFieldTyped']) {
                     case 'COST':
-                        $backResult = $priceService->calcSellValue($data['form']);
+                        $backResult = $priceService->calcSellValue(
+                            $data['form']['costValue'],
+                            $data['form']['marginValue'],
+                            $data['form']['marginMethod']
+                        );
                         $frontResult = $data['form']['sellValue'];
                         break;
                     case 'SELL':
-                        $backResult = $priceService->calcCostValue($data['form']);
+                        $backResult = $priceService->calcCostValue(
+                            $data['form']['sellValue'],
+                            $data['form']['marginValue'],
+                            $data['form']['marginMethod']
+                        );
                         $frontResult = $data['form']['costValue'];
                         break;
                 }

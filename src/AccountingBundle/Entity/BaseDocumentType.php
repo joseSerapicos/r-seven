@@ -22,7 +22,7 @@ class BaseDocumentType extends BaseEntity {
     /**
      * @ORM\Column(name="type", type="string", length=16, nullable=false, unique=false, options={"comment":"Nature of document"})
      */
-    protected $type; // [INVOICE, RECEIPT]
+    protected $type; // [INVOICE, RECTIFICATION, RECEIPT, PAYMENT, SETTLEMENT]
 
     /**
      * @ORM\Column(name="operation", type="string", length=16, nullable=false, unique=false, options={"comment":"Nature of operations"})
@@ -34,6 +34,11 @@ class BaseDocumentType extends BaseEntity {
      * Some document types can't be edited or removed
      */
     protected $acl;
+
+    /**
+     * @ORM\Column(name="aclTargetDocs", type="string", length=16, nullable=false, unique=false, options={"comment":"ACL target"})
+     */
+    protected $aclTargetDocs; // [CREATED, NOT_ACCESSED]
 
     /**
      * @ORM\Column(name="requiresSysadminRole", type="boolean", nullable=false, unique=false, options={"default":0, "comment":"Determines if the menu access requires admin role"})
@@ -116,7 +121,7 @@ class BaseDocumentType extends BaseEntity {
      */
     public function setType($type)
     {
-        if (!empty($type) && !in_array($type, array("INVOICE", "RECEIPT", "RECTIFICATION"))) {
+        if (!empty($type) && !in_array($type, array("INVOICE", "RECTIFICATION", "RECEIPT", "PAYMENT", "SETTLEMENT"))) {
             throw new \InvalidArgumentException("Invalid document nature");
         }
         $this->type = $type;
@@ -158,8 +163,33 @@ class BaseDocumentType extends BaseEntity {
     }
 
     /**
+     * Set aclTargetDocs
+     * @param string $aclTargetDocs
+     * @return $this
+     */
+    public function setAclTargetDocs($aclTargetDocs)
+    {
+        if (!empty($aclTargetDocs) && !in_array($aclTargetDocs, array("CREATED", "NOT_ACCESSED"))) {
+            throw new \InvalidArgumentException("Invalid acl target documents.");
+        }
+        $this->aclTargetDocs = $aclTargetDocs;
+
+        return $this;
+    }
+
+    /**
+     * Get aclTargetDocs
+     *
+     * @return string
+     */
+    public function getAclTargetDocs()
+    {
+        return $this->aclTargetDocs;
+    }
+
+    /**
      * Set requiresSysadminRole
-     * @param string $requiresSysadminRole
+     * @param boolean $requiresSysadminRole
      * @return $this
      */
     public function setRequiresSysadminRole($requiresSysadminRole)
@@ -170,7 +200,7 @@ class BaseDocumentType extends BaseEntity {
 
     /**
      * Get requiresSysadminRole
-     * @return string
+     * @return boolean
      */
     public function getRequiresSysadminRole()
     {

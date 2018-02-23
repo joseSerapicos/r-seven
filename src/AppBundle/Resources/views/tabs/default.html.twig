@@ -13,7 +13,7 @@
                      class="tab-pane"
                      [class.active]="{{key}} == _navManagerService.getIndex()">
                     <div class="panel-body js_lazyLoadContainer_{{key}}">
-                        <template #js_lazyLoadContainer></template>
+                        <ng-template #js_lazyLoadContainer></ng-template>
                     </div>
                 </div>
             {% endfor %}

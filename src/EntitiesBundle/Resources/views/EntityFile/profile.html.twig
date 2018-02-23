@@ -1,1 +1,27 @@
-{% extends 'AppBundle:file:index.html.twig' %}
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets filter="scssphp" output="assets/app/file/css/all.css"
+        '@dropzone_css'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block body_container %}
+    <div class="js_appBasics"></div>
+    <div class="js_file"></div>
+{% endblock %}
+
+{%  block local_javascripts %}
+    {% javascripts output="assets/entities/entity-file/profile/js/local.js"
+        '@EntitiesBundle/Resources/public/entity-file/profile/ts/dist/inline.bundle.js'
+        '@EntitiesBundle/Resources/public/entity-file/profile/ts/dist/polyfills.bundle.js'
+        '@EntitiesBundle/Resources/public/entity-file/profile/ts/dist/vendor.bundle.js'
+        '@EntitiesBundle/Resources/public/entity-file/profile/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

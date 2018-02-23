@@ -6,22 +6,32 @@ use AppBundle\Form\BaseType;
 class ClientDocumentInvoiceDetailNoServiceType extends BaseType
 {
     /**
-     * Initialization of variables.
-     * @return mixed
+     * Overrides parent method
+     * @return $this
      */
     protected function init()
     {
-        // Initialize only once
-        if(!empty($this->entityClass)) {
-            return $this;
-        }
+        // Set configuration only once
+        if ($this->isInitialized) { return $this; }
 
-        $this->entityClass = 'AccountingBundle\Entity\ClientDocumentInvoiceDetail';
-        $this->entityRepositoryClass = 'AccountingBundle\Entity\ClientDocumentInvoiceDetailRepository';
+        parent::init();
 
-        // Define fields
-        $repositoryClass = $this->entityRepositoryClass;
-        $this->entityMetadata = $repositoryClass::getMetadata();
+        $this->conf['entityClass'] = 'AccountingBundle\Entity\ClientDocumentInvoiceDetail';
+        $this->conf['entityRepositoryClass'] = ($this->conf['entityClass'] . 'Repository');
+
+        return $this;
+    }
+
+    /**
+     * Overrides parent method
+     * @return $this
+     */
+    protected function setEntityMetadata()
+    {
+        parent::setEntityMetadata();
+
+        // Redefine fields
+        // Remove service for invoice rectification (service is the same that the original invoice)
         unset($this->entityMetadata['serviceObj']);
 
         return $this;

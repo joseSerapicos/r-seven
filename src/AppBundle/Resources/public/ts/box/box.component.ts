@@ -9,9 +9,10 @@ export {BoxProvider};
 /**
  * Box (simple base box)
  */
+var baseRoute = Helper.getAppVar('route');
 @Component({
     selector: '.js_box',
-    templateUrl: Helper.getGlobalVar('route') + 'template/box'
+    templateUrl: baseRoute + 'template/box'
 })
 export class BoxComponent extends BoxExtensionComponent {
     constructor(

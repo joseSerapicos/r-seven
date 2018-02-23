@@ -6,22 +6,22 @@
         </h4>
         <div *ngIf="_navManagerService.getComponentRef({{key}}) && _navManagerService.getComponentRef({{key}}).instance._actionsService"
              class="actions no-user-select txt-align-r valign-table-component valign-table-component-middle">
-            <template [ngIf]="_navManagerService.getComponentRef({{key}}).instance._actionsService.getActionAttr('search', 'isEnabled')">
+            <ng-template [ngIf]="_navManagerService.getComponentRef({{key}}).instance._actionsService.getActionAttr('search', 'isEnabled')">
                 <js_search [injector]="_navManagerService.getComponentRef({{key}}).instance._injector || null" class="search"></js_search>
-            </template>
+            </ng-template>
             <div (click)="_navManagerService.getComponentRef({{key}}).instance.triggerAction($event)">
-                <template ngFor let-action [ngForOf]="_navManagerService.getComponentRef({{key}}).instance._actionsService.getHeadActions()">
+                <ng-template ngFor let-action [ngForOf]="_navManagerService.getComponentRef({{key}}).instance._actionsService.getHeadActions()">
                     <a *ngIf="_navManagerService.getComponentRef({{key}}).instance._actionsService.getActionAttr(action, 'isEnabled')"
                        [ngClass]="[_navManagerService.getComponentRef({{key}}).instance._actionsService.getActionAttr(action, 'icon')]"
                        class="-round fa"
                        [attr.data-action]="action"></a>
-                </template>
+                </ng-template>
             </div>
         </div>
     </div>
     <div id="panel{{key}}{{_id}}" class="panel-collapse collapse">
         <div class="panel-body js_lazyLoadContainer_{{key}}">
-            <template #js_lazyLoadContainer></template>
+            <ng-template #js_lazyLoadContainer></ng-template>
         </div>
     </div>
 </div>

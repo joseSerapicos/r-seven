@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {FlashMessageService, FlashMessageTypes} from './flash-message.service';
+import {TasksLoaderManagerService} from '../tasks-loader-manager/ts/tasks-loader-manager.service';
 //import {Http, Headers} from 'angular2/http';
 //import 'rxjs/add/operator/map';
 
@@ -11,11 +12,13 @@ export interface PostResponse {
     flashMessages?: any
 }
 
+
 // Service
 @Injectable()
 export class PostService {
     constructor(
-        private _flashMessageService: FlashMessageService
+        private _flashMessageService: FlashMessageService,
+        protected _tasksLoaderManagerService: TasksLoaderManagerService
     ) {}
 
     /**
@@ -24,8 +27,10 @@ export class PostService {
      * @param data
      * @returns {Promise}
      */
-    public post(url: string, data: any): Promise<any>
+    public post(url: string, data: any = null): Promise<any>
     {
+        this._tasksLoaderManagerService.addTask('POSTING_DATA');
+
         let that = this;
 
         return new Promise(function(resolve, reject) {
@@ -35,6 +40,7 @@ export class PostService {
                 postResponse => {
                     // Unknown response, generally html responses (debug, exceptions, etc.)
                     if (!postResponse || (typeof postResponse !== 'object')) {
+                        that._tasksLoaderManagerService.delTask('POSTING_DATA');
                         that.handleFlashMessages({});
                         return reject({});
                     }
@@ -45,7 +51,10 @@ export class PostService {
                     delete postResponse.status; // Is no more necessary
 
                     // Success
-                    if (isSuccess) { return resolve(postResponse['data'] || null); }
+                    if (isSuccess) {
+                        that._tasksLoaderManagerService.delTask('POSTING_DATA');
+                        return resolve(postResponse['data'] || null);
+                    }
 
                     // Error
                     let errors = (postResponse['errors'] || {});
@@ -58,9 +67,11 @@ export class PostService {
                             errors['object'] = postResponse['data']['object'];
                         }
                     }
+                    that._tasksLoaderManagerService.delTask('POSTING_DATA');
                     return reject(errors);
                 }
             ).fail(errors => {
+                that._tasksLoaderManagerService.delTask('POSTING_DATA');
                 that.handleFlashMessages({});
                 return reject({});
             });

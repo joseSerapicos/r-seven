@@ -1,0 +1,103 @@
+<div class="modal-body">
+    <div class="form-wrapper gray-bg">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>
+                        <div class="txt-align-r actions">
+                            <a class="-round fa fa-times"
+                               (click)="closeAction($event)"></a>
+                        </div>
+                    </div>
+                                        <div class="ibox-content">    <div class="wizard">
+        <ul class="wizard-nav">
+                            <li class="wizard-step"
+                    [class.step-active]="0 == _wizardManagerService.getIndex()">
+                    <span class="step-number">1</span>
+                    <span class="step-text">Document Type</span>
+                </li>
+                            <li class="wizard-step"
+                    [class.step-active]="1 == _wizardManagerService.getIndex()">
+                    <span class="step-number">2</span>
+                    <span class="step-text">Detail</span>
+                </li>
+                            <li class="wizard-step"
+                    [class.step-active]="2 == _wizardManagerService.getIndex()">
+                    <span class="step-number">3</span>
+                    <span class="step-text">Preview</span>
+                </li>
+                    </ul>
+    </div>
+
+    
+                                                                <section [hidden]="_wizardManagerService.getIndex() != 0">                    
+
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+
+    
+            
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_clientDocumentTypeObj">Document Type</label>
+    
+            <div class="col-sm-10">
+                                        
+        <select id="form_clientDocumentTypeObj" name="form[clientDocumentTypeObj]" [(ngModel)]="_formService.getObject().clientDocumentTypeObj" formControlName="clientDocumentTypeObj" [class.error]="_formService.getErrors().clientDocumentTypeObj &amp;&amp; _formService.getErrors().clientDocumentTypeObj.length &gt; 0" class="form-control">            <option value="1" >Fatura (1)</option>            <option value="2" >Nota de Crédito (2)</option>            <option value="3" >Nota de Débito (3)</option>            <option value="4" >Recibo (4)</option>            <option value="5" >Reembolso (5)</option>            <option value="6" >Aviso de Liquidação (6)</option>            <option value="7" >Recibo de Adiantamento (7)</option></select>
+    <input [(ngModel)]="_formService.getObject().clientDocumentTypeObj"
+           formControlName = clientDocumentTypeObj
+           required="required"           type="hidden">
+
+                <label class="error" *ngFor="let error of _formService.getErrors().clientDocumentTypeObj">{{error}}</label>
+            </div>
+        </div>
+                
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_clientObj">Client</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().clientObj"
+           formControlName = clientObj
+           name="form[clientObj]"
+           required="required"           type="hidden">
+    <js_autoComplete [field]="'clientObj'"
+                     [selfReference]="_dataService.getFieldChoicesAttr('clientObj', 'selfReference')"
+                                                                       ></js_autoComplete>
+                    <label class="error" *ngFor="let error of _formService.getErrors().clientObj">{{error}}</label>
+            </div>
+        </div>
+        
+
+    
+
+    <input type="hidden" id="form__token" name="form[_token]" value="M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso" /></form>
+                </section>                                            <section [hidden]="_wizardManagerService.getIndex() != 1"
+         class="js_lazyLoadContainer_1">
+    <ng-template #js_lazyLoadContainer></ng-template>
+</section>                                <section [hidden]="_wizardManagerService.getIndex() != 2"
+         class="js_lazyLoadContainer_2">
+    <ng-template #js_lazyLoadContainer></ng-template>
+</section>            
+    
+</div>
+                    <div class="ibox-footer hide-on-empty">    <div class="form-horizontal">
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                <button class="btn-default btn" type="button" (click)="_wizardManagerService.cancelAction($event)">Cancel</button>
+                <button class="btn-primary btn" type="button" (click)="_wizardManagerService.prevAction($event)"
+                        *ngIf="0 < _wizardManagerService.getIndex()">Prev</button>
+                <button class="btn-primary btn" type="button" (click)="_wizardManagerService.nextAction($event)"
+                        *ngIf="2 > _wizardManagerService.getIndex()">Next</button>
+                                    <button class="btn-primary btn" type="button" (click)="_wizardManagerService.finishAction($event)"
+                            *ngIf="2 == _wizardManagerService.getIndex()">Finish</button>
+                            </div>
+        </div>
+    </div>
+</div>                                    </div>
+            </div>
+        </div>
+    </div>
+</div>

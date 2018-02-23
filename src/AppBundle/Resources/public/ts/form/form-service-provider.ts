@@ -1,5 +1,6 @@
 // Provider interface
 // If defined overrides DataServiceProvider in FormService
 export interface FormServiceProvider {
-    fields?: string[]
+    fields?: string[],
+    hasPreventObjectOverride?: boolean
 }

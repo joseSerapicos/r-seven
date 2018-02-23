@@ -4,23 +4,23 @@
 
 {% block header_container %}
     <div class="actions no-user-select">
-        <template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search class="search"></js_search></template>
+        <ng-template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search class="search"></js_search></ng-template>
         <div (click)="triggerAction($event)">
-            <template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
+            <ng-template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
                 <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
                    [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
                    class="-round fa"
                    [attr.data-action]="action"></a>
-            </template>
+            </ng-template>
         </div>
     </div>
 {% endblock %}
 
 {# _dataService.getProviderAttr('objects')[0] // used to work with objects (tree-view) and arrays simultaneously #}
 {% block body %}
-    <template [ngIf]="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">
+    <ng-template [ngIf]="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">
     {% block body_container %}{% endblock %}
-    </template><p
+    </ng-template><p
         class="text-center"
         *ngIf="!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">No results.</p>
 {% endblock %}

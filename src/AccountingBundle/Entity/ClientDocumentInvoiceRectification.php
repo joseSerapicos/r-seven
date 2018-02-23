@@ -22,9 +22,9 @@ class ClientDocumentInvoiceRectification extends BaseEntity {
 
     /**
      * @ORM\ManyToOne(targetEntity="\AccountingBundle\Entity\ClientDocumentInvoiceDetail")
-     * @ORM\JoinColumn(name="fk_originalClientDocumentInvoiceDetail", referencedColumnName="id", nullable=false, unique=false, onDelete="RESTRICT")
+     * @ORM\JoinColumn(name="fk_rectificationClientDocumentInvoiceDetail", referencedColumnName="id", nullable=false, unique=false, onDelete="RESTRICT")
      */
-    protected $originalClientDocumentInvoiceDetailObj; // original client document invoice detail object
+    protected $rectificationClientDocumentInvoiceDetailObj; // original client document invoice detail object
 
 
     /**
@@ -48,22 +48,22 @@ class ClientDocumentInvoiceRectification extends BaseEntity {
     }
 
     /**
-     * Set originalClientDocumentInvoiceDetailObj
-     * @param \AccountingBundle\Entity\ClientDocumentInvoiceDetail $originalClientDocumentInvoiceDetailObj
+     * Set rectificationClientDocumentInvoiceDetailObj
+     * @param \AccountingBundle\Entity\ClientDocumentInvoiceDetail $rectificationClientDocumentInvoiceDetailObj
      * @return $this
      */
-    public function setOriginalClientDocumentInvoiceDetailObj(\AccountingBundle\Entity\ClientDocumentInvoiceDetail $originalClientDocumentInvoiceDetailObj)
+    public function setRectificationClientDocumentInvoiceDetailObj(\AccountingBundle\Entity\ClientDocumentInvoiceDetail $rectificationClientDocumentInvoiceDetailObj)
     {
-        $this->originalClientDocumentInvoiceDetailObj = $originalClientDocumentInvoiceDetailObj;
+        $this->rectificationClientDocumentInvoiceDetailObj = $rectificationClientDocumentInvoiceDetailObj;
         return $this;
     }
 
     /**
-     * Get originalClientDocumentInvoiceDetailObj
+     * Get rectificationClientDocumentInvoiceDetailObj
      * @return \AccountingBundle\Entity\ClientDocumentInvoiceDetail
      */
-    public function getOriginalClientDocumentInvoiceDetailObj()
+    public function getRectificationClientDocumentInvoiceDetailObj()
     {
-        return $this->originalClientDocumentInvoiceDetailObj;
+        return $this->rectificationClientDocumentInvoiceDetailObj;
     }
 }

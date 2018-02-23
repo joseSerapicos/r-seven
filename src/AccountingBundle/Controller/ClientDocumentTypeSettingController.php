@@ -130,17 +130,17 @@ class ClientDocumentTypeSettingController extends BaseEntityController
     /**
      * Overrides parent function
      * @param $object
-     * @param $data
-     * @param null $context
+     * @param $data (usually the form data)
      * @return bool
      */
-    protected function preSaveObject($object, $data, $context = null) {
+    protected function preSaveObject(&$object, $data) {
         $documentTypeObj = $object->getClientDocumentTypeObj();
         $prefix = $object->getSeriesPrefix();
         $prefix = ($prefix ? $prefix : '');
         $number = ($object->getSeriesNumber());
 
-        $object = $this->getRepositoryService("ClientDocument", 'AccountingBundle')
+        // Check if the "Series Number" is already in use
+        $results = $this->getRepositoryService("ClientDocument", 'AccountingBundle')
             ->execute(
                 'queryBuilder',
                 array(
@@ -151,6 +151,9 @@ class ClientDocumentTypeSettingController extends BaseEntityController
                         'criteria' => array(
                             array('field' => 'clientDocumentTypeObj', 'expr' => 'eq', 'value' => $documentTypeObj),
                             array('field' => 'clientDocument.codePrefix', 'expr' => 'eq', 'value' => $prefix),
+                            // There can not be a greater number than $number, otherwise $number can reach the greater
+                            // number and shuffle the series (smaller is not a problem because document type series is
+                            // updated and never can be again smaller)
                             array('field' => 'clientDocument.codeNumber', 'expr' => 'gt', 'value' => $number)
                         ),
                         'limit' => 1
@@ -158,7 +161,7 @@ class ClientDocumentTypeSettingController extends BaseEntityController
                 )
             );
 
-        if (empty($object)) {
+        if (empty($results)) {
             return true;
         }
 

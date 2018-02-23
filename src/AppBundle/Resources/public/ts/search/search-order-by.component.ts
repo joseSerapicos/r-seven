@@ -7,14 +7,14 @@ import {DataService} from '../data-service/data.service';
     template: `
     <js_expander [label]="'Order'" [hasIcon]="false" [customClass]="'action'" (onChange)="toggleIsExpanded($event, 'fields')"></js_expander>
     <div [hidden]="!_isExpanded" class="col-xs-12 col-sm-12 white-dropdown search-order-by">
-        <template ngFor let-orderBy [ngForOf]="_orderByArray" let-i="index">
+        <ng-template ngFor let-orderBy [ngForOf]="_orderByArray" let-i="index">
             <div class="col-sm-6 controller">
                 <div class="select">
                     <select [(ngModel)]="orderBy['field']" class="form-control">
-                        <template ngFor let-field [ngForOf]="_fields">
+                        <ng-template ngFor let-field [ngForOf]="_fields">
                             <option *ngIf="!_helperService.inArray(_fieldsMetadata[field]['type'], _deniedTypes) && !_fieldsMetadata[field]['isObject']"
                                     value="{{field}}">{{_fieldsMetadata[field]['label']}}</option>
-                        </template>
+                        </ng-template>
                     </select>
                     <select [(ngModel)]="orderBy['value']" class="form-control">
                         <option *ngFor="let value of [{key: 'ASC', label: 'Asc'}, {key: 'DESC', label: 'Desc'}]"
@@ -26,7 +26,7 @@ import {DataService} from '../data-service/data.service';
                     <a *ngIf="(i+1) == _orderByArray.length" class="fa fa-plus" (click)="add($event)"></a>
                 </div>
             </div>
-        </template>
+        </ng-template>
     </div>
     `,
     host: {

@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Service\PriceService;
 use Doctrine\ORM\Mapping as ORM;
 
 
@@ -33,36 +34,26 @@ class BasePriceWithVat extends BasePrice
 
     /**
      * @ORM\Column(name="subTotalCost", type="decimal", scale=2, nullable=false, unique=false, options={"default":"0", "comment":"Cost sub total"})
-     *
-     * Field calculated based in the sum in "BookingService"
      */
     protected $subTotalCost;
 
     /**
      * @ORM\Column(name="subTotalSell", type="decimal", scale=2, nullable=false, unique=false, options={"default":"0", "comment":"Sell sub total"})
-     *
-     * Field calculated based in the sum in "BookingService"
      */
     protected $subTotalSell;
 
     /**
      * @ORM\Column(name="totalVatCost", type="decimal", scale=2, nullable=false, unique=false, options={"default":"0", "comment":"Total VAT of cost value"})
-     *
-     * Field calculated based in the sum in "BookingService"
      */
     protected $totalVatCost;
 
     /**
      * @ORM\Column(name="totalVatSell", type="decimal", scale=2, nullable=false, unique=false, options={"default":"0", "comment":"Total VAT of sell value"})
-     *
-     * Field calculated based in the sum in "BookingService"
      */
     protected $totalVatSell;
 
     /**
      * @ORM\Column(name="quantity", type="smallint", nullable=false, unique=false, options={"unsigned":true, "comment":"Quantity"})
-     *
-     * This is inherited from "BookingService", but can be changed
      */
     protected $quantity;
 
@@ -274,18 +265,10 @@ class BasePriceWithVat extends BasePrice
         return round($this->subTotalSell + $this->totalVatSell, 2);
     }
 
+
     ////////
     // Fake methods to keep default values
     ////////////////////////////////
-
-    /**
-     * Get isVatIncluded
-     * @return boolean
-     */
-    public function getIsVatIncluded()
-    {
-        return true;
-    }
 
     /**
      * Get user_costValue
@@ -293,7 +276,12 @@ class BasePriceWithVat extends BasePrice
      */
     public function getUser_costValue()
     {
-        return $this->getTotalUnitCost();
+        // Value, according with the "getIsVatIncluded" returned value
+        if ($this->getIsVatIncluded()) {
+            return $this->getTotalUnitCost();
+        }
+
+        return $this->getCostValue();
     }
 
     /**
@@ -302,6 +290,11 @@ class BasePriceWithVat extends BasePrice
      */
     public function getUser_sellValue()
     {
-        return $this->getTotalUnitSell();
+        // Value, according with the "getIsVatIncluded" returned value
+        if ($this->getIsVatIncluded()) {
+            return $this->getTotalUnitSell();
+        }
+
+        return $this->getSellValue();
     }
 }

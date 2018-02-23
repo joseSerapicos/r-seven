@@ -13,10 +13,19 @@ use AppBundle\Entity\BaseEntityRepository;
 abstract class BaseDocumentRepository extends BaseEntityRepository
 {
     /**
-     * Get context (it needs to be implemented by children to get the correct context <client, supplier, entity>)
-     * @return string
+     * Get Local Entity Context.
+     * @return mixed (lowerCamelCase)
      */
-    abstract protected function getContext();
+    abstract protected function getLocalEntityContext();
+
+    /**
+     * Get entity context (it needs to be implemented by children to get the correct context <client, supplier, entity>)
+     * @param $isUpperCase
+     * @return mixed (lowerCamelCase)
+     */
+    public function getEntityContext($isUpperCase = false) {
+        return ($isUpperCase ? ucfirst($this->getLocalEntityContext()) : $this->getLocalEntityContext());
+    }
 
     /**
      * Get local metadata (it needs to be implemented by children to get static variable with local metadata from parent)
@@ -83,6 +92,7 @@ abstract class BaseDocumentRepository extends BaseEntityRepository
                 'form' => array('type' => 'number', 'isMapped' => false),
                 'normalizer' => array('method' => 'getTotal')
             ),
+            'remainSettlement' => array('label' => 'Pendent Value', 'type' => 'monetary', 'acl' => 'edit', 'form' => array('type' => 'none')),
             'settlementStatus' => array('label' => 'Status', 'type' => 'enum', 'acl' => 'read',
                 'field' => "(CASE WHEN (" . $localTable . ".remainSettlement = 0) THEN 'YES'"
                     . " ELSE (CASE WHEN (" . $localTable . ".remainSettlement = ($localTable.subTotal + " . $localTable . ".totalVat)) THEN 'NO'"
@@ -97,9 +107,254 @@ abstract class BaseDocumentRepository extends BaseEntityRepository
                 'form' => array('type' => 'none'),
                 'normalizer' => array('method' => 'getSettlementStatus')
             ),
+            'isAccessed' => array('label' => 'Accessed', 'type' => 'boolean', 'acl' => 'read',
+                'form' => array('type' => 'none')
+            ),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read', 'form' => array('type' => 'none')),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'none', 'acl' => 'edit', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'read', 'form' => array('type' => 'none'))
         ));
+    }
+
+    /**
+     * Get objects (regular method to retrieve objects correctly).
+     * @param $options (array with queryBuilder options format)
+     * @return mixed
+     */
+    public function getObjects($options)
+    {
+        // Filter by booking
+        $bookingConf = ((isset($options['conf'])) && (isset($options['conf']['localData']) && isset($options['conf']['localData']['booking'])) ?
+            $options['conf']['localData']['booking'] :
+            null
+        );
+        if ($bookingConf) {
+            $bookingDocumentsIdArr = $this->getDocumentsIdByBooking($bookingConf['id'], $bookingConf['repositoryService']);
+            if (count($bookingDocumentsIdArr) > 0) {
+                $options['criteria'] = array_merge(
+                    (isset($options['criteria']) ? $options['criteria'] : array()),
+                    array (
+                        array( // Enabled
+                            'field' => 'id',
+                            'expr' => 'IN',
+                            'value' => $bookingDocumentsIdArr
+                        )
+                    )
+                );
+            } else { // No booking documents, return empty
+                return array();
+            }
+        }
+
+        return $this->queryBuilder($options);
+    }
+
+    /**
+     * Get objects for settlement (not settled objects)
+     * @param $options (array with queryBuilder options format)
+     * @param $targetDocumentObj (target document to filter by entity and document type operation)
+     * @return mixed
+     */
+    public function getForSettlement($options = array(), $targetDocumentObj = null)
+    {
+        $entityContext = $this->getEntityContext();
+        $entityContextUC = $this->getEntityContext(true);
+        $localTable = $this->getLocalTable();
+
+        $options = array(
+            'fields' => array(
+                'id',
+                'storeObj', // For code color
+                'documentType_name',
+                'code',
+                'date',
+                'dueDate',
+                // Get the total value of document minus the total received of document
+                "((".$localTable.".subTotal + ".$localTable.".totalVat) "
+                . " - "
+                . "SUM(CASE WHEN (documentReceiptSettlement.id IS NOT NULL) THEN (documentReceiptSettlement.value) "
+                . "ELSE (0) END)) AS total"
+            ),
+            'criteria' => array_merge(
+                (isset($options['criteria']) ? $options['criteria'] : array()),
+                array (
+                    array( // Enabled
+                        'field' => 'isEnabled',
+                        'expr' => 'eq',
+                        'value' => true
+                    ),
+                    array( // Document type
+                        'field' => $entityContext . 'DocumentType.type',
+                        'expr' => 'in',
+                        'value' => array('INVOICE', 'RECTIFICATION', 'PAYMENT')
+                    )
+                )
+            )
+        );
+
+        if ($targetDocumentObj) {
+            // Same entity
+            $getMethod = 'get' . $entityContextUC . 'Obj';
+            $options['criteria'][] = array(
+                'field' => $entityContext . 'Obj',
+                'expr' => 'eq',
+                'value' => $targetDocumentObj->$getMethod()
+            );
+
+            // DocumentType operation (inverse to the target document)
+            $getMethod = 'get' . $entityContextUC . 'DocumentTypeObj';
+            switch ($targetDocumentObj->$getMethod()->getOperation()) {
+                case 'DEBIT':
+                    $options['criteria'][] = array(
+                        'field' => $entityContext . 'DocumentType.operation',
+                        'expr' => 'eq',
+                        'value' => 'CREDIT'
+                    );
+                    break;
+                case 'CREDIT':
+                    $options['criteria'][] = array(
+                        'field' => $entityContext . 'DocumentType.operation',
+                        'expr' => 'eq',
+                        'value' => 'DEBIT'
+                    );
+                    break;
+            }
+        }
+
+        // Filter by booking
+        $bookingConf = ((isset($options['conf'])) && (isset($options['conf']['localData']) && isset($options['conf']['localData']['booking'])) ?
+            $options['conf']['localData']['booking'] :
+            null
+        );
+        if ($bookingConf) {
+            $bookingDocumentsIdArr = $this->getDocumentsIdByBooking($bookingConf['id'], $bookingConf['repositoryService']);
+            if (count($bookingDocumentsIdArr) > 0) {
+                $options['criteria'][] = array(
+                    'field' => 'id',
+                    'expr' => 'IN',
+                    'value' => $bookingDocumentsIdArr
+                );
+            } else { // No booking documents, return empty
+                return array();
+            }
+        }
+
+        // Get query builder
+        $qb = $this->queryBuilder($options, false);
+
+        // Get document receipt settlement to calc the remain val
+        $qb->leftJoin('AccountingBundle\Entity\\' . $entityContextUC . 'DocumentReceiptSettlement',
+            'documentReceiptSettlement',
+            'WITH',
+            '(documentReceiptSettlement.settlement' . $entityContextUC . 'DocumentObj = ' . $localTable . '.id)'
+        );
+
+        // Get document receipt (to validate the "isEnabled" field)
+        $qb->leftJoin('documentReceiptSettlement.' . $entityContext . 'DocumentObj',
+            'document_receipt',
+            'WITH',
+            'document_receipt.isEnabled = 1'
+        );
+
+        // Group by id for "SUM"
+        $qb->groupBy($localTable . '.id');
+
+        // Remove registries already invoiced
+        $qb->having("(total > 0)");
+
+        return $this->executeQueryBuilder($qb);
+    }
+
+    /**
+     * Get documents id by booking
+     * @param $bookingId
+     * @param $repositoryService (repository service sent by controller)
+     * @return mixed
+     */
+    public function getDocumentsIdByBooking($bookingId, $repositoryService)
+    {
+        // Get all document related to booking in way to minimize database resources
+        if (empty($bookingId) || empty($repositoryService)) {
+            return array();
+        }
+
+        $entityContextUC = $this->getEntityContext(true);
+
+        // INVOICE
+        $invoiceDocuments = $repositoryService->setEntityRepository('AccountingBundle:'.$entityContextUC."DocumentInvoiceDetail")
+            ->execute('getDocumentsIdByBooking', array($bookingId));
+
+        $rectificationDocuments = array();
+        $receiptDocuments = array();
+        if (count($invoiceDocuments) > 0) {
+            // RECEIPT SETTLEMENT
+            $receiptDocuments = $repositoryService->setEntityRepository('AccountingBundle:'.$entityContextUC."DocumentReceiptSettlement")
+                ->execute('getDocumentsIdByBooking', array($invoiceDocuments));
+        }
+
+        return array_merge(
+            $invoiceDocuments,
+            $rectificationDocuments,
+            $receiptDocuments
+        );
+    }
+
+    /**
+     * Get Rectification Documents
+     * @param $documentObj
+     * @return mixed
+     */
+    public function getRectificationDocuments($documentObj)
+    {
+        $entityContext = $this->getEntityContext();
+        $entityContextUC = $this->getEntityContext(true);
+
+        // Local table
+        $localTable = $this->getLocalTable();
+
+        $options = array(
+            'fields' => array(
+                'CONCAT(rectificationDocument.codePrefix, rectificationDocument.codeNumber) AS rectificationDocument_code',
+                'rectificationDocument.isEnabled'
+            ),
+            'criteria' => array(
+                array(
+                    'field' => 'id',
+                    'expr' => 'eq',
+                    'value' => $documentObj
+                )
+            )
+        );
+
+        // Get query builder
+        $qb = $this->queryBuilder($options, false);
+
+        // Get document invoice detail
+        $qb->innerJoin('AccountingBundle\Entity\\'.$entityContextUC.'DocumentInvoiceDetail',
+            'documentInvoiceDetail',
+            'WITH',
+            'documentInvoiceDetail.'.$entityContext.'DocumentObj = '.$localTable.'.id'
+        );
+
+        // Get document invoice rectification
+        $qb->innerJoin('AccountingBundle\Entity\\'.$entityContextUC.'DocumentInvoiceRectification',
+            'documentInvoiceRectification',
+            'WITH',
+            'documentInvoiceRectification.rectification'.$entityContextUC.'DocumentInvoiceDetailObj = documentInvoiceDetail.id'
+        );
+
+        // Get rectification document invoice detail
+        $qb->innerJoin('documentInvoiceRectification.'.$entityContext.'DocumentInvoiceDetailObj',
+            'rectificationDocumentInvoiceDetail'
+        );
+
+        // Get rectification document
+        $qb->innerJoin('rectificationDocumentInvoiceDetail.'.$entityContext.'DocumentObj',
+            'rectificationDocument',
+            'WITH',
+            'rectificationDocument.isEnabled = 1'
+        );
+
+        return $this->executeQueryBuilder($qb);
     }
 }

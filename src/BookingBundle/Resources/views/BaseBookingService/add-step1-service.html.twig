@@ -1,0 +1,31 @@
+{# This template is called directy from angular, so we need to simulate the controller response conf #}
+{% set serviceField = (serviceField is defined ? serviceField : "serviceObj") %}
+{% set serviceIdField = (serviceIdField is defined ? serviceIdField : "serviceObj") %}
+{% set _localData = {
+    "template": {
+        "class": "form-control-box -embed-form",
+        "attrs": {
+            "[ngClass]": "{'error': _formService.getErrors()['" ~ serviceField ~ "'] && (_formService.getErrors()['" ~ serviceField ~ "'].length > 0)}"
+        }
+    }
+} %}
+
+{% set dataBoxDefault_hasHeader = false %}
+{% set dataBoxDefault_hasForm = false %}
+{% set dataBoxDefault_hasActions = false %}
+
+{% extends 'AppBundle:data-box:default.html.twig' %}
+{% block dataBoxDefault_container %}
+    {% block bookingServiceAddStep1Service_container %}
+        <td [innerHTML]="obj['thumbnail']"></td>
+        <td>
+            <div [innerHTML]="obj['name']"></div>
+            <div [innerHTML]="obj['description']"></div>
+        </td>
+    {% endblock %}
+    <td (click)="_formService.setFormFieldValue('{{serviceField}}', $event.target.value)">
+        <div class="radio"><label><input type="radio"
+                 value="{% verbatim %}{{{% endverbatim %}obj['{{serviceIdField}}']{% verbatim %}}}{% endverbatim %}"
+                 [checked]="_formService.getObject().{{serviceField}} == obj['serviceObj']"></label></div>
+    </td>
+{% endblock %}

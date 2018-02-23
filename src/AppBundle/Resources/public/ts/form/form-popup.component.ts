@@ -1,6 +1,5 @@
 import {Component, ElementRef, Inject, Optional, Injector, ViewChild, EventEmitter, Renderer} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Helper} from '../helper';
 import {FormService} from './form.service';
 import {DataService} from "../data-service/data.service";
 import {FormPopupExtensionComponent, FormProvider} from './form-popup.extension-component';
@@ -11,7 +10,7 @@ export {FormProvider};
 
 @Component({
     selector: '.js_formPopup',
-    templateUrl: Helper.getRuntimeVar('templateUrl')
+    template: '' // Define template in child component
 })
 export class FormPopupComponent extends FormPopupExtensionComponent
 {

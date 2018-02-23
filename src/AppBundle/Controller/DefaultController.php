@@ -64,22 +64,24 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/template/{view}/{path}/{bundle}",
-     *     name="_app__default__template",
-     *     defaults={"path" = null, "bundle" = null}
+     * @Route("/template/{bundle}/{controller}/{view}",
+     *     name="_app__default__template"
      * )
      *
-     * Action to render template
-     * @param $view (view file name)
-     * @param $path (path to view, use '__' instead "/" to separate folders)
+     * Action to render template.
      * @param $bundle
+     * @param $controller
+     * @param $view (view name or path to view, use '__' instead "/" to separate folders)
      * @return mixed
      */
-    public function templateAction($view, $path, $bundle) {
-        $bundle = ($bundle ? (ucfirst($bundle) . 'Bundle') : 'AppBundle');
-        // If view is out of AppBundle, then the path needs to be converted in CamelCase
-        $path = (($bundle == 'AppBundle') ? $path : (HelperService::hyphenCaseToCamelCase($path)));
-        $path = ($path ? str_replace('__', '/', $path) : '');
-        return $this->render($bundle . ':' . $path . ':' . $view . '.html.twig');
+    public function templateAction($bundle, $controller, $view) {
+        $bundle = (ucfirst($bundle) . 'Bundle');
+
+        // If view is out of AppBundle, then the controller name needs to be converted in CamelCase
+        $controller = (($bundle == 'AppBundle') ? $controller : (HelperService::hyphenCaseToCamelCase($controller)));
+
+        $view = ($view ? str_replace('__', '/', $view) : '');
+
+        return $this->render($bundle . ':' . $controller . ':' . $view . '.html.twig');
     }
 }

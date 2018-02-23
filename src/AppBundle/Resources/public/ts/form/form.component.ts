@@ -10,9 +10,10 @@ export {FormProvider};
 
 
 // Component
+var templateUrl = Helper.getGlobalVar('templateUrl');
 @Component({
     selector: '.js_form',
-    templateUrl: Helper.getRuntimeVar('templateUrl')
+    templateUrl: templateUrl
 })
 export class FormComponent extends FormExtensionComponent
 {

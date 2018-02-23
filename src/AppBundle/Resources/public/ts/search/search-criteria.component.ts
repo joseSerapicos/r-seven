@@ -10,6 +10,7 @@ export class SearchCriteriaMap {
     protected _exprMap = [
         { key: 'lrlike', label: '?' },
         { key: 'eq', label: '=' },
+        { key: 'neq', label: '<>' },
         { key: 'gte', label: '>=' },
         { key: 'lte', label: '<=' }
     ];
@@ -64,26 +65,26 @@ export class SearchCriteriaMap {
     template: `
     <js_expander [label]="'Filter'" [hasIcon]="false" [customClass]="'action'" (onChange)="toggleIsExpanded($event, 'fields')"></js_expander>
     <div [hidden]="!_isExpanded" class="col-xs-12 col-sm-12 white-dropdown search-criteria">
-        <template ngFor let-criteria [ngForOf]="_criteriaArr" let-i="index">
+        <ng-template ngFor let-criteria [ngForOf]="_criteriaArr" let-i="index">
             <div class="col-sm-6 controller">
                 <div class="select">
                     <select [(ngModel)]="criteria['field']"
                             (change)="onFieldChange($event, criteria)"
                             class="form-control">
-                        <template ngFor let-field [ngForOf]="_fields">
+                        <ng-template ngFor let-field [ngForOf]="_fields">
                             <option *ngIf="!_helperService.inArray(_fieldsMetadata[field]['type'], _deniedTypes) && !_fieldsMetadata[field]['isObject']"
                                     value="{{field}}">{{_fieldsMetadata[field]['label']}}</option>
-                        </template>
+                        </ng-template>
                     </select>
                     <!-- ng switch should be here -->
-                    <template [ngIf]="(_fieldsMetadata[criteria['field']]) && (_fieldsMetadata[criteria['field']]['type'] == 'boolean')">
+                    <ng-template [ngIf]="(_fieldsMetadata[criteria['field']]) && (_fieldsMetadata[criteria['field']]['type'] == 'boolean')">
                         <select [(ngModel)]="criteria['value']"
                                 class="form-control">
                             <option *ngFor="let value of [{key: 1, label: 'Yes'}, {key: 0, label: 'No'}]"
                                     value="{{value['key']}}">{{value['label']}}</option>
                         </select>
-                    </template>
-                    <template [ngIf]="(!_fieldsMetadata[criteria['field']]) || (_fieldsMetadata[criteria['field']]['type'] != 'boolean')">
+                    </ng-template>
+                    <ng-template [ngIf]="(!_fieldsMetadata[criteria['field']]) || (_fieldsMetadata[criteria['field']]['type'] != 'boolean')">
                         <select [(ngModel)]="criteria['expr']"
                                 class="form-control">
                             <option *ngFor="let expr of _searchCriteriaMap.getExprMap()"
@@ -91,14 +92,14 @@ export class SearchCriteriaMap {
                         </select>
                         <input [(ngModel)]="criteria['value']"
                                class="form-control" type="text">
-                    </template>
+                    </ng-template>
                 </div>
                 <div class="actions">
                     <a *ngIf="_criteriaArr.length > 1" class="fa fa-trash-o" (click)="del($event, i)"></a>
                     <a *ngIf="(i+1) == _criteriaArr.length" class="fa fa-plus" (click)="add($event)"></a>
                 </div>
             </div>
-        </template>
+        </ng-template>
     </div>
     `,
     host: {

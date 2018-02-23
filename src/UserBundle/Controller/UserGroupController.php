@@ -38,9 +38,7 @@ class UserGroupController extends BaseEntityController
         parent::init($request);
 
         // Search
-        $this->templateConf['search']['fields'] = $this->templateConf['fields']['view'];
-        // Disable pagination
-        $this->templateConf['search']['limit'] = $this->templateConf['search']['offset'] = null;
+        $this->templateConf['search']['fields'] = array('name', 'isEnabled');
 
         // Actions for template/view
         $this->templateConf['actions'] = array_merge(
@@ -52,15 +50,9 @@ class UserGroupController extends BaseEntityController
         );
 
         // Tree view configuration
+        $this->flags['treeViewMode'] = true;
         $this->templateConf['treeView'] = array(
             'iconDefault' => 'fa-users'
-        );
-
-        // Extra data
-        $this->templateConf['extraData']['service'] = array(
-            'treeView' => array(
-                'parentNodeField' => null
-            )
         );
 
         return $this;
@@ -162,23 +154,6 @@ class UserGroupController extends BaseEntityController
                 )
             )
         ));
-    }
-
-    /**
-     * Get list/array of objects by search configuration using the parent id as index to use in the tree-view
-     * @param null $options (array with 'fields', 'criteria', 'orderBy', 'limit' and 'offset')
-     * @return null
-     */
-    protected function getObjectsBySearch($options = null) {
-        $objects = parent::getObjectsBySearch($options);
-
-        // Put all objects in level '0' to simulate a tree-view of one level
-        // (it's used the tree-view template to show the objects)
-        if (is_array($objects) && (count($objects) > 0)) {
-            return array(0 => $objects);
-        }
-
-        return $objects;
     }
 
     /**

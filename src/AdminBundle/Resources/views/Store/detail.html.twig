@@ -42,14 +42,16 @@
 {% endblock %}
 
 {% block body_container %}
+    <div class="js_appBasics"></div>
     <div id="js_main"></div>
 {% endblock %}
 
-{% block local_javascripts %}
+{%  block local_javascripts %}
     {% javascripts output="assets/admin/store/detail/js/local.js"
-        '@AdminBundle/Resources/public/store/detail/webpack_generated/common.js'
-        '@AdminBundle/Resources/public/store/detail/webpack_generated/app.js'
-        '@AdminBundle/Resources/public/store/detail/webpack_generated/main.js'
+        '@AdminBundle/Resources/public/store/detail/ts/dist/inline.bundle.js'
+        '@AdminBundle/Resources/public/store/detail/ts/dist/polyfills.bundle.js'
+        '@AdminBundle/Resources/public/store/detail/ts/dist/vendor.bundle.js'
+        '@AdminBundle/Resources/public/store/detail/ts/dist/main.bundle.js'
     %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}

@@ -2,6 +2,7 @@
 namespace AppBundle\Service;
 
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
+use AppBundle\Service\HelperService;
 
 class AppService
 {
@@ -151,6 +152,8 @@ class AppService
         if ($store && !isset($session->get('_app.stores')[$store]['acl'])) {
             // Get acl for store
             $storeAcl = $this->getStoreAcl($store);
+
+            // Update stores in session (with acl defined)
             $stores = $session->get('_app.stores');
             $stores[$store]['acl'] = $storeAcl;
             $session->set('_app.stores', $stores);
@@ -242,10 +245,9 @@ class AppService
             $appModulesName[] = 'Sysadmin';
         }
 
-        $moduleMenuArr = array();
-
         $options = array(
-            'fields' => array('id', 'name', 'appModuleObj', 'app_module.id AS module_id', 'app_module.name AS module_name',
+            'fields' => array('id', 'name', 'appModuleObj',
+                'app_module.id AS module_id', 'IDENTITY(app_module.appModuleObj) AS parentModule_id', 'app_module.name AS module_name',
                 'app_icon.name AS module_icon', '8 AS acl', 'route'
             ),
             'criteria' => array(
@@ -268,7 +270,7 @@ class AppService
                 )
             );
 
-        return $this->normalizeModulesTree($moduleMenuArr);
+        return $this->normalizeModulesTreeView($moduleMenuArr);
     }
 
     /**
@@ -281,6 +283,7 @@ class AppService
         // Get logged user store
         $session = $this->container->get('session');
         $loggedUserStore = ($store ? $store : $session->get('_app.store'));
+        $baseModuleMenuArr = $session->get('_app.modules');
 
         // No store, no menus!
         if (empty($loggedUserStore)) {
@@ -294,7 +297,8 @@ class AppService
 
         $options = array(
             // "app_module.id" and "app_moduleMenu.id" are used to avoid id override between local and system db
-            'fields' => array('app_moduleMenu.id', 'name', 'moduleObj', 'app_module.id AS module_id', 'module.name AS module_name',
+            'fields' => array('app_moduleMenu.id', 'name', 'moduleObj',
+                'app_module.id AS module_id', 'IDENTITY(app_module.appModuleObj) AS parentModule_id', 'module.name AS module_name',
                 'app_icon.name AS module_icon', 'userGroupAclMenu.acl AS acl', 'app_moduleMenu.route AS route'
             ),
             'criteria' => array(
@@ -319,7 +323,7 @@ class AppService
                 )
             );
 
-        return $this->normalizeModulesTree($moduleMenuArr);
+        return $this->normalizeModulesTreeView($moduleMenuArr, $baseModuleMenuArr);
     }
 
     /**
@@ -351,20 +355,31 @@ class AppService
     }
 
     /**
-     * Create a tree of modules and menus
+     * Create a tree view of modules and menus
      * @param $moduleMenuArr
+     * @param $baseModuleMenuArr (base module menu array to append entries of $moduleMenuArr,
+     *     usually used to create store modules using as base app modules)
      * @return array
      */
-    protected function normalizeModulesTree($moduleMenuArr)
+    protected function normalizeModulesTreeView($moduleMenuArr, $baseModuleMenuArr = array())
     {
-        $modules = array();
+        $modules = $baseModuleMenuArr;
         if (is_array($moduleMenuArr) && (count($moduleMenuArr) > 0)) {
             foreach ($moduleMenuArr as $moduleMenu) {
                 // Add entry in modules
                 $module_id = $moduleMenu['module_id'];
-                if (!isset($modules[$module_id])) {
-                    $modules[$module_id] = array(
+                $parentModule_id = (empty($moduleMenu['parentModule_id']) ? 0 : $moduleMenu['parentModule_id']);
+
+                // Parent module index
+                if (!isset($modules[$parentModule_id])) {
+                    $modules[$parentModule_id] = array();
+                }
+
+                // Module index
+                if (!isset($modules[$parentModule_id][$module_id])) {
+                    $modules[$parentModule_id][$module_id] = array(
                         'id' => $module_id,
+                        'parent' => $parentModule_id,
                         'name' => $moduleMenu['module_name'],
                         'icon' => $moduleMenu['module_icon'],
                         'menus' => array()
@@ -372,7 +387,7 @@ class AppService
                 }
 
                 // Add entry in menus of module
-                $modules[$module_id]['menus'][] = array(
+                $modules[$parentModule_id][$module_id]['menus'][] = array(
                     'id' => $moduleMenu['id'],
                     'name' => $moduleMenu['name'],
                     'acl' => $moduleMenu['acl'],
@@ -382,6 +397,6 @@ class AppService
             }
         }
 
-        return array_values($modules);
+        return $modules;
     }
 }

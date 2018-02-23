@@ -1,0 +1,25 @@
+{% extends 'AppBundle::base-popup.html.twig' %}
+
+{% block header_container %}Debug&nbsp;<small>{% verbatim %}{{getProviderAttr('label')}}{% endverbatim %}</small>{% endblock %}
+{% block body %}
+    {% embed 'AppBundle:accordion:dynamic.html.twig' with {'panels': "'availability', 'allot', 'price'"} %}
+        {% block panel_restriction_start %}<ng-template [ngIf]="getProviderAttr('data')[panel]">{% endblock %}
+
+        {% block panel_label %}{% verbatim %}<span class="status -{{ _statusMap[getProviderAttr('data')[panel]['status']] || 'danger' }}"></span>&nbsp;{{_helperService.uCFirst(panel)}}{% endverbatim %}{% endblock %}
+
+        {% block panel_container %}
+            <ul class="no-bullets"><li class="p-xxs" *ngFor="let debugDetail of getProviderAttr('data')[panel]['detail'];">
+                    <span class="status -{% verbatim %}{{ _statusMap[debugDetail['status']] || 'danger' }}{% endverbatim %}"></span><span
+                    >&nbsp;{% verbatim %}{{debugDetail['date']}}{% endverbatim %}</span>
+
+                    <span *ngIf="panel == 'allot'">&nbsp;({% verbatim %}{{debugDetail['free']}}/{{debugDetail['total']}} - {{debugDetail['type']}}{% endverbatim %})</span>
+                    <ul *ngIf="panel == 'price'"><li *ngFor="let priceDetail of debugDetail['price'];">
+                            {% verbatim %}{{priceDetail['description']}}{% endverbatim %}:&nbsp;
+                            <strong>Cost:</strong>&nbsp;{% verbatim %}{{priceDetail['costValue']}}{% endverbatim %}&nbsp;<strong>Sell:</strong>&nbsp;{% verbatim %}{{priceDetail['sellValue']}}{% endverbatim %}
+                        </li></ul>
+                </li></ul>
+        {% endblock %}
+
+        {% block panel_restriction_end %}</ng-template>{% endblock %}
+    {% endembed %}
+{% endblock %}

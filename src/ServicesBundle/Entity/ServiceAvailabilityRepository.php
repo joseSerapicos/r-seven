@@ -59,6 +59,15 @@ class ServiceAvailabilityRepository extends BaseEntityRepository {
             'endDate' => array('label' => 'End Date', 'type' => 'date', 'acl' => 'edit', 'view' => array(
                 'typeDetail' => array('rules' => array(array('expr' => 'min', 'value' => 'startDate')))
             )),
+            'targetServiceObj' => array('label' => 'Target', 'type' => 'object', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'table' => 'service', 'tableAlias' => 'service_target', 'bundle' => 'services', 'type' => 'none',
+                    'fieldInView' => 'targetService_name', 'choices' => array('query' => 'getChoicesForServicePrice')),
+                'isRequired' => false,
+                'form' => array('type' => 'html-select')
+            ),
+            'targetService_name' => array('table' => 'service_target', 'field' => 'name', 'label' => 'Target',
+                'type' => 'text', 'acl' => 'read', 'dependency' => 'targetServiceObj', 'form' => array('type' => 'none')),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
             'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
@@ -68,9 +77,10 @@ class ServiceAvailabilityRepository extends BaseEntityRepository {
     /**
      * Get current availability
      * @param $serviceObj (object)
+     * @param $availabilityTargetServiceObj (target service object, to get availability of specific service (like packages))
      * @return mixed
      */
-    public function getCurrentAvailability($serviceObj)
+    public function getCurrentAvailability($serviceObj, $availabilityTargetServiceObj = null)
     {
         $currentDate = date("Y-m-d");
 
@@ -88,6 +98,13 @@ class ServiceAvailabilityRepository extends BaseEntityRepository {
             array('field' => 'endDate', 'expr' => 'gte', 'value' => $currentDate
             )
         );
+        if ($availabilityTargetServiceObj) {
+            // Specific allot for $targetServiceObj
+            $options['criteria'][] = array('field' => 'targetServiceObj', 'expr' => 'eq', 'value' => $availabilityTargetServiceObj);
+        } else {
+            // Regular allot
+            $options['criteria'][] = array('field' => 'targetServiceObj', 'expr' => 'isNull', 'value' => null);
+        }
 
         // Order by
         $options['orderBy'] = array(
@@ -96,8 +113,8 @@ class ServiceAvailabilityRepository extends BaseEntityRepository {
 
         $qb = $this->queryBuilder($options, false);
 
-        // Retrieve only availability dates that have allot (if enabled). This simple approach doesn't have assurance
-        // because entire ranges is not validate
+        // Retrieve only availability dates that have allot (if enabled). This approach does not ensure that all date
+        // range has allot, because we only validates the start and the end date and not all range
         if ($serviceObj->getIsEnabledAllot())
         {
             $qb->innerJoin('ServicesBundle\Entity\ServiceAllot',
@@ -111,8 +128,8 @@ class ServiceAvailabilityRepository extends BaseEntityRepository {
             );
         }
 
-        // Retrieve only availability dates that have price (if enabled). This simple approach doesn't have assurance
-        // because entire ranges is not validate
+        // Retrieve only availability dates that have price (if enabled). This approach does not ensure that all date
+        // range has price, because we only validates the start and the end date and not all range
         if ($serviceObj->getIsEnabledPrice())
         {
             $qb->innerJoin('ServicesBundle\Entity\ServicePrice',

@@ -40,31 +40,26 @@ class UserController extends BaseEntityController
             )
         );
 
-        // Fields
+        // Fields (set correct fields before process them by the parent init)
         $this->localConf['entityFields'] = $this->getRepositoryService('User', 'AdminBundle')->execute('getMetadata');
-        if (!empty($this->flags['hasForm'])) {
-            // Code does not make sense in users, needs to be of "fake" type because code is rendered by another external
-            // form, so "fake" allow to simulate the rendering without any output
-            $this->localConf['entityFields']['code']['type'] = 'fake';
-        } else {
-            // In view context is not necessary
-            unset($this->localConf['entityFields']['code']);
-        }
         // Only admins can see role
         $isAdmin = $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN');
         if (!$isAdmin) {
             unset($this->localConf['entityFields']['role']);
+            $this->localConf['formTypeClass'] = 'AdminBundle\Form\UserNoAdminType';
         }
 
         parent::init($request);
 
+        // Local Search
         // Remove Sysadmin from results
         $this->localConf['search']['criteria'][] = array(
             'field' => 'role',
             'expr' => 'neq',
             'value' => 'ROLE_SYSADMIN'
         );
-        // Remove the logged user
+        // Remove the logged user (logged user can not manager herself, like delete his own account,
+        // if he is the unique admin, the application would be stay without admin accounts, and this can not be happen)
         $session = $this->get('session');
         $loggedUserId = $session->get('_app.user')['id'];
         $this->localConf['search']['criteria'][] = array(
@@ -72,17 +67,16 @@ class UserController extends BaseEntityController
             'expr' => 'neq',
             'value' => $loggedUserId
         );
-        // Remove self reference comes from the merge table (entity)
-        unset($this->localConf['entityFields']['user']);
 
-        // Search
+        // Template Search
         $this->templateConf['search']['fields'] =
             array('id', 'avatar', 'name', 'surname', 'username', 'isEnabled');
         if ($isAdmin) {
             $this->templateConf['search']['fields'][] = 'role';
         }
 
-        // Access control list (only admin can remove users, because users can be across stores)
+        // Access control list (only admin can remove users, because users can belongs to multiple stores,
+        // and other users can not realize that)
         $this->templateConf['acl']['delete'] = $isAdmin;
 
         // Actions for template/view
@@ -124,19 +118,6 @@ class UserController extends BaseEntityController
     public function profileAction(Request $request)
     {
         return parent::profileAction($request);
-    }
-
-    /**
-     * @Route("/admin/user/profile-detail",
-     *     name="_admin__user__profile_detail"
-     * )
-     *
-     * Profile detail
-     * @return mixed
-     */
-    public function profileDetailAction()
-    {
-        return $this->render('AdminBundle:User:profile-detail.html.twig');
     }
 
     /**
@@ -219,9 +200,8 @@ class UserController extends BaseEntityController
 
         // Keep only the password field
         $this->templateConf['fields']['form'] = array('password');
-
+        $this->localConf['formTypeClass'] = 'AdminBundle\Form\UserPasswordType';
         $this->localConf['templates']['edit'] = 'AppBundle:form:form.html.twig';
-        $this->localConf['form']['buttons'] = 'none';
 
         return $this->editAction($request, $id);
     }
@@ -250,6 +230,7 @@ class UserController extends BaseEntityController
                 unset($this->templateConf['fields']['form'][$key]);
             }
             $this->localConf['form']['buttons'] = 'wizard';
+            $this->localConf['formTypeClass'] = str_replace('User', 'UserAdd', $this->localConf['formTypeClass']);
         }
 
         // Get object
@@ -257,7 +238,7 @@ class UserController extends BaseEntityController
         $obj_role = $obj->getRole(); // Save current role
 
         // Build form
-        $form = $this->buildForm($request, $obj);
+        $form = $this->createForm($this->localConf['formTypeClass'], $obj);
 
         // Handle request
         $form->handleRequest($request);
@@ -303,7 +284,7 @@ class UserController extends BaseEntityController
             // Set password to be rendered by Angular form
             $this->templateConf['fields']['form'][] = 'password';
             // Render form
-            return $this->render('AppBundle:wizard:popup.html.twig', array(
+            return $this->render('AppBundle:wizard:form-popup.html.twig', array(
                 '_conf' => $this->templateConf,
                 '_form' => $form->createView(),
                 '_containers' => array(
@@ -368,9 +349,10 @@ class UserController extends BaseEntityController
             $obj->setRole('ROLE_USER');
         }
 
-        $entity = new Entity();
-        $entity->setCode('user-'.uniqid()); // Set an code (is nor used, but can't be null...)
-        $obj->setEntityObj($entity);
+        $entityObj = $obj->getEntityObj();
+        // Set an code (is not used, but can't be null...)
+        $entityObj->setCodePrefix('user-');
+        $entityObj->setCodeNumber(uniqid());
 
         return $obj;
     }
@@ -414,16 +396,16 @@ class UserController extends BaseEntityController
      */
     protected function getSearch()
     {
-        $this->templateConf['search'] = $this->empowerCriteriaByName($this->templateConf['search']);
+        $this->templateConf['search'] = $this->boostCriteriaByName($this->templateConf['search']);
         return parent::getSearch();
     }
 
     /**
-     * Empower criteria by name. To improve the search results by "name"
+     * Boost criteria by name. To improve the search results by "name"
      * @param $search
      * @return mixed
      */
-    private function empowerCriteriaByName($search) {
+    private function boostCriteriaByName($search) {
         if (isset($search['criteria']) && is_array($search['criteria'])) {
             // Search criteria for 'name' to change it.
             $criteriaIndex = null;

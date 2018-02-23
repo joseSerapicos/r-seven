@@ -136,7 +136,7 @@ class StoreController extends BaseEntityController
         $obj = $this->getObject($id);
 
         // Build form
-        $form = $this->buildForm($request, $obj);
+        $form = $this->createForm($this->localConf['formTypeClass'], $obj);
 
         // Handle request
         $form->handleRequest($request);

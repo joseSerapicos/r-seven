@@ -43,7 +43,7 @@
             var _app = {
                 'userRole': '{{ app.session.get('_app.user')['role'] }}',
                 'isDebug': Boolean({{app.debug}}),
-                'csrfToken': '{{csrf_token('request-data')}}',
+                'csrfToken': '{{csrf_token(csrf_token_id)}}',
                 'stores': {{ app.session.get('_app.view.stores')|json_encode|raw }},
                 'route': '{{ url('_app__default__index') }}',
                 'flashMessages': {{ flashMessages['messages'] is defined ? flashMessages['messages']|json_encode|raw : 'null' }},
@@ -76,7 +76,10 @@
 
             {% block body %}
                 <div class="row wrapper-content main-body-container"><div
-                            class="col-lg-12">{% block body_container %}{% endblock %}</div></div>
+                            class="col-lg-12">{% block body_container %}
+                            <div class="js_appBasics"></div>
+                            <div class="js_app"></div>
+                        {% endblock %}</div></div>
             {% endblock %}
 
             {% include 'AppBundle:partial:footer.html.twig' %}
@@ -88,22 +91,14 @@
 
     {% block after_container %}{% endblock %}
 
-    <div class="js_app"></div>
+    <div class="modal-backdrop snipped js_loader"></div>
 
     {% block vendor_javascripts %}
-        {% javascripts output="assets/app/base/js/angular.js"
-            '@shim'
-            '@reflect'
-            '@zone'
-        %}
-            <script src="{{ asset_url }}"></script>
-        {% endjavascripts %}
-
-        {# '@AppBundle/Resources/public/scripts/plugins/jquery-ui/jquery-ui.min.js' ???? #}
         {% javascripts output="assets/app/base/js/vendor.js"
             '@jquery'
             '@bootstrap3'
             '@metismenu'
+            '@jquery_lazy'
 
             '@AppBundle/Resources/public/scripts/plugins/slimscroll/jquery.slimscroll.min.js'
 
@@ -116,12 +111,15 @@
     {% endblock %}
 
     {% block local_javascripts %}
-        {% javascripts output="assets/app/base/js/local.js"
-            '@AppBundle/Resources/public/app/webpack_generated/common.js'
-            '@AppBundle/Resources/public/app/webpack_generated/main.js'
+        {# PUT HERE YOUR LOCAL JAVASCRIPT (ANGULAR APP/MODULE)
+        {% javascripts output="assets/my-bundle/my-controller/my-action/js/local.js"
+            '@MyBundle/Resources/public/my-controller/my-action/ts/dist/inline.bundle.js'
+            '@MyBundle/Resources/public/my-controller/my-action/ts/dist/polyfills.bundle.js'
+            '@MyBundle/Resources/public/my-controller/my-action/ts/dist/vendor.bundle.js'
+            '@MyBundle/Resources/public/my-controller/my-action/ts/dist/main.bundle.js'
         %}
             <script src="{{ asset_url }}"></script>
-        {% endjavascripts %}
+        {% endjavascripts #}
     {% endblock %}
 </body>
 </html>

@@ -1,0 +1,25 @@
+{% extends 'AppBundle:wizard:popup.html.twig' %}
+
+{% block before_steps %}{% endblock %}
+
+{% block steps %}
+    {# Override this block if you want to define static steps. #}
+    {% for key, value in _containers %}
+        {% if (key == 0) %}
+            {% block first_step %}
+                {# Override this block if you don't want a form in first step.
+                   You can replace this step to another one static container or lazy load container. #}
+                {% include 'AppBundle:wizard:start-static-container.html.twig' %}
+                    {% include 'AppBundle:form:form.html.twig' with {
+                        'form': _form,
+                        'fields': (_conf['fields'] is defined ? _conf['fields'] : null)
+                    } %}
+                {% include 'AppBundle:wizard:end-static-container.html.twig' %}
+            {% endblock %}
+        {% else %}
+            {% include 'AppBundle:wizard:lazy-load-container.html.twig' %}
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
+{% block after_steps %}{% endblock %}

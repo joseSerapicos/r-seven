@@ -1,0 +1,7 @@
+{
+  "main": "http://weboffice.whs.dev.com/app_dev.php/admin/store/detail-tabs",
+  "contacts": "http://weboffice.whs.dev.com/app_dev.php/admin/store/contacts",
+  "store-phone-edit": "http://weboffice.whs.dev.com/app_dev.php/admin/store-phone/edit/0",
+  "store-email-edit": "http://weboffice.whs.dev.com/app_dev.php/admin/store-email/edit/0",
+  "store-link-edit": "http://weboffice.whs.dev.com/app_dev.php/admin/store-link/edit/0"
+}

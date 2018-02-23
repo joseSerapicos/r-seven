@@ -1,0 +1,89 @@
+
+
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+
+        
+                                        
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_bookingServiceObj_quantityManual">Quantity</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_bookingServiceObj_quantityManual" name="form[bookingServiceObj][quantityManual]" [(ngModel)]="_formService.getObject().quantityManual" formControlName="quantityManual" [class.error]="_formService.getErrors().quantityManual &amp;&amp; _formService.getErrors().quantityManual.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().quantityManual">{{error}}</label>
+            </div>
+        </div>
+                                                    <div class="form-group">
+                                <label class="col-sm-2 control-label required" for="form_bookingServiceObj_confirmationStatus">Confirmation</label>
+                        <div class="col-sm-10"
+                         [hidden]="!_formService.getObject()['isEnabledAllot'] || !_formService.getObject()['isAutoAllot']">
+                                                <p id="form_bookingServiceObj_confirmationStatus"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().confirmationStatus"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().confirmationStatus">{{error}}</label>
+                    </div>
+                    <div class="col-sm-10"
+                         [hidden]="_formService.getObject()['isEnabledAllot'] && _formService.getObject()['isAutoAllot']">
+                                                    <div [htmlSelect]="'confirmationStatusManual'"
+         class="html-select"
+                               >
+        <div class="form-control"
+             [class.error]="_formService.getErrors()['confirmationStatusManual'] && (_formService.getErrors()['confirmationStatusManual'].length > 0)">
+            <span class="control">
+                <span class="js_label"></span><a class="pull-right"><i class="fa fa-angle-down"></i></a>
+            </span>
+        </div>
+        <div class="choices js_choices">
+            <ul class="form-control-box">
+                                    <li data-value="NO"><span class="status -danger"></span></li>
+                                    <li data-value="PARTIAL"><span class="status -warning"></span></li>
+                                    <li data-value="YES"><span class="status -primary"></span></li>
+                            </ul>
+        </div>
+    </div>
+    <input [(ngModel)]="_formService.getObject().confirmationStatusManual"
+           formControlName = confirmationStatusManual
+           name="form[bookingServiceObj][confirmationStatusManual]"
+           required="required"           type="hidden">
+                    <label class="error" *ngFor="let error of _formService.getErrors().confirmationStatusManual">{{error}}</label>
+                    </div>
+                </div>
+                <ng-template [ngIf]="_formService.getObject()['isEnabledAllot']">
+                    
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label">Auto Allot</label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label><input type="checkbox" id="form_bookingServiceObj_isAutoAllot" name="form[bookingServiceObj][isAutoAllot]" [(ngModel)]="_formService.getObject().isAutoAllot" formControlName="isAutoAllot" [class.error]="_formService.getErrors().isAutoAllot &amp;&amp; _formService.getErrors().isAutoAllot.length &gt; 0" value="1" /> Is auto allot</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().isAutoAllot">{{error}}</label>
+            </div>
+        </div>
+                    </ng-template>
+                                                                
+    <ng-template [ngIf]="_formService.getObject()['isEnabledAllot'] && _dataService.getProviderAttr('localData') && _dataService.getProviderAttr('localData')['allot']">
+        <div [hidden]="!_formService.getObject()['isAutoAllot']"> 
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Allot allocation            </div>
+            <div class="panel-body">
+                    <ul class="no-bullets"><li class="p-xxs" *ngFor="let allot of _dataService.getProviderAttr('localData')['allot'];">
+        <span class="status -{{ _statusMap[allot['status']] || 'danger' }}"></span><span
+            >&nbsp;{{allot['date']}}</span><span
+                >&nbsp;({{allot['free']}}/{{allot['total']}}&nbsp;available)</span>
+    </li></ul>
+            </div>
+        </div>
+    </div>
+</div></div>
+    </ng-template>
+
+
+    
+
+    <input type="hidden" id="form__token" name="form[_token]" value="TcyNUc0ivaNc2Bzv96jY_ov6RXK7ED_ZXIRcdRl89Ag" /></form>

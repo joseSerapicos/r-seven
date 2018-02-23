@@ -1,0 +1,89 @@
+
+
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+
+        
+                                        
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_bookingServiceObj_startDateManual">Start Date</label>
+    
+            <div class="col-sm-10">
+                                        
+    <div class="input-group js_dataPicker"
+         [datePicker]="'startDateManual'"
+         #dpk_startDateManual="" [control]="dpk_startDateManual">
+        <input [(ngModel)]="_formService.getObject().startDateManual"
+               formControlName = startDateManual
+               name="form[bookingServiceObj][startDateManual]"
+               required="required"               class="form-control"
+               [class.error]="_formService.getErrors()['startDateManual'] && (_formService.getErrors()['startDateManual'].length > 0)"
+               placeholder="yyyy-mm-dd"
+               ngbDatepicker #dpk_startDateManual="ngbDatepicker">
+        <a class="input-group-addon action dsp-table-cell fa fa-calendar"></a>
+    </div>
+    
+                <label class="error" *ngFor="let error of _formService.getErrors().startDateManual">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_bookingServiceObj_endDateManual">End Date</label>
+    
+            <div class="col-sm-10">
+                                        
+    <div class="input-group js_dataPicker"
+         [datePicker]="'endDateManual'"
+         #dpk_endDateManual="" [control]="dpk_endDateManual">
+        <input [(ngModel)]="_formService.getObject().endDateManual"
+               formControlName = endDateManual
+               name="form[bookingServiceObj][endDateManual]"
+               required="required"               class="form-control"
+               [class.error]="_formService.getErrors()['endDateManual'] && (_formService.getErrors()['endDateManual'].length > 0)"
+               placeholder="yyyy-mm-dd"
+               ngbDatepicker #dpk_endDateManual="ngbDatepicker">
+        <a class="input-group-addon action dsp-table-cell fa fa-calendar"></a>
+    </div>
+    
+                <label class="error" *ngFor="let error of _formService.getErrors().endDateManual">{{error}}</label>
+            </div>
+        </div>
+                                                    <ng-template [ngIf]="_formService.getObject()['isEnabledAvailability']">
+                    
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label">Auto Availability</label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label><input type="checkbox" id="form_bookingServiceObj_isAutoAvailability" name="form[bookingServiceObj][isAutoAvailability]" [(ngModel)]="_formService.getObject().isAutoAvailability" formControlName="isAutoAvailability" [class.error]="_formService.getErrors().isAutoAvailability &amp;&amp; _formService.getErrors().isAutoAvailability.length &gt; 0" value="1" /> Is auto availability</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().isAutoAvailability">{{error}}</label>
+            </div>
+        </div>
+                    </ng-template>
+                        
+    <ng-template [ngIf]="_formService.getObject()['isEnabledAvailability'] && _dataService.getProviderAttr('localData') && _dataService.getProviderAttr('localData')['availability']">
+        <div [hidden]="!_formService.getObject()['isAutoAvailability']"> 
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Availability Data Ranges            </div>
+            <div class="panel-body">
+                    <ul class="no-bullets"><li class="p-xxs" *ngFor="let dataRange of _dataService.getProviderAttr('localData')['availability'];">
+        <strong>From</strong>&nbsp;{{dataRange['startDate']}}&nbsp;<strong>To</strong>&nbsp;{{dataRange['endDate']}}
+    </li></ul>
+            </div>
+        </div>
+    </div>
+</div></div>
+    </ng-template>
+
+
+    
+
+    <input type="hidden" id="form__token" name="form[_token]" value="M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso" /></form>

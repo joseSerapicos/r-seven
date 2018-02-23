@@ -286,7 +286,7 @@ export class TreeViewDataService extends DataService
                 // Submit to provided route
                 return that.runAction(route, {id: idArr}).then(
                     data => { return resolve(data); },
-                    errors => { console.log(errors); return reject(errors); }
+                    errors => { return reject(errors); }
                 );
             } else {
                 // No indexes to submit
@@ -315,15 +315,12 @@ export class TreeViewDataService extends DataService
             }
         }
 
-        this.post(
+        this._postService.post(
             this._provider.route['delete']['url'],
             this.getRequestData({id: idArr})
         ).then(
             data => {
-                // Refresh fields choices
-                if (data.fieldsChoices) {
-                    that.setFieldsChoices(data.fieldsChoices);
-                }
+                that.handleResponse(data);
 
                 // Refresh objects array
                 // Correction for index (each time you remove an index, all indices needs to be corrected)

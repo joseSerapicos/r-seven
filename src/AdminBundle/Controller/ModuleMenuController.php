@@ -68,12 +68,18 @@ class ModuleMenuController extends BaseEntityChildController
             )
         );
 
+        $parent = reset($this->parentConf);
+        $appModuleId = ($parent['obj'] ?
+            $parent['obj']->getAppModuleObj()->getId() :
+            0 // When parent is not defined like to get edit and add template
+        );
+
         // Extra data
         $this->templateConf['extraData']['service'] = array(
             'appDependencyRouteGetUrl' => $this->generateUrl(
                 '_sysadmin__module_menu__get',
                 array(
-                    'module' => $this->parentConf['module']['obj']->getAppModuleObj()->getId()
+                    'module' => $appModuleId
                 )
             ),
             'appDependencyFieldKey' => 'appModuleMenuObj',
@@ -114,6 +120,52 @@ class ModuleMenuController extends BaseEntityChildController
     }
 
     /**
+     * @Route("/admin/module-menu/add/{module}",
+     *     name="_admin__module_menu__add"
+     * )
+     *
+     * Action to add objects using the form
+     * @param Request $request
+     * @param $module
+     * @return mixed
+     */
+    public function addLocalChildAction(Request $request, $module)
+    {
+        // Set configuration
+        $this->flags['hasForm'] = true;
+        $this->initChild($request, array($module));
+
+        // New object
+        $obj = $this->newObject();
+
+        // Build form
+        $form = $this->createForm('AdminBundle\Form\ModuleMenuAddFormType', $obj);
+
+        // Handle request
+        $form->handleRequest($request);
+
+        // Check if is submitted
+        if($form->isSubmitted()) {
+            $this->saveForm($form, $obj);
+            return $this->getResponse(true);
+        }
+
+        // Render form
+        return $this->render('AdminBundle:ModuleMenu:add-popup.html.twig', array(
+            '_conf' => $this->templateConf,
+            '_form' => $form->createView(),
+            '_containers' => array(
+                array(
+                    'label' => 'Select Menu',
+                ),
+                array(
+                    'label' => 'Fill Form',
+                )
+            )
+        ));
+    }
+
+    /**
      * @Route("/admin/module-menu/edit/{module}/{id}",
      *     name="_admin__module_menu__edit",
      *     defaults={"id" = null}
@@ -137,53 +189,6 @@ class ModuleMenuController extends BaseEntityChildController
         }
 
         return parent::editChildAction($request, array($module), $id);
-    }
-
-    /**
-     * @Route("/admin/module-menu/add/{module}",
-     *     name="_admin__module_menu__add"
-     * )
-     *
-     * Action to add objects using the form
-     * @param Request $request
-     * @param $module
-     * @return mixed
-     */
-    public function addLocalChildAction(Request $request, $module)
-    {
-        // Set configuration
-        $this->flags['hasForm'] = true;
-        $this->initChild($request, array($module));
-
-        // New object
-        $obj = $this->newObject();
-
-        // Build form
-        $this->localConf['form'] = array_merge($this->localConf['form'], array('route' => 'add', 'buttons' => 'wizard'));
-        $form = $this->buildForm($request, $obj);
-
-        // Handle request
-        $form->handleRequest($request);
-
-        // Check if is submitted
-        if($form->isSubmitted()) {
-            $this->saveForm($form, $obj);
-            return $this->getResponse(true);
-        }
-
-        // Render form
-        return $this->render('AdminBundle:Module:add-popup.html.twig', array(
-            '_conf' => $this->templateConf,
-            '_form' => $form->createView(),
-            '_containers' => array(
-                array(
-                    'label' => 'Select Menu',
-                ),
-                array(
-                    'label' => 'Fill Form',
-                )
-            )
-        ));
     }
 
     /**
@@ -221,6 +226,16 @@ class ModuleMenuController extends BaseEntityChildController
      */
     protected function getFieldChoices($field)
     {
+        $parent = reset($this->parentConf);
+        $appModuleId = ($parent['obj'] ?
+            $parent['obj']->getAppModuleObj()->getId() :
+            null // When parent is not defined like to get edit and add template
+        );
+
+        if (!$appModuleId) {
+            return array();
+        }
+
         $localRepositoryService = $this->getLocalRepositoryService();
         $systemRepositoryService = $this->get('sysadmin.service.repository')
             ->setEntityRepository('SysadminBundle:ModuleMenu');
@@ -234,7 +249,7 @@ class ModuleMenuController extends BaseEntityChildController
                         'appModuleMenuObj'
                     ),
                     'criteria' => array(
-                        array('field' => 'moduleObj', 'expr' => 'eq', 'value' => $this->parentConf['module']['obj'])
+                        array('field' => 'moduleObj', 'expr' => 'eq', 'value' => $parent['obj'])
                     )
                 )
             )
@@ -259,7 +274,7 @@ class ModuleMenuController extends BaseEntityChildController
             )
         )
         ->where('app_module.id = ?1')
-        ->setParameter(1, $this->parentConf['module']['obj']->getAppModuleObj()->getId())
+        ->setParameter(1, $appModuleId)
         ->andWhere('app_module.isEnabled = 1');
         if (is_array($subQb) && (count($subQb) > 0)) {
             $appMenus = (implode(",", array_column($subQb, 'appModuleMenuObj')));

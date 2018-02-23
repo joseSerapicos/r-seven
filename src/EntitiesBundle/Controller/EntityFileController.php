@@ -40,11 +40,8 @@ class EntityFileController extends BaseEntityChildController
 
         parent::initChild($request, $parents, $label);
 
-        /* Form */
-        $this->localConf['form']['class'] = 'dropzone';
-        $this->localConf['form']['buttons'] = 'none';
-        $this->localConf['form']['hasNgForm'] = false;
-        /* /Form */
+        // Form (set submit context as default, because this is the most used)
+        $this->localConf['formTypeClass'] = ('EntitiesBundle\Form\EntityFileSubmitFormType');
 
         // Templates
         $this->localConf['templates']['edit'] = 'AppBundle:file:form-popup.html.twig';
@@ -117,10 +114,10 @@ class EntityFileController extends BaseEntityChildController
 
         // Build form
         if(empty($_FILES)) {
-            // Fields is not necessary, the plugin render the control
-            $this->localConf['form']['hasFields'] = false;
+            // Fields is necessary, to submit data, to render in view the plugin makes the work
+            $this->localConf['formTypeClass'] = str_replace('Submit', 'Render', $this->localConf['formTypeClass']);
         }
-        $form = $this->buildForm($request, $obj);
+        $form = $this->createForm($this->localConf['formTypeClass'], $obj);
 
         // Handle request
         $form->handleRequest($request);
@@ -153,11 +150,13 @@ class EntityFileController extends BaseEntityChildController
         // Set configuration
         $this->flags['hasForm'] = true;
         $this->initChild($request, array($entity));
+
         // Set form attributes
-        $this->localConf['form']['class'] = 'm-t-md dropzone';
-        $this->localConf['form']['buttons'] = 'none';
+        $this->localConf['formTypeClass'] = ('EntitiesBundle\Form\EntityFileSubmitFlatFormType');
+
         // Set view
         $this->localConf['templates']['edit'] = 'AppBundle:partial/form:form.html.twig';
+
         // Render edit action
         return $this->editLocalChildAction($request, array($entity), null);
     }
@@ -203,10 +202,17 @@ class EntityFileController extends BaseEntityChildController
     {
         $obj = parent::newObject();
 
+        $parent = reset($this->parentConf);
+
+        $parentId = ($parent['obj'] ?
+            $parent['obj']->getId() :
+            0 // Needed when parent is not defined like to get edit template
+        );
+
         $obj->setDir(
             $this->get('session')->get('_app.system')['filesRepository']
             . 'entities/'
-            . $this->parentConf['entity']['obj']->getId()
+            . $parentId
             . '/file/'
         );
 

@@ -1,0 +1,5 @@
+{
+  "add": "http://weboffice.whs.dev.com/app_dev.php/admin/user/edit",
+  "add-form-password": "http://weboffice.whs.dev.com/app_dev.php/admin/user/edit-password/0",
+  "edit": "http://weboffice.whs.dev.com/app_dev.php/admin/user/edit/0"
+}

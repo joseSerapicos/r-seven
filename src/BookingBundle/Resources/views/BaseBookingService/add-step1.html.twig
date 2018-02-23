@@ -1,0 +1,67 @@
+{% extends 'AppBundle:wizard:form-popup.html.twig' %}
+
+{% block wizard_header %}
+<div *ngIf="getSelectedServiceAttr('id')" class="row m-b-sm">
+    <div class="col-sm-8">
+        <div class="widget gray-bg height104">
+            <div class="col-sm-3">
+                <div [innerHTML]="getSelectedServiceAttr('thumbnail')"></div>
+            </div>
+            <div class="col-sm-9">
+                <div>
+                    <span [innerHTML]="getSelectedServiceAttr('icon')"></span>
+                    <span class="font-bold" [innerHTML]="getSelectedServiceAttr('name')"></span>
+                </div>
+                <div class="height52" [innerHTML]="getSelectedServiceAttr('description')"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="widget navy-bg height104 text-center">
+            <h2 [innerHTML]="getSelectedServiceAttr('totalSell')"></h2>
+            <div><span [innerHTML]="getSelectedServiceAttr('quantity')" class="font-bold"></span>&nbsp;Pax</div>
+            <div><span [innerHTML]="getSelectedServiceAttr('durationDays')" class="font-bold"></span>&nbsp;Days</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block first_step %}
+    {% include 'AppBundle:wizard:start-static-container.html.twig' %}
+    {% set form = (form is defined ? form : (_form is defined ? _form : null)) %}
+    {% set fields = (fields is defined ? fields : (_conf['fields'] is defined ? _conf['fields'] : null)) %}
+
+    {% block bookingServiceAddStep1_container %}
+        {% embed 'AppBundle:form:form.html.twig' with {
+        'form': form,
+        'fields': fields
+        } %}
+            {% block fields %}
+
+                {% if (form and fields) %}
+                    {% for field in fields['form'] %}
+
+                        {% set fieldMetadata = fields['metadata'][field] %}
+
+                        {% if (field == 'serviceObj') %}
+                            <ng-template #js_step1Service></ng-template>
+                            {% include 'AppBundle:form:field.html.twig' with {
+                            'field': field,
+                            'metadata': fieldMetadata,
+                            'form': form
+                            } %}
+                        {% else %}
+                            {% include 'AppBundle:form:field.html.twig' with {
+                            'field': field,
+                            'metadata': fieldMetadata,
+                            'form': form
+                            } %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+            {% endblock %}
+        {% endembed %}
+    {% endblock %}
+    {% include 'AppBundle:wizard:end-static-container.html.twig' %}
+{% endblock %}

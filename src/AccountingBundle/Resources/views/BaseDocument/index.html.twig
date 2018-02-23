@@ -1,0 +1,14 @@
+{% extends 'AppBundle:data-box:index.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets filter="scssphp" output="assets/accounting/base-document/index/css/local.css"
+        '@AppBundle/Resources/public/css/wizard.css'
+        '@AppBundle/Resources/public/scss/select-box.scss'
+        '@AppBundle/Resources/public/tree-view/scss/styles.scss'
+        '@AccountingBundle/Resources/public/base-document/scss/_document.scss'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{# block local_javascripts %}{% endblock #}

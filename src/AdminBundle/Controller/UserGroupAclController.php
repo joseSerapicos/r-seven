@@ -60,9 +60,6 @@ class UserGroupAclController extends BaseEntityController
         $this->templateConf['extraData']['service'] = array(
             'fields' => array(
                 'userObjArr' => null
-            ),
-            'treeView' => array(
-                'parentNodeField' => null
             )
         );
 

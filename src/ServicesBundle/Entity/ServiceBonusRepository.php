@@ -57,7 +57,7 @@ class ServiceBonusRepository extends BaseEntityRepository {
                 'typeDetail' => array(
                     'type' => 'text', 'choices' => array(
                         'value' => array(
-                            'Pax' => 'PAX', 'Days' => 'DAYS'
+                            'Pax/Quantity' => 'PAX', 'Days' => 'DAYS'
                         )
                     )),
                 'form' => array('type' => 'select')
@@ -72,24 +72,53 @@ class ServiceBonusRepository extends BaseEntityRepository {
                 'form' => array('type' => 'select')
             ),
             'ruleValue' => array('label' => 'Rule Value', 'type' => 'number', 'acl' => 'edit'),
+            // Field to control how to show the fake field "user_[...]"
+            'isVatIncluded' => array('label' => 'VAT included', 'type' => 'none', 'acl' => 'edit', 'default' => true,
+                'attr' => array('(change)' => 'onIsVatIncludedChange($event.target.checked)'),
+                'form' => array('type' => 'boolean')
+            ),
             'bonusServiceObj' => array('label' => 'Bonus Service', 'type' => 'object', 'acl' => 'edit',
                 'typeDetail' => array(
-                    'table' => 'service', 'fieldInView' => 'bonusService', 'bundle' => 'services', 'type' => 'none'),
-                'form' => array('type' => 'html-select')
+                    'table' => 'service', 'tableAlias' => 'bonusService', 'fieldInView' => 'bonusService_name',
+                    'bundle' => 'services', 'type' => 'none'
+                ), 'form' => array('type' => 'html-select')
             ),
-            'bonusService' => array('table' => 'service', 'field' => 'name', 'label' => 'Bonus Service', 'type' => 'text',
-                'acl' => 'read', 'dependency' => 'bonusServiceObj', 'form' => array('type' => 'none')),
-            'bonusType' => array('label' => 'Bonus Type', 'type' => 'enum', 'acl' => 'edit',
+            // Fields to determine VAT percentage
+            'bonusVatCodeObj' => array('table' => 'bonusService', 'field' => 'vatCodeObj', 'label' => 'VAT Code',
+                'type' => 'object', 'acl' => 'read', 'dependency' => 'bonusServiceObj',
+                'typeDetail' => array(
+                    'table' => 'vatCode', 'tableAlias' => 'bonusVatCode', 'bundle' => 'accounting', 'type' => 'none'
+                )
+            ),
+            'bonusVatCode_percentage' => array('table' => 'bonusVatCode', 'field' => 'percentage',
+                'label' => '', 'type' => 'hidden', 'acl' => 'read', 'dependency' => 'bonusVatCodeObj',
+                'form' => array('type' => 'none')
+            ),
+            'bonusService_name' => array('table' => 'bonusService', 'field' => 'name', 'label' => 'Bonus Service',
+                'type' => 'text', 'acl' => 'read', 'dependency' => 'bonusServiceObj', 'form' => array('type' => 'none')),
+            'bonusMethod' => array('label' => 'Bonus Method', 'type' => 'enum', 'acl' => 'edit',
+                'attr' => array('(change)' => 'onBonusMethodChange($event.target.value)'),
                 'typeDetail' => array(
                     'type' => 'text', 'choices' => array(
                         'value' => array(
                             'Percentage' => 'PERCENTAGE', 'Fixed' => 'FIXED'
                         )
-                    )),
+                    )
+                ),
                 'form' => array('type' => 'select')
             ),
-            'bonusValue' => array('label' => 'Bonus Value', 'type' => 'number', 'acl' => 'edit'),
-            'paxToApplyType' => array('label' => 'Pax to Apply', 'type' => 'enum', 'acl' => 'edit',
+            // Original field is hidden
+            'bonusValue' => array('label' => 'Bonus Value', 'type' => 'number', 'acl' => 'edit',
+                'form' => array('type' => 'hidden')),
+            // Fake field for user type the value (with or without VAT), because the original field is always without VAT
+            'user_bonusValue' => array('label' => 'Bonus Value', 'type' => 'none', 'acl' => 'edit',
+                'attr' => array(
+                    '(input)' => 'onBonusValueEnterKey($event.target.value)',
+                    '(focusout)' => 'onBonusValueEnterKey($event.target.value)'
+                ),
+                'form' => array('type' => 'number', 'isMapped' => false),
+            ),
+            'paxToApplyType' => array('label' => 'Pax/Quantity to Apply', 'type' => 'enum', 'acl' => 'edit',
                 'typeDetail' => array(
                     'type' => 'text', 'choices' => array(
                         'value' => array(
@@ -115,6 +144,15 @@ class ServiceBonusRepository extends BaseEntityRepository {
             'endDate' => array('label' => 'End Date', 'type' => 'date', 'acl' => 'edit', 'view' => array(
                 'typeDetail' => array('rules' => array(array('expr' => 'min', 'value' => 'startDate')))
             )),
+            'targetServiceObj' => array('label' => 'Target', 'type' => 'object', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'table' => 'service', 'tableAlias' => 'service_target', 'bundle' => 'services', 'type' => 'none',
+                    'fieldInView' => 'targetService_name', 'choices' => array('query' => 'getChoicesForServicePrice')),
+                'isRequired' => false,
+                'form' => array('type' => 'html-select')
+            ),
+            'targetService_name' => array('table' => 'service_target', 'field' => 'name', 'label' => 'Target',
+                'type' => 'text', 'acl' => 'read', 'dependency' => 'targetServiceObj', 'form' => array('type' => 'none')),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
             'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)

@@ -1,0 +1,277 @@
+<div class="modal-body">
+    <div class="form-wrapper gray-bg">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>
+                        <div class="txt-align-r actions">
+                            <a class="-round fa fa-times"
+                               (click)="closeAction($event)"></a>
+                        </div>
+                    </div>
+                        
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+                    <div class="ibox-content">        
+            
+            
+                            
+
+                <div class="form-group" *ngIf="_formService.getObject().code">
+
+                        <label class="col-sm-2 control-label" for="form_bookingObj_code">Code</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_bookingObj_code"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().code"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().code">{{error}}</label>
+            </div>
+        </div>
+                        
+            
+                            
+
+                <div class="form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_bookingObj_userObj">User/Operator</label>
+    
+            <div class="col-sm-10">
+                                        
+        <select id="form_bookingObj_userObj" name="form[bookingObj][userObj]" [(ngModel)]="_formService.getObject().userObj" formControlName="userObj" [class.error]="_formService.getErrors().userObj &amp;&amp; _formService.getErrors().userObj.length &gt; 0" class="form-control"><option value=""></option>            <option value="590" >Britt Sulei (590)</option>            <option value="591" >Kate Gon (591)</option>            <option value="592" >Lara Alvar (592)</option>            <option value="593" >Helen Lin (593)</option></select>
+    <input [(ngModel)]="_formService.getObject().userObj"
+           formControlName = userObj
+                      type="hidden">
+
+                <label class="error" *ngFor="let error of _formService.getErrors().userObj">{{error}}</label>
+            </div>
+        </div>
+                        
+            
+            
+                
+                <div class="form-group">
+                                <label class="col-sm-2 control-label required" for="form_bookingObj_clientObj">Client</label>
+                        <div class="col-sm-10"><div class="row">
+                        <div class="col-sm-8">
+                                                        <input [(ngModel)]="_formService.getObject().clientObj"
+           formControlName = clientObj
+           name="form[bookingObj][clientObj]"
+           required="required"           type="hidden">
+    <js_autoComplete [field]="'clientObj'"
+                     [selfReference]="_dataService.getFieldChoicesAttr('clientObj', 'selfReference')"
+                                                                       ></js_autoComplete>
+                    <label class="error" *ngFor="let error of _formService.getErrors().clientObj">{{error}}</label>
+                        </div>
+                        <div class="col-sm-4">
+                                                        <div class="checkbox">                                        <label><input type="checkbox" id="form_bookingObj_clientIsPax" name="form[bookingObj][clientIsPax]" [(ngModel)]="_formService.getObject().clientIsPax" formControlName="clientIsPax" [class.error]="_formService.getErrors().clientIsPax &amp;&amp; _formService.getErrors().clientIsPax.length &gt; 0" value="1" /> Client is pax</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().clientIsPax">{{error}}</label>
+                        </div>
+                    </div></div>
+                </div>
+                    
+            
+                            
+
+                                            <label class="error" *ngFor="let error of _formService.getErrors().bookingPaxObj">{{error}}</label>
+                        
+            
+                    
+            
+                            
+
+                <div class="form-group" *ngIf="_formService.getObject().startDate">
+
+                        <label class="col-sm-2 control-label required" for="form_bookingObj_startDate">Start Date</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_bookingObj_startDate"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().startDate"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().startDate">{{error}}</label>
+            </div>
+        </div>
+                        
+            
+                            
+
+                <div class="form-group" *ngIf="_formService.getObject().endDate">
+
+                        <label class="col-sm-2 control-label required" for="form_bookingObj_endDate">End Date</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_bookingObj_endDate"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().endDate"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().endDate">{{error}}</label>
+            </div>
+        </div>
+                        
+            
+                            
+
+                <div class="form-group" *ngIf="_formService.getObject().invoiceStatus">
+
+                        <label class="col-sm-2 control-label required" for="form_bookingObj_invoiceStatus">Invoice</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_bookingObj_invoiceStatus"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().invoiceStatus"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().invoiceStatus">{{error}}</label>
+            </div>
+        </div>
+                        
+            
+                            
+
+                <div class="form-group" *ngIf="_formService.getObject().confirmationStatus">
+
+                        <label class="col-sm-2 control-label required" for="form_bookingObj_confirmationStatus">Confirmation</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_bookingObj_confirmationStatus"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().confirmationStatus"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().confirmationStatus">{{error}}</label>
+            </div>
+        </div>
+                        
+            
+                            
+
+                <div class="form-group" *ngIf="_formService.getObject().totalCost">
+
+                        <label class="col-sm-2 control-label" for="form_bookingObj_totalCost">Total Cost</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_bookingObj_totalCost"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().totalCost"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().totalCost">{{error}}</label>
+            </div>
+        </div>
+                        
+            
+                            
+
+                <div class="form-group" *ngIf="_formService.getObject().totalSell">
+
+                        <label class="col-sm-2 control-label" for="form_bookingObj_totalSell">Total Sell</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_bookingObj_totalSell"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().totalSell"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().totalSell">{{error}}</label>
+            </div>
+        </div>
+                        
+            
+                            
+
+                <div class="form-group" *ngIf="_formService.getObject().totalMargin">
+
+                        <label class="col-sm-2 control-label required" for="form_bookingObj_totalMargin">Margin (net)</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_bookingObj_totalMargin"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().totalMargin"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().totalMargin">{{error}}</label>
+            </div>
+        </div>
+                        
+            
+                            
+
+                <div class="form-group" *ngIf="_formService.getObject().totalMarkup">
+
+                        <label class="col-sm-2 control-label required" for="form_bookingObj_totalMarkup">Markup (net)</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_bookingObj_totalMarkup"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().totalMarkup"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().totalMarkup">{{error}}</label>
+            </div>
+        </div>
+                        
+            
+                            
+
+                <div class="form-group" *ngIf="_formService.getObject().totalProfit">
+
+                        <label class="col-sm-2 control-label required" for="form_bookingObj_totalProfit">Profit (net)</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_bookingObj_totalProfit"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().totalProfit"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().totalProfit">{{error}}</label>
+            </div>
+        </div>
+                        
+            
+                            
+
+                <div class="form-group" *ngIf="_formService.getObject().insertTime">
+
+                        <label class="col-sm-2 control-label required" for="form_insertTime">Insert Time</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_insertTime"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().insertTime"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().insertTime">{{error}}</label>
+            </div>
+        </div>
+                        
+            
+                            
+
+                <div class="form-group" *ngIf="_formService.getObject().insertUser">
+
+                        <label class="col-sm-2 control-label required" for="form_insertUser">Insert User</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_insertUser"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().insertUser"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().insertUser">{{error}}</label>
+            </div>
+        </div>
+                            </div>
+                    <div class="ibox-footer hide-on-empty">    
+                    <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                                            <button                                     class="btn"
+                                    (click)="cancelAction($event)"
+                                        id="form_cancel"
+            name="form[cancel]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                                                <button                                     class="btn"
+                                    (click)="resetAction($event)"
+                                        id="form_reset"
+            name="form[reset]"
+            type="button"><i class="fa fa-ban"></i>&nbsp;Reset</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAction($event)"
+                                        id="form_save"
+            name="form[save]"
+            type="button"><i class="fa fa-check"></i>&nbsp;Save</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAndCloseAction($event)"
+                                        id="form_saveAndClose"
+            name="form[saveAndClose]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Save and Close</button>
+                                </div>
+        </div>
+    </div>                        
+    <input type="hidden" id="form__token" name="form[_token]" value="TcyNUc0ivaNc2Bzv96jY_ov6RXK7ED_ZXIRcdRl89Ag" /></form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+<div class="modal-body">
+    <div class="form-wrapper gray-bg">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>{{getProviderAttr('label')}}</h5>
+                        <div class="txt-align-r actions">
+                            <a class="-round fa fa-times"
+                               (click)="closeAction($event)"></a>
+                        </div>
+                    </div>
+                                        <div class="ibox-content">    <form name="form" method="post" class="image-crop form-horizontal">
+        <div class="row">
+            <div class="col-sm-8 image-container"><img class="image" src="{{getWebPath()}}"></div>
+            <div class="col-sm-4 image-container"><div class="image-preview"></div></div>
+        </div>
+        <input type="hidden" value="" name="path" class="path">
+        <input type="hidden" value="" name="width" class="width">
+        <input type="hidden" value="" name="height" class="height">
+        <input type="hidden" value="" name="x" class="x">
+        <input type="hidden" value="" name="y" class="y">
+    <input type="hidden" id="form__token" name="form[_token]" value="cVPVAkrc8mUqLC76AHZ48r-KIns64tMCy2zvIfd61xM" /></form>
+
+    <div class="hr-line-solid"></div>
+
+    <div class="form-horizontal"><div class="form-group">
+        <div class="col-sm-12">
+            <button class="btn-default btn" type="button" (click)="closeAction($event)">Cancel</button>
+            <button class="btn-primary btn" type="button" (click)="saveAction($event)">Save and Close</button>
+        </div>
+    </div></div>
+</div>
+                    <div class="ibox-footer hide-on-empty"></div>                                    </div>
+            </div>
+        </div>
+    </div>
+</div>

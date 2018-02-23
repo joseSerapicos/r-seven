@@ -22,16 +22,16 @@
                         </div>
                         <div class="col-sm-4">
                             {% include 'AppBundle:form:input.html.twig' with {
-                                'field': 'costBaseValue',
-                                'formField': form['costBaseValue'],
-                                'metadata': fields['metadata']['costBaseValue']
+                                'field': 'user_costValue',
+                                'formField': form['user_costValue'],
+                                'metadata': fields['metadata']['user_costValue']
                             } %}
                         </div>
                         <div class="col-sm-4">
                             {% include 'AppBundle:form:input.html.twig' with {
-                                'field': 'costValue',
-                                'formField': form['costValue'],
-                                'metadata': fields['metadata']['costValue']
+                                'field': 'costBaseValue',
+                                'formField': form['costBaseValue'],
+                                'metadata': fields['metadata']['costBaseValue']
                             } %}
                         </div>
                     </div></div>
@@ -52,25 +52,28 @@
                         </div>
                         <div class="col-sm-4">
                             {% include 'AppBundle:form:input.html.twig' with {
+                                'field': 'user_marginValue',
+                                'formField': form['user_marginValue'],
+                                'metadata': fields['metadata']['user_marginValue']
+                            } %}
+                        </div>
+                        <div class="col-sm-4">
+                            {% include 'AppBundle:form:input.html.twig' with {
                                 'field': 'marginBaseValue',
                                 'formField': form['marginBaseValue'],
                                 'metadata': fields['metadata']['marginBaseValue']
                             } %}
                         </div>
-                        <div class="col-sm-4">
-                            {% include 'AppBundle:form:input.html.twig' with {
-                                'field': 'marginValue',
-                                'formField': form['marginValue'],
-                                'metadata': fields['metadata']['marginValue']
-                            } %}
-                        </div>
                     </div></div>
                 </div>
-            {% elseif (field not in ['costValue', 'costBaseValue', 'marginBaseValue', 'marginValue']) %}
+            {% elseif (field not in [
+                'costMethod', 'user_costValue', 'costBaseValue',
+                'marginMethod', 'user_marginValue', 'marginBaseValue'
+            ]) %}
                 {% include 'AppBundle:form:field.html.twig' with {
-                'field': field,
-                'metadata': fields['metadata'][field],
-                'form': form
+                    'field': field,
+                    'metadata': fields['metadata'][field],
+                    'form': form
                 } %}
             {% endif %}
         {% endfor %}

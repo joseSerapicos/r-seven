@@ -2,11 +2,10 @@
 
 namespace ServicesBundle\Controller;
 
-use AppBundle\Controller\BaseEntityChildController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 
-class ServiceSupplementController extends BaseEntityChildController
+class ServiceSupplementController extends BaseServicePriceExceptionController
 {
     /**
      * Overrides parent method
@@ -107,14 +106,7 @@ class ServiceSupplementController extends BaseEntityChildController
      */
     public function editLocalChildAction(Request $request, $service, $id)
     {
-        $parents = array($service);
-
-        // Set configuration
-        $this->flags['hasForm'] = true;
-        $this->initChild($request, $parents);
-        $this->localConf['templates']['edit'] = $this->localConf['templatesPath'].'form-popup.html.twig';
-
-        return parent::editChildAction($request, $parents, $id);
+        return parent::editLocalChildAction($request, $service, $id);
     }
 
     /**

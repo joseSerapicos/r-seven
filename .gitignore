@@ -10,3 +10,6 @@
 
 # Uploads
 /web/upload/
+
+# dependencies
+/node_modules

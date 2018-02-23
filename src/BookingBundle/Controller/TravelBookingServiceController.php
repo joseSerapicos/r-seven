@@ -8,6 +8,15 @@ use Symfony\Component\HttpFoundation\Request;
 class TravelBookingServiceController extends BaseBookingServiceController
 {
     /**
+     * Get Local Booking Context.
+     * @return mixed (lowerCamelCase)
+     */
+    protected function getLocalBookingContext()
+    {
+        return 'travel';
+    }
+
+    /**
      * Overrides parent method
      * @param Request $request
      * @param $parents
@@ -19,9 +28,12 @@ class TravelBookingServiceController extends BaseBookingServiceController
         // Set configuration only once
         if($this->isInitialized) { return $this; }
 
+        // Menu
+        $this->templateConf['selectedMenu']['route'] = '_booking__travel_booking__index';
+
         // Parent route
         $this->parentConf = array(
-            'travelBooking' => array('route' => '_booking__travel_booking__index')
+            'booking' => array('route' => '_booking__booking__index')
         );
 
         // Route
@@ -29,20 +41,23 @@ class TravelBookingServiceController extends BaseBookingServiceController
             'get' => array(
                 'name' => '_booking__travel_booking_service__get'
             ),
-            'add' => array(
-                'name' => '_booking__travel_booking_service__add',
+            'addStep1' => array(
+                'name' => '_booking__travel_booking_service__add_step1',
             ),
-            'addDetail' => array(
-                'name' => '_booking__travel_booking_service__add_detail',
+            'addStep2' => array(
+                'name' => '_booking__travel_booking_service__add_step2',
             ),
-            'addDates' => array(
-                'name' => '_booking__travel_booking_service__add_dates',
+            'addStep3' => array(
+                'name' => '_booking__travel_booking_service__add_step3',
             ),
-            'addAllot' => array(
-                'name' => '_booking__travel_booking_service__add_allot',
+            'addStep4' => array(
+                'name' => '_booking__travel_booking_service__add_step4',
             ),
             'edit' => array(
                 'name' => '_booking__travel_booking_service__edit',
+            ),
+            'cancel' => array(
+                'name' => '_booking__travel_booking_service__cancel',
             ),
             'delete' => array(
                 'name' => '_booking__travel_booking_service__delete',
@@ -55,15 +70,14 @@ class TravelBookingServiceController extends BaseBookingServiceController
         parent::initChild($request, $parents, $label);
 
         // Templates
-        $this->localConf['templates']['add'] = 'AppBundle:wizard:popup.html.twig';
-        $this->localConf['templates']['addDetail'] = 'BookingBundle:BaseBookingService:add-detail.html.twig';
-        $this->localConf['templates']['addDates'] = 'BookingBundle:BaseBookingService:add-dates.html.twig';
-        $this->localConf['templates']['addAllot'] = 'BookingBundle:BaseBookingService:add-allot.html.twig';
+        $this->localConf['templates']['addStep1'] = 'BookingBundle:BaseBookingService:add-step1.html.twig';
+        $this->localConf['templates']['addStep2'] = 'BookingBundle:BaseBookingService:add-step2.html.twig';
+        $this->localConf['templates']['addStep3'] = 'BookingBundle:BaseBookingService:add-step3.html.twig';
         $this->localConf['templates']['edit'] = 'BookingBundle:BaseBookingService:edit.html.twig';
 
         // Search
         $this->templateConf['search']['fields'] = array(
-            'icon', 'name', 'reference', 'place_iata', 'placeTo_iata', 'startDate', 'endDate',
+            'icon', 'name', 'reference', 'place_iata', 'placeTo_iata', 'startDate', 'endDate', 'durationDays',
             'quantity', 'totalCost', 'totalSell', 'totalMarkup',
             'confirmationStatus', 'isAutoAllot'
         );
@@ -71,13 +85,13 @@ class TravelBookingServiceController extends BaseBookingServiceController
             array('field' => 'startDate', 'value' => 'ASC'),
             array('field' => 'priority', 'value' => 'ASC')
         );
-        // Empty criteria to be able to see all registers because "search" action is disabled.
-        $this->templateConf['search']['criteria'] = array();
 
         // Actions for template/view
         $this->templateConf['actions'] = array_merge(
             $this->templateConf['actions'],
             array(
+                'search' => true,
+                'cancel' => true,
                 'order' => true
             )
         );
@@ -91,138 +105,155 @@ class TravelBookingServiceController extends BaseBookingServiceController
     }
 
     /**
-     * @Route("/booking/travel-booking-service/get/{travelBooking}/{id}",
+     * @Route("/booking/travel-booking-service/get/{booking}/{id}",
      *     name="_booking__travel_booking_service__get",
      *     defaults={"id" = null}
      * )
      *
      * Overrides parent method
      * @param Request $request
-     * @param $travelBooking
+     * @param $booking
      * @param $id
      * @return mixed
      */
-    public function getLocalChildAction(Request $request, $travelBooking, $id)
+    public function getLocalChildAction(Request $request, $booking, $id)
     {
-        return parent::getChildAction($request, array($travelBooking), $id);
+        return parent::getChildAction($request, array($booking), $id);
     }
 
     /**
-     * @Route("/booking/travel-booking-service/add/{travelBooking}/{id}",
-     *     name="_booking__travel_booking_service__add",
+     * @Route("/booking/travel-booking-service/add-step1/{booking}/{id}",
+     *     name="_booking__travel_booking_service__add_step1",
      *     defaults={"id" = null}
      * )
      *
      * Action to add objects using the form
      * @param Request $request
-     * @param $travelBooking
+     * @param $booking
      * @param $id
      * @return mixed
      */
-    public function addAction(Request $request, $travelBooking, $id)
+    public function addStep1Action(Request $request, $booking, $id)
     {
-        return parent::addAction($request, $travelBooking, $id);
+        return parent::addStep1Action($request, $booking, $id);
     }
 
     /**
-     * @Route("/booking/travel-booking-service/add-detail/{travelBooking}/{id}",
-     *     name="_booking__travel_booking_service__add_detail",
+     * @Route("/booking/travel-booking-service/add-step2/{booking}/{id}",
+     *     name="_booking__travel_booking_service__add_step2",
+     *     defaults={"id" = null}
+     * )
+     *
+     * Action to add dates, allot and price of object
+     * @param Request $request
+     * @param $booking
+     * @param $id
+     * @return mixed
+     */
+    public function addStep2Action(Request $request, $booking, $id)
+    {
+        return parent::addStep2Action($request, $booking, $id);
+    }
+
+    /**
+     * @Route("/booking/travel-booking-service/add-step3/{booking}/{id}",
+     *     name="_booking__travel_booking_service__add_step3",
      *     defaults={"id" = null}
      * )
      *
      * Action to add detail info of object
      * @param Request $request
-     * @param $travelBooking
+     * @param $booking
      * @param $id
      * @return mixed
      */
-    public function addDetailAction(Request $request, $travelBooking, $id)
+    public function addStep3Action(Request $request, $booking, $id)
     {
+        $this->flags['storage'] = 'session'; // Session storage is used
         $this->flags['hasForm'] = true;
-        $this->initChild($request, array($travelBooking));
+        $this->initChild($request, array($booking));
         $this->templateConf['fields']['form'] = array(
-            'icon', 'name', 'description', 'supplierObj', 'reference', 'placeObj', 'placeToObj',
-            'isEnabled'
+            'icon', 'name', 'description', 'supplierObj', 'reference', 'placeObj', 'placeToObj'
         );
 
-        return parent::addDetailAction($request, $travelBooking, $id);
+        return parent::addStep3Action($request, $booking, $id);
     }
 
     /**
-     * @Route("/booking/travel-booking-service/add-dates/{travelBooking}/{id}",
-     *     name="_booking__travel_booking_service__add_dates",
+     * @Route("/booking/travel-booking-service/add-step4/{booking}/{id}",
+     *     name="_booking__travel_booking_service__add_step4",
      *     defaults={"id" = null}
      * )
      *
-     * Action to add dates of object
+     * Action to save object to database from session storage
      * @param Request $request
-     * @param $travelBooking
+     * @param $booking
      * @param $id
      * @return mixed
      */
-    public function addDatesAction(Request $request, $travelBooking, $id)
+    public function addStep4Action(Request $request, $booking, $id)
     {
-        return parent::addDatesAction($request, $travelBooking, $id);
+        return parent::addStep4Action($request, $booking, $id);
     }
 
     /**
-     * @Route("/booking/travel-booking-service/add-allot/{travelBooking}/{id}",
-     *     name="_booking__travel_booking_service__add_allot",
-     *     defaults={"id" = null}
-     * )
-     *
-     * Action to add allot of object
-     * @param Request $request
-     * @param $travelBooking
-     * @param $id
-     * @return mixed
-     */
-    public function addAllotAction(Request $request, $travelBooking, $id)
-    {
-        return parent::addAllotAction($request, $travelBooking, $id);
-    }
-
-    /**
-     * @Route("/booking/travel-booking-service/edit/{travelBooking}/{id}",
+     * @Route("/booking/travel-booking-service/edit/{booking}/{id}",
      *     name="_booking__travel_booking_service__edit",
      *     defaults={"id" = null}
      * )
      *
      * Overrides parent method
      * @param Request $request
-     * @param $travelBooking
+     * @param $booking
      * @param $id
      * @return mixed
      */
-    public function editLocalChildAction(Request $request, $travelBooking, $id)
+    public function editLocalChildAction(Request $request, $booking, $id)
     {
         // Set configuration
         $this->flags['hasForm'] = true;
-        $this->initChild($request, array($travelBooking));
+        $this->initChild($request, array($booking));
         $this->templateConf['fields']['form'] = array(
             'icon', 'name', 'description', 'supplierObj', 'reference', 'placeObj', 'placeToObj',
             'startDate', 'endDate',
-            'quantity', 'confirmationStatus',
-            'isEnabled');
+            'quantity', 'confirmationStatus'
+        );
 
-        return parent::editLocalChildAction($request, $travelBooking, $id);
+        return parent::editLocalChildAction($request, $booking, $id);
     }
 
     /**
-     * @Route("/booking/travel-booking-service/delete/{travelBooking}/{id}",
+     * @Route("/booking/travel-booking-service/cancel/{booking}/{id}",
+     *     name="_booking__travel_booking_service__cancel",
+     *     defaults={"id" = null}
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $booking
+     * @param $id
+     * @return mixed
+     */
+    public function cancelLocalChildAction(Request $request, $booking, $id)
+    {
+        return parent::cancelLocalChildAction($request, $booking, $id);
+    }
+
+    /**
+     * @Route("/booking/travel-booking-service/delete/{booking}/{id}",
      *     name="_booking__travel_booking_service__delete",
      *     defaults={"id" = null}
      * )
      *
      * Overrides parent method
      * @param Request $request
-     * @param $travelBooking
+     * @param $booking
      * @param $id
      * @return mixed
      */
-    public function deleteLocalChildAction(Request $request, $travelBooking, $id)
+    public function deleteLocalChildAction(Request $request, $booking, $id)
     {
-        $response = parent::deleteLocalChildAction($request, $travelBooking, $id);
+        $response = parent::deleteChildAction($request, $booking, $id);
         if ($this->responseConf['status'] == 1) {
             $this->setDependenciesPlaces();
         }
@@ -230,51 +261,51 @@ class TravelBookingServiceController extends BaseBookingServiceController
     }
 
     /**
-     * @Route("/booking/travel-booking-service/order/{travelBooking}/{id}/{type}",
+     * @Route("/booking/travel-booking-service/order/{booking}/{id}/{type}",
      *     name="_booking__travel_booking_service__order",
      *     defaults={"id" = null, "type" = null}
      * )
      *
      * Overrides parent method
      * @param Request $request
-     * @param $travelBooking
+     * @param $booking
      * @param $id
      * @param $type
      * @return mixed
      */
-    public function orderLocalChildAction(Request $request, $travelBooking, $id, $type)
+    public function orderLocalChildAction(Request $request, $booking, $id, $type)
     {
-        return parent::orderChildAction($request, array($travelBooking), $id, $type);
+        return parent::orderChildAction($request, array($booking), $id, $type);
     }
 
     /**
-     * @Route("/booking/travel-booking-service/data/{travelBooking}",
+     * @Route("/booking/travel-booking-service/data/{booking}",
      *     name="_booking__travel_booking_service__data"
      * )
      *
      * Overrides parent method
      * @param Request $request
-     * @param $travelBooking
+     * @param $booking
      * @return mixed
      */
-    public function dataLocalChildAction(Request $request, $travelBooking)
+    public function dataLocalChildAction(Request $request, $booking)
     {
-        return parent::dataChildAction($request, array($travelBooking));
+        return parent::dataChildAction($request, array($booking));
     }
 
     /**
-     * @Route("/booking/travel-booking-service/conf/{travelBooking}",
+     * @Route("/booking/travel-booking-service/conf/{booking}",
      *     name="_booking__travel_booking_service__conf"
      * )
      *
      * Overrides parent method
      * @param Request $request
-     * @param $travelBooking
+     * @param $booking
      * @return mixed
      */
-    public function confLocalChildAction(Request $request, $travelBooking)
+    public function confLocalChildAction(Request $request, $booking)
     {
-        return parent::confChildAction($request, array($travelBooking));
+        return parent::confChildAction($request, array($booking));
     }
 
     /**
@@ -284,14 +315,17 @@ class TravelBookingServiceController extends BaseBookingServiceController
     protected function setDependenciesPlaces() {
         // Check if there are no errors in previous updates
         if ($this->responseConf['status'] == 1) {
-            // Update booking places
+            // Update travel booking places
             $bookingObj = reset($this->parentConf)['obj']; // First parent
+            $travelBookingObj = $this->getRepositoryService('TravelBooking', 'BookingBundle')
+                ->execute('findOneByBookingObj', array($bookingObj));
+
             $this->getLocalRepositoryService()
                 ->execute(
-                    'setBookingPlaces',
-                    array($bookingObj)
+                    'setTravelBookingPlaces',
+                    array($travelBookingObj)
                 );
-            parent::saveObject($bookingObj);
+            parent::saveObject_static($this, $bookingObj);
         }
 
         return $this;
@@ -300,15 +334,15 @@ class TravelBookingServiceController extends BaseBookingServiceController
     /**
      * Overrides parent method.
      * @param $object
-     * @param $context (context to determine actions)
+     * @param $data (usually the form data)
      * @return $this
      */
-    protected function postSaveObject($object, $context = null) {
-        switch ($context) {
-            case 'addDetail':
-            case 'edit':
-                $this->setDependenciesPlaces();
-                break;
+    protected function postSaveObject($object, $data = null) {
+        parent::postSaveObject($object, $data);
+
+        // Check if there are no errors in previous updates
+        if ($this->responseConf['status'] == 1) {
+            $this->setDependenciesPlaces();
         }
 
         return $this;

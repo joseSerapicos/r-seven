@@ -1,27 +1,27 @@
 <?php
 namespace BookingBundle\Entity;
 
+use AppBundle\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
  * @ORM\Entity(repositoryClass="BookingBundle\Entity\TravelBookingRepository")
- * @ORM\Table(name="travelBooking",
- *     uniqueConstraints={@ORM\UniqueConstraint(name="unq_travelBooking_code", columns={"codePrefix", "codeNumber"})})
+ * @ORM\Table(name="travelBooking")
  */
-class TravelBooking extends BaseBooking {
+class TravelBooking extends BaseEntity
+{
     /**
-     * @ORM\ManyToOne(targetEntity="TravelBookingPax", cascade={"all"})
-     * @ORM\JoinColumn(name="fk_travelBookingPax", referencedColumnName="id", nullable=true, unique=false, onDelete="SET NULL")
+     * @ORM\ManyToOne(targetEntity="Booking", cascade={"all"})
+     * @ORM\JoinColumn(name="fk_booking", referencedColumnName="id", nullable=false, unique=true, onDelete="RESTRICT")
      *
-     * Determines if the client is a pax. If this field is not null, then the pax was created automatically and should
-     * be update automatically also. This field is handled by a flag "Client is pax?".
+     * @Assert\Valid()
      */
-    protected $travelBookingPaxObj;
+    protected $bookingObj;
 
     /**
-     * @ORM\ManyToOne(targetEntity="\BookingBundle\Entity\Place")
+     * @ORM\ManyToOne(targetEntity="\CommonBundle\Entity\Place")
      * @ORM\JoinColumn(name="fk_place", referencedColumnName="id", nullable=true, unique=false, onDelete="SET NULL")
      *
      * Determined automatically based on the place of the first service in "BookingService"
@@ -29,51 +29,42 @@ class TravelBooking extends BaseBooking {
     protected $placeObj;
 
     /**
-     * @ORM\ManyToOne(targetEntity="\BookingBundle\Entity\Place")
+     * @ORM\ManyToOne(targetEntity="\CommonBundle\Entity\Place")
      * @ORM\JoinColumn(name="fk_placeTo", referencedColumnName="id", nullable=true, unique=false, onDelete="SET NULL")
      *
      * Determined automatically based on the place of the last service in "BookingService"
      */
     protected $placeToObj;
 
+
     /**
-     * Set travelBookingPaxObj
-     * @param \BookingBundle\Entity\TravelBookingPax $travelBookingPaxObj
+     * Set bookingObj
+     * @param \BookingBundle\Entity\Booking $bookingObj
      * @return $this
      */
-    public function setTravelBookingPaxObj(\BookingBundle\Entity\TravelBookingPax $travelBookingPaxObj = null)
+    public function setBookingObj(\BookingBundle\Entity\Booking $bookingObj)
     {
-        $this->travelBookingPaxObj = $travelBookingPaxObj;
+        $this->bookingObj = $bookingObj;
         return $this;
     }
 
     /**
-     * Get travelBookingPaxObj
-     * @return \BookingBundle\Entity\TravelBookingPax
+     * Get bookingObj
+     * @return \BookingBundle\Entity\Booking
      */
-    public function getTravelBookingPaxObj()
+    public function getBookingObj()
     {
-        return $this->travelBookingPaxObj;
-    }
-
-    /**
-     * Get client is pax.
-     * Fake function to determines if the client is added as pax.
-     * @return boolean
-     */
-    public function getClientIsPax()
-    {
-        return !empty($this->travelBookingPaxObj);
+        return $this->bookingObj;
     }
 
     /**
      * Set placeObj
      *
-     * @param \BookingBundle\Entity\Place $placeObj
+     * @param \CommonBundle\Entity\Place $placeObj
      *
      * @return $this
      */
-    public function setPlaceObj(\BookingBundle\Entity\Place $placeObj = null)
+    public function setPlaceObj(\CommonBundle\Entity\Place $placeObj = null)
     {
         $this->placeObj = $placeObj;
 
@@ -83,7 +74,7 @@ class TravelBooking extends BaseBooking {
     /**
      * Get placeObj
      *
-     * @return \BookingBundle\Entity\Place
+     * @return \CommonBundle\Entity\Place
      */
     public function getPlaceObj()
     {
@@ -93,11 +84,11 @@ class TravelBooking extends BaseBooking {
     /**
      * Set placeToObj
      *
-     * @param \BookingBundle\Entity\Place $placeToObj
+     * @param \CommonBundle\Entity\Place $placeToObj
      *
      * @return $this
      */
-    public function setPlaceToObj(\BookingBundle\Entity\Place $placeToObj = null)
+    public function setPlaceToObj(\CommonBundle\Entity\Place $placeToObj = null)
     {
         $this->placeToObj = $placeToObj;
 
@@ -107,7 +98,7 @@ class TravelBooking extends BaseBooking {
     /**
      * Get placeToObj
      *
-     * @return \BookingBundle\Entity\Place
+     * @return \CommonBundle\Entity\Place
      */
     public function getPlaceToObj()
     {

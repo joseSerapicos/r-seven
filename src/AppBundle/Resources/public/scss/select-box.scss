@@ -4,6 +4,10 @@
 .html-select {
     position: relative;
 
+    > .input-group {
+        width: 100%;
+    }
+
     .control {
         position: relative;
         display: block;

@@ -10,6 +10,7 @@
         '@AppBundle/Resources/public/scss/note.scss'
         '@AppBundle/Resources/public/css/video-player.css'
         '@AppBundle/Resources/public/scss/select-box.scss'
+        '@videojs_css'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
@@ -59,10 +60,6 @@
     } %}
 {% endblock %}
 
-{% block body_container %}
-    <div id="js_main"></div>
-{% endblock %}
-
 {% block after_container %}
     <div id="blueimp-gallery" class="blueimp-gallery">
         <div class="slides"></div>
@@ -85,11 +82,12 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% block local_javascripts %}
+{%  block local_javascripts %}
     {% javascripts output="assets/entities/entity/detail/js/local.js"
-        '@EntitiesBundle/Resources/public/entity/detail/webpack_generated/common.js'
-        '@EntitiesBundle/Resources/public/entity/detail/webpack_generated/app.js'
-        '@EntitiesBundle/Resources/public/entity/detail/webpack_generated/main.js'
+        '@EntitiesBundle/Resources/public/entity/detail/ts/dist/inline.bundle.js'
+        '@EntitiesBundle/Resources/public/entity/detail/ts/dist/polyfills.bundle.js'
+        '@EntitiesBundle/Resources/public/entity/detail/ts/dist/vendor.bundle.js'
+        '@EntitiesBundle/Resources/public/entity/detail/ts/dist/main.bundle.js'
     %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}

@@ -44,6 +44,7 @@ security:
 
     access_control:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/assets/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/sysadmin, roles: ROLE_SYSADMIN }
         # - { path: ^/admin, roles: ROLE_ADMIN } # Not used because user can access some admin menus
         - { path: ^/admin/module, roles: ROLE_ADMIN }

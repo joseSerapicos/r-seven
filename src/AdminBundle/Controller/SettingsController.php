@@ -121,9 +121,6 @@ class SettingsController extends BaseController
                 ),
                 array(
                     'label' => 'Supplier Document Types'
-                ),
-                array(
-                    'label' => 'Entity Document Types'
                 )
             ),
             '_id' => 'doc-types'

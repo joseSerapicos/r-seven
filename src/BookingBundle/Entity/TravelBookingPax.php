@@ -1,39 +1,43 @@
 <?php
 namespace BookingBundle\Entity;
 
+use AppBundle\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
  * @ORM\Entity(repositoryClass="BookingBundle\Entity\TravelBookingPaxRepository")
  * @ORM\Table(name="travelBookingPax")
  */
-class TravelBookingPax extends BaseBookingPax {
+class TravelBookingPax extends BaseEntity
+{
     /**
-     * @ORM\ManyToOne(targetEntity="TravelBooking")
-     * @ORM\JoinColumn(name="fk_travelBooking", referencedColumnName="id", nullable=false, unique=false, onDelete="CASCADE")
+     * @ORM\ManyToOne(targetEntity="BookingPax", cascade={"all"})
+     * @ORM\JoinColumn(name="fk_bookingPax", referencedColumnName="id", nullable=false, unique=true, onDelete="RESTRICT")
+     *
+     * @Assert\Valid()
      */
-    protected $travelBookingObj;
+    protected $bookingPaxObj;
 
 
     /**
-     * Set travelBookingObj
-     * @param \BookingBundle\Entity\TravelBooking $travelBookingObj
+     * Set bookingPaxObj
+     * @param \BookingBundle\Entity\BookingPax $bookingPaxObj
      * @return $this
      */
-    public function setTravelBookingObj(\BookingBundle\Entity\TravelBooking $travelBookingObj)
+    public function setBookingPaxObj(\BookingBundle\Entity\BookingPax $bookingPaxObj)
     {
-        $this->travelBookingObj = $travelBookingObj;
-
+        $this->bookingPaxObj = $bookingPaxObj;
         return $this;
     }
 
     /**
-     * Get travelBookingObj
-     * @return \BookingBundle\Entity\TravelBooking
+     * Get bookingPaxObj
+     * @return \BookingBundle\Entity\BookingPax
      */
-    public function getTravelBookingObj()
+    public function getBookingPaxObj()
     {
-        return $this->travelBookingObj;
+        return $this->bookingPaxObj;
     }
 }

@@ -7,23 +7,28 @@
     {% if (form and fields) %}
         {% for field in fields['form'] %}
             {% if field == 'marginMethod' %}
+                {% set fieldsForm = ((fields['metadata'][field]['parent'] is defined and
+                    fields['metadata'][field]['parent'] is not null)
+                        ? form[fields['metadata'][field]['parent']]
+                        : form
+                ) %}
                 <div class="form-group">
                     {% include 'AppBundle:form:label.html.twig' with {
-                        'formField': form['marginValue'],
+                        'formField': fieldsForm['marginValue'],
                         'metadata': fields['metadata']['marginValue']
                     } %}
                     <div class="col-sm-10"><div class="row">
                         <div class="col-sm-6">
                             {% include 'AppBundle:form:input.html.twig' with {
                                 'field': field,
-                                'formField': form[field],
+                                'formField': fieldsForm[field],
                                 'metadata': fields['metadata'][field]
                             } %}
                         </div>
                         <div class="col-sm-6">
                             {% include 'AppBundle:form:input.html.twig' with {
                                 'field': 'marginValue',
-                                'formField': form['marginValue'],
+                                'formField': fieldsForm['marginValue'],
                                 'metadata': fields['metadata']['marginValue']
                             } %}
                         </div>

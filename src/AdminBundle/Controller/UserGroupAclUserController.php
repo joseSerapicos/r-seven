@@ -52,7 +52,6 @@ class UserGroupAclUserController extends BaseEntityChildController
             'value' => $loggedUserId
         );
         // Variables
-        $this->localConf['form']['buttons'] = 'none';
         $this->localConf['templates']['edit'] = 'AdminBundle:UserGroupAclUser:form.html.twig';
 
         // Search

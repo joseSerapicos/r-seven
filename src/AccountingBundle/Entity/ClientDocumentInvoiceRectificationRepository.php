@@ -18,7 +18,7 @@ class ClientDocumentInvoiceRectificationRepository extends BaseDocumentInvoiceRe
      * Defines parent method
      * @return string
      */
-    protected function getContext()
+    protected function getLocalEntityContext()
     {
         return 'client';
     }
@@ -61,41 +61,42 @@ class ClientDocumentInvoiceRectificationRepository extends BaseDocumentInvoiceRe
                 ),
                 'form' => array('type' => 'embed', 'typeClass' => 'ClientDocumentInvoiceDetailNoService')
             ),
-            'originalClientDocumentInvoiceDetailObj' => array('label' => '', 'type' => 'object', 'acl' => 'read',
+            'rectificationClientDocumentInvoiceDetailObj' => array('label' => '', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array(
-                    'table' => 'clientDocumentInvoiceDetail', 'tableAlias' => 'originalClientDocumentInvoiceDetail',
+                    'table' => 'clientDocumentInvoiceDetail', 'tableAlias' => 'rectificationClientDocumentInvoiceDetail',
                     'bundle' => 'accounting', 'type' => 'none'
                 )
             ),
-            // Foreign fields
-            'originalClientDocumentObj' => array('table' => 'originalClientDocumentInvoiceDetail', 'field' => 'clientDocumentObj',
+            // Foreign fields (is not used the entity type prefix (client),
+            // to make fields compatibles with all entity types (supplier, entity, etc.), except in "Obj" fields)
+            'rectificationClientDocumentObj' => array('table' => 'rectificationClientDocumentInvoiceDetail', 'field' => 'clientDocumentObj',
                 'label' => 'Document', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array(
-                    'table' => 'clientDocument', 'tableAlias' => 'originalClientDocument', 'bundle' => 'accounting', 'type' => 'none'),
-                'dependency' => 'originalClientDocumentInvoiceDetailObj'
+                    'table' => 'clientDocument', 'tableAlias' => 'rectificationClientDocument', 'bundle' => 'accounting', 'type' => 'none'),
+                'dependency' => 'rectificationClientDocumentInvoiceDetailObj'
             ),
-            'originalClientDocument_code' => array('label' => 'Original Doc.', 'table' => '',
-                'field' => 'CONCAT(originalClientDocument.codePrefix, originalClientDocument.codeNumber)',
-                'dependency' => 'originalClientDocumentObj', 'type' => 'code', 'acl' => 'read',
+            'originalDocument_code' => array('label' => 'Original Doc.', 'table' => '',
+                'field' => 'CONCAT(rectificationClientDocument.codePrefix, rectificationClientDocument.codeNumber)',
+                'dependency' => 'rectificationClientDocumentObj', 'type' => 'code', 'acl' => 'read',
                 'normalizer' => array('method' => 'getCode')
             ),
-            'originalClientDocument_date' => array('table' => 'originalClientDocument', 'field' => 'date', 'label' => 'Date',
-                'type' => 'date', 'acl' => 'read', 'dependency' => 'originalClientDocumentObj',
+            'originalDocument_date' => array('table' => 'rectificationClientDocument', 'field' => 'date', 'label' => 'Date',
+                'type' => 'date', 'acl' => 'read', 'dependency' => 'rectificationClientDocumentObj',
                 'form' => array('type' => 'none')
             ),
-            'originalClientDocument_dueDate' => array('table' => 'originalClientDocument', 'field' => 'dueDate', 'label' => 'Due Date',
-                'type' => 'date', 'acl' => 'read', 'dependency' => 'originalClientDocumentObj',
+            'originalDocument_dueDate' => array('table' => 'rectificationClientDocument', 'field' => 'dueDate', 'label' => 'Due Date',
+                'type' => 'date', 'acl' => 'read', 'dependency' => 'rectificationClientDocumentObj',
                 'form' => array('type' => 'none')
             ),
-            'originalClientDocumentTypeObj' => array('table' => 'originalClientDocument', 'field' => 'clientDocumentTypeObj',
+            'rectificationClientDocumentTypeObj' => array('table' => 'rectificationClientDocument', 'field' => 'clientDocumentTypeObj',
                 'label' => 'Document Type', 'type' => 'object', 'acl' => 'read',
-                'typeDetail' => array('table' => 'clientDocumentType', 'tableAlias' => 'originalClientDocumentType',
+                'typeDetail' => array('table' => 'clientDocumentType', 'tableAlias' => 'rectificationClientDocumentType',
                     'bundle' => 'accounting', 'type' => 'none'),
-                'dependency' => 'originalClientDocumentObj'
+                'dependency' => 'rectificationClientDocumentObj'
             ),
-            'originalClientDocumentType_name' => array('table' => 'originalClientDocumentType', 'field' => 'name',
+            'originalDocumentType_name' => array('table' => 'rectificationClientDocumentType', 'field' => 'name',
                 'label' => 'Doc. Name',
-                'type' => 'text', 'acl' => 'read', 'dependency' => 'originalClientDocumentTypeObj'
+                'type' => 'text', 'acl' => 'read', 'dependency' => 'rectificationClientDocumentTypeObj'
             ),
             // Override fields when merge with DocumentInvoiceDetail
             // (service can't be edit, is inherited from original document)
@@ -107,7 +108,7 @@ class ClientDocumentInvoiceRectificationRepository extends BaseDocumentInvoiceRe
             ),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read', 'form' => array('type' => 'none')),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'none', 'acl' => 'edit', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'none', 'acl' => 'read', 'default' => true)
         ));
 
         return self::$metadata = HelperService::pushIntoArray($localMetadata, $parentMetadata);

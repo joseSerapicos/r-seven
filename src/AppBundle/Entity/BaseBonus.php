@@ -31,9 +31,9 @@ class BaseBonus extends BaseEntity
     protected $ruleValue; // [<, >, =]
 
     /**
-     * @ORM\Column(name="bonusType", type="string", length=16, nullable=false, unique=false, options={"comment":"Type of bonus"})
+     * @ORM\Column(name="bonusMethod", type="string", length=16, nullable=false, unique=false, options={"comment":"Method to calc bonus"})
      */
-    protected $bonusType; // [PERCENTAGE, FIXED]
+    protected $bonusMethod; // [PERCENTAGE, FIXED]
 
     /**
      * @ORM\Column(name="bonusValue", type="decimal", scale=2, nullable=false, unique=false, options={"comment":"Value of bonus"})
@@ -168,27 +168,27 @@ class BaseBonus extends BaseEntity
     }
 
     /**
-     * Set bonusType
+     * Set bonusMethod
      *
-     * @param string $bonusType
+     * @param string $bonusMethod
      *
      * @return $this
      */
-    public function setBonusType($bonusType)
+    public function setBonusMethod($bonusMethod)
     {
-        $this->bonusType = $bonusType;
+        $this->bonusMethod = $bonusMethod;
 
         return $this;
     }
 
     /**
-     * Get bonusType
+     * Get bonusMethod
      *
      * @return string
      */
-    public function getBonusType()
+    public function getBonusMethod()
     {
-        return $this->bonusType;
+        return $this->bonusMethod;
     }
 
     /**

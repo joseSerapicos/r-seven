@@ -1,20 +1,32 @@
 import {DataServiceProvider} from './data-service/data-service-provider';
-import {TreeViewProvider} from '../tree-view/ts/tree-view-provider';
-import {DataBoxProvider} from './data-box/data-box-provider';
-import {ImageProvider} from './image/image-provider';
+import {TreeViewProvider} from '../tree-view/ts/src/tree-view-provider';
+import {DataBoxProvider} from '../data-box/ts/src/data-box-provider';
+import {ImageProvider} from '../image/ts/src/image-provider';
 import {BaseProvider} from './base/base-provider';
 import {BoxProvider} from './box/box-provider';
 import {FormProvider} from './form/form-provider';
-import {WizardPopupProvider} from './wizard/wizard-popup-provider';
-import {EntityDetailProvider} from './entity-detail/entity-detail-provider';
+import {WizardPopupProvider} from '../wizard/ts/src/wizard-popup-provider';
+import {EntityDetailProvider} from '../entity-detail/ts/src/entity-detail-provider';
 import {ActionsServiceProvider} from './actions/actions-service-provider';
+
 
 /**
  * Helper with common functions
  */
 export class Helper {
-    // Object to use in angular component at runtime.
-    private static runtimeVar = {};
+    // Object to use in angular modules at runtime to define global variables.
+    private static globalVar = {};
+
+    // Controls the generation of a unique incremental number,
+    // to be used as unique identifier by any feature instance ensuring that there is no duplication.
+    private static uniqueIdCounter = 0;
+
+
+    // Get an unique incremental number to be used as unique identifier
+    public static getUniqueId(): number
+    {
+        return (Helper.uniqueIdCounter++);
+    }
 
     /**
      * Get decimal configuration
@@ -24,6 +36,7 @@ export class Helper {
     {
         // Configure number of decimals to use and to round
         let decimalConf = {unit: {value: 4, iterator: 0}, total: {value: 2, iterator: 0}};
+
         decimalConf.unit.iterator = Math.pow(10, decimalConf.unit.value);
         decimalConf.total.iterator = Math.pow(10, decimalConf.total.value);
 
@@ -167,41 +180,36 @@ export class Helper {
     }
 
     /**
-     * Get global var
-     * @param index
-     * @returns {any}
-     */
-    public static getGlobalVar(index: string): any
-    {
-        if (index in _app) {
-            return _app[index];
-        }
-        return null;
-    }
-
-    /**
-     * Set global var
+     * Set app var
      * @param index
      * @param value
      * @returns {Helper}
      */
-    public static setGlobalVar(index: string, value: any): Helper
+    public static setAppVar(index: string, value: any): Helper
     {
-        _app[index] = value;
-        return Helper;
+        return Helper.setVar(_app, index, value);
     }
 
     /**
-     * Delete global var
+     * Get app var
      * @param index
+     * @param defaultValue
+     * @returns {any}
+     */
+    public static getAppVar(index: string, defaultValue = null): string
+    {
+        return Helper.getVar(_app, index, defaultValue);
+    }
+
+    /**
+     * Delete app var
+     * @param index
+     * @param defaultValue
      * @returns {Helper}
      */
-    public static deleteGlobalVar(index: string): Helper
+    public static deleteAppVar(index: string): Helper
     {
-        if (index in _app) {
-            delete _app[index];
-        }
-        return Helper;
+        return Helper.deleteVar(_app, index);
     }
 
     /**
@@ -236,28 +244,6 @@ export class Helper {
                 localParentField: (data.treeView.localParentField)
             }
         );
-    }
-
-    /**
-     * Normalize tree-view form data provider
-     * Normalizes data provider to use in tree-view form context
-     * @param data
-     * @returns any
-     */
-    public static normalizeTreeViewFormDataProvider(data: any): any
-    {
-        // Create another object, otherwise the merge affects the original data object
-        data = Helper.cloneObject(data, true);
-
-        let dataProvider = Helper.mergeObjects(
-            data,
-            (data.treeView.form || {}) // Specific data to override original data explicit for form
-        );
-
-        // Remove objects (this abjects is for parent not for form)
-        dataProvider.objects = {};
-
-        return dataProvider;
     }
 
     /**
@@ -390,29 +376,36 @@ export class Helper {
     }
 
     /**
-     * Set runtime var
-     * @param key
+     * Set global var
+     * @param index
      * @param value
      * @returns {Helper}
      */
-    public static setRuntimeVar(key: string, value: any): Helper
+    public static setGlobalVar(index: string, value: any): Helper
     {
-        Helper.runtimeVar[key] = value;
-        return Helper;
+        return Helper.setVar(Helper.globalVar, index, value);
     }
 
     /**
-     * Get runtime var
-     * @param key
+     * Get global var
+     * @param index
      * @param defaultValue
      * @returns {any}
      */
-    public static getRuntimeVar(key: string, defaultValue = null): string
+    public static getGlobalVar(index: string, defaultValue = null): string
     {
-        if (key in Helper.runtimeVar) {
-            return Helper.runtimeVar[key];
-        }
-        return defaultValue;
+        return Helper.getVar(Helper.globalVar, index, defaultValue);
+    }
+
+    /**
+     * Delete global var
+     * @param index
+     * @param defaultValue
+     * @returns {Helper}
+     */
+    public static deleteGlobalVar(index: string): Helper
+    {
+        return Helper.deleteVar(Helper.globalVar, index);
     }
 
     /**
@@ -435,5 +428,70 @@ export class Helper {
      */
     public static uCFirst(string: string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    /**
+     * Get var
+     * @param object
+     * @param index
+     * @param defaultValue
+     * @returns {any}
+     */
+    public static getVar(object: any, index: string, defaultValue = null): any
+    {
+        if (index in object) {
+            return object[index];
+        }
+        return defaultValue;
+    }
+
+    /**
+     * Set var
+     * @param object
+     * @param index
+     * @param value
+     * @returns {Helper}
+     */
+    public static setVar(object: any, index: string, value: any): Helper
+    {
+        object[index] = value;
+        return Helper;
+    }
+
+    /**
+     * Delete var
+     * @param object
+     * @param index
+     * @returns {Helper}
+     */
+    public static deleteVar(object: any, index: string): Helper
+    {
+        if (index in object) {
+            delete object[index];
+        }
+        return Helper;
+    }
+
+    /**
+     * Set Form Token
+     * @param $form
+     * @returns {Helper}
+     */
+    public static setFormToken($form: any): Helper
+    {
+        let $tokenField = $form.find('#form__token');
+        if ($tokenField) {
+            $tokenField.val(_app.csrfToken);
+        }
+        return Helper;
+    }
+
+    /**
+     * Get Status Map
+     * @returns any
+     */
+    public static getStatusMap()
+    {
+        return {'NO': 'danger', 'PARTIAL': 'warning', 'YES': 'primary'};
     }
 }

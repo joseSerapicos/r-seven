@@ -52,6 +52,13 @@ class ModuleController extends BaseEntityController
             )
         );
 
+        // Tree view configuration
+        $this->flags['treeViewMode'] = true;
+        $this->templateConf['treeView'] = array(
+            'iconField' => 'icon',
+            'localParentField' => 'appModuleObj'
+        );
+
         return $this;
     }
 

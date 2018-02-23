@@ -10,12 +10,12 @@
                      width="128"
                      height="128">
                 <div class="ibox-tools no-user-select">
-                    <template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
+                    <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
                         <a class="action -round fa"
                            *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
                            (click)="triggerAction($event, action, objIndex)"
                            [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"></a>
-                    </template>
+                    </ng-template>
                 </div>
             </div>
         </div></form>

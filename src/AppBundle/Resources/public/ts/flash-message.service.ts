@@ -37,7 +37,8 @@ export class FlashMessageService {
      * @param head
      * @param type
      */
-    public message(body: string, head = '', type = FlashMessageTypes.info): void {
+    public message(body: string, head = '', type = FlashMessageTypes.info): void
+    {
         // Set info as default type if is not a valid entry
         type = (FlashMessageTypes[type] || FlashMessageTypes.info);
         toastr[type](body, head);

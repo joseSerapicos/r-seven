@@ -1,0 +1,28 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}{{ parent() }}{% endblock %}
+
+{% block head_javascripts %}{{ parent() }}{% endblock %}
+
+{% block header_container %}
+    {% include 'AppBundle:partial:entity-detail.html.twig' with {
+        'object': _conf['object'],
+        'fields': _conf['fields']
+    } %}
+{% endblock %}
+
+{% block after_container %}
+    <div id="blueimp-gallery" class="blueimp-gallery">
+        <div class="slides"></div>
+        <h3 class="title"></h3>
+        <a class="prev">‹</a>
+        <a class="next">›</a>
+        <a class="close">×</a>
+        <a class="play-pause"></a>
+        <ol class="indicator"></ol>
+    </div>
+{% endblock %}
+
+{% block vendor_javascripts %}{{ parent() }}{% endblock %}
+
+{% block local_javascripts %}{{ parent() }}{% endblock %}

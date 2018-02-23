@@ -1,17 +1,22 @@
 <?php
 namespace ServicesBundle\Entity;
 
-use AppBundle\Entity\BasePriceDefinition;
+use AppBundle\Entity\BasePrice;
+use AppBundle\Service\PriceService;
 use Doctrine\ORM\Mapping as ORM;
 
 
 /**
  * @ORM\Entity(repositoryClass="ServicesBundle\Entity\ServicePriceRepository")
  * @ORM\Table(name="servicePrice",
- *     indexes={@ORM\Index(name="idx_servicePrice_date", columns={"startDate", "endDate"})}
+ *     indexes={@ORM\Index(name="idx_servicePrice_date", columns={"startDate", "endDate", "fk_targetService"})}
  * )
+ *
+ * This class does not saves the VAT values like others (BookingServicePrice, DocumentInvoiceDetail), because the
+ * VAT values are always calculated at runtime, we only can get the current valid VAT of service at runtime, so does
+ * not make sense save it.
  */
-class ServicePrice extends BasePriceDefinition {
+class ServicePrice extends BasePrice {
     /**
      * @ORM\ManyToOne(targetEntity="Service")
      * @ORM\JoinColumn(name="fk_service", referencedColumnName="id", nullable=false, unique=false, onDelete="CASCADE")
@@ -32,6 +37,16 @@ class ServicePrice extends BasePriceDefinition {
      * @ORM\Column(name="endDate", type="date", nullable=false, unique=false, options={"comment":"End date of validation"})
      */
     protected $endDate;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Service")
+     * @ORM\JoinColumn(name="fk_targetService", referencedColumnName="id", nullable=true, unique=false, onDelete="CASCADE")
+     *
+     * Determines the target of the entry, if targetServiceObj is defined, the entry is specific for the
+     * targetServiceObj (generally a package), else the entry is for the service itself
+     */
+    protected $targetServiceObj;
+
 
     /**
      * Set serviceObj
@@ -123,5 +138,70 @@ class ServicePrice extends BasePriceDefinition {
     public function getEndDate()
     {
         return $this->endDate;
+    }
+
+    /**
+     * Set targetServiceObj
+     * @param \ServicesBundle\Entity\Service $targetServiceObj
+     * @return $this
+     */
+    public function setTargetServiceObj(\ServicesBundle\Entity\Service $targetServiceObj)
+    {
+        $this->targetServiceObj = $targetServiceObj;
+        return $this;
+    }
+
+    /**
+     * Get targetServiceObj
+     * @return \ServicesBundle\Entity\Service
+     */
+    public function getTargetServiceObj()
+    {
+        return $this->targetServiceObj;
+    }
+
+
+    ////////
+    // Fake methods to keep default values
+    ////////////////////////////////
+
+    /**
+     * Get user_costValue
+     * @return float
+     */
+    public function getUser_costValue()
+    {
+        // Value, according with the "getIsVatIncluded" returned value
+        if ($this->getIsVatIncluded()) {
+            $splitPrice = PriceService::getTotalUnitDetail(
+                $this->getCostValue(),
+                $this->getServiceObj()->getVatCodeObj()->getPercentage(),
+                false
+            );
+
+            return ($splitPrice['totalUnit']);
+        }
+
+        return $this->getCostValue();
+    }
+
+    /**
+     * Get user_sellValue
+     * @return float
+     */
+    public function getUser_sellValue()
+    {
+        // Value, according with the "getIsVatIncluded" returned value
+        if ($this->getIsVatIncluded()) {
+            $splitPrice = PriceService::getTotalUnitDetail(
+                $this->getSellValue(),
+                $this->getServiceObj()->getVatCodeObj()->getPercentage(),
+                false
+            );
+
+            return ($splitPrice['totalUnit']);
+        }
+
+        return $this->getSellValue();
     }
 }

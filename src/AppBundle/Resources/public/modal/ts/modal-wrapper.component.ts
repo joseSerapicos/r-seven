@@ -19,7 +19,7 @@ export var ModalSizes = {
     <div class="modal animated">
         <div class="modal-dialog modal-{{_size}}">
             <div class="modal-content">
-                <template #js_modalContainer></template>
+                <ng-template #js_modalContainer></ng-template>
             </div>
         </div>
     </div>

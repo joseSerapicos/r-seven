@@ -1,19 +1,19 @@
 {% extends 'AccountingBundle:BaseDocument:form.html.twig' %}
 {% block dueDate %}{% endblock %}
 {% block detail %}<section>
-    <template #js_lazyLoadContainer></template>
-    <template #js_lazyLoadContainer></template>
+    <ng-template #js_lazyLoadContainer></ng-template>
+    <ng-template #js_lazyLoadContainer></ng-template>
 </section>{% endblock %}
 {% block total %}<div class="row"><div class="col-sm-4 col-sm-offset-8">
     <table class="table document-total">
         <tbody>
-        <tr>
+        {% block total_container %}<tr>
             <td><strong>DIFF:</strong></td>
             <td><input class="form-control js_diffControl"
                        readonly="readonly"
                        type="text"
                        value="0"></td>
-        </tr>
+        </tr>{% endblock %}
         </tbody>
     </table>
 </div></div>{% endblock %}

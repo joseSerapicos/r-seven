@@ -1,16 +1,16 @@
 import {Injectable, ViewContainerRef, ReflectiveInjector} from '@angular/core';
 import {DynamicComponentLoaderService} from '../../ts/dynamic-component-loader.service';
 import {ModalDialogExtensionModule} from './modal-dialog.extension-module';
-import {BaseModalPopup, IModalPopup} from './base-modal-popup';
+import {IModalPopup, BaseModalPopupExt, BaseModalPopup, BaseProvider} from './base-modal-popup';
 import {ModalWrapperComponent, ModalSizes} from './modal-wrapper.component';
 
 // Re-exports
-export {IModalPopup, BaseModalPopup, ModalSizes};
+export {IModalPopup, BaseModalPopupExt, BaseModalPopup, ModalSizes, BaseProvider};
 
 
 // Popup interface
 export interface Popup {
-    module: any
+    module: any,
     component: string,
     providers?: any[],
     // Used only by ModalService to avoid create new instances of classes (services, etc.)
@@ -36,6 +36,8 @@ import {ModalWrapperExtensionModule} from './modal-wrapper.extension-module';
 /**
  * Service
  * Modal uses the Bootstrap classes
+ * NOTE: In modal service it's no use implementing the TaskLoaderManagerService because not works! Modal
+ * are duplicated in the same way, because all clicks are processes one after finish the other and not at same time!
  */
 @Injectable()
 export class ModalService {
@@ -133,7 +135,7 @@ export class ModalService {
 
         // Create popup
         return new Promise(function(resolve, reject) {
-            that._dynamicComponentLoaderService.load(
+            return that._dynamicComponentLoaderService.load(
                 popup.module,
                 popup.component,
                 modalComponentInstance.getModalContainerRef(),

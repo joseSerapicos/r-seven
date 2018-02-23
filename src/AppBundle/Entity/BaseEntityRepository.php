@@ -74,13 +74,15 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                         .'\Entity\\'
                         .$metadata[$field]['typeDetail']['entity']
                     );
-                    $metadata[$field]['typeDetail']['formClass'] = ($metadata[$field]['typeDetail']['Bundle']
-                        .'\Form\\'
-                        .(((isset($metadata[$field]['form']) && isset($metadata[$field]['form']['typeClass']))
-                                ? $metadata[$field]['form']['typeClass']
-                                : $metadata[$field]['typeDetail']['entity']
-                            ).'Type')
-                    );
+                    if (!isset($metadata[$field]['typeDetail']['formClass'])) { // Define only if is not defined yet
+                        $metadata[$field]['typeDetail']['formClass'] = ($metadata[$field]['typeDetail']['Bundle']
+                            . '\Form\\'
+                            . (((isset($metadata[$field]['form']) && isset($metadata[$field]['form']['typeClass']))
+                                    ? $metadata[$field]['form']['typeClass']
+                                    : $metadata[$field]['typeDetail']['entity']
+                                ) . 'Type')
+                        );
+                    }
 
                     // Merge foreign metadata into local metadata
                     if (!empty($fieldMetadata['typeDetail']['metadata'])) {
@@ -199,6 +201,7 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                         : null
                 );
             case 'isMapped':
+            case 'isFakeField':
                 // Form context
                 return ((isset($fieldMetadata['form']) && isset($fieldMetadata['form'][$attribute]))
                     ? $fieldMetadata['form'][$attribute]
@@ -287,7 +290,11 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
 
     /**
      * Query Build
-     * @param $options (array with search format plus "conf" => array("hasFields" => true))
+     * @param $options (array with search format plus "conf" => array(
+     *     "hasFields" => true,
+     *     "hasDependencyResolver" => true, (resolve fields dependency automatically)
+     *     "localData" => array([any local data of Controller to send to specific methods])
+     * ))
      * @param $hasExecute
      * @param $executeMethod
      * @return mixed
@@ -304,23 +311,31 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                 'criteria' => null,
                 'orderBy' => null,
                 'limit' => null,
-                'offset' => null
+                'offset' => null,
+                'conf' => null
             ),
             $options
         );
         $qb = $this->getQueryBuilder();
 
-        // SELECT
+        // Configuration
+        $hasFields = (isset($options['conf']) && isset($options['conf']['hasFields'])
+            ? $options['conf']['hasFields']
+            : true
+        );
+        $hasDependencyResolver = (isset($options['conf']) && isset($options['conf']['hasDependencyResolver'])
+            ? $options['conf']['hasDependencyResolver']
+            : true
+        );
+
+
+        // SELECT (must be first because dependency fields needs to be resolved before the WHERE dependency fields)
         if (is_array($options['fields'])) {
             // Determines if fields should be added to select or are used only for join
-            $hasFields = (isset($options['conf']) && isset($options['conf']['hasFields'])
-                ? $options['conf']['hasFields']
-                : true
-            );
 
             $select = array();
             foreach ($options['fields'] as $field) {
-                $this->queryBuilderAddSelect($qb, $field, $select, $options['fields'], $hasFields);
+                $this->queryBuilderAddSelect($qb, $field, $select, $options['fields'], $hasFields, $hasDependencyResolver);
             }
             if ($hasFields) { $qb->select($select); }
         }
@@ -357,14 +372,24 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                         break;
                 }
 
-                // Full file name (table.field)
-                $table = $this->getFieldTable($field);
-                if (!empty($table)) {
-                    $field = ($table . '.' . $this->getLocalFieldMetadata($field, 'field', $metadata));
-                    if (!empty($field2)) {
-                        $field2 = ($table . '.' . $this->getLocalFieldMetadata($field2, 'field', $metadata));
+                // Add criteria dependency fields to select
+                if ($hasDependencyResolver) {
+                    $dependency = $this->getLocalFieldMetadata($field, 'dependency', $metadata);
+                    if (!empty($dependency)) {
+                        if (!in_array($dependency, $options['fields'])) { // Avoid to repeat fields
+                            $select = array();
+                            $this->queryBuilderAddSelect($qb, $dependency, $select, $options['fields'], $hasFields, $hasDependencyResolver);
+                            if ($hasFields) {
+                                foreach ($select as $fieldSelect) {
+                                    $qb->addSelect($fieldSelect);
+                                }
+                            }
+                        }
                     }
                 }
+
+                // Get table
+                $table = $this->getFieldTable($field);
 
                 // Determines where method according with option
                 switch ($whereMethod) {
@@ -374,11 +399,22 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                     default:
                         $whereMethod = 'and';
                 }
-                if (isset($table) && empty($table)) {
-                    // Table can be empty when the field is calculated (like SUM, CASE WHEN, CONCAT, etc.).
+                if (isset($table) && empty($table) && in_array($field, $options['fields'])) {
+                    // Table can be empty when the field is calculated (like SUM, CASE WHEN, CONCAT, etc.), so we use
+                    // the HAVING to avoid repeat the calc in the WHERE.
+                    // Note: If field is not in fields array, we can't use HAVING
                     $whereMethod .= 'Having';
                 } else {
                     $whereMethod .= 'Where';
+
+                    // Get the full field name for database (table.field)
+                    $fieldTablePrefix = (empty($table) ? '' : ($table . '.'));
+                    $dbField = $this->getLocalFieldMetadata($field, 'field', $metadata);
+                    $field = ($fieldTablePrefix . (empty($dbField) ? $field : $dbField));
+                    if (!empty($field2)) {
+                        $dbField2 = $this->getLocalFieldMetadata($field2, 'field', $metadata);
+                        $field2 = ($fieldTablePrefix . (empty($dbField2) ? $field2 : $dbField2));
+                    }
                 }
 
                 // Add expression according the $expression
@@ -426,7 +462,6 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
         }
 
         // LIMIT
-        $limit = (empty($options['limit']) ? 1 : ($options['limit'] - 1));
         if (!empty($options['limit'])) {
             $qb->setMaxResults($options['limit']);
         }
@@ -452,18 +487,21 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
      * @param $select (array of select sentences, needs to be updated due to recursion)
      * @param $addedFields (all added fields, needs to be updated after each "add" to avoid duplication for dependencies)
      * @param $hasFields (determines if fields should be added to select or are used only for join)
+     * @param $hasDependencyResolver (determines if fields dependency should be resolved)
      * @return $this
      */
-    protected function queryBuilderAddSelect($queryBuilder, $field, &$select, &$addedFields, $hasFields = true)
+    protected function queryBuilderAddSelect($queryBuilder, $field, &$select, &$addedFields, $hasFields = true, $hasDependencyResolver = true)
     {
         $metadata = $this->getLocalMetadata();
 
         // Resolve dependency (recursive)
-        $dependency = $this->getLocalFieldMetadata($field, 'dependency', $metadata);
-        if (!empty($dependency)) {
-            if (!in_array($dependency, $addedFields)) { // Avoid to repeat fields
-                $addedFields[] = $dependency;
-                $this->queryBuilderAddSelect($queryBuilder, $dependency, $select, $addedFields, $hasFields);
+        if ($hasDependencyResolver) {
+            $dependency = $this->getLocalFieldMetadata($field, 'dependency', $metadata);
+            if (!empty($dependency)) {
+                if (!in_array($dependency, $addedFields)) { // Avoid to repeat fields
+                    $addedFields[] = $dependency;
+                    $this->queryBuilderAddSelect($queryBuilder, $dependency, $select, $addedFields, $hasFields);
+                }
             }
         }
 

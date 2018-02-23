@@ -3,7 +3,9 @@ import {DataService} from '../../data-service/data.service';
 import {ModalService} from '../../../modal/ts/modal.service';
 import {PostService} from '../../post.service';
 import {FormService} from '../../../../../../AppBundle/Resources/public/ts/form/form.service';
-import {PopupTypes, Popups, Popup} from '../../data-box/data-box.component';
+import {PopupTypes, Popups, Popup} from '../../../data-box/ts/src/data-box.component';
+import {TasksLoaderManagerService} from '../../../../../../AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service';
+
 
 /**
  * Multiple AutoComplete instances can be released together,
@@ -52,14 +54,14 @@ export interface AutoCompleteProviders {
         <div class="choices">
             <ul [hidden]="_isHidden"
                 (click)="onChoiceClick($event)">
-                <template [ngIf]="selfReference"><template ngFor let-choice [ngForOf]="_choices" let-choiceIndex="index">
+                <ng-template [ngIf]="selfReference"><ng-template ngFor let-choice [ngForOf]="_choices" let-choiceIndex="index">
                     <li *ngIf="choice['id'] != _object['id']"
                         [attr.data-index]="choiceIndex">{{choice['label']}}</li>
-                </template></template>
-                <template [ngIf]="!selfReference">
+                </ng-template></ng-template>
+                <ng-template [ngIf]="!selfReference">
                     <li *ngFor="let choice of _choices; let choiceIndex = index"
                         [attr.data-index]="choiceIndex">{{choice['label']}}</li>
-                </template>
+                </ng-template>
                 <li *ngIf="_childCandidateSearch && _childCandidateSearch.hasMore"
                     (click)="getMoreObjects($event)"
                     class="-pagination"
@@ -77,10 +79,11 @@ export class FieldTypeAutoCompleteComponent {
     @Input() selfReference: boolean;
     @Input() placeholder: string = ''; // Set empty as default, because value can be undefined
 
-    @Output() onChange = new EventEmitter();
+    @Output() onChange = new EventEmitter(); // When choice change or the data of current choice is edited
 
-    private _onObjectChangeSubscription: any; // When the object change in formService
-    private _onChildObjectsChangeSubscription: any; // When the object change in dataService (pagination)
+    private _onObjectChangeSubscription: any; // When the object change in main formService
+    private _onChildObjectsChangeSubscription: any; // When the objects list change in choices dataService (pagination)
+    private _onChildObjectChangeSubscription: any; // When the object change in popup dataService (edit)
 
     protected _provider: any;
     protected _object: any; // From object
@@ -103,6 +106,7 @@ export class FieldTypeAutoCompleteComponent {
         protected _postService: PostService,
         protected _modalService: ModalService,
         @Inject('DataService') protected _dataService: any,
+        protected _tasksLoaderManagerService: TasksLoaderManagerService,
         protected _formService: FormService,
         protected _injector: Injector,
         @Inject('AutoCompleteProviders') protected _autoCompleteProviders: any,
@@ -286,6 +290,8 @@ export class FieldTypeAutoCompleteComponent {
         if (this._object[this.field]) {
             // Simulate object
             let object = {id: this._object[this.field]};
+            // Set object to null to avoid emit the event "_onChildObjectChangeSubscription"
+            this._childDataServicePopup.setObject({}, null);
             this._childDataServicePopup.setObjects([object]);
             this._childDataServicePopup.selectObject(0).then(
                 data => {
@@ -375,6 +381,9 @@ export class FieldTypeAutoCompleteComponent {
      */
     ngOnInit()
     {
+        // Enable load while component initializes, to avoid use the component before init has finished causing errors
+        this._tasksLoaderManagerService.addTask('INIT_AUTO_COMPLETE');
+
         // Initialize values
         this._provider = (this._autoCompleteProviders[this.field] || null);
         if (this._provider.field) {
@@ -387,6 +396,7 @@ export class FieldTypeAutoCompleteComponent {
         if (this._provider.childInjector) {
             this._childInjector = this._provider.childInjector;
             this.init();
+            this._tasksLoaderManagerService.delTask('INIT_AUTO_COMPLETE');
             return;
         }
 
@@ -421,6 +431,7 @@ export class FieldTypeAutoCompleteComponent {
                         (that._childDataServiceChoices.getRoute('choices') + '/' + that._provider.urlChoicesParams)
                     );
                 }
+                that._tasksLoaderManagerService.delTask('INIT_AUTO_COMPLETE');
             },
             errors => { console.log(errors); return; }
         );
@@ -432,11 +443,25 @@ export class FieldTypeAutoCompleteComponent {
      */
     protected init(): FieldTypeAutoCompleteComponent
     {
+        let that = this;
+
         this._childDataServicePopup = this._childInjector.get('DataService');
+        this._onChildObjectChangeSubscription = this._childDataServicePopup.getOnObjectsChangeEmitter()
+            .subscribe(data => {
+                // Only emit event if there are a valid object
+                if (that._childDataServicePopup.getObject() && that._childDataServicePopup.getObject()['id']) {
+                    that.onChange.emit(that._object[that.field]);
+                }
+            });
+
         this._childDataServiceChoices = this._childInjector.get('DataServiceChoices');
         this._onChildObjectsChangeSubscription = this._childDataServiceChoices.getOnObjectsRefreshEmitter()
             .subscribe(object => this.resetChoices());
+
         this._childCandidateSearch = this._childDataServiceChoices.getCandidateSearch(); // To filter objects
+        // Reset criteria to avoid inject default criteria sent from controller to template
+        this._childCandidateSearch['criteria'] = [];
+        // @TODO simplify fields to avoid inject default fields sent from controller to template, use only needed fields
 
         return this;
     }
@@ -446,7 +471,15 @@ export class FieldTypeAutoCompleteComponent {
      */
     ngOnDestroy()
     {
-        this._onObjectChangeSubscription.unsubscribe();
-        this._onChildObjectsChangeSubscription.unsubscribe();
+        // Sometimes the component can be already destroyed, so test if exists first
+        if (this._onObjectChangeSubscription) {
+            this._onObjectChangeSubscription.unsubscribe();
+        }
+        if (this._onChildObjectChangeSubscription) {
+            this._onChildObjectChangeSubscription.unsubscribe();
+        }
+        if (this._onChildObjectsChangeSubscription) {
+            this._onChildObjectsChangeSubscription.unsubscribe();
+        }
     }
 }

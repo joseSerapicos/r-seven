@@ -46,17 +46,16 @@ class UserRepository extends BaseEntityRepository {
     static function getMetadata()
     {
         // Process metadata only once
-        if (self::$metadata) {
-            return self::$metadata;
-        }
-        return self::$metadata = self::processMetadata(array(
+        if (self::$metadata) { return self::$metadata; }
+
+        $metadata = self::processMetadata(array(
             'id' => array('label' => 'Id', 'type' => 'number', 'acl' => 'read'),
             'entityObj' => array('label' => 'Entity', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array(
                     'table' => 'entity', 'field' => 'id', 'bundle' => 'entities', 'type' => 'none',
-                    'metadata' => array('method' => 'merge', 'pushAfterField' => 'id')
+                    'metadata' => array('method' => 'merge', 'persist' => true, 'pushAfterField' => 'id')
                 ),
-                'form' => array('type' => 'embed')
+                'form' => array('type' => 'embed', 'typeClass' => 'EntityNoCode')
             ),
             'username' => array('label' => 'Username', 'type' => 'text', 'acl' => 'edit'),
             'password' => array('label' => 'Password', 'type' => 'none', 'acl' => 'edit', 'form' => array(
@@ -82,6 +81,13 @@ class UserRepository extends BaseEntityRepository {
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
             'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
         ));
+
+        // This fields are only a consequence of inheritance from Entity:
+        //     Code is not used by users
+        //     User object it's a self reference used only by Entity to filter refine results
+        unset($metadata['code'], $metadata['userObj']);
+
+        return self::$metadata = $metadata;
     }
 
     /**

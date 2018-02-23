@@ -1,0 +1,45 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets filter="scssphp" output="assets/booking/package-booking/detail/css/all.css"
+        '@AppBundle/Resources/public/scss/select-box.scss'
+        '@AppBundle/Resources/public/tree-view/scss/styles.scss'
+        '@AccountingBundle/Resources/public/base-document/scss/_document.scss'
+        '@dropzone_css'
+        '@AppBundle/Resources/public/css/wizard.css'
+        '@BookingBundle/Resources/public/base-booking/detail/scss/main.scss'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block head_javascripts %}
+    {{ parent() }}
+
+    {% set bookingPaxData = render(controller(
+        'BookingBundle:PackageBookingPax:dataChild',
+        {'parents': {'booking': _conf['object']['bookingObj']}}
+    )) %}
+    <script>
+        _app.dependency.bookingPax = {{ bookingPaxData|raw }};
+    </script>
+{% endblock %}
+
+{% block before_container %}
+    <div class="js_appBasics"></div>
+    <div class="js_app"></div>
+{% endblock %}
+
+{% block header %}{% endblock %}
+{% block body %}{% endblock %}
+
+{% block local_javascripts %}
+    {% javascripts output="assets/booking/package-booking/detail/js/local.js"
+        '@BookingBundle/Resources/public/package-booking/detail/ts/dist/inline.bundle.js'
+        '@BookingBundle/Resources/public/package-booking/detail/ts/dist/polyfills.bundle.js'
+        '@BookingBundle/Resources/public/package-booking/detail/ts/dist/vendor.bundle.js'
+        '@BookingBundle/Resources/public/package-booking/detail/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

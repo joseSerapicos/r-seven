@@ -1,10 +1,13 @@
 import {Injectable, Compiler, ReflectiveInjector, ViewContainerRef, Injector} from '@angular/core';
+import {TasksLoaderManagerService} from '../tasks-loader-manager/ts/tasks-loader-manager.service';
+
 
 // Service
 @Injectable()
 export class DynamicComponentLoaderService {
     constructor(
-        protected _compiler: Compiler
+        protected _compiler: Compiler,
+        protected _tasksLoaderManagerService: TasksLoaderManagerService
     ) {}
 
     /**
@@ -25,12 +28,15 @@ export class DynamicComponentLoaderService {
      */
     public load(module: any, component: string, viewContainerRef: ViewContainerRef, injector: Injector = null): Promise<any>
     {
+        this._tasksLoaderManagerService.addTask('DYNAMIC_COMPONENT_LOADING');
+
         let that = this;
 
         return new Promise(function(resolve, reject) {
             that.getComponentFactory(module, component).then(
                 componentFactory => {
                     let componentRef = viewContainerRef.createComponent(componentFactory, 0, injector, []);
+                    that._tasksLoaderManagerService.delTask('DYNAMIC_COMPONENT_LOADING');
                     return resolve(componentRef);
                 });
         });

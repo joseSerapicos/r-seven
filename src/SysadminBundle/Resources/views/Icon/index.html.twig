@@ -1,1 +1,12 @@
 {% extends 'AppBundle:data-box:index.html.twig' %}
+
+{% block local_javascripts %}
+    {% javascripts output="assets/sysadmin/icon/index/js/local.js"
+        '@SysadminBundle/Resources/public/icon/index/ts/dist/inline.bundle.js'
+        '@SysadminBundle/Resources/public/icon/index/ts/dist/polyfills.bundle.js'
+        '@SysadminBundle/Resources/public/icon/index/ts/dist/vendor.bundle.js'
+        '@SysadminBundle/Resources/public/icon/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

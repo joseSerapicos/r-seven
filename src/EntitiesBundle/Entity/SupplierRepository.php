@@ -63,6 +63,10 @@ class SupplierRepository extends BaseEntityRepository
                     'table' => 'entity', 'bundle' => 'entities', 'type' => 'none', 'fieldInView' => 'name',
                     'metadata' => array('method' => 'join', 'pushAfterField' => 'code')
                 ),
+                'attr' => array(
+                    '(onChange)' => 'onEntityChange($event)',
+                    '[placeholder]' => "'Entity'"
+                ),
                 'form' => array('type' => 'auto-complete')
             ),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),

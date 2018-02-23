@@ -14,10 +14,19 @@ use AppBundle\Service\HelperService;
 abstract class BaseDocumentReceiptSettlementRepository extends BaseEntityRepository
 {
     /**
-     * Get context (it needs to be implemented by children to get the correct context <client, supplier, entity>)
-     * @return string
+     * Get Local Entity Context.
+     * @return mixed (lowerCamelCase)
      */
-    abstract protected function getContext();
+    abstract protected function getLocalEntityContext();
+
+    /**
+     * Get entity context (it needs to be implemented by children to get the correct context <client, supplier, entity>)
+     * @param $isUpperCase
+     * @return mixed (lowerCamelCase)
+     */
+    public function getEntityContext($isUpperCase = false) {
+        return ($isUpperCase ? ucfirst($this->getLocalEntityContext()) : $this->getLocalEntityContext());
+    }
 
     /**
      * Get local metadata (it needs to be implemented by children to get static variable with local metadata from parent)
@@ -36,12 +45,7 @@ abstract class BaseDocumentReceiptSettlementRepository extends BaseEntityReposit
     {
         return self::processMetadata(array(
             'id' => array('label' => 'Id', 'type' => 'none', 'acl' => 'read'),
-            'value' => array('label' => 'Value', 'type' => 'number', 'acl' => 'edit',
-                'attr' => array(
-                    '(input)' => 'onValueEnterKey($event.target.value)',
-                    '(focusout)' => 'onValueEnterKey($event.target.value)'
-                )
-            ),
+            'value' => array('label' => 'Value', 'type' => 'number', 'acl' => 'edit'),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read', 'form' => array('type' => 'none')),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
             'isEnabled' => array('label' => 'Enabled', 'type' => 'none', 'acl' => 'edit', 'default' => true)
@@ -56,33 +60,36 @@ abstract class BaseDocumentReceiptSettlementRepository extends BaseEntityReposit
     public function getDocumentRemainSettlement($documentObject)
     {
         // Validate context
-        $context = $this->getContext();
-        if (!in_array($context, array('client', 'supplier', 'entity'))) {
-            return array();
-        }
+        $entityContext = $this->getEntityContext();
+        $entityContextUC = $this->getEntityContext(true);
 
         // Entities names
         $localTable = $this->getLocalTable();
 
         $options = array(
             'fields' => array(
-                "SUM(" . $localTable . ".value) AS totalSettlement",
+                "SUM(" . $localTable . ".value) AS totalSettlement"
             ),
             'criteria' => array (
                 array(
-                    'field' => ('invoice' . ucfirst($context) . 'DocumentObj'),
+                    'field' => ('settlement' . $entityContextUC . 'DocumentObj'),
                     'expr' => 'eq',
                     'value' => $documentObject->getId()
-                ),
-                array(
-                    'field' => 'isEnabled',
-                    'expr' => 'eq',
-                    'value' => 1
                 )
             )
         );
 
-        $totalSettlement = $this->queryBuilder($options);
+        // Get query builder
+        $qb = $this->queryBuilder($options, false);
+
+        // Get document
+        $qb->innerJoin($localTable.'.'.$entityContext.'DocumentObj',
+            'document',
+            'WITH',
+            'document.isEnabled = 1'
+        );
+
+        $totalSettlement = $this->executeQueryBuilder($qb);
         $totalSettlement = reset($totalSettlement); // First element of array
 
         return ($documentObject->getTotal() - $totalSettlement['totalSettlement']);
@@ -96,7 +103,43 @@ abstract class BaseDocumentReceiptSettlementRepository extends BaseEntityReposit
     public function setDocumentRemainSettlement($documentObject)
     {
         $documentObject->setRemainSettlement($this->getDocumentRemainSettlement($documentObject));
-
         return $documentObject;
+    }
+
+    /**
+     * Get documents id by booking
+     * @param $bookingDocumentsIdArr (array with document id of booking)
+     * @return mixed
+     */
+    public function getDocumentsIdByBooking($bookingDocumentsIdArr)
+    {
+        if (!is_array($bookingDocumentsIdArr) || (count($bookingDocumentsIdArr) < 1)) {
+            return array();
+        }
+
+        $entityContext = $this->getEntityContext();
+        $entityContextUC = $this->getEntityContext(true);
+        $localTable = $this->getLocalTable();
+
+        $options = array(
+            'fields' => array(
+                'IDENTITY('.$localTable.'.'.$entityContext.'DocumentObj) AS document_id'
+            ),
+            'criteria' => array(
+                array(
+                    'field' => 'settlement'.$entityContextUC.'DocumentObj',
+                    'expr' => 'IN',
+                    'value' => $bookingDocumentsIdArr
+                )
+            )
+        );
+
+        // Get query builder
+        $qb = $this->queryBuilder($options, false);
+
+        // Avoid repeated entries caused by joins
+        $qb->distinct('document_id');
+
+        return array_column($this->executeQueryBuilder($qb), 'document_id');
     }
 }

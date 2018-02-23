@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use EntitiesBundle\Entity\Entity;
 use EntitiesBundle\Entity\EntityGroupEntity;
 
-class EntityGroupEntityController extends BaseEntityChildController
+class EntityGroupEntityControllerbbbbbb extends BaseEntityChildController
 {
     /**
      * Overrides parent method

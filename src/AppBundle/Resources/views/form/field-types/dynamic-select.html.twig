@@ -5,10 +5,10 @@
     } %}
         <option value=""></option>
         {% if selfReference %}
-            <template ngFor let-choice [ngForOf]="_dataService.getFieldChoices('{{ field }}')">
+            <ng-template ngFor let-choice [ngForOf]="_dataService.getFieldChoices('{{ field }}')">
                 <option *ngIf="choice['id'] != _formService.getObject()['id']"
                         value="{% verbatim %}{{choice['id']}}{% endverbatim %}">{% verbatim %}{{choice['name']}}{% endverbatim %}</option>
-            </template>
+            </ng-template>
         {% else %}
             <option *ngFor="let choice of _dataService.getFieldChoices('{{ field }}')"
                     value="{% verbatim %}{{choice['id']}}{% endverbatim %}">{% verbatim %}{{choice['name']}}{% endverbatim %}</option>

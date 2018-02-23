@@ -167,10 +167,11 @@ class EntityController extends BaseEntityController
         $this->flags['hasForm'] = true;
         $this->init($request);
 
+        // Get object
+        $obj = $this->getObject($id);
+
         // Create form
-        $form = $this->createFormBuilder()
-            ->setMethod('POST')
-            ->getForm();
+        $form = $this->createForm('EntitiesBundle\Form\EntityThumbnailType', $obj);
 
         // Handle request
         $form->handleRequest($request);
@@ -186,8 +187,6 @@ class EntityController extends BaseEntityController
             $fields = array();
             parse_str($content, $fields);
 
-            // Get object
-            $obj = $this->getObject($id);
             $obj->setAvatar(HelperService::cropImage(
                 $this->container->get('liip_imagine.data.manager'),
                 $this->container->get('liip_imagine.filter.manager'),

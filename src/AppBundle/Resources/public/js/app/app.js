@@ -25,7 +25,7 @@ $(document).ready(function () {
     $('#js_navbar').metisMenu();
 
     // Collapse ibox function
-    $('.collapse-link').click(function () {
+    /*$('.collapse-link').click(function () {
         var ibox = $(this).closest('div.ibox');
         var button = $(this).find('i');
         var content = ibox.find('div.ibox-content');
@@ -36,16 +36,16 @@ $(document).ready(function () {
             ibox.resize();
             ibox.find('[id^=map-]').resize();
         }, 50);
-    });
+    });*/
 
     // Close ibox function
-    $('.close-link').click(function () {
+    /*$('.close-link').click(function () {
         var content = $(this).closest('div.ibox');
         content.remove();
-    });
+    });*/
 
     // Fullscreen ibox function
-    $('.fullscreen-link').click(function () {
+    /*$('.fullscreen-link').click(function () {
         var ibox = $(this).closest('div.ibox');
         var button = $(this).find('i');
         $('body').toggleClass('fullscreen-ibox-mode');
@@ -54,7 +54,7 @@ $(document).ready(function () {
         setTimeout(function () {
             $(window).trigger('resize');
         }, 100);
-    });
+    });*/
 
     // Close menu in canvas mode
     $('.close-canvas-menu').click(function () {
@@ -81,25 +81,25 @@ $(document).ready(function () {
     });
 
     // Open close small chat
-    $('.open-small-chat').click(function () {
+    /*$('.open-small-chat').click(function () {
         $(this).children().toggleClass('fa-comments').toggleClass('fa-remove');
         $('.small-chat-box').toggleClass('active');
-    });
+    });*/
 
     // Initialize slimscroll for small chat
-    $('.small-chat-box .content').slimScroll({
+    /*$('.small-chat-box .content').slimScroll({
         height: '234px',
         railOpacity: 0.4
-    });
+    });*/
 
     // Small todo handler
-    $('.check-link').click(function () {
+    /*$('.check-link').click(function () {
         var button = $(this).find('i');
         var label = $(this).next('span');
         button.toggleClass('fa-check-square').toggleClass('fa-square-o');
         label.toggleClass('todo-completed');
         return false;
-    });
+    });*/
 
     // Minimalize menu
     $('.navbar-minimalize').click(function () {
@@ -109,14 +109,10 @@ $(document).ready(function () {
     });
 
     // Tooltips demo
-    $('.tooltip-demo').tooltip({
+    /*$('.tooltip-demo').tooltip({
         selector: "[data-toggle=tooltip]",
         container: "body"
-    });
-
-    // Move modal to body
-    // Fix Bootstrap backdrop issu with animation.css
-    $('.modal').appendTo("body");
+    });*/
 
     // Full height of sidebar
     function fix_height() {
@@ -170,10 +166,6 @@ $(document).ready(function () {
             fix_height();
         }
     });
-
-    // Initializes popover component
-    $("[data-toggle=popover]")
-        .popover();
 
     // Add slimscroll to element
     $('.full-height-scroll').slimscroll({
@@ -296,5 +288,3 @@ function WinMove() {
         })
         .disableSelection();
 }
-
-

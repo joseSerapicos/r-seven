@@ -31,9 +31,9 @@ export abstract class FormExtensionComponent extends BaseExtensionComponent impl
      * @param dataService
      */
     public initFormExtensionComponent(
-        elementRef: ElementRef,
-        renderer: Renderer,
-        @Inject('Provider') provider: FormProvider,
+        elementRef: any,
+        renderer: any,
+        provider: FormProvider,
         formService: any,
         dataService: any
     ) {

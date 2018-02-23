@@ -12,17 +12,17 @@
         <div class="col-sm-6">
             <address>
                 <strong>{{'{{_formService.getObject().storeLegalName}}'}}</strong><br>
-                {% for field in ['storeStreet1', 'storeStreet2', 'storePostCode', 'storeRegion'] %}<template
+                {% for field in ['storeStreet1', 'storeStreet2', 'storePostCode', 'storeRegion'] %}<ng-template
                     [ngIf]="_formService.getObject().{{field}}"
-                    ><span>{{'{{_formService.getObject().' ~ field ~ '}}'}}{% if (field == 'storePostCode') %} {{'{{_formService.getObject().storeCity}}'}}{% endif %}</span><br></template>{% endfor %}
+                    ><span>{{'{{_formService.getObject().' ~ field ~ '}}'}}{% if (field == 'storePostCode') %} {{'{{_formService.getObject().storeCity}}'}}{% endif %}</span><br></ng-template>{% endfor %}
             </address>
-            <template
+            <ng-template
                 ngFor let-field [ngForOf]="_dataService.getProviderAttr('localData')['storeInfo']"><span
-                    [innerHtml]="field"></span><br></template>
+                    [innerHtml]="field"></span><br></ng-template>
             <p class="m-t-sm">Tax Number: {{'{{_formService.getObject().storeTaxNumber}}'}}</p>
         </div>
         <div class="col-sm-6">
-            <h3 *ngIf="_formService.getObject().code" class="document-number text-right"><span>Invoice No: </span>{% include 'AppBundle:form:input.html.twig' with {
+            <h3 *ngIf="_formService.getObject().code" class="document-number text-right"><span>{{'{{_formService.getObject().documentType_name}}'}}:&nbsp;</span>{% include 'AppBundle:form:input.html.twig' with {
                 'field': 'code',
                 'formField': documentForm['code'],
                 'metadata': fields['metadata']['code']
@@ -61,9 +61,9 @@
                                 'metadata': fields['metadata']['entityAddressObj']
                             } %}
                         </div>
-                        {% for field in ['entityStreet1', 'entityStreet2', 'entityPostCode', 'entityRegion'] %}<template
+                        {% for field in ['entityStreet1', 'entityStreet2', 'entityPostCode', 'entityRegion'] %}<ng-template
                             [ngIf]="_formService.getObject().{{field}}"
-                            ><span>{{'{{_formService.getObject().' ~ field ~ '}}'}}{% if (field == 'entityPostCode') %} {{'{{_formService.getObject().entityCity}}'}}{% endif %}</span><br></template>{% endfor %}
+                            ><span>{{'{{_formService.getObject().' ~ field ~ '}}'}}{% if (field == 'entityPostCode') %} {{'{{_formService.getObject().entityCity}}'}}{% endif %}</span><br></ng-template>{% endfor %}
                     </address>
                 </div>
             </div>
@@ -81,12 +81,12 @@
     </div>
 
     {% block detail %}
-        <section><template #js_lazyLoadContainer></template></section>
+        <section><ng-template #js_lazyLoadContainer></ng-template></section>
     {% endblock %}
 
     {% block total %}<div class="row">
         <div class="col-sm-8">
-            <template [ngIf]="_dataService.getProviderAttr('localData')['totalVatSplitByCode']">
+            <ng-template [ngIf]="_dataService.getProviderAttr('localData')['totalVatSplitByCode']">
             <span>TAX Resume</span>
             <div class="well document-tax-resume">
                 <table class="table">
@@ -110,7 +110,7 @@
                     </tbody>
                 </table>
             </div>
-            </template>
+            </ng-template>
         </div>
         <div class="col-sm-4">
             <table class="table document-total">
@@ -118,25 +118,25 @@
                 <tr>
                     <td><strong>Sub Total:</strong></td>
                     <td>{% include 'AppBundle:form:input.html.twig' with {
-                        'field': 'subTotal',
-                        'formField': documentForm['subTotal'],
-                        'metadata': fields['metadata']['subTotal']
+                            'field': 'subTotal',
+                            'formField': documentForm['subTotal'],
+                            'metadata': fields['metadata']['subTotal']
                         } %}</td>
                 </tr>
                 <tr>
                     <td><strong>TAX:</strong></td>
                     <td>{% include 'AppBundle:form:input.html.twig' with {
-                        'field': 'totalVat',
-                        'formField': documentForm['totalVat'],
-                        'metadata': fields['metadata']['totalVat']
+                            'field': 'totalVat',
+                            'formField': documentForm['totalVat'],
+                            'metadata': fields['metadata']['totalVat']
                         } %}</td>
                 </tr>
                 <tr>
                     <td><strong>TOTAL:</strong></td>
                     <td>{% include 'AppBundle:form:input.html.twig' with {
-                        'field': 'total',
-                        'formField': documentForm['total'],
-                        'metadata': fields['metadata']['total']
+                            'field': 'total',
+                            'formField': documentForm['total'],
+                            'metadata': fields['metadata']['total']
                         } %}</td>
                 </tr>
                 </tbody>

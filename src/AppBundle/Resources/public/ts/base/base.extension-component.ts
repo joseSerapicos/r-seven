@@ -1,4 +1,4 @@
-import {Component, ElementRef, Renderer} from '@angular/core';
+import {Component, ElementRef, Inject, Renderer, Optional} from '@angular/core';
 import {BaseProvider} from './base-provider';
 
 // Re-exports
@@ -14,31 +14,37 @@ export {BaseProvider}
 })
 export abstract class BaseExtensionComponent {
     // Constructor vars
-    public _elementRef: ElementRef; // Public because the children that implement "IForm"
-    protected _renderer: Renderer;
+    public _elementRef: any; // Public because the children that implement "IForm"
+    protected _renderer: any;
     protected _provider: BaseProvider;
+    //protected _dataService: any;
+
 
     /**
      * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
      * @param elementRef
      * @param renderer
      * @param provider
+     * //@param dataService
      */
     public initBaseExtensionComponent(
-        elementRef: ElementRef,
-        renderer: Renderer,
+        elementRef: any,
+        renderer: any,
         // This provider can becomes any provider defined by your child
         // (don't need the "inject" because it's a static class, so will be provider by children components)
         provider: BaseProvider
+        // @TODO: Disabled for, but is here to analise later how dataservice can handle with lazy loader
+        //@Optional() @Inject('DataService') dataService: any = null
     ) {
         // Constructor vars
         this._elementRef = elementRef;
         this._renderer = renderer;
         this._provider = provider;
+        //this._dataService = dataService;
 
         // Set defaults
         if (!this._provider) {
-            this._provider = [];
+            this._provider = {};
         }
 
         // Set main class
@@ -53,6 +59,18 @@ export abstract class BaseExtensionComponent {
     }
 
     /**
+     * Set provider attribute
+     * @param attribute
+     * @param value
+     * @returns {any|null}
+     */
+    protected setProviderAttr(attribute: string, value: any): any
+    {
+        this._provider[attribute] = value;
+        return this;
+    }
+
+    /**
      * Get provider attribute
      * @param attribute
      * @returns {any|null}
@@ -60,6 +78,16 @@ export abstract class BaseExtensionComponent {
     protected getProviderAttr(attribute: string): any
     {
         return this._provider[attribute] || null;
+    }
+
+    /**
+     * Get "localData" attribute
+     * @param attribute
+     * @returns any
+     */
+    public getLocalDataAttr(attribute: string = null): any
+    {
+        return (this._provider['localData']['template'][attribute] || null);
     }
 
     /**
@@ -74,5 +102,15 @@ export abstract class BaseExtensionComponent {
                 ? this._provider['extraData'][attribute]
                 : null
         );
+    }
+
+    /**
+     * Lifecycle callback
+     */
+    ngAfterViewInit()
+    {
+        // Start loading lazy images
+        // @TODO: This method should be called from DataService each time that objects are updated
+        $(this._elementRef.nativeElement).find('.js_lazy').Lazy();
     }
 }

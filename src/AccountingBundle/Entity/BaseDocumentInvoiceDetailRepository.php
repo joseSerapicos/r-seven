@@ -14,10 +14,19 @@ use AppBundle\Service\HelperService;
 abstract class BaseDocumentInvoiceDetailRepository extends BaseEntityRepository
 {
     /**
-     * Get context (it needs to be implemented by children to get the correct context <client, supplier, entity>)
-     * @return string
+     * Get Local Entity Context.
+     * @return mixed (lowerCamelCase)
      */
-    abstract protected function getContext();
+    abstract protected function getLocalEntityContext();
+
+    /**
+     * Get entity context (it needs to be implemented by children to get the correct context <client, supplier, entity>)
+     * @param $isUpperCase
+     * @return mixed (lowerCamelCase)
+     */
+    public function getEntityContext($isUpperCase = false) {
+        return ($isUpperCase ? ucfirst($this->getLocalEntityContext()) : $this->getLocalEntityContext());
+    }
 
     /**
      * Get local metadata (it needs to be implemented by children to get static variable with local metadata from parent)
@@ -38,6 +47,10 @@ abstract class BaseDocumentInvoiceDetailRepository extends BaseEntityRepository
 
         return self::processMetadata(array(
             'id' => array('label' => 'Id', 'type' => 'none', 'acl' => 'read'),
+            'bookingServicePriceObj' => array('label' => '', 'type' => 'object', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'table' => 'bookingServicePrice', 'bundle' => 'booking', 'type' => 'none')
+            ),
             'serviceObj' => array('label' => 'Service', 'type' => 'object', 'acl' => 'edit',
                 'attr' => array('(onChange)' => 'onServiceChange($event)'),
                 'typeDetail' => array(
@@ -52,6 +65,22 @@ abstract class BaseDocumentInvoiceDetailRepository extends BaseEntityRepository
                 'acl' => 'read', 'dependency' => 'appIconObj', 'form' => array('type' => 'none')),
             'service_name' => array('table' => 'service', 'field' => 'name', 'label' => '', 'type' => 'text',
                 'acl' => 'read', 'dependency' => 'serviceObj', 'form' => array('type' => 'none')),
+            // To join with BookingServicePrice to get the booking code
+            'bookingServiceObj' => array('table' => 'bookingServicePrice', 'label' => '',
+                'type' => 'object', 'acl' => 'read', 'dependency' => 'bookingServicePriceObj',
+                'typeDetail' => array('table' => 'bookingService', 'bundle' => 'booking', 'type' => 'none')
+            ),
+            'bookingService_description' => array('table' => 'bookingService', 'field' => 'description', 'label' => '', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'bookingServiceObj', 'form' => array('type' => 'none')),
+            'bookingObj' => array('table' => 'bookingService', 'label' => '',
+                'type' => 'object', 'acl' => 'read', 'dependency' => 'bookingServiceObj',
+                'typeDetail' => array('table' => 'booking', 'bundle' => 'booking', 'type' => 'none'),
+            ),
+            'booking_code' => array('table' => '', 'label' => 'Booking',
+                'field' => 'CONCAT(booking.codePrefix, booking.codeNumber)',
+                'dependency' => 'bookingObj', 'type' => 'code', 'acl' => 'read',
+                'normalizer' => array('method' => 'getCode')
+            ),
             'description' => array('label' => 'Description', 'type' => 'text', 'acl' => 'edit'),
             'vatCodeObj' => array('label' => 'VAT Code', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array('table' => 'vatCode', 'bundle' => 'accounting', 'type' => 'none')
@@ -67,15 +96,15 @@ abstract class BaseDocumentInvoiceDetailRepository extends BaseEntityRepository
                     '(input)' => 'onQuantityEnterKey($event.target.value)',
                     '(focusout)' => 'onQuantityEnterKey($event.target.value)'
                 )),
-            'isVatIncluded' => array('label' => 'VAT included', 'type' => 'none', 'acl' => 'edit',
-                'isRequired' => false, 'default' => true,
+            // Field to control how to show the fake field "user_[...]"
+            'isVatIncluded' => array('label' => 'VAT included', 'type' => 'none', 'acl' => 'edit', 'default' => true,
                 'attr' => array('(change)' => 'onIsVatIncludedChange($event.target.checked)'),
-                'form' => array('type' => 'boolean', 'isMapped' => false)),
+                'form' => array('type' => 'boolean')
+            ),
+            // Original field is hidden
             'value' => array('label' => 'Value', 'type' => 'number', 'acl' => 'edit',
                 'form' => array('type' => 'hidden')),
-            // Fake field for user type de value (with or without VAT). This fake field is used to allow if needed
-            // to show all values in the form (readonly), without VAT, with VAT, total VAT, sub total, etc,
-            // without interfering with the value entered by the user
+            // Fake field for user type the value (with or without VAT), because the original field is always without VAT
             'user_value' => array('label' => 'Value', 'type' => 'none', 'acl' => 'edit',
                 'attr' => array(
                     '(input)' => 'onValueEnterKey($event.target.value)',
@@ -83,7 +112,8 @@ abstract class BaseDocumentInvoiceDetailRepository extends BaseEntityRepository
                 ),
                 'form' => array('type' => 'number', 'isMapped' => false),
             ),
-            'vatValue' => array('label' => 'VAT Value', 'type' => 'number', 'acl' => 'read'
+            'vatValue' => array('label' => 'VAT Value', 'type' => 'number', 'acl' => 'read',
+                'form' => array('type' => 'none')
                 // To simplify the form and keep some coherence with totals of document, do not include this field in form
                 /*'attr' => array('readonly' => 'readonly'), 'isRequired' => false,
                 'form' => array('type' => 'number', 'isMapped' => false)*/
@@ -110,12 +140,12 @@ abstract class BaseDocumentInvoiceDetailRepository extends BaseEntityRepository
             ),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read', 'form' => array('type' => 'none')),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'none', 'acl' => 'edit', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'none', 'acl' => 'read', 'default' => true)
         ));
     }
 
     /**
-     * Set current account totals
+     * Set document totals
      * @param $documentObj
      * @return mixed
      */
@@ -192,39 +222,38 @@ abstract class BaseDocumentInvoiceDetailRepository extends BaseEntityRepository
 
     /**
      * Get remain rectification (valid value, not rectified with rectification documents)
-     * @param $operation (<CREDIT, DEBIT>)
-     * @param $targetDocumentObj (to filter by entity of target document)
      * @param $options (array with queryBuilder options format)
-     * @param $bookingObj (to filter by booking)
+     * @param $targetDocumentObj (to filter by entity id and by document type operation of target document)
      * @param $excludeRectificationId (rectification id to exclude. Used in edit mode, when you don't want include the
      * id that is in edition, in order to not consider the value of this id in calc, otherwise you can't use the total
      * value in edit, because the current value (of id in edition) is decremented here)
      * @return mixed
      */
-    public function getRemainRectification($operation, $targetDocumentObj, $options = array(), $bookingObj = null, $excludeRectificationId = null)
+    public function getRemainRectification($options = array(), $targetDocumentObj = null, $excludeRectificationId = null)
     {
         // Validate context
-        $context = $this->getContext();
-        if (!in_array($context, array('client', 'supplier', 'entity'))) {
+        $entityContext = $this->getEntityContext();
+        $entityContextUC = $this->getEntityContext(true);
+        if (!in_array($entityContext, array('client', 'supplier', 'entity'))) {
             return array();
         }
 
         // Entities names
         $localTable = $this->getLocalTable();
-        $documentTable = ($context . 'Document');
+        $documentTable = ($entityContext . 'Document');
         $documentObjField = ($documentTable . 'Obj');
-        $documentTypeObjField = ($context . 'DocumentTypeObj');
-        $documentTypeTable = ($context . 'DocumentType');
-        $documentInvoiceRectificationTable = ($context . 'DocumentInvoiceRectification');
-        $originalDocumentInvoiceDetailObjField = ('original' . ucfirst($context) . 'DocumentInvoiceDetailObj');
+        $documentTypeObjField = ($entityContext . 'DocumentTypeObj');
+        $documentTypeTable = ($entityContext . 'DocumentType');
+        $documentInvoiceRectificationTable = ($entityContext . 'DocumentInvoiceRectification');
+        $originalDocumentInvoiceDetailObjField = ('rectification' . ucfirst($entityContext) . 'DocumentInvoiceDetailObj');
         $rectificationInvoiceDetailTable = ('rectification' . $localTable);
         $rectificationInvoiceDetailObjField = ($localTable . 'Obj');
 
-        // Normalize options
+        // Set fields
         $options['fields'] = array(
             'id', $documentObjField, 'service_icon', 'service_name', 'description',
             'quantity', 'totalUnit', 'vatCode_percentage', 'vatCode_name', 'total',
-            'clientDocument_code', // 'clientDocument_code' mandatory to use in search having clause (add document invoice rectification)
+            'document_code', // 'document_code' mandatory to use in search having clause (add document invoice rectification)
             (
                 "((" . $localTable . ".subTotal + " . $localTable . ".totalVat)"
                 . " - "
@@ -244,18 +273,49 @@ abstract class BaseDocumentInvoiceDetailRepository extends BaseEntityRepository
                 . "ELSE (0) END)) AS notRectifiedQuantity"
             )
         );
-        $getEntityObjMethod = ('get' . ucfirst($context) . 'Obj');
+
+        // Filter by enabled documents
+        $getEntityObjMethod = ('get' . $entityContextUC . 'Obj');
         $options['criteria'] = array_merge(
             (empty($options['criteria']) ? array() : $options['criteria']),
             array(
-               /* array('field' => ($documentTable . '.isEnabled'), 'expr' => 'eq', 'value' => 1),
-                array(
-                    'field' => ($documentTable . '.' . $context . 'Obj'),
-                    'expr' => 'eq',
-                    'value' => $targetDocumentObj->$getEntityObjMethod()
-                )*/
+                array('field' => ($documentTable . '.isEnabled'), 'expr' => 'eq', 'value' => 1)
             )
         );
+
+        // Filter by entity id
+        if ($targetDocumentObj) {
+            $options['criteria'][] = array(
+                'field' => ($documentTable . '.' . $entityContext . 'Obj'),
+                'expr' => 'eq',
+                'value' => $targetDocumentObj->$getEntityObjMethod()
+            );
+        }
+
+        // Filter by booking
+        $bookingConf = ((isset($options['conf'])) && (isset($options['conf']['localData']) && isset($options['conf']['localData']['booking'])) ?
+            $options['conf']['localData']['booking'] :
+            null
+        );
+        if ($bookingConf) {
+            $bookingDocumentsIdArr = $this->getDocumentsIdByBooking($bookingConf['id'], $bookingConf['repositoryService']);
+            if (count($bookingDocumentsIdArr) > 0) {
+                $options['criteria'] = array_merge(
+                    (isset($options['criteria']) ? $options['criteria'] : array()),
+                    array (
+                        array( // Enabled
+                            'field' => ($documentTable . '.id'),
+                            'expr' => 'IN',
+                            'value' => $bookingDocumentsIdArr
+                        )
+                    )
+                );
+            } else { // No booking documents, return empty
+                return array();
+            }
+        }
+
+        // Order by
         $options['orderBy'] = array( // Get object ordered by most recent and document
             array(
                 'field' => $documentTable . '.date',
@@ -270,23 +330,16 @@ abstract class BaseDocumentInvoiceDetailRepository extends BaseEntityRepository
         // Get query builder
         $qb = $this->queryBuilder($options, false);
 
-        // Filter by operation
-        $qb->innerJoin($documentTable . '.' . $documentTypeObjField,
-            $documentTypeTable,
-            'WITH',
-            ($documentTypeTable . ".operation = '" . $operation . "'")
-        );
+        // Filter by document type operation
+        if ($targetDocumentObj) {
+            $getMethod = ('get' . $entityContextUC . 'DocumentTypeObj');
+            $operation = $targetDocumentObj->$getMethod()->getOperation();
+            $operation = (($operation == 'DEBIT') ? 'CREDIT' : 'DEBIT'); // Get inverse operation
 
-        // Filter by booking
-        if ($bookingObj) {
-            $bookingEntity = HelperService::getClassName($bookingObj);
-            $bookingDocumentTable = ($bookingEntity . ucfirst($context) . 'Document');
-            $qb->innerJoin('BookingBundle\Entity\\' . ucfirst($bookingDocumentTable),
-                $bookingDocumentTable,
+            $qb->innerJoin($documentTable . '.' . $documentTypeObjField,
+                $documentTypeTable,
                 'WITH',
-                ('(' . $bookingDocumentTable . '.' . $documentObjField . ' = ' . $documentTable . '.id) AND '
-                    . $bookingDocumentTable . '.' . lcfirst($bookingEntity) . 'Obj = ' . $bookingObj->getId()
-                )
+                ($documentTypeTable . ".operation = '" . $operation . "'")
             );
         }
 
@@ -311,8 +364,54 @@ abstract class BaseDocumentInvoiceDetailRepository extends BaseEntityRepository
         $qb->groupBy($localTable . '.id');
 
         // Remove registries already rectified
-        $qb->andHaving("notRectifiedValue > 0");
+        $qb->andHaving("notRectifiedValue <> 0"); // Values can be < 0 in case of discounts
 
         return $this->executeQueryBuilder($qb);
+    }
+
+    /**
+     * Get documents id by booking
+     * @param $bookingId
+     * @return mixed
+     */
+    public function getDocumentsIdByBooking($bookingId)
+    {
+        if (empty($bookingId)) {
+            return array();
+        }
+
+        $entityContext = $this->getEntityContext();
+        $localTable = $this->getLocalTable();
+
+        $options = array(
+            'fields' => array(
+                'document.id AS document_id'
+            )
+        );
+
+        // Get query builder
+        $qb = $this->queryBuilder($options, false);
+
+        // Get booking service price
+        $qb->innerJoin($localTable.'.bookingServicePriceObj',
+            'bookingServicePrice'
+        );
+
+        // Get booking service
+        $qb->innerJoin('bookingServicePrice.bookingServiceObj',
+            'bookingService',
+            'WITH',
+            'bookingService.bookingObj = ' . $bookingId // Booking criteria is used here
+        );
+
+        // Get document
+        $qb->innerJoin($localTable.'.'.$entityContext.'DocumentObj',
+            'document'
+        );
+
+        // Avoid repeated entries caused by joins
+        $qb->distinct('document_id');
+
+        return array_column($this->executeQueryBuilder($qb), 'document_id');
     }
 }

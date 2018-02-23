@@ -18,7 +18,7 @@ class ClientDocumentRepository extends BaseDocumentRepository
      * Defines parent method
      * @return string
      */
-    protected function getContext()
+    protected function getLocalEntityContext()
     {
         return 'client';
     }
@@ -57,15 +57,17 @@ class ClientDocumentRepository extends BaseDocumentRepository
                 'typeDetail' => array('table' => 'clientDocumentType', 'bundle' => 'accounting', 'type' => 'none'),
                 'form' => array('type' => 'select')
             ),
-            'clientDocumentType_name' => array('table' => 'clientDocumentType', 'field' => 'name', 'label' => 'Doc. Name',
+            // Foreign fields (is not used the entity type prefix (client),
+            // to make fields compatibles with all entity types (supplier, entity, etc.), except in "Obj" fields)
+            'documentType_name' => array('table' => 'clientDocumentType', 'field' => 'name', 'label' => 'Doc. Name',
                 'type' => 'text', 'acl' => 'read', 'dependency' => 'clientDocumentTypeObj',
                 'form' => array('type' => 'none')
             ),
-            'clientDocumentType_type' => array('table' => 'clientDocumentType', 'field' => 'type', 'label' => 'Doc. Type',
+            'documentType_type' => array('table' => 'clientDocumentType', 'field' => 'type', 'label' => 'Doc. Type',
                 'type' => 'hidden', 'acl' => 'read', 'dependency' => 'clientDocumentTypeObj',
                 'form' => array('type' => 'none')
             ),
-            'clientDocumentType_operation' => array('table' => 'clientDocumentType', 'field' => 'operation', 'label' => 'Doc. Operation',
+            'documentType_operation' => array('table' => 'clientDocumentType', 'field' => 'operation', 'label' => 'Doc. Operation',
                 'type' => 'hidden', 'acl' => 'read', 'dependency' => 'clientDocumentTypeObj',
                 'form' => array('type' => 'none')
             ),

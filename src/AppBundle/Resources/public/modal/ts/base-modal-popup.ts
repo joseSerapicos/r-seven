@@ -1,6 +1,9 @@
 import {ViewChild, ElementRef, EventEmitter, Renderer} from '@angular/core';
 import {BaseExtensionComponent, BaseProvider} from '../../ts/base/base.extension-component';
 
+// Re-exports
+export {BaseProvider}
+
 /**
  * This interface should be extended by all components that use popup but not extends "BaseModalPopup" class
  */
@@ -16,15 +19,23 @@ export interface IModalPopup {
 }
 
 /**
- * BaseModalPopup
+ * BaseModalPopupExt
  * Base class for custom popups.
  * All popups should extend this class.
  */
-export abstract class BaseModalPopup extends BaseExtensionComponent implements IModalPopup
+export abstract class BaseModalPopupExt extends BaseExtensionComponent implements IModalPopup
 {
     onDismissEmitter: EventEmitter<any> = new EventEmitter();
-    
-    constructor(
+
+    constructor() { super(); }
+
+    /**
+     * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
+     * @param elementRef
+     * @param renderer
+     * @param provider
+     */
+    initBaseModalPopupExt(
         elementRef: ElementRef,
         renderer: Renderer,
         // This provider can becomes any provider defined by your child
@@ -32,7 +43,6 @@ export abstract class BaseModalPopup extends BaseExtensionComponent implements I
         provider: BaseProvider
     ) {
         // Call parent construct
-        super();
         super.initBaseExtensionComponent(
             elementRef,
             renderer,
@@ -49,5 +59,29 @@ export abstract class BaseModalPopup extends BaseExtensionComponent implements I
     {
         if ($event) { $event.preventDefault(); }
         this.onDismissEmitter.emit(data);
+    }
+}
+
+/**
+ * BaseModalPopup
+ * Base class for custom popups.
+ * All popups should extend this class.
+ */
+export abstract class BaseModalPopup extends BaseModalPopupExt
+{
+    constructor(
+        elementRef: ElementRef,
+        renderer: Renderer,
+        // This provider can becomes any provider defined by your child
+        // (don't need the "inject" because it's a static class, so will be provider by children components)
+        provider: BaseProvider
+    ) {
+        // Call parent construct
+        super();
+        super.initBaseModalPopupExt(
+            elementRef,
+            renderer,
+            provider
+        );
     }
 }

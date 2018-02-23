@@ -1,0 +1,196 @@
+<div class="modal-body">
+    <div class="form-wrapper gray-bg">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>
+                        <div class="txt-align-r actions">
+                            <a class="-round fa fa-times"
+                               (click)="closeAction($event)"></a>
+                        </div>
+                    </div>
+                        
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+                    <div class="ibox-content">    
+            
+
+            <div class="form-group" *ngIf="_formService.getObject().id">
+
+                        <label class="col-sm-2 control-label required" for="form_id">Id</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_id"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().id"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().id">{{error}}</label>
+            </div>
+        </div>
+                
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_serviceObj_appIconObj">Icon</label>
+    
+            <div class="col-sm-10">
+                                            <div [htmlSelect]="'appIconObj'"
+         class="html-select"
+                               >
+        <div class="form-control"
+             [class.error]="_formService.getErrors()['appIconObj'] && (_formService.getErrors()['appIconObj'].length > 0)">
+            <span class="control">
+                <span class="js_label"></span><a class="pull-right"><i class="fa fa-angle-down"></i></a>
+            </span>
+        </div>
+        <div class="choices js_choices">
+            <ul class="form-control-box">
+                                    <li data-value="2"><i class="fa fa-wrench"></i> (Assistance)</li>
+                                    <li data-value="11"><i class="fa fa-cubes"></i> (fa-cubes)</li>
+                                    <li data-value="17"><i class="fa fa-university"></i> (Museum)</li>
+                                    <li data-value="18"><i class="fa fa-taxi"></i> (Taxi)</li>
+                                    <li data-value="19"><i class="fa fa-car"></i> (Car)</li>
+                                    <li data-value="20"><i class="fa fa-send"></i> (Paper plain)</li>
+                                    <li data-value="21"><i class="fa fa-bus"></i> (Bus)</li>
+                                    <li data-value="22"><i class="fa fa-bicycle"></i> (Bicycle)</li>
+                                    <li data-value="23"><i class="fa fa-birthday-cake"></i> (Birthday cake)</li>
+                                    <li data-value="24"><i class="fa fa-futbol-o"></i> (Futbol)</li>
+                                    <li data-value="26"><i class="fa fa-wifi"></i> (Wifi)</li>
+                                    <li data-value="27"><i class="fa fa-coffee"></i> (Coffee)</li>
+                                    <li data-value="28"><i class="fa fa-cutlery"></i> (Cutlery)</li>
+                                    <li data-value="29"><i class="fa fa-plane"></i> (Plane)</li>
+                                    <li data-value="30"><i class="fa fa-puzzle-piece"></i> (Puzzle piece)</li>
+                                    <li data-value="31"><i class="fa fa-road"></i> (Road)</li>
+                                    <li data-value="32"><i class="fa fa-tachometer"></i> (Tachometer)</li>
+                                    <li data-value="33"><i class="fa fa-ticket"></i> (Ticket)</li>
+                                    <li data-value="34"><i class="fa fa-truck"></i> (Truck)</li>
+                                    <li data-value="35"><i class="fa fa-unlock-alt"></i> (Lock)</li>
+                                    <li data-value="37"><i class="fa fa-medkit"></i> (Medkit)</li>
+                                    <li data-value="38"><i class="fa fa-user-md"></i> (Doctor)</li>
+                                    <li data-value="40"><i class="fa fa-gamepad"></i> (Gamepad)</li>
+                                    <li data-value="41"><i class="fa fa-gift"></i> (Gift)</li>
+                                    <li data-value="42"><i class="fa fa-flag-checkered"></i> (Flag checkered)</li>
+                                    <li data-value="43"><i class="fa fa-crosshairs"></i> (Crosshairs)</li>
+                                    <li data-value="45"><i class="fa fa-tree"></i> (Tree)</li>
+                                    <li data-value="46"><i class="fa fa-paw"></i> (Paw)</li>
+                                    <li data-value="47"><i class="fa fa-paint-brush"></i> (Paint brush)</li>
+                                    <li data-value="48"><i class="fa fa-glass"></i> (Glass)</li>
+                                    <li data-value="51"><i class="fa fa-video-camera"></i> (Video camera)</li>
+                            </ul>
+        </div>
+    </div>
+    <input [(ngModel)]="_formService.getObject().appIconObj"
+           formControlName = appIconObj
+           name="form[serviceObj][appIconObj]"
+                      type="hidden">
+                    <label class="error" *ngFor="let error of _formService.getErrors().appIconObj">{{error}}</label>
+            </div>
+        </div>
+                
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_serviceObj_name">Name</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_serviceObj_name" name="form[serviceObj][name]" required="required" maxlength="64" [(ngModel)]="_formService.getObject().name" formControlName="name" [class.error]="_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().name">{{error}}</label>
+            </div>
+        </div>
+                
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_serviceObj_vatCodeObj">VAT Code</label>
+    
+            <div class="col-sm-10">
+                                        
+        <select id="form_serviceObj_vatCodeObj" name="form[serviceObj][vatCodeObj]" [(ngModel)]="_formService.getObject().vatCodeObj" formControlName="vatCodeObj" [class.error]="_formService.getErrors().vatCodeObj &amp;&amp; _formService.getErrors().vatCodeObj.length &gt; 0" class="form-control">            <option value="1" >IVA23 (1)</option>            <option value="2" >IVA13 (2)</option></select>
+    <input [(ngModel)]="_formService.getObject().vatCodeObj"
+           formControlName = vatCodeObj
+           required="required"           type="hidden">
+
+                <label class="error" *ngFor="let error of _formService.getErrors().vatCodeObj">{{error}}</label>
+            </div>
+        </div>
+                
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_serviceObj_description">Description</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_serviceObj_description" name="form[serviceObj][description]" maxlength="256" [(ngModel)]="_formService.getObject().description" formControlName="description" [class.error]="_formService.getErrors().description &amp;&amp; _formService.getErrors().description.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().description">{{error}}</label>
+            </div>
+        </div>
+                
+
+            <div class="form-group" *ngIf="_formService.getObject().insertTime">
+
+                        <label class="col-sm-2 control-label required" for="form_insertTime">Insert Time</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_insertTime"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().insertTime"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().insertTime">{{error}}</label>
+            </div>
+        </div>
+                
+
+            <div class="form-group" *ngIf="_formService.getObject().insertUser">
+
+                        <label class="col-sm-2 control-label required" for="form_insertUser">Insert User</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_insertUser"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().insertUser"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().insertUser">{{error}}</label>
+            </div>
+        </div>
+                
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label">Enabled</label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().isEnabled">{{error}}</label>
+            </div>
+        </div>
+        </div>
+                    <div class="ibox-footer hide-on-empty">    
+                    <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                                            <button                                     class="btn"
+                                    (click)="cancelAction($event)"
+                                        id="form_cancel"
+            name="form[cancel]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                                                <button                                     class="btn"
+                                    (click)="resetAction($event)"
+                                        id="form_reset"
+            name="form[reset]"
+            type="button"><i class="fa fa-ban"></i>&nbsp;Reset</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAction($event)"
+                                        id="form_save"
+            name="form[save]"
+            type="button"><i class="fa fa-check"></i>&nbsp;Save</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAndCloseAction($event)"
+                                        id="form_saveAndClose"
+            name="form[saveAndClose]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Save and Close</button>
+                                </div>
+        </div>
+    </div>                        
+    <input type="hidden" id="form__token" name="form[_token]" value="TcyNUc0ivaNc2Bzv96jY_ov6RXK7ED_ZXIRcdRl89Ag" /></form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

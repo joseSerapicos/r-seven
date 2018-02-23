@@ -1,46 +1,5 @@
 {% extends 'AppBundle:form:form-popup.html.twig' %}
 
 {% block body %}
-    {% set form = (form is defined ? form : (_form is defined ? _form : null)) %}
-    {% set fields = (fields is defined ? fields : (_conf['fields'] is defined ? _conf['fields'] : null)) %}
-
-    {% set documentForm = ((fields['metadata']['user_value']['parent'] is defined and fields['metadata']['user_value']['parent'] is not null)
-        ? form[fields['metadata']['user_value']['parent']]
-        : form
-    ) %}
-
-    {% if (form and fields) %}
-        {% for field in fields['form'] %}
-            {% if field == 'user_value' %}
-                <div class="form-group">
-                    {% include 'AppBundle:form:label.html.twig' with {
-                        'formField': documentForm[field],
-                        'metadata': fields['metadata'][field]
-                    } %}
-                    <div class="col-sm-10"><div class="row">
-                        <div class="col-sm-8">
-                            {% include 'AppBundle:form:input.html.twig' with {
-                                'field': field,
-                                'formField': documentForm[field],
-                                'metadata': fields['metadata'][field]
-                            } %}
-                        </div>
-                        <div class="col-sm-4">
-                            {% include 'AppBundle:form:input.html.twig' with {
-                                'field': 'isVatIncluded',
-                                'formField': documentForm['isVatIncluded'],
-                                'metadata': fields['metadata']['isVatIncluded']
-                            } %}
-                        </div>
-                    </div></div>
-                </div>
-            {% elseif (field not in ['user_value', 'isVatIncluded']) %}
-                {% include 'AppBundle:form:field.html.twig' with {
-                    'field': field,
-                    'metadata': fields['metadata'][field],
-                    'form': form
-                } %}
-            {% endif %}
-        {% endfor %}
-    {% endif %}
+    {% include 'AccountingBundle:BaseDocumentInvoiceDetail:edit-form-fields.html.twig' %}
 {% endblock %}

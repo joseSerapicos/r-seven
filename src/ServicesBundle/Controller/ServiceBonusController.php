@@ -153,4 +153,45 @@ class ServiceBonusController extends BaseEntityChildController
     {
         return parent::confChildAction($request, array($service));
     }
+
+    /**
+     * Overrides parent method.
+     * @param $object
+     * @param $data (usually the form data)
+     * @return boolean (true to continue, false to abort)
+     */
+    protected function preSaveObject(&$object, $data)
+    {
+        $data = (isset($data['form']) ? $data['form'] : $data);
+        $isVatIncluded = (isset($data['isVatIncluded']) ? $data['isVatIncluded'] : false);
+        $priceService = $this->get('app.service.price');
+        $vatCodePercentage = $object->getBonusServiceObj()->getVatCodeObj()->getPercentage();
+        $errorMessage = null;
+
+        // If used method is "FIXED", then value is used directly,
+        // so we need to calc value according with isVatIncluded user preferences.
+        if (isset($data['bonusMethod']) && ($data['bonusMethod'] == 'FIXED')) {
+            echo("Fix this values and test with: 10 12,3 25");
+            var_dump($data);exit;
+            $splitValue = $priceService->getTotalUnitDetail($data['user_bonusValue'], $vatCodePercentage, $isVatIncluded);
+            if (!$priceService->isEqual($data['bonusValue'], $splitValue['value'])) {
+                $errorMessage = ('Invalid value was detected:<br/>'
+                    . $data['bonusValue'] . ' Does not match with ' . $splitValue['value']
+                );
+            }
+        }
+
+        // Set error
+        if ($errorMessage) {
+            $this->responseConf['status'] = 0;
+            $this->addFlashMessage(
+                $errorMessage,
+                'Data not persisted',
+                'error'
+            );
+            return false;
+        }
+
+        return true;
+    }
 }

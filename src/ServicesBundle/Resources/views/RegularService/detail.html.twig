@@ -1,0 +1,88 @@
+{% extends 'ServicesBundle:BaseService:detail.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets filter="scssphp" output="assets/services/regular-service/detail/css/all.css"
+        '@dropzone_css'
+        '@cropper_css'
+        '@AppBundle/Resources/public/scss/_gallery.scss'
+        '@AppBundle/Resources/public/css/image-crop.css'
+        '@AppBundle/Resources/public/css/wizard.css'
+        '@AppBundle/Resources/public/css/video-player.css'
+        '@AppBundle/Resources/public/scss/select-box.scss'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+
+    <link rel="stylesheet" href="{{ asset('assets/vendor/blueimp-gallery/css/blueimp-gallery.min.css') }}" />
+{% endblock %}
+
+{% block head_javascripts %}
+    {{ parent() }}
+
+    {% set parentId = _conf['object']['serviceObj'] %}
+
+    {% set serviceAvailabilityData = render(controller(
+    'ServicesBundle:ServiceAvailability:dataChild',
+    {'parents': {'entity': parentId}}
+    )) %}
+
+    {% set serviceAllotData = render(controller(
+    'ServicesBundle:ServiceAllot:dataChild',
+    {'parents': {'entity': parentId}}
+    )) %}
+
+    {% set servicePriceData = render(controller(
+    'ServicesBundle:ServicePrice:dataChild',
+    {'parents': {'entity': parentId}}
+    )) %}
+
+    {% set serviceFixedCostData = render(controller(
+    'ServicesBundle:ServiceFixedCost:dataChild',
+    {'parents': {'entity': parentId}}
+    )) %}
+
+    {% set serviceSupplementData = render(controller(
+    'ServicesBundle:ServiceSupplement:dataChild',
+    {'parents': {'entity': parentId}}
+    )) %}
+
+    {% set serviceDiscountData = render(controller(
+    'ServicesBundle:ServiceDiscount:dataChild',
+    {'parents': {'entity': parentId}}
+    )) %}
+
+    {% set serviceBonusData = render(controller(
+    'ServicesBundle:ServiceBonus:dataChild',
+    {'parents': {'entity': parentId}}
+    )) %}
+    <script>
+        _app.dependency.serviceAvailability = {{ serviceAvailabilityData|raw }};
+        _app.dependency.serviceAllot = {{ serviceAllotData|raw }};
+        _app.dependency.servicePrice = {{ servicePriceData|raw }};
+        _app.dependency.serviceFixedCost = {{ serviceFixedCostData|raw }};
+        _app.dependency.serviceSupplement = {{ serviceSupplementData|raw }};
+        _app.dependency.serviceDiscount = {{ serviceDiscountData|raw }};
+        _app.dependency.serviceBonus = {{ serviceBonusData|raw }};
+    </script>
+{% endblock %}
+
+{% block vendor_javascripts %}
+    {{ parent() }}
+
+    {% javascripts output="assets/services/regular-service/detail/js/vendor.js"
+        '@cropper_js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block local_javascripts %}
+    {% javascripts output="assets/services/regular-service/detail/js/local.js"
+        '@ServicesBundle/Resources/public/regular-service/detail/ts/dist/inline.bundle.js'
+        '@ServicesBundle/Resources/public/regular-service/detail/ts/dist/polyfills.bundle.js'
+        '@ServicesBundle/Resources/public/regular-service/detail/ts/dist/vendor.bundle.js'
+        '@ServicesBundle/Resources/public/regular-service/detail/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

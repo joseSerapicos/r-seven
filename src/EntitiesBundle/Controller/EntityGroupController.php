@@ -52,6 +52,7 @@ class EntityGroupController extends BaseEntityController
         );
 
         // Tree view configuration
+        $this->flags['treeViewMode'] = true;
         $this->templateConf['treeView'] = array(
             'iconDefault' => 'fa-users',
             'localParentField' => 'entityGroupObj' // User by TreeViewDataService

@@ -1,0 +1,9 @@
+{% if (field is defined) and (formField is defined) %}
+    <input [(ngModel)]="_formService.getObject().{{field}}"
+           formControlName = {{field}}
+           id="{{ formField.vars.id }}"
+           name="{{ formField.vars.full_name }}"
+           {% if formField.vars.required %}required="required"{% endif %}
+           type="hidden">
+    {% do formField.setRendered %}
+{% endif %}

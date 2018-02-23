@@ -29,25 +29,20 @@
                                 } %}
                             </div>
                         </div>
-                        <div class="row">
-                            <label class="col-sm-12 m-t-sm">Resources:</label>
-                            <div class="col-sm-12"><div class="form-control-box">
-                                <div class="row"><div class="col-sm-12">
-                                    {% include 'AppBundle:form:field.html.twig' with {
-                                        'field': 'shareEntities',
-                                        'metadata': fields['metadata']['shareEntities'],
-                                        'form': form
-                                    } %}
-                                </div></div>
-                                <div class="row"><div class="col-sm-12">
-                                    {% include 'AppBundle:form:field.html.twig' with {
-                                        'field': 'shareCurrentAccounts',
-                                        'metadata': fields['metadata']['shareCurrentAccounts'],
-                                        'form': form
-                                    } %}
-                                </div></div>
-                            </div></div>
-                        </div>
+                        {% embed 'AppBundle:form:form-control-box.html.twig' with {'label': 'Resources'} %}
+                            {% block container %}
+                                {% include 'AppBundle:form:field.html.twig' with {
+                                    'field': 'shareEntities',
+                                    'metadata': fields['metadata']['shareEntities'],
+                                    'form': form
+                                } %}
+                                {% include 'AppBundle:form:field.html.twig' with {
+                                    'field': 'shareCurrentAccounts',
+                                    'metadata': fields['metadata']['shareCurrentAccounts'],
+                                    'form': form
+                                } %}
+                            {% endblock %}
+                        {% endembed %}
                     </div>
                 </div>
             {% elseif (field not in ['storeObj', 'shareEntities', 'shareCurrentAccounts']) %}

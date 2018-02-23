@@ -1,0 +1,213 @@
+<div class="modal-body">
+    <div class="form-wrapper gray-bg">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>
+                        <div class="txt-align-r actions">
+                            <a class="-round fa fa-times"
+                               (click)="closeAction($event)"></a>
+                        </div>
+                    </div>
+                        
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+                    <div class="ibox-content">        
+                                        
+
+            <div class="form-group" *ngIf="_formService.getObject().id">
+
+                        <label class="col-sm-2 control-label required" for="form_id">Id</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_id"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().id"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().id">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_name">Name</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_name" name="form[name]" required="required" maxlength="64" [(ngModel)]="_formService.getObject().name" formControlName="name" [class.error]="_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().name">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_description">Description</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_description" name="form[description]" maxlength="256" [(ngModel)]="_formService.getObject().description" formControlName="description" [class.error]="_formService.getErrors().description &amp;&amp; _formService.getErrors().description.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().description">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_startTime">Start Time</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_startTime" name="form[startTime]" required="required" [(ngModel)]="_formService.getObject().startTime" formControlName="startTime" [class.error]="_formService.getErrors().startTime &amp;&amp; _formService.getErrors().startTime.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().startTime">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_endTime">End Time</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_endTime" name="form[endTime]" required="required" [(ngModel)]="_formService.getObject().endTime" formControlName="endTime" [class.error]="_formService.getErrors().endTime &amp;&amp; _formService.getErrors().endTime.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().endTime">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_color">Color</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().color"
+           formControlName = color
+           class="form-control"
+           [class.error]="_formService.getErrors().color && (_formService.getErrors().color.length > 0)"
+           id="form_color"
+           name="form[color]"
+                      maxlength="7"
+           type="color">
+                    <label class="error" *ngFor="let error of _formService.getErrors().color">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label required">Privacy</label>
+    
+            <div class="col-sm-10">
+                                        
+    <div class="form-control-box"
+         [ngClass]="{'error': _formService.getErrors().privacy && (_formService.getErrors().privacy.length > 0)}"
+         (click)="_formService.setFormFieldValue('privacy', $event.target.value)">
+                    <div class="radio">                                                            <label class="required"><input type="radio" id="form_privacy_0" name="form[privacy]" required="required" [checked]="&#039;PRIVATE&#039; == _formService.getObject().privacy" value="PRIVATE" /> Private</label>
+    </div>
+                    <div class="radio">                                                            <label class="required"><input type="radio" id="form_privacy_1" name="form[privacy]" required="required" [checked]="&#039;SHARED&#039; == _formService.getObject().privacy" value="SHARED" /> Shared</label>
+    </div>
+            </div>
+    <input [(ngModel)]="_formService.getObject().privacy"
+           formControlName = privacy
+           required="required"           type="hidden">
+
+                <label class="error" *ngFor="let error of _formService.getErrors().privacy">{{error}}</label>
+            </div>
+        </div>
+                                                    <div *ngIf="_formService.getObject().privacy == 'SHARED'"  class="form-group">
+                                <label class="col-sm-2 control-label" for="form_shareToType">Share With</label>
+                        <div class="col-sm-10"><div class="row">
+                        <div class="col-sm-6">
+                                                    
+        <select id="form_shareToType" name="form[shareToType]" [(ngModel)]="_formService.getObject().shareToType" formControlName="shareToType" [class.error]="_formService.getErrors().shareToType &amp;&amp; _formService.getErrors().shareToType.length &gt; 0" class="form-control"><option value=""></option>            <option value="ALL" >All</option>            <option value="USER" >User</option>            <option value="USER_GROUP" >Group</option>            <option value="STORE" >Store</option></select>
+    <input [(ngModel)]="_formService.getObject().shareToType"
+           formControlName = shareToType
+                      type="hidden">
+
+                <label class="error" *ngFor="let error of _formService.getErrors().shareToType">{{error}}</label>
+                        </div>
+                        <div *ngIf="_formService.getObject().shareToType == 'USER'" class="col-sm-6">
+                                                    
+        <select id="form_shareUserObj" name="form[shareUserObj]" [(ngModel)]="_formService.getObject().shareUserObj" formControlName="shareUserObj" [class.error]="_formService.getErrors().shareUserObj &amp;&amp; _formService.getErrors().shareUserObj.length &gt; 0" class="form-control"><option value=""></option>            <option value="590" >Britt Sulei (590)</option>            <option value="591" >Kate Gon (591)</option>            <option value="592" >Lara Alvar (592)</option>            <option value="593" >Helen Lin (593)</option></select>
+    <input [(ngModel)]="_formService.getObject().shareUserObj"
+           formControlName = shareUserObj
+                      type="hidden">
+
+                <label class="error" *ngFor="let error of _formService.getErrors().shareUserObj">{{error}}</label>
+                        </div>
+                        <div *ngIf="_formService.getObject().shareToType == 'USER_GROUP'"  class="col-sm-6">
+                                                    
+        <select id="form_userGroupObj" name="form[userGroupObj]" [(ngModel)]="_formService.getObject().userGroupObj" formControlName="userGroupObj" [class.error]="_formService.getErrors().userGroupObj &amp;&amp; _formService.getErrors().userGroupObj.length &gt; 0" class="form-control"><option value=""></option>            <option value="1" >Friends (1)</option>            <option value="2" >Antiquances (2)</option>            <option value="3" >Boss (3)</option>            <option value="4" >Family (4)</option></select>
+    <input [(ngModel)]="_formService.getObject().userGroupObj"
+           formControlName = userGroupObj
+                      type="hidden">
+
+                <label class="error" *ngFor="let error of _formService.getErrors().userGroupObj">{{error}}</label>
+                        </div>
+                        <div *ngIf="_formService.getObject().shareToType == 'STORE'"  class="col-sm-6">
+                                                    
+        <select id="form_storeObj" name="form[storeObj]" [(ngModel)]="_formService.getObject().storeObj" formControlName="storeObj" [class.error]="_formService.getErrors().storeObj &amp;&amp; _formService.getErrors().storeObj.length &gt; 0" class="form-control"><option value=""></option>            <option value="1" >Lisboa Store (1)</option>            <option value="2" >Rio de Janeiro Store (2)</option>            <option value="4" >Madrid Store (4)</option>            <option value="5" >Luanda Store (5)</option></select>
+    <input [(ngModel)]="_formService.getObject().storeObj"
+           formControlName = storeObj
+                      type="hidden">
+
+                <label class="error" *ngFor="let error of _formService.getErrors().storeObj">{{error}}</label>
+                        </div>
+                    </div></div>
+                </div>
+                                                                                                            
+
+            <div class="form-group" *ngIf="_formService.getObject().insertTime">
+
+                        <label class="col-sm-2 control-label required" for="form_insertTime">Insert Time</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_insertTime"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().insertTime"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().insertTime">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+            <div class="form-group" *ngIf="_formService.getObject().insertUser">
+
+                        <label class="col-sm-2 control-label required" for="form_insertUser">Insert User</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_insertUser"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().insertUser"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().insertUser">{{error}}</label>
+            </div>
+        </div>
+                            </div>
+                    <div class="ibox-footer hide-on-empty">    
+                    <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                                            <button                                     class="btn"
+                                    (click)="cancelAction($event)"
+                                        id="form_cancel"
+            name="form[cancel]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                                                <button                                     class="btn"
+                                    (click)="resetAction($event)"
+                                        id="form_reset"
+            name="form[reset]"
+            type="button"><i class="fa fa-ban"></i>&nbsp;Reset</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAction($event)"
+                                        id="form_save"
+            name="form[save]"
+            type="button"><i class="fa fa-check"></i>&nbsp;Save</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAndCloseAction($event)"
+                                        id="form_saveAndClose"
+            name="form[saveAndClose]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Save and Close</button>
+                                </div>
+        </div>
+    </div>                        
+    <input type="hidden" id="form__token" name="form[_token]" value="j220WQYbPdus8DRz7qgAv-xVSfLL0l6lbr9UUlRDxBE" /></form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

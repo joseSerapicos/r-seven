@@ -3,6 +3,7 @@
 namespace ServicesBundle\Entity;
 
 use AppBundle\Entity\BaseEntityRepository;
+use BookingBundle\Entity\BookingServicePriceRepository;
 
 /**
  * ServiceAllotRepository
@@ -52,14 +53,23 @@ class ServiceAllotRepository extends BaseEntityRepository {
             'id' => array('label' => 'Id', 'type' => 'number', 'acl' => 'read'),
             'serviceObj' => array('label' => 'Service', 'type' => 'object', 'acl' => 'read', 'typeDetail' => array(
                 'table' => 'service', 'bundle' => 'services', 'type' => 'none')),
-            'name' => array('label' => 'Name', 'type' => 'text', 'acl' => 'edit'),
-            'allot' => array('label' => 'Allot / Allot', 'type' => 'number', 'acl' => 'edit'),
+            'description' => array('label' => 'Description', 'type' => 'text', 'acl' => 'edit'),
+            'allot' => array('label' => 'Allot', 'type' => 'number', 'acl' => 'edit'),
             'startDate' => array('label' => 'Start Date', 'type' => 'date', 'acl' => 'edit', 'view' => array(
                 'typeDetail' => array('rules' => array(array('expr' => 'max', 'value' => 'endDate')))
             )),
             'endDate' => array('label' => 'End Date', 'type' => 'date', 'acl' => 'edit', 'view' => array(
                 'typeDetail' => array('rules' => array(array('expr' => 'min', 'value' => 'startDate')))
             )),
+            'targetServiceObj' => array('label' => 'Target', 'type' => 'object', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'table' => 'service', 'tableAlias' => 'service_target', 'bundle' => 'services', 'type' => 'none',
+                    'fieldInView' => 'targetService_name', 'choices' => array('query' => 'getChoicesForServicePrice')),
+                'isRequired' => false,
+                'form' => array('type' => 'html-select')
+            ),
+            'targetService_name' => array('table' => 'service_target', 'field' => 'name', 'label' => 'Target',
+                'type' => 'text', 'acl' => 'read', 'dependency' => 'targetServiceObj', 'form' => array('type' => 'none')),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
             'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
@@ -67,16 +77,19 @@ class ServiceAllotRepository extends BaseEntityRepository {
     }
 
     /**
-     * Get current allot by date
+     * Get allot by date
      * @param $serviceObj (object)
      * @param $date
+     * @param $allotTargetServiceObj (target service object, to get allot of specific service (like packages))
      * @return mixed
      */
-    public function getCurrentAllotByDate($serviceObj, $date)
+    public function getAllotByDate($serviceObj, $date, $allotTargetServiceObj = null)
     {
+        $localTable = $this->getLocalTable();
+
         // Fields
         $options['fields'] = array(
-            "SUM(serviceAllot.allot) AS allot"
+            "SUM(".$localTable.".allot) AS total"
         );
 
         // Criteria
@@ -85,11 +98,17 @@ class ServiceAllotRepository extends BaseEntityRepository {
             array('field' => 'serviceObj', 'expr' => 'eq', 'value' => $serviceObj),
             array('field' => $date, 'expr' => 'rbetween', 'value' => array('startDate', 'endDate'))
         );
+        if ($allotTargetServiceObj) {
+            // Specific allot for $targetServiceObj
+            $options['criteria'][] = array('field' => 'targetServiceObj', 'expr' => 'eq', 'value' => $allotTargetServiceObj);
+        } else {
+            // Regular allot
+            $options['criteria'][] = array('field' => 'targetServiceObj', 'expr' => 'isNull', 'value' => null);
+        }
 
-        $allot = $this->queryBuilder($options);
-        $allot = reset($allot); // Get first element
-        $allot['allot'] = (empty($allot['allot']) ? 0 : $allot['allot']); // Normalize array
-
-        return $allot;
+        // Get query builder
+        $totalAllot = $this->queryBuilder($options);
+        $totalAllot = reset($totalAllot); // Get first element
+        return (empty($totalAllot['total']) ? 0 : $totalAllot['total']);
     }
 }

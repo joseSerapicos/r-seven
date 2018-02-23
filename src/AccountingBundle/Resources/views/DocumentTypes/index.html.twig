@@ -10,28 +10,20 @@
     {% set supplierDocumentTypeData = render(controller(
         'AccountingBundle:SupplierDocumentType:data'
     )) %}
-
-    {% set entityDocumentTypeData = render(controller(
-        'AccountingBundle:EntityDocumentType:data'
-    )) %}
     <script>
         _app.dependency.clientDocumentType = {{ clientDocumentTypeData|raw }};
         _app.dependency.supplierDocumentType = {{ supplierDocumentTypeData|raw }};
-        _app.dependency.entityDocumentType = {{ entityDocumentTypeData|raw }};
     </script>
 {% endblock %}
 
 {% block header %}{% endblock %}
 
-{% block body_container %}
-    <div id="js_main" class="accordion-white"></div>
-{% endblock %}
-
-{% block local_javascripts %}
+{%  block local_javascripts %}
     {% javascripts output="assets/accounting/document-types/index/js/local.js"
-        '@AccountingBundle/Resources/public/document-types/index/webpack_generated/common.js'
-        '@AccountingBundle/Resources/public/document-types/index/webpack_generated/app.js'
-        '@AccountingBundle/Resources/public/document-types/index/webpack_generated/main.js'
+        '@AccountingBundle/Resources/public/document-types/index/ts/dist/inline.bundle.js'
+        '@AccountingBundle/Resources/public/document-types/index/ts/dist/polyfills.bundle.js'
+        '@AccountingBundle/Resources/public/document-types/index/ts/dist/vendor.bundle.js'
+        '@AccountingBundle/Resources/public/document-types/index/ts/dist/main.bundle.js'
     %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}

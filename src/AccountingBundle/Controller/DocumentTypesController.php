@@ -6,6 +6,12 @@ use AppBundle\Controller\BaseController;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
+/**
+ * Class DocumentTypesController
+ * @package AccountingBundle\Controller
+ *
+ * This class is only used to merge all entities document type in the same menu
+ */
 class DocumentTypesController extends BaseController
 {
     /**
@@ -26,6 +32,11 @@ class DocumentTypesController extends BaseController
 
         // Search
         $this->templateConf['search'] = null;
+
+        // Extra data
+        $this->templateConf['extraData']['template'] = array(
+            'class' => 'accordion-white'
+        );
 
         return $this;
     }
@@ -68,9 +79,6 @@ class DocumentTypesController extends BaseController
                 ),
                 array(
                     'label' => 'Supplier Document Types'
-                ),
-                array(
-                    'label' => 'Entity Document Types'
                 )
             )
         ));

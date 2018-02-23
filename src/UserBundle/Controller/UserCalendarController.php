@@ -128,7 +128,7 @@ class UserCalendarController extends BaseEntityController
         $obj = $this->getObject($id);
 
         // Build form
-        $form = $this->buildForm($request, $obj);
+        $form = $this->createForm($this->localConf['formTypeClass'], $obj);
 
         // Handle request
         $form->handleRequest($request);
@@ -222,10 +222,12 @@ class UserCalendarController extends BaseEntityController
                 'field' => 'endTime',
                 'method' => 'or',
                 'expr' => 'between',
-                'value' => array($currentDate . ' 00:00:00', $currentDate . ' 23:59:59')
+                // Needs to be ...01, otherwise events terminated in the last day are included
+                'value' => array($currentDate . ' 00:00:01', $currentDate . ' 23:59:59')
             ),
             array( // Crosses
-                'field' => ($currentDate . ' 00:00:00'),
+                // Needs to be ...01, otherwise events terminated in the last day are included
+                'field' => ($currentDate . ' 00:00:01'),
                 'method' => 'or',
                 'expr' => 'rbetween',
                 'value' => array('startTime', 'endTime')

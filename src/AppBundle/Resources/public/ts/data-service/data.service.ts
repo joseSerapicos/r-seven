@@ -1,6 +1,7 @@
-import {Injectable, Inject, EventEmitter} from '@angular/core';
+import {Injectable, Inject, EventEmitter, Optional} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {PostService} from '../post.service';
+//import {AssetsLazyLoaderManagerService} from '../assets-lazy-loader-manager.service';
 import {DataServiceProvider, Search} from './data-service-provider';
 
 // Re-exports
@@ -29,11 +30,17 @@ export class DataService {
     protected _objectsIds: number[] = []; // Array of "ids" of objects in provider.objects.value to avoid duplications
     protected _newObjectsIds: number[] = []; // Array of "ids" with new objects added by the user
 
-    protected _onObjectChangeEmitter: EventEmitter<any>; // When the object change
-    protected _onObjectsRefreshEmitter: EventEmitter<any>; // When the list of objects change
+    protected _onObjectChangeEmitter: EventEmitter<any>; // When the selected object change
+    protected _onObjectsRefreshEmitter: EventEmitter<any>; // When list of objects change
     protected _onObjectsChangeEmitter: EventEmitter<any>; // When objects change, from add, refresh, delete, etc (useful when you need to update parent)
 
     protected _candidateSearch: Search; // Candidate to new search with modified parameters
+
+    // Handles with assets lazy loader.
+    // DataService it's that normalize data, so nobody better than him to knows when AssetsLazyLoaderManager should be called.
+    // Assets lazy loader is called only for objects provided in construct, because in the other cases we cannot
+    // control the template rendering to call the lazy loader at the right time.
+    protected _hasAssetsLazyLoader: boolean = true; // Controls if this feature should be used
 
 
     constructor(
@@ -41,6 +48,7 @@ export class DataService {
         @Inject('HelperService') protected _helperService: any,
         @Inject('DataServiceProvider') protected _provider: DataServiceProvider,
         private _sanitizer: DomSanitizer
+        //@Optional() protected _assetsLazyLoaderManagerService: AssetsLazyLoaderManagerService, // @TODO
     ) {
         if (this._provider['pin']) {
             this.pinProvider();
@@ -152,15 +160,22 @@ export class DataService {
 
     /**
      * Set route
-     * @param route
+     * @param index
      * @param url
+     * @param name
      * @returns {DataService}
      */
-    public setRoute(route: string, url: string): DataService
+    public setRoute(index: string, url: string, name: string = null): DataService
     {
-        if (route in this._provider.route) {
-            this._provider.route[route]['url'] = url;
+        // Set new route if not exists
+        if (!(index in this._provider.route)) {
+            this._provider.route[index] = {name: null, route: null};
         }
+
+        // Set values
+        if (name) { this._provider.route[index]['name'] = name; }
+        if (url) { this._provider.route[index]['url'] = url; }
+
         return this;
     }
 
@@ -176,22 +191,8 @@ export class DataService {
             let that = this,
                 route = (this._provider.route['get']['url'] + '/' + id);
 
-            this.post(route, this.getRequestData(null, false, false)).then(
-                data => {
-                    // Local data (do not override, merge data)
-                    if (data['localData']) {
-                        that._provider.localData = that._helperService.mergeObjects(
-                            that._provider.localData,
-                            data['localData']
-                        );
-                    }
-
-                    let obj = (data.object || null);
-                    // Refresh object
-                    if (obj) {
-                        that.setObject(data.object, that._objectIndex);
-                    }
-                },
+            this._postService.post(route, this.getRequestData(null, false, false)).then(
+                data => { that.handleResponse(data); },
                 errors => { console.log(errors); }
             );
         }
@@ -220,10 +221,7 @@ export class DataService {
                     data => {
                         // Local data (do not override, merge data)
                         if (data['localData']) {
-                            that._provider.localData = that._helperService.mergeObjects(
-                                that._provider.localData,
-                                data['localData']
-                            );
+                            that.setLocalData(data['localData']);
                         }
 
                         // Object
@@ -265,16 +263,16 @@ export class DataService {
                 if ((index != null) && objectsProvider[index]) {
                     // Update existent object
                     this._objectIndex = index;
-                    objectsProvider[index] = this._normalizedObject;
                     this._normalizedObject['_isEdited'] = true; // Flag to use in template
-                    // Emmit changes (object has been edited)
+                    objectsProvider[index] = this._normalizedObject;
+                    // Emmit changes (object has been edited in objects list)
                     this._onObjectsChangeEmitter.emit(null);
                 } else {
                     // Add new object at first of array (to best user experience)
                     this._objectIndex = 0; // Update index to the new index
+                    this._normalizedObject['_isNew'] = true; // Flag to use in template
                     this.pushToObjects([this._normalizedObject], true);
                     this._newObjectsIds.push(object['id']); // New object added
-                    this._normalizedObject['_isNew'] = true; // Flag to use in template
                 }
             }
 
@@ -563,7 +561,17 @@ export class DataService {
      */
     public getProviderAttr(attribute: string): any
     {
-        return this._provider[attribute] || null;
+        return (this._provider[attribute] || null);
+    }
+
+    /**
+     * Get "localData" attribute
+     * @param attribute
+     * @returns any
+     */
+    public getLocalDataAttr(attribute: string = null): any
+    {
+        return (this._provider['localData']['data'][attribute] || null);
     }
 
     /**
@@ -631,14 +639,14 @@ export class DataService {
                 if (fieldMetadata['skipNormalizer']) { continue; }
 
                 switch (fieldMetadata['type']) {
+                    case 'img':
+                    case 'avatar':
                     case 'boolean':
                     case 'code':
                     case 'percentage':
                     case 'monetary':
                     case 'icon':
                     case 'link':
-                    case 'img':
-                    case 'avatar':
                     case 'status':
                         for (let obj of objects) {
                             if (typeof obj[field] != 'undefined') { // Can be undefined, if the search doest have the field selected
@@ -663,9 +671,37 @@ export class DataService {
                     }
                 }
             }
+
+            // @TODO: Analise better how lazy loader should be handled
+            if (this._hasAssetsLazyLoader) {
+                this._hasAssetsLazyLoader = false;
+            }
         }
         return this;
     }
+
+    /**
+     * Set Has Assets Lazy Loader
+     * @TODO: Not used for now, it's here to analise better in future how lazy loader should be handled
+     * @param hasAssetsLazyLoader
+     */
+    /*public setHasAssetsLazyLoader (hasAssetsLazyLoader: boolean)
+    {
+        this._hasAssetsLazyLoader = hasAssetsLazyLoader;
+    }*/
+    /**
+     * Run Assets Lazy Loader
+     * @TODO: Not used for now, it's here to analise better in future how lazy loader should be handled
+     */
+    /*public runAssetsLazyLoader()
+    {
+        // Only can be used in the first load (check out the comment above)
+        if (this._hasAssetsLazyLoader) {
+            this._hasAssetsLazyLoader = false;
+            this._assetsLazyLoaderManagerService.load();
+            console.log("Lazy load called in dataservice");
+        }
+    }*/
 
     /**
      * Render field
@@ -690,12 +726,12 @@ export class DataService {
                     }
                 case 'code':
                     if (object['storeObj']
-                        && this._helperService.getGlobalVar('stores')
-                        && this._helperService.getGlobalVar('stores')[object['storeObj']]
+                        && this._helperService.getAppVar('stores')
+                        && this._helperService.getAppVar('stores')[object['storeObj']]
                     ) {
                         return this._sanitizer.bypassSecurityTrustHtml( // Used to allow the style attr
                             '<span class="store" style="background-color: '
-                            + this._helperService.getGlobalVar('stores')[object['storeObj']]['color']
+                            + this._helperService.getAppVar('stores')[object['storeObj']]['color']
                             + '">' + value + '</span>'
                         );
                     }
@@ -711,11 +747,30 @@ export class DataService {
                 case 'img':
                 case 'avatar':
                     let extraClass = ((fieldMetadata['type'] == 'avatar') ? 'img-circle' : 'thumbnail');
-                    return (value
-                        ? ('<img alt="'+fieldMetadata['label']+'" class="'+extraClass+'" src="'
-                            + (this._helperService.getUploadWebPath(value) || value)
-                            + '">')
-                        : null);
+
+                    // No image is provided
+                    if (!value) {
+                        return (
+                            '<img alt="' + fieldMetadata['label'] + '" class="' + extraClass
+                            + '" src="/assets/img/dummy-48x48.png">'
+                        );
+                    }
+
+                    // Regular load
+                    if (!this._hasAssetsLazyLoader) {
+                        return (
+                            '<img alt="' + fieldMetadata['label'] + '" class="' + extraClass
+                            + '" src="' + (this._helperService.getUploadWebPath(value) || value) + '">'
+                        );
+                    }
+
+                    // Use lazy loader
+                    return this._sanitizer.bypassSecurityTrustHtml(
+                        '<img alt="' + fieldMetadata['label'] + '" class="js_lazy ' + extraClass
+                        + '" src="/assets/img/dummy-48x48.png" data-src="'
+                        + (this._helperService.getUploadWebPath(value) || value) + '">'
+                    );
+
                 case 'status':
                     let statusMap = {'NO': 'danger', 'PARTIAL': 'warning', 'YES': 'primary'};
                     return ('<span class="status -' + (statusMap[value] || 'danger') + '"></span>');
@@ -727,13 +782,20 @@ export class DataService {
 
     /**
      * New object (call this function to create a new object)
-     * @param index
+     * @param index (to create object based on another)
+     * @param object (to create object based on a pre existent object)
      * @returns {Promise}
      */
-    public newObject(index: any = null): Promise<any> {
+    public newObject(index: any = null, object: any = null): Promise<any> {
         let that = this;
 
         return new Promise(function(resolve, reject) {
+            if (object) {
+                // Objects has pre existent data (for example can be from backend session storage)
+                that.setNewObject(object);
+                return resolve(true);
+            }
+
             let newObj = {};
             // Create by copy
             if (index != null) {
@@ -770,14 +832,12 @@ export class DataService {
                         data => {
                             // Local data (do not override, merge data)
                             if (data['localData']) {
-                                that._provider.localData = that._helperService.mergeObjects(
-                                    that._provider.localData,
-                                    data['localData']
-                                );
+                                that.setLocalData(data['localData']);
                             }
 
                             // Object
                             that.setNewObject(data.object);
+
                             return resolve(true);
                         },
                         errors => { console.log(errors); return reject(false); }
@@ -826,54 +886,26 @@ export class DataService {
         let that = this;
 
         return new Promise(function(resolve, reject) {
-
-            // Set route (if id is provided, use 'edit', else use 'add')
+            // Set route (if id is provided, use 'edit', else try 'add')
             if (!route) {
-                route = (id
-                        ? that._provider.route['edit']['url']
-                        : (that._provider.route['add']
-                            ? that._provider.route['add']['url']
-                            : that._provider.route['edit']['url']
-                    )
-                );
+                let routeName = (id ? 'edit' : (that._provider.route['add'] ? 'add' : 'edit'));
+                route = (that._provider.route[routeName] ? that._provider.route[routeName]['url'] : null);
+                if (!route) {
+                    console.log('Error: No route was defined!');
+                    return reject({});
+                }
             }
             if (id) { route += ('/' + id); }
 
-            that.post(route, that.getRequestData(data)).then(
+            that._postService.post(route, that.getRequestData(data)).then(
                 data => {
-                    // Refresh all objects
-                    if (data.objects) {
-                        that.setObjects(data.objects);
-                    }
-
-                    // Refresh fields choices
-                    if (data.fieldsChoices) {
-                        that.setFieldsChoices(data.fieldsChoices);
-                    }
-
-                    // Local data (do not override, merge data)
-                    if (data['localData']) {
-                        that._provider.localData = that._helperService.mergeObjects(
-                            that._provider.localData,
-                            data['localData']
-                        );
-                    }
-
-                    let obj = (data.object || null);
-                    // Refresh object
-                    if (obj) {
-                        that.setObject(data.object, that._objectIndex);
-                    }
-
-                    return resolve(obj);
+                    that.handleResponse(data);
+                    return resolve(data['object'] || null);
                 },
                 errors => {
                     // Local data (do not override, merge data). Exception in errors list used in some cases.
                     if (errors['localData']) {
-                        that._provider.localData = that._helperService.mergeObjects(
-                            that._provider.localData,
-                            errors['localData']
-                        );
+                        that.setLocalData(errors['localData']);
                         delete errors['localData']; // It's no more necessary
                     }
 
@@ -917,15 +949,11 @@ export class DataService {
         // Reset pagination for new search
         this.resetPagination();
 
-        this.post(
+        this._postService.post(
             this._provider.route['get']['url'],
             this.getRequestData(null, false)
         ).then(
-            data => {
-                // Update list of objects
-                that.setObjects(data.objects || null);
-                that.setFieldsChoices(data.fieldsChoices || null);
-            },
+            data => { that.handleResponse(data); },
             errors => { console.log(errors); }
         );
 
@@ -940,13 +968,14 @@ export class DataService {
     {
         let that = this;
 
-        this.post(
+        this._postService.post(
             this._provider.route['get']['url'],
             this.getRequestData()
         ).then(
             data => {
-                // Update list of objects
-                that.setObjects(data.objects || [], true);
+                // Update objects
+                data.objects = (data.objects || []);
+                that.handleResponse(data, null, true);
             },
             errors => { console.log(errors); }
         );
@@ -976,13 +1005,13 @@ export class DataService {
         // No field is necessary, is returned the choices pattern (minimizes data sent)
         this._provider['search']['fields'] = [];
 
-        this.post(
+        this._postService.post(
             this._provider.route['choices']['url'],
             this.getRequestData(null, noReset)
         ).then(
             data => {
-                // Update list of objects
-                that.setObjects(data.objects || [], noReset);
+                data.objects = (data.objects || []);
+                that.handleResponse(data, null, noReset);
             },
             errors => { console.log(errors); }
         );
@@ -1005,27 +1034,15 @@ export class DataService {
             // If priority is already in the max value (0), then 'up' doesn't make sense.
             && ((objectsProvider[index]['priority'] > 0) || (OrderTypes[type] == 'down'))
         ) {
-            this.post(
+            this._postService.post(
                 (this._provider.route['order']['url'] + '/' + objectsProvider[index]['id'] + '/' + OrderTypes[type]),
                 that.getRequestData()
             ).then(
                 data => {
-                    // Refresh all objects
-                    if (data.objects) {
-                        that.setObjects(data.objects);
-                    }
+                    that.handleResponse(data, index);
 
-                    // Refresh fields choices
-                    if (data.fieldsChoices) {
-                        that.setFieldsChoices(data.fieldsChoices);
-                    }
-
-                    let obj = (data.object || null);
-                    // Refresh object
-                    if (obj) {
-                        that.setObject(obj, index);
-
-                        // If objects are not returned, then order objects by "search" "orderBy" provider
+                    // If objects are not returned, then order objects by "search" "orderBy" provider
+                    if (data.object) {
                         if (!data.objects) {
                             // Get fields from search
                             let orderFields = that._provider.search.orderBy.map(function($item) {
@@ -1045,6 +1062,30 @@ export class DataService {
     }
 
     /**
+     * Cancel object.
+     * @param index
+     * @returns {Promise}
+     */
+    public cancel(index: any): Promise<any>
+    {
+        let that = this,
+            objectsProvider = (this._objectsProvider || this._provider.objects);
+
+        return new Promise(function(resolve, reject) {
+            that._postService.post(
+                that._provider.route['cancel']['url'] + '/' + objectsProvider[index]['id'],
+                that.getRequestData()
+            ).then(
+                data => {
+                    that.handleResponse(data, index);
+                    return resolve(true);
+                },
+                errors => { return reject(false); }
+            );
+        });
+    }
+
+    /**
      * Delete object.
      * @param index
      * @returns {Promise}
@@ -1055,30 +1096,24 @@ export class DataService {
             objectsProvider = (this._objectsProvider || this._provider.objects);
 
         return new Promise(function(resolve, reject) {
-            that.post(
+            that._postService.post(
                 that._provider.route['delete']['url'] + '/' + objectsProvider[index]['id'],
                 that.getRequestData()
             ).then(
                 data => {
-                    // Refresh all objects
-                    if (data.objects) {
-                        that.setObjects(data.objects);
+                    // Refresh objects array removing the removed object
+                    if (!data.objects) {
+                        that.pullFromObjects(index);
                     }
-
-                    // Refresh fields choices
-                    if (data.fieldsChoices) {
-                        that.setFieldsChoices(data.fieldsChoices);
-                    }
-
-                    // Refresh objects array
-                    that.pullFromObjects(index);
 
                     // Reset object index
                     that._objectIndex = null;
 
+                    that.handleResponse(data);
+
                     return resolve(true);
                 },
-                errors => { console.log(errors); return reject(false); }
+                errors => { return reject(false); }
             );
         });
     }
@@ -1103,15 +1138,12 @@ export class DataService {
             }
         }
 
-        this.post(
+        this._postService.post(
             this._provider.route['delete']['url'],
             this.getRequestData({id: idArr})
         ).then(
             data => {
-                // Refresh fields choices
-                if (data.fieldsChoices) {
-                    that.setFieldsChoices(data.fieldsChoices);
-                }
+                that.handleResponse(data);
 
                 // Refresh objects array
                 // Correction for index (each time you remove an index, all indices needs to be corrected)
@@ -1164,26 +1196,15 @@ export class DataService {
         let that = this;
 
         return new Promise(function(resolve, reject) {
-            return that.post(route, that.getRequestData(data, false, false)).then(
+            return that._postService.post(route, that.getRequestData(data, false, false)).then(
                 data => {
                     if (updateData) {
-                        // Local data (do not override, merge data)
-                        if (data['localData']) {
-                            that._provider.localData = that._helperService.mergeObjects(
-                                that._provider.localData,
-                                data['localData']
-                            );
-                        }
-
-                        // Refresh object
-                        if (data['object']) {
-                            that.setObject(data.object, that._objectIndex);
-                        }
+                        that.handleResponse(data);
                     }
 
                     return resolve(data);
                 },
-                errors => { console.log(errors); return reject(errors); }
+                errors => { return reject(errors); }
             );
         });
     }
@@ -1215,45 +1236,12 @@ export class DataService {
                 // Submit to provided route
                 return that.runAction(route, {id: idArr}).then(
                     data => { return resolve(data); },
-                    errors => { console.log(errors); return reject(errors); }
+                    errors => { return reject(errors); }
                 );
             } else {
                 // No indexes to submit
                 return resolve(null);
             }
-        });
-    }
-
-    /**
-     * Post to server.
-     * @param url
-     * @param data
-     * @returns {Promise}
-     */
-    public post(url: string, data: any = null): Promise<any>
-    {
-        let that = this;
-
-        return new Promise(function(resolve, reject) {
-            return that._postService.post(
-                url,
-                data
-            ).then(
-                data => {
-                    // Update search
-                    if (data['search'] && (typeof data['search']['hasMore'] != 'undefined')) {
-                        // Equals search in provider and candidate search to avoid return false
-                        // in comparisons doing unnecessary searches.
-                        that._candidateSearch.hasMore = that._provider.search.hasMore
-                            = that._helperService.castToBoolean(data['search']['hasMore']);
-                        that._candidateSearch.offset = that._provider.search.offset
-                            = (data['search']['offset'] || 0);
-                    }
-
-                    return resolve(data);
-                },
-                errors => { return reject(errors); }
-            );
         });
     }
 
@@ -1273,7 +1261,7 @@ export class DataService {
 
         if (!data || (typeof data == 'object')) {
             return {
-                csrfToken: this._helperService.getGlobalVar('csrfToken'),
+                csrfToken: this._helperService.getAppVar('csrfToken'),
                 search: (hasSearch ? this._provider['search'] : null),
                 data: data
             }
@@ -1300,6 +1288,74 @@ export class DataService {
     protected updatePagination(): DataService
     {
         this._provider.search.offset = (this._provider.objects.length - this._newObjectsIds.length);
+        return this;
+    }
+
+    /**
+     * Set local data
+     * @param localData
+     */
+    protected setLocalData(localData: any)
+    {
+        // Local data (do not override, merge data)
+        if (localData) {
+            if (localData['data']) {
+                this._provider.localData['data'] = this._helperService.mergeObjects(
+                    this._provider.localData['data'],
+                    localData['data']
+                );
+            }
+            if (localData['template']) {
+                this._provider.localData['template'] = this._helperService.mergeObjects(
+                    this._provider.localData['template'],
+                    localData['template']
+                );
+            }
+        }
+    }
+
+    /**
+     * Handle with regular server responses
+     * @param response
+     * @param objectIndex (object index to update object)
+     * @param hasMergeObjects (merge array of objects, otherwise will be override)
+     * @returns {DataService}
+     */
+    protected handleResponse(response: any, objectIndex: number = null, hasMergeObjects: boolean = false)
+    {
+        // Set default object index (this can be done in method signature)
+        if (objectIndex === null) { objectIndex = this._objectIndex; }
+
+        // Refresh all objects
+        if (response['objects']) {
+            this.setObjects(response['objects'], hasMergeObjects);
+        }
+
+        // Refresh object
+        if (response['object']) {
+            this.setObject(response['object'], objectIndex);
+        }
+
+        // Local data (do not override, merge data)
+        if (response['localData']) {
+            this.setLocalData(response['localData']);
+        }
+
+        // Refresh fields choices
+        if (response['fieldsChoices']) {
+            this.setFieldsChoices(response['fieldsChoices']);
+        }
+
+        // Update search pagination
+        if (response['search'] && (typeof response['search']['hasMore'] != 'undefined')) {
+            // Equals search in provider and candidate search to avoid return false
+            // in comparisons doing unnecessary searches.
+            this._candidateSearch.hasMore = this._provider.search.hasMore
+                = this._helperService.castToBoolean(response['search']['hasMore']);
+            this._candidateSearch.offset = this._provider.search.offset
+                = (response['search']['offset'] || 0);
+        }
+
         return this;
     }
 }

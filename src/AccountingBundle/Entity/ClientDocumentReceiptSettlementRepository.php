@@ -18,7 +18,7 @@ class ClientDocumentReceiptSettlementRepository extends BaseDocumentReceiptSettl
      * Defines parent method
      * @return string
      */
-    protected function getContext()
+    protected function getLocalEntityContext()
     {
         return 'client';
     }
@@ -55,44 +55,58 @@ class ClientDocumentReceiptSettlementRepository extends BaseDocumentReceiptSettl
         $localMetadata = self::processMetadata(array(
             'clientDocumentObj' => array('label' => 'Client Current Account', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array('table' => 'clientDocument', 'bundle' => 'accounting', 'type' => 'none')),
-            'invoiceClientDocumentObj' => array('label' => 'Document', 'type' => 'object', 'acl' => 'edit',
+            'settlementClientDocumentObj' => array('label' => '', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array(
-                    'table' => 'clientDocument', 'tableAlias' => 'invoiceClientDocument', 'bundle' => 'accounting',
-                    'type' => 'none', 'fieldInView' => 'invoiceClientDocument_code'),
-                'form' => array('type' => 'auto-complete')
+                    'table' => 'clientDocument', 'tableAlias' => 'settlementClientDocument', 'bundle' => 'accounting',
+                    'type' => 'none'
+                )
             ),
-            // Foreign fields
-            'invoiceClientDocument_code' => array('label' => 'Code',
-                'field' => 'CONCAT(invoiceClientDocument.codePrefix, invoiceClientDocument.codeNumber)',
-                'dependency' => 'invoiceClientDocumentObj', 'table' => '', 'type' => 'code', 'acl' => 'read',
-                'normalizer' => array('method' => 'getCode'),
+
+            // Foreign fields (is not used the entity type prefix (client),
+            // to make fields compatibles with all entity types (supplier, entity, etc.), except in "Obj" fields)
+
+            // "storeObj" and "code" fields are used to set the store color to code of settlement document
+            'storeObj' => array('table' => 'settlementClientDocument', 'label' => '',
+                'dependency' => 'settlementClientDocumentObj', 'type' => 'object', 'acl' => 'read',
+                'typeDetail' => array(
+                    'table' => 'store', 'bundle' => 'admin', 'field' => 'id', 'type' => 'none'
+                )
+            ),
+            'code' => array('label' => 'Code',
+                'field' => 'CONCAT(settlementClientDocument.codePrefix, settlementClientDocument.codeNumber)',
+                'dependency' => 'settlementClientDocumentObj', 'table' => '', 'type' => 'code', 'acl' => 'read',
+                'normalizer' => array('method' => 'getCode')
+            ),
+
+            'settlementDocument_date' => array('table' => 'settlementClientDocument', 'field' => 'date', 'label' => 'Date',
+                'type' => 'date', 'acl' => 'read', 'dependency' => 'settlementClientDocumentObj',
                 'form' => array('type' => 'none')
             ),
-            'invoiceClientDocument_date' => array('table' => 'invoiceClientDocument', 'field' => 'date', 'label' => 'Date',
-                'type' => 'date', 'acl' => 'read', 'dependency' => 'invoiceClientDocumentObj',
+            'settlementDocument_dueDate' => array('table' => 'settlementClientDocument', 'field' => 'dueDate', 'label' => 'Due Date',
+                'type' => 'date', 'acl' => 'read', 'dependency' => 'settlementClientDocumentObj',
                 'form' => array('type' => 'none')
             ),
-            'invoiceClientDocument_dueDate' => array('table' => 'invoiceClientDocument', 'field' => 'dueDate', 'label' => 'Due Date',
-                'type' => 'date', 'acl' => 'read', 'dependency' => 'invoiceClientDocumentObj',
-                'form' => array('type' => 'none')
-            ),
-            'invoiceClientDocument_clientDocumentTypeObj' => array('table' => 'invoiceClientDocument', 'field' => 'clientDocumentTypeObj',
+            'settlementClientDocument_clientDocumentTypeObj' => array('table' => 'settlementClientDocument', 'field' => 'clientDocumentTypeObj',
                 'label' => 'Document Type', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array('table' => 'clientDocumentType', 'bundle' => 'accounting', 'type' => 'none'),
-                'dependency' => 'invoiceClientDocumentObj'
+                'dependency' => 'settlementClientDocumentObj'
             ),
-            'clientDocumentType_name' => array('table' => 'clientDocumentType', 'field' => 'name', 'label' => 'Doc. Name',
-                'type' => 'text', 'acl' => 'read', 'dependency' => 'invoiceClientDocument_clientDocumentTypeObj',
+            'documentType_name' => array('table' => 'clientDocumentType', 'field' => 'name', 'label' => 'Doc. Name',
+                'type' => 'text', 'acl' => 'read', 'dependency' => 'settlementClientDocument_clientDocumentTypeObj',
                 'form' => array('type' => 'none')
             ),
-            'invoiceClientDocument_clientObj' => array('table' => 'invoiceClientDocument', 'field' => 'clientObj',
+            'documentType_operation' => array('table' => 'clientDocumentType', 'field' => 'operation', 'label' => '',
+                'type' => 'hidden', 'acl' => 'read', 'dependency' => 'settlementClientDocument_clientDocumentTypeObj',
+                'form' => array('type' => 'none')
+            ),
+            'settlementClientDocument_clientObj' => array('table' => 'settlementClientDocument', 'field' => 'clientObj',
                 'label' => 'Client', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array(
                     'table' => 'client', 'fieldInView' => 'entity_name', 'bundle' => 'entities', 'type' => 'none'),
-                'dependency' => 'invoiceClientDocumentObj'
+                'dependency' => 'settlementClientDocumentObj'
             ),
             'entityObj' => array('table' => 'client', 'field' => 'entityObj', 'label' => 'nd',
-                'type' => 'object', 'acl' => 'read', 'dependency' => 'invoiceClientDocument_clientObj', 'typeDetail' => array(
+                'type' => 'object', 'acl' => 'read', 'dependency' => 'settlementClientDocument_clientObj', 'typeDetail' => array(
                     'table' => 'entity', 'tableAlias' => 'entity', 'bundle' => 'entities', 'type' => 'none')
             ),
             'entity_avatar' => array('table' => 'entity', 'field' => 'avatar', 'label' => 'Client',

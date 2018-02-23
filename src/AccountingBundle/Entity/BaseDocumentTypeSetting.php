@@ -31,7 +31,7 @@ class BaseDocumentTypeSetting extends BaseEntity {
      * @param \AdminBundle\Entity\Store $storeObj
      * @return $this
      */
-    public function setStoreObj(\AdminBundle\Entity\Store $storeObj)
+    public function setStoreObj(\AdminBundle\Entity\Store $storeObj = null)
     {
         $this->storeObj = $storeObj;
         return $this;

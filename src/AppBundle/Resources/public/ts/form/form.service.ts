@@ -2,6 +2,7 @@ import {Injectable, ElementRef, Inject, Injector, Renderer, EventEmitter, Option
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {DataService} from '../data-service/data.service';
 import {ModalService} from '../../modal/ts/modal.service';
+import {TasksLoaderManagerService} from '../../tasks-loader-manager/ts/tasks-loader-manager.service';
 import {Helper} from '../helper';
 import {FormServiceProvider} from './form-service-provider';
 
@@ -25,20 +26,23 @@ export interface IForm {
 export class FormService
 {
     // Local variables
-    protected _component: any; // Parent component that uses and implement this service
+
+    // Unique identifier of this feature instance. Used to identify your own tasks,
+    // otherwise tasks can be confused with task of others instances and cause problems.
+    // IE: The 'SAVE' task, when multiple forms are using the same DataService, all forms stay waiting for save
+    // and does not update the object when DataService emits the change (like the wizard in "BookingService" "Add").
+    protected _uniqueId: any;
+    protected _component: any = null; // Parent component that uses and implement this service
     protected _originalObject: any = {}; // Original object to compare changes and reset object in DataService
     protected _originalNormalizedObject: any = {}; // Original normalized (for form) object to compare changes and reset object in form
     protected _object: any = {}; // Object used by form
     protected _onObjectChangeSubscription: any; // To get notify about changes on object over the service
-    protected _$form = null; // DOM form
+    protected _$form: any = null; // DOM form
     protected _form: FormGroup; // Angular Form
     protected _errors: any = {}; // Form errors validation
     // Used to force form to submit,
     // generally when you need that user confirm the date, but the data has no changes.
     protected _forceSubmit: boolean;
-    // Controls if the form is on "save" mode (waiting to finish the save process). It's useful to control the
-    // save action (avoid multiples clicks on button) and to recognize the object change after saved by DataService.
-    protected _isOnSave: boolean;
     // Confirm object override by user to prevent data loss (when the object is changed from DataService).
     // It is useful when you have multiples forms to handle the same object, and the object is changed from any form
     // (like wizard using the same object and the same DataServiceInstance),
@@ -53,12 +57,15 @@ export class FormService
         formBuilder: FormBuilder,
         @Inject('DataService') protected _dataService: any,
         @Inject('HelperService') protected _helperService: any,
+        protected _tasksLoaderManagerService: TasksLoaderManagerService,
         @Optional() @Inject('FormServiceProvider') protected _provider: FormServiceProvider
     ) {
         // Set default values for provider
         if (!this._provider) {
             this._provider = {};
         }
+
+        this._uniqueId = this._helperService.getUniqueId();
 
         this._onObjectChangeEmitter = new EventEmitter();
 
@@ -67,7 +74,6 @@ export class FormService
             .subscribe(object => this.onObjectChangeSubscription(object));
 
         this._forceSubmit = false;
-        this._isOnSave = false;
         this._preventObjectOverride = true;
 
         // Set object, if it has not been setted before open the form
@@ -118,11 +124,39 @@ export class FormService
     {
         // Local variables
         this._component = component;
-        this._$form = $(component._elementRef.nativeElement).find('form');
+        // @TODO: discontinue this provider, and keep only the second verification
         this._preventObjectOverride = this._component.getProviderAttr('preventObjectOverride');
+        if (this._preventObjectOverride) { // Optional provider attribute
+            this._preventObjectOverride = (!this._provider.hasOwnProperty('hasPreventObjectOverride')
+                || this._provider['hasPreventObjectOverride']
+            );
+        }
+
+        // Note: _$form needs to be setted each time that the component changes, otherwise if you set the form
+        // only once, form loss your binding consistence from the second time that it is opened and setted a
+        // different object. Ie: "BookingServicePriceEdit", field "isVatIncluded" and "markupValue" loss binding
+        // consistence and the data is not correctly sent to server!!!!
+        this._$form = $(this._component._elementRef.nativeElement).find('form');
 
         return this;
     }
+
+
+    ///////////////////////////////////////////////
+    // It's no more necessary, because we only create the form (open popup) after get the
+    // promise successful response (get, new or clone object), so this code is kept here for future consideration.
+    ///////////////////////////////////////////////
+    /**
+     * Is Initialized
+     * Controls if FormService has been initialized the "formBuilder group",
+     * to avoid the component render the template form before and break
+     * @returns {boolean}
+     */
+    /*public isInitialized(): boolean
+    {
+        return (this.getForm() ? true : false);
+    }*/
+
 
     /**
      * Get form object emitter to tell all subscribers about changes
@@ -139,15 +173,11 @@ export class FormService
     public onObjectChangeSubscription(object: any): void
     {
         if ((object != this._originalObject) // Set object only if is different
-            && !this._isOnSave // If form is on save object will be setted by the save method when there are some correct procedures
+            // If form is in saving process, object will be setted by the save method where there are some correct procedures
+            && !this._tasksLoaderManagerService.hasTask('SAVE_'+this._uniqueId)
         ) {
-            if (
-                // Form is waiting for save process, this is the saved object,
-                // it's not necessary any confirmation, if you need more security in this process, add a token.
-                this._isOnSave
-                // Form does not need to confirm object override
-                || !this._preventObjectOverride
-            ) {
+            // Form does not need to confirm object override
+            if (!this._preventObjectOverride) {
                 this.setObject(object);
                 return;
             }
@@ -158,6 +188,16 @@ export class FormService
                 errors => { return; }
             );
         }
+    }
+
+    /**
+     * Set _preventObjectOverride
+     * @param value
+     * @returns {FormService}
+     */
+    public setPreventObjectOverride(value) {
+        this._preventObjectOverride = value;
+        return this;
     }
 
     /**
@@ -205,7 +245,7 @@ export class FormService
         if (object != this._originalObject) {
             // Keep the original object from dataService
             this._originalObject = object;
-            this._isOnSave = false; // Waiting mode for save process ends here, after update the original object.
+            this._tasksLoaderManagerService.delTask('SAVE_'+this._uniqueId); // Waiting mode for save process ends here, after update the original object.
 
             // Normalize object to form
             this._originalNormalizedObject = Helper.cloneObject(this._originalObject, true);
@@ -363,17 +403,14 @@ export class FormService
         let that = this;
 
         return new Promise(function(resolve, reject) {
-            if (that._isOnSave) {
+            if (!that._tasksLoaderManagerService.addTask('SAVE_'+that._uniqueId)) {
                 // Form is already in save process
                 return reject(false);
             }
 
-            // Put form in "save" mode
-            that._isOnSave = true;
-
             // Current form object has changes from user?
+            // Note: Objects in session storage enables the "_forceSubmit" by default
             if(that._forceSubmit || !that._object['id'] || that.hasChanges()) {
-
                 // Validate form
                 if (hasValidation) {
                     that._errors = {};
@@ -385,32 +422,35 @@ export class FormService
                     }
 
                     if (that._helperService.objectLength(that._errors) > 0) {
-                        that._isOnSave = false;
+                        that._tasksLoaderManagerService.delTask('SAVE_'+that._uniqueId); // Cancel save, form has errors
                         return reject(false);
                     }
                 }
+
+                // Set the valid token
+                that._helperService.setFormToken(that._$form);
 
                 // Get form data
                 let data = that._$form.serialize();
                 let id = that._object['id'] ? that._object['id'] : null;
 
                 // Save form
-                that._dataService.save(data, id, route).then(
+                return that._dataService.save(data, id, route).then(
                     object => {
                         // Force submit is reset, each activation is valid  only once
                         that._forceSubmit = false;
-                        // Update form after save with saved object
+                        // Update form with updated object
                         that.setObject(object);
                         return resolve(true);
                     },
                     errors => {
                         if (errors) { that._errors = errors; }
-                        that._isOnSave = false;
+                        that._tasksLoaderManagerService.delTask('SAVE_'+that._uniqueId);
                         return reject(errors);
                     }
                 );
             } else {
-                that._isOnSave = false;
+                that._tasksLoaderManagerService.delTask('SAVE_'+that._uniqueId);
                 return resolve(true);
             }
         });

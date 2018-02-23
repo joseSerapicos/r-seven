@@ -9,13 +9,13 @@
                title="{% verbatim %}{{obj['name']}}{% endverbatim %}"><span>{% verbatim %}{{obj['name']}}{% endverbatim %}</span>
                 <div class="txt-align-r actions no-user-select"
                      (click)="triggerAction($event)">
-                    <template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
+                    <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
                         <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
                            [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
                            class="fa"
                            [attr.data-action]="action"
                            [attr.data-value]="index"></a>
-                   </template>
+                   </ng-template>
                 </div>
             </a>
         </div>

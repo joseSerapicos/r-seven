@@ -1,4 +1,11 @@
+/**
+ * Patters:
+ *     Use the prefix "-" for modifiers of original classes ie: ".-badge-md" (it's a modifier of original class ".badge")
+ */
+
+
 @import "variables";
+
 
 // General
 .no-user-select {
@@ -12,6 +19,9 @@
 }
 .position-relative {
     position: relative;
+}
+.abs-position {
+    position: absolute;
 }
 .ellipsis {
     white-space: nowrap;
@@ -86,6 +96,14 @@
     &-bottom {
         vertical-align: bottom;
     }
+
+    &-super {
+        vertical-align: super;
+    }
+
+    &-sub {
+        vertical-align: sub;
+    }
 }
 
 // Display
@@ -157,6 +175,69 @@
 }
 
 // line-height
-.lh-lg {
+.lnh-lg {
     line-height: 22px; // For lines with buttons
+}
+
+// font-size and badge
+.txt-xs,
+.badge.-badge-xs { // extra small
+    font-size: 10px;
+}
+.txt-sm,
+.badge.-badge-sm { // small
+    font-size: 12px;
+}
+.txt-md,
+.badge.-badge-md { // medium
+    font-size: 14px;
+}
+.txt-lg,
+.badge.-badge-lg { // large
+    font-size: 18px;
+}
+.txt-xl,
+.badge.-badge-xl { // extra large
+    font-size: 24px;
+}
+
+// font-weight
+.txt-normal {
+    font-weight: normal;
+}
+.txt-bold {
+    font-weight: bold;
+}
+
+// font-color
+.txt-default {
+    color: #676a6c;
+}
+.txt-primary {
+    color: #1ab394;
+}
+.txt-info {
+    color: #23c6c8;
+}
+.txt-warning {
+    color: #f7a54a;
+}
+.txt-danger {
+    color: #ec4758;
+}
+.txt-success {
+    color: #1c84c6;
+}
+
+// badge
+.badge {
+    // To keep checkbox aligned with text
+    input[type="checkbox"] {
+        margin: 0;
+        vertical-align: sub;
+    }
+
+    label {
+        margin: 0;
+    }
 }

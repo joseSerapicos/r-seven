@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="ServicesBundle\Entity\ServiceAvailabilityRepository")
  * @ORM\Table(name="serviceAvailability",
- *     indexes={@ORM\Index(name="idx_serviceAvailability_date", columns={"startDate", "endDate"})}
+ *     indexes={@ORM\Index(name="idx_serviceAvailability_date", columns={"startDate", "endDate", "fk_targetService"})}
  * )
  */
 class ServiceAvailability extends BaseEntity {
@@ -32,6 +32,16 @@ class ServiceAvailability extends BaseEntity {
      * @ORM\Column(name="endDate", type="date", nullable=false, unique=false, options={"comment":"End date of validation"})
      */
     protected $endDate;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Service")
+     * @ORM\JoinColumn(name="fk_targetService", referencedColumnName="id", nullable=true, unique=false, onDelete="CASCADE")
+     *
+     * Determines the target of the entry, if targetServiceObj is defined, the entry is specific for the
+     * targetServiceObj (generally a package), else the entry is for the service itself
+     */
+    protected $targetServiceObj;
+
 
     /**
      * Set serviceObj
@@ -123,5 +133,25 @@ class ServiceAvailability extends BaseEntity {
     public function getEndDate()
     {
         return $this->endDate;
+    }
+
+    /**
+     * Set targetServiceObj
+     * @param \ServicesBundle\Entity\Service $targetServiceObj
+     * @return $this
+     */
+    public function setTargetServiceObj(\ServicesBundle\Entity\Service $targetServiceObj)
+    {
+        $this->targetServiceObj = $targetServiceObj;
+        return $this;
+    }
+
+    /**
+     * Get targetServiceObj
+     * @return \ServicesBundle\Entity\Service
+     */
+    public function getTargetServiceObj()
+    {
+        return $this->targetServiceObj;
     }
 }

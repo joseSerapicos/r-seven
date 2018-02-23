@@ -1,0 +1,16 @@
+{
+  "extends": "../../../../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "baseUrl": "./",
+    "module": "es2015"
+  },
+  "exclude": [
+    "./dist"
+  ],
+  "include": [
+    "./src/**/*",
+    "../../../../../../angular_cli_conf/environments/**/*",
+    "../../../../../../polyfills.ts"
+  ]
+}

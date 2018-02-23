@@ -17,9 +17,9 @@ class ClientDocumentReceiptSettlement extends BaseDocumentReceiptSettlement {
 
     /**
      * @ORM\ManyToOne(targetEntity="\AccountingBundle\Entity\ClientDocument")
-     * @ORM\JoinColumn(name="fk_invoiceClientDocument", referencedColumnName="id", nullable=false, unique=false, onDelete="RESTRICT")
+     * @ORM\JoinColumn(name="fk_settlementClientDocument", referencedColumnName="id", nullable=false, unique=false, onDelete="RESTRICT")
      */
-    protected $invoiceClientDocumentObj;
+    protected $settlementClientDocumentObj;
 
 
     /**
@@ -43,22 +43,22 @@ class ClientDocumentReceiptSettlement extends BaseDocumentReceiptSettlement {
     }
 
     /**
-     * Set invoiceClientDocumentObj
-     * @param \AccountingBundle\Entity\ClientDocument $invoiceClientDocumentObj
+     * Set settlementClientDocumentObj
+     * @param \AccountingBundle\Entity\ClientDocument $settlementClientDocumentObj
      * @return $this
      */
-    public function setInvoiceClientDocumentObj(\AccountingBundle\Entity\ClientDocument $invoiceClientDocumentObj)
+    public function setSettlementClientDocumentObj(\AccountingBundle\Entity\ClientDocument $settlementClientDocumentObj)
     {
-        $this->invoiceClientDocumentObj = $invoiceClientDocumentObj;
+        $this->settlementClientDocumentObj = $settlementClientDocumentObj;
         return $this;
     }
 
     /**
-     * Get invoiceClientDocumentObj
+     * Get settlementClientDocumentObj
      * @return \AccountingBundle\Entity\ClientDocument
      */
-    public function getInvoiceClientDocumentObj()
+    public function getSettlementClientDocumentObj()
     {
-        return $this->invoiceClientDocumentObj;
+        return $this->settlementClientDocumentObj;
     }
 }

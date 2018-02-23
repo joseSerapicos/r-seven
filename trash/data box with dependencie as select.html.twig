@@ -21,12 +21,12 @@
     </div>
     <div class="col-md-8 pd-t-sm">
         {{ parent() }}
-        <template [ngIf]="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">
+        <ng-template [ngIf]="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">
             <div class="hr-line-solid"></div>
             {% include 'AppBundle:form:buttons.html.twig' with {
                 'form': _form
             } %}
-        </template>
+        </ng-template>
     </div>
 </div>
 {% endblock %}

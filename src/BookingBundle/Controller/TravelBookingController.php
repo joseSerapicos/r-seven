@@ -8,6 +8,15 @@ use Symfony\Component\HttpFoundation\Request;
 class TravelBookingController extends BaseBookingController
 {
     /**
+     * Get Local Booking Context.
+     * @return mixed (lowerCamelCase)
+     */
+    protected function getLocalBookingContext()
+    {
+        return 'travel';
+    }
+
+    /**
      * Initialization. Set all basic configuration
      * @param Request $request
      * @return $this

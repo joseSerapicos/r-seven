@@ -2,12 +2,19 @@
 
 namespace AccountingBundle\Controller;
 
-use AppBundle\Controller\BaseEntityChildController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 
-class ClientDocumentReceiptPaymentController extends BaseEntityChildController
+class ClientDocumentReceiptPaymentController extends BaseDocumentReceiptPaymentController
 {
+    /**
+     * Defines parent method
+     * @return mixed (lowerCamelCase)
+     */
+    protected function getLocalEntityContext() {
+        return 'client';
+    }
+
     /**
      * Overrides parent method
      * @param Request $request
@@ -29,9 +36,6 @@ class ClientDocumentReceiptPaymentController extends BaseEntityChildController
         $this->templateConf['route'] = array(
             'get' => array(
                 'name' => '_accounting__client_document_receipt_payment__get'
-            ),
-            'add' => array(
-                'name' => '_accounting__client_document_receipt_payment__add',
             ),
             'edit' => array(
                 'name' => '_accounting__client_document_receipt_payment__edit',
@@ -76,44 +80,6 @@ class ClientDocumentReceiptPaymentController extends BaseEntityChildController
     }
 
     /**
-     * @Route("/accounting/client-document-receipt-payment/add/{clientDocument}/{id}",
-     *     name="_accounting__client_document_receipt_payment__add",
-     *     defaults={"id" = null}
-     * )
-     *
-     * Add object action
-     * @param Request $request
-     * @param $clientDocument
-     * @param $id
-     * @return mixed
-     */
-    public function addLocalChildAction(Request $request, $clientDocument, $id)
-    {
-        $parents = array($clientDocument);
-
-        // Set configuration
-        $this->flags['hasForm'] = true;
-        $this->initChild($request, $parents);
-
-        // Add is not allowed when parent are stored in database,
-        // because value are only correctly validated when object is saved from session to database
-        // (comparing settlement whit payment).
-        // So to add new entries cancel the receipt document and create another.
-        if ($this->flags['storage'] == 'db') {
-            $this->responseConf['status'] = 0;
-            $this->addFlashMessage(
-                'This transaction is closed.<br/>If you need to add new entries, please cancel the receipt and create another one.',
-                'Data not persisted',
-                'error'
-            );
-
-            return $this->getResponse(true);
-        }
-
-        return parent::editChildAction($request, $parents, $id);
-    }
-
-    /**
      * @Route("/accounting/client-document-receipt-payment/edit/{clientDocument}/{id}",
      *     name="_accounting__client_document_receipt_payment__edit",
      *     defaults={"id" = null}
@@ -127,54 +93,24 @@ class ClientDocumentReceiptPaymentController extends BaseEntityChildController
      */
     public function editLocalChildAction(Request $request, $clientDocument, $id)
     {
-        $parents = array($clientDocument);
+        return parent::editLocalChildAction($request, $clientDocument, $id);
+    }
 
-        // Set configuration
-        $this->flags['hasForm'] = true;
-        $this->initChild($request, $parents);
-
-        // Edit does not allow to change value when object are stored in database,
-        // because value are only correctly validated when object is saved from session to database
-        // (comparing settlement whit payment).
-        // So to fix values cancel the receipt document and create another.
-        if ($this->flags['storage'] == 'session') {
-            return parent::editChildAction($request, $parents, $id);
-        }
-
-        // Get object
-        $obj = $this->getObject($id);
-        $oldValue = $obj->getValue();
-
-        // Build form
-        $form = $this->buildForm($request, $obj);
-
-        // Handle request
-        $form->handleRequest($request);
-
-        // Check if is submitted
-        if($form->isSubmitted()) {
-            $data = $this->getRequestData($request);
-
-            if ($oldValue != $data['form']['value']) {
-                $this->responseConf['status'] = 0;
-                $this->addFlashMessage(
-                    'Value cannot be edited, this transaction is closed.<br/>If you need to change the value, please cancel the receipt and create another one.',
-                    'Data not persisted',
-                    'error'
-                );
-
-                return $this->getResponse(true);
-            }
-
-            $this->saveForm($form, $obj);
-            return $this->getResponse(true);
-        }
-
-        // Render form
-        return $this->render($this->localConf['templates']['edit'], array(
-            '_conf' => $this->templateConf,
-            '_form' => $form->createView()
-        ));
+    /**
+     * @Route("/accounting/client-document-receipt-payment/edit-flat-form/{clientDocument}/{id}",
+     *     name="_accounting__client_document_receipt_payment__edit_flat_form",
+     *     defaults={"id" = null}
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $clientDocument
+     * @param $id
+     * @return mixed
+     */
+    public function editFlatFormAction(Request $request, $clientDocument, $id)
+    {
+        return parent::editFlatFormAction($request, $clientDocument, $id);
     }
 
     /**
@@ -192,26 +128,6 @@ class ClientDocumentReceiptPaymentController extends BaseEntityChildController
     public function deleteLocalChildAction(Request $request, $clientDocument, $id)
     {
         $parents = array($clientDocument);
-
-        // Set configuration
-        $this->flags['hasForm'] = true;
-        $this->initChild($request, $parents);
-
-        // Delete is not allowed when parent are stored in database,
-        // because value are only correctly validated when object is saved from session to database
-        // (comparing settlement whit payment).
-        // So to delete entries cancel the receipt document and create another.
-        if ($this->flags['storage'] == 'db') {
-            $this->responseConf['status'] = 0;
-            $this->addFlashMessage(
-                'This transaction is closed.<br/>If you need to delete entries, please cancel the receipt and create another one.',
-                'Data not persisted',
-                'error'
-            );
-
-            return $this->getResponse(true);
-        }
-
         return parent::deleteChildAction($request, $parents, $id);
     }
 
@@ -243,27 +159,5 @@ class ClientDocumentReceiptPaymentController extends BaseEntityChildController
     public function confLocalChildAction(Request $request, $clientDocument)
     {
         return parent::confChildAction($request, array($clientDocument));
-    }
-
-    /**
-     * Overrides parent function
-     * @param $object
-     * @param $data
-     * @param null $context
-     * @return bool
-     */
-    protected function preSaveObject($object, $data, $context = null) {
-        if ($object->getValue() <= 0) {
-            $this->responseConf['status'] = 0;
-            $this->addFlashMessage(
-                'Payment value must be >= 0.',
-                'Data not persisted',
-                'error'
-            );
-
-            return false;
-        }
-
-        return true;
     }
 }

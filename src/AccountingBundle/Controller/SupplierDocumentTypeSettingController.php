@@ -130,17 +130,16 @@ class SupplierDocumentTypeSettingController extends BaseEntityController
     /**
      * Overrides parent function
      * @param $object
-     * @param $data
-     * @param null $context
+     * @param $data (usually the form data)
      * @return bool
      */
-    protected function preSaveObject($object, $data, $context = null) {
+    protected function preSaveObject(&$object, $data) {
         $documentTypeObj = $object->getSupplierDocumentTypeObj();
         $prefix = $object->getSeriesPrefix();
         $prefix = ($prefix ? $prefix : '');
         $number = ($object->getSeriesNumber());
 
-        $object = $this->getRepositoryService("SupplierDocument", 'AccountingBundle')
+        $results = $this->getRepositoryService("SupplierDocument", 'AccountingBundle')
             ->execute(
                 'queryBuilder',
                 array(
@@ -158,7 +157,7 @@ class SupplierDocumentTypeSettingController extends BaseEntityController
                 )
             );
 
-        if (empty($object)) {
+        if (empty($results)) {
             return true;
         }
 

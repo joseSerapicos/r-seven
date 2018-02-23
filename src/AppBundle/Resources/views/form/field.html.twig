@@ -11,7 +11,8 @@
 ) %}
 
 {% if (form and field and metadata and formField) %}
-    {% if (metadata['type'] in ['hidden', 'fake']) %}
+    {# Spik label #}
+    {% if (metadata['type'] in ['hidden', 'hidden-entity', 'fake']) %}
         {% include 'AppBundle:form:input.html.twig' with {
             'field': field,
             'formField': formField,

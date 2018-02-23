@@ -21,21 +21,17 @@
             </li>
         </ul>
         {# Modules #}
-        {% set modules = app.session.get('_app.modules') %}
-        {% set selectedModule = _conf['selectedMenu']['module'] %}
-        {% set selectedMenu = _conf['selectedMenu']['menu'] %}
         {% set store = app.session.get('_app.store') %}
-        {% if (store) %}
-            {% set modules = modules|merge(app.session.get('_app.stores')[store]['modules']) %}
-        {% endif %}
+        {% set modules = (store ? app.session.get('_app.stores')[store]['modules'] : app.session.get('_app.modules')) %}
         {# /Modules #}
         <ul class="nav metismenu" id="js_navbar">
-            {% for module in modules %}
-                {% if (module['menus']|length > 1) %}
-                    {% include 'AppBundle:partial:navbar-multi-menu-module.html.twig' %}
-                {% else %}
-                    {% include 'AppBundle:partial:navbar-single-menu-module.html.twig' %}
-                {% endif %}
+            {% for module in modules[0] %}
+                {% include 'AppBundle:partial:navbar-module-menus.html.twig' with {
+                    module: module,
+                    selectedModule: _conf['selectedMenu']['module'][0],
+                    selectedMenu: _conf['selectedMenu']['menu'],
+                    moduleLevel: 'second'
+                } %}
             {% endfor %}
         </ul>
     </div>

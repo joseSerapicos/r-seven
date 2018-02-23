@@ -1,0 +1,17 @@
+{# Note: Popover it's associated to the previous element #}
+{# "position" options: 'top', 'bottom', 'left', 'right' #}
+{% set position = (position is defined ? position : 'bottom') %}
+{# "align" options: 'left', 'right', 'middle' #}
+{% set align = (align is defined ? align : 'left') %}
+{# "elementTarget" options: 'prev', 'next', 'parent' #}
+{% set elementTarget = (elementTarget is defined ? elementTarget : 'prev') %}
+{% set popoverClass = (popoverClass is defined ? popoverClass : '') %}
+
+<span class="{{popoverClass}}" [popover]="'{{position}}'" [align]="'{{align}}'" [elementTarget]="'{{elementTarget}}'">
+    <i class="fa fa-info-circle txt-lg txt-info js_icon"></i>
+    <div class="popover fade {{position}} in js_popover">
+        <div class="arrow arrow-{{align}}"></div>
+        <h3 class="popover-title">{% block popover_header %}{% endblock %}</h3>
+        <div class="popover-content">{% block popover_container %}{% endblock %}</div>
+    </div>
+</span>

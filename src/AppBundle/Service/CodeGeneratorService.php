@@ -53,6 +53,14 @@ class CodeGeneratorService
                     $prefix = $settingObj->getSeriesPrefix();
                     $prefix = ($prefix ? $prefix : '');
 
+                    // Criteria to detect object using the current code
+                    $objectUsingCodeCriteria = array('codePrefix' => $prefix);
+                    if (!empty($criteria)) {
+                        foreach ($criteria as $settingCriteria) {
+                            $objectUsingCodeCriteria[$settingCriteria['field']] = $settingCriteria['value'];
+                        }
+                    }
+
                     // Try to set code multiple times (can be useful in case of codes already in use)
                     for ($i = 0; $i < 1000; $i++) {
                         // Update the new number in settings table as soon as possible to avoid concurrent processes
@@ -62,10 +70,11 @@ class CodeGeneratorService
                         $this->entityManager->persist($settingObj);
 
                         // Check if code is already in use
+                        $objectUsingCodeCriteria['codeNumber'] = $number;
                         $ObjectUsingCode = $repositoryService->setEntityRepository($entityRepository)
                             ->execute(
                                 'findBy',
-                                array(array('codePrefix' => $prefix, 'codeNumber' => $number))
+                                array($objectUsingCodeCriteria)
                             );
 
                         if (empty($ObjectUsingCode)) {

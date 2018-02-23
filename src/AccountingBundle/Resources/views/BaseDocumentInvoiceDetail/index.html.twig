@@ -1,27 +1,34 @@
 {% extends 'AppBundle:data-box:base.html.twig' %}
 {% block body_container %}
+    {% set fields = (fields is defined ? fields : "'quantity', 'totalUnit', 'vatCode_name', 'total'") %}
     <div class="table-responsive m-t">
         <form>
             <table class="table document-table">
                 <thead>
                 <tr>
-                    <th *ngFor="let field of ['description', 'quantity', 'value', 'vatCode_name', 'total']">{% verbatim %}{{ _dataService.getFields('metadata')[field].label }}{% endverbatim %}</th>
+                    <th *ngFor="let field of ['description', {{ fields|raw }}]">{% verbatim %}{{ _dataService.getFields('metadata')[field].label }}{% endverbatim %}</th>
                     <th>&nbsp;</th>
                 </tr>
                 </thead>
                 <tbody>
-                <template ngFor let-obj [ngForOf]="_dataService.getProviderAttr('objects')" let-objIndex="index"><tr
+                <ng-template ngFor let-obj [ngForOf]="_dataService.getProviderAttr('objects')" let-objIndex="index"><tr
                           (dblclick)="editAction($event, objIndex)">
                         <td class="txt-align-l"><div><strong><span
-                            [innerHTML]="obj['service_icon']" class="m-r-xs"></span><span
-                            [innerHTML]="obj['bookingService_name'] || obj['service_name']"></span></strong></div><small><span
+                            [innerHTML]="obj['service_icon']" class="m-r-xs"></span><span class="m-r-xs"
+                            [innerHTML]="obj['service_name']"></span><span
+                            [innerHTML]="obj['booking_code'] || ''"></span></strong></div><small><span
                             [innerHTML]="obj['description']"></span></small></td>
-                        <td *ngFor="let field of ['quantity', 'totalUnit', 'vatCode_name', 'total']"
+                        <td *ngFor="let field of [{{ fields|raw }}]"
                             [ngClass]="getColAlign(field)"
                             [innerHTML]="obj[field]"></td>
                         <td>
                             <span *ngIf="obj['_isNew']" class="badge badge-info">New</span>
                             <span *ngIf="obj['_isEdited']" class="badge badge-info">Edited</span>
+                            <input *ngIf="_actionsService.getActionAttr('radioChoice', 'isEnabled')"
+                                   class="pull-right action"
+                                   type="radio"
+                                   name="index[]"
+                                   value="{% verbatim %}{{objIndex}}{% endverbatim %}"/>
                             <input *ngIf="_actionsService.getActionAttr('checkAll', 'isEnabled')"
                                    class="pull-right action js_checkAll"
                                    type="checkbox"
@@ -29,16 +36,16 @@
                                    value="{% verbatim %}{{objIndex}}{% endverbatim %}"
                                    [ngModel]="checkAll"/>
                             <div class="pull-right actions no-user-select" (click)="triggerAction($event)">
-                                <template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
+                                <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
                                     <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
                                        [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
                                        class="fa"
                                        [attr.data-action]="action"
                                        [attr.data-value]="objIndex"></a>
-                                </template>
+                                </ng-template>
                             </div>
                         </td>
-                    </tr></template>
+                    </tr></ng-template>
                 </tbody>
             </table>
         </form>

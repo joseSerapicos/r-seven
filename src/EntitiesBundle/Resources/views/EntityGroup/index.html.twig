@@ -1,1 +1,12 @@
 {% extends 'AppBundle:tree-view:index.html.twig' %}
+
+{% block local_javascripts %}
+    {% javascripts output="assets/entities/entity-group/index/js/local.js"
+        '@EntitiesBundle/Resources/public/entity-group/index/ts/dist/inline.bundle.js'
+        '@EntitiesBundle/Resources/public/entity-group/index/ts/dist/polyfills.bundle.js'
+        '@EntitiesBundle/Resources/public/entity-group/index/ts/dist/vendor.bundle.js'
+        '@EntitiesBundle/Resources/public/entity-group/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

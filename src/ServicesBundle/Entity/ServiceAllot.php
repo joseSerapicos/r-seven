@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass="ServicesBundle\Entity\ServiceAllotRepository")
  * @ORM\Table(name="serviceAllot",
- *     indexes={@ORM\Index(name="idx_serviceAllot_date", columns={"startDate", "endDate"})}
+ *     indexes={@ORM\Index(name="idx_serviceAllot__date", columns={"startDate", "endDate", "fk_targetService"})}
  * )
  */
 class ServiceAllot extends BaseEntity {
@@ -19,12 +19,12 @@ class ServiceAllot extends BaseEntity {
     protected $serviceObj;
 
     /**
-     * @ORM\Column(name="name", type="string", length=64, nullable=false, unique=true, options={"comment":"Name"})
+     * @ORM\Column(name="description", type="string", length=64, nullable=true, unique=false, options={"comment":"Description"})
      */
-    protected $name;
+    protected $description;
 
     /**
-     * @ORM\Column(name="allot", type="smallint", nullable=false, unique=false, options={"unsigned":true, "comment":"Allot/Allot"})
+     * @ORM\Column(name="allot", type="smallint", nullable=false, unique=false, options={"unsigned":true, "comment":"Allot"})
      */
     protected $allot;
 
@@ -37,6 +37,16 @@ class ServiceAllot extends BaseEntity {
      * @ORM\Column(name="endDate", type="date", nullable=false, unique=false, options={"comment":"End date of validation"})
      */
     protected $endDate;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Service")
+     * @ORM\JoinColumn(name="fk_targetService", referencedColumnName="id", nullable=true, unique=false, onDelete="CASCADE")
+     *
+     * Determines the target of the entry, if targetServiceObj is defined, the entry is specific for the
+     * targetServiceObj (generally a package), else the entry is for the service itself
+     */
+    protected $targetServiceObj;
+
 
     /**
      * Set serviceObj
@@ -59,27 +69,26 @@ class ServiceAllot extends BaseEntity {
     }
 
     /**
-     * Set name
+     * Set description
      *
-     * @param string $name
+     * @param string $description
      *
-     * @return ServiceAllot
+     * @return $this
      */
-    public function setName($name)
+    public function setDescription($description)
     {
-        $this->name = $name;
-
+        $this->description = $description;
         return $this;
     }
 
     /**
-     * Get name
+     * Get description
      *
      * @return string
      */
-    public function getName()
+    public function getDescription()
     {
-        return $this->name;
+        return $this->description;
     }
 
     /**
@@ -152,5 +161,25 @@ class ServiceAllot extends BaseEntity {
     public function getEndDate()
     {
         return $this->endDate;
+    }
+
+    /**
+     * Set targetServiceObj
+     * @param \ServicesBundle\Entity\Service $targetServiceObj
+     * @return $this
+     */
+    public function setTargetServiceObj(\ServicesBundle\Entity\Service $targetServiceObj)
+    {
+        $this->targetServiceObj = $targetServiceObj;
+        return $this;
+    }
+
+    /**
+     * Get targetServiceObj
+     * @return \ServicesBundle\Entity\Service
+     */
+    public function getTargetServiceObj()
+    {
+        return $this->targetServiceObj;
     }
 }

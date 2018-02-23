@@ -16,6 +16,7 @@
 {% endblock %}
 
 {% block body_container %}
+    <div class="js_appBasics"></div>
     {{ render(controller(
         'AdminBundle:ModuleMenu:indexLocalChild',
         { 'module': _conf['object']['id'] }
@@ -23,10 +24,11 @@
 {% endblock %}
 
 {% block local_javascripts %}
-    {% javascripts output="assets/admin/module/index/js/local.js"
-        '@AdminBundle/Resources/public/module/index/webpack_generated/common.js'
-        '@AdminBundle/Resources/public/module/index/webpack_generated/app.js'
-        '@AdminBundle/Resources/public/module/index/webpack_generated/main.js'
+    {% javascripts output="assets/admin/module/detail/js/local.js"
+        '@AdminBundle/Resources/public/module/detail/ts/dist/inline.bundle.js'
+        '@AdminBundle/Resources/public/module/detail/ts/dist/polyfills.bundle.js'
+        '@AdminBundle/Resources/public/module/detail/ts/dist/vendor.bundle.js'
+        '@AdminBundle/Resources/public/module/detail/ts/dist/main.bundle.js'
     %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}

@@ -1,0 +1,72 @@
+<div class="modal-body">
+    <div class="form-wrapper gray-bg">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>
+                        <div class="txt-align-r actions">
+                            <a class="-round fa fa-times"
+                               (click)="closeAction($event)"></a>
+                        </div>
+                    </div>
+                        
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+                    <div class="ibox-content">    
+            
+
+            <div class="form-group" *ngIf="_formService.getObject().code">
+
+                        <label class="col-sm-2 control-label" for="form_code">Code</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_code"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().code"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().code">{{error}}</label>
+            </div>
+        </div>
+                
+
+            <div class="form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_value">Value</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_value" name="form[value]" required="required" [(ngModel)]="_formService.getObject().value" formControlName="value" [class.error]="_formService.getErrors().value &amp;&amp; _formService.getErrors().value.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().value">{{error}}</label>
+            </div>
+        </div>
+        </div>
+                    <div class="ibox-footer hide-on-empty">    
+                    <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                                            <button                                     class="btn"
+                                    (click)="cancelAction($event)"
+                                        id="form_cancel"
+            name="form[cancel]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                                                <button                                     class="btn"
+                                    (click)="resetAction($event)"
+                                        id="form_reset"
+            name="form[reset]"
+            type="button"><i class="fa fa-ban"></i>&nbsp;Reset</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAction($event)"
+                                        id="form_save"
+            name="form[save]"
+            type="button"><i class="fa fa-check"></i>&nbsp;Save</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAndCloseAction($event)"
+                                        id="form_saveAndClose"
+            name="form[saveAndClose]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Save and Close</button>
+                                </div>
+        </div>
+    </div>                        
+    <input type="hidden" id="form__token" name="form[_token]" value="M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso" /></form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

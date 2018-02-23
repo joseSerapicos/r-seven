@@ -7,7 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class SupplierController extends BaseEntityController
+class SupplierController extends BaseEntityTypeController
 {
     /**
      * Initialization. Set all basic configuration
@@ -211,48 +211,5 @@ class SupplierController extends BaseEntityController
         }
 
         return $this;
-    }
-
-    /**
-     * Overrides parent method
-     * @return mixed
-     */
-    protected function getSearch()
-    {
-        $this->templateConf['search'] = $this->empowerCriteriaByName($this->templateConf['search']);
-        return parent::getSearch();
-    }
-
-    /**
-     * Empower criteria by name. To improve the search results by "name"
-     * @param $search
-     * @return mixed
-     */
-    private function empowerCriteriaByName($search) {
-        if (isset($search['criteria']) && is_array($search['criteria'])) {
-            // Search criteria for 'name' to change it.
-            $criteriaIndex = null;
-            foreach ($search['criteria'] as $tmpCriteriaIndex => $criteria) {
-                if ($criteria['field'] == 'name') {
-                    $criteriaIndex = $tmpCriteriaIndex;
-                    break;
-                }
-            }
-
-            // If criteria for "name" is found, change it.
-            if ($criteriaIndex !== null) {
-                // Search in name and surname
-                // SELECT * FROM `entity` WHERE CONCAT(entity.name, ' ', entity.surname) like '%name surname%'
-                $search['criteria'][$criteriaIndex]['field'] = "CONCAT(entity.name, ' ', entity.surname)";
-                $search['criteria'][] = array( // Crosses
-                    'field' => 'legalName',
-                    'method' => 'or',
-                    'expr' => $search['criteria'][$criteriaIndex]['expr'],
-                    'value' => $search['criteria'][$criteriaIndex]['value']
-                );
-            }
-        }
-
-        return $search;
     }
 }

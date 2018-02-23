@@ -1,0 +1,161 @@
+{% extends 'AppBundle:form:form.html.twig' %}
+
+{% block fields %}
+    {% set form = (form is defined ? form : (_form is defined ? _form : null)) %}
+    {% set fields = (fields is defined ? fields : (_conf['fields'] is defined ? _conf['fields'] : null)) %}
+    {% set icons = {'change': 'fa-check'} %}
+
+    {% if (form and fields) %}
+        {% for field in fields['form'] %}
+            {% if field == 'startDateManual' %}
+                <div class="form-group">
+                    {% include 'AppBundle:form:label.html.twig' with {
+                    'formField': form['bookingServiceObj'][field],
+                    'metadata': fields['metadata'][field]
+                    } %}
+                    <div class="col-sm-10">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                        'field': field,
+                        'formField': form['bookingServiceObj'][field],
+                        'metadata': fields['metadata'][field]
+                        } %}
+                        <ng-template [ngIf]="_formService.getObject()['isAutoAvailability']">
+                            {% embed 'AppBundle:popover:default.html.twig' with {'position': 'bottom'} %}
+                                {% block popover_header %}Available dates{% endblock %}
+                                {% block popover_container %}
+                                    <ng-template [ngIf]="getControlDebug('availability')">
+                                        <div *ngFor="let dataRange of getControlDebug('availability');">
+                                            <strong>From</strong>&nbsp;{% verbatim %}{{dataRange['startDate']}}{% endverbatim %}&nbsp;<strong>To</strong>&nbsp;{% verbatim %}{{dataRange['endDate']}}{% endverbatim %}
+                                        </div>
+                                    </ng-template>
+                                {% endblock %}
+                            {% endembed %}
+                        </ng-template>
+                    </div>
+                </div>
+            {% elseif field == 'endDateManual' %}
+                {% block endDateManualField %}
+                    {% include 'AppBundle:form:field.html.twig' with {
+                    'field': field,
+                    'metadata': fields['metadata'][field],
+                    'form': form
+                    } %}
+                {% endblock %}
+            {% elseif field == 'quantityManual' %}
+                <div class="form-group">
+                    {% include 'AppBundle:form:label.html.twig' with {
+                    'formField': form['bookingServiceObj'][field],
+                    'metadata': fields['metadata'][field]
+                    } %}
+                    <div class="col-sm-10">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                        'field': field,
+                        'formField': form['bookingServiceObj'][field],
+                        'metadata': fields['metadata'][field]
+                        } %}
+                        <ng-template [ngIf]="_formService.getObject()['isAutoAllot']
+                                             && getControlDebug('allotDebug')['detail']
+                                             && (getControlDebug('allotDebug')['status'] != 'YES')">
+                            {% embed 'AppBundle:popover:default.html.twig' with {'position': 'bottom'} %}
+                                {% block popover_header %}Missing allot{% endblock %}
+                                {% block popover_container %}
+                                        <div *ngFor="let debugDetail of getControlDebug('allotDebug')['detail'];">
+                                            <ng-template [ngIf]="debugDetail['status'] != 'YES'">
+                                                <span class="status -{% verbatim %}{{ _statusMap[debugDetail['status']] || 'danger' }}{% endverbatim %}"></span><span
+                                                >&nbsp;{% verbatim %}{{debugDetail['date']}}{% endverbatim %}</span><span
+                                                >&nbsp;({% verbatim %}{{debugDetail['free'] - _formService.getObject()['quantityManual']}}{% endverbatim %})</span>
+                                            </ng-template>
+                                        </div>
+                                {% endblock %}
+                            {% endembed %}
+                        </ng-template>
+                    </div>
+                </div>
+            {% elseif field == 'confirmationStatus' %}
+                <div class="form-group">
+                    {% include 'AppBundle:form:label.html.twig' with {
+                    'formField': form['bookingServiceObj'][field],
+                    'metadata': fields['metadata'][field]
+                    } %}
+                    <div class="col-sm-10"
+                         [hidden]="!_formService.getObject()['isEnabledAllot'] || !_formService.getObject()['isAutoAllot']">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                        'field': field,
+                        'formField': form['bookingServiceObj'][field],
+                        'metadata': fields['metadata'][field]
+                        } %}
+                    </div>
+                    <div class="col-sm-10"
+                         [hidden]="_formService.getObject()['isEnabledAllot'] && _formService.getObject()['isAutoAllot']">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                        'field': 'confirmationStatusManual',
+                        'formField': form['bookingServiceObj']['confirmationStatusManual'],
+                        'metadata': fields['metadata']['confirmationStatusManual']
+                        } %}
+                    </div>
+                </div>
+            {% elseif field == 'isAutoAvailability' %}
+                <div class="form-group"
+                     *ngIf="_formService.getObject()['isEnabledAvailability'] ||
+                            _formService.getObject()['isEnabledAllot'] ||
+                            _formService.getObject()['isEnabledPrice']">
+                    <div class="col-sm-3">
+                        {% include 'AppBundle:form:field-types/button.html.twig' with {
+                        'field': 'debug',
+                        'formField': form['bookingServiceObj']['debug'],
+                        'icons': icons
+                        } %}
+                    </div>
+                    <div class="col-sm-3 chkStatus" *ngIf="_formService.getObject()['isEnabledAvailability']">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                        'field': field,
+                        'formField': form['bookingServiceObj'][field],
+                        'metadata': fields['metadata'][field]
+                        } %}
+                        {% verbatim %}&nbsp;<span
+                            *ngIf="_formService.getObject()['isAutoAvailability']"
+                            class="status -{{ _statusMap[getControlDebug('availabilityDebug')['status']] || 'danger' }}"></span>{% endverbatim %}
+                    </div>
+                    <div class="col-sm-3 chkStatus" *ngIf="_formService.getObject()['isEnabledAllot']">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                        'field': 'isAutoAllot',
+                        'formField': form['bookingServiceObj']['isAutoAllot'],
+                        'metadata': fields['metadata']['isAutoAllot']
+                        } %}
+                        {% verbatim %}&nbsp;<span
+                            *ngIf="_formService.getObject()['isAutoAllot']"
+                            class="status -{{ _statusMap[getControlDebug('allotDebug')['status']] || 'danger' }}"></span>{% endverbatim %}
+                    </div>
+                    <div class="col-sm-3 chkStatus" *ngIf="_formService.getObject()['isEnabledPrice']">
+                        {% include 'AppBundle:form:input.html.twig' with {
+                        'field': 'isAutoPrice',
+                        'formField': form['bookingServiceObj']['isAutoPrice'],
+                        'metadata': fields['metadata']['isAutoPrice']
+                        } %}
+                        {% verbatim %}&nbsp;<span
+                            *ngIf="_formService.getObject()['isAutoPrice']"
+                            class="status -{{ _statusMap[getControlDebug('priceDebug')['status']] || 'danger' }}"></span>{% endverbatim %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        {% include 'AppBundle:form:field-types/button.html.twig' with {
+                        'field': 'change',
+                        'formField': form['bookingServiceObj']['change'],
+                        'icons': icons
+                        } %}
+                    </div>
+                </div>
+            {% elseif (field not in ['confirmationStatusManual', 'isAutoAllot', 'isAutoPrice']) %}
+                {% include 'AppBundle:form:field.html.twig' with {
+                'field': field,
+                'metadata': fields['metadata'][field],
+                'form': form
+                } %}
+            {% endif %}
+        {% endfor %}
+
+        PAX HERE TO DETERMINE AGES, SO YOU CAN DETERMINE PRICE
+
+    {% endif %}
+{% endblock %}

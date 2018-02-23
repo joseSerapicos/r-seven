@@ -33,6 +33,10 @@ export class ActionsService {
         icon: 'fa-eye',
         isEnabled: false
     };
+    protected cancel = {
+        icon: 'fa-ban',
+        isEnabled: false
+    };
     protected delete = {
         icon: 'fa-trash-o',
         isEnabled: false
@@ -52,6 +56,10 @@ export class ActionsService {
         icon: 'fa-trash-o',
         isEnabled: false
     };
+    protected radioChoice = {
+        icon: null,
+        isEnabled: false
+    };
     protected checkAll = {
         icon: 'fa-check-square-o',
         isEnabled: false
@@ -66,7 +74,7 @@ export class ActionsService {
     };
     
     protected _headActions: string[] = ['refresh', 'deleteAll', 'add', 'checkAll']; // Default actions for massive objects
-    protected _detailActions: string[] = ['orderUp', 'orderDown', 'detail', 'thumbnail', 'avatar', 'delete', 'copy', 'edit']; // Default actions for single object
+    protected _detailActions: string[] = ['orderUp', 'orderDown', 'detail', 'thumbnail', 'avatar', 'cancel', 'delete', 'copy', 'edit']; // Default actions for single object
 
     constructor(
         @Inject('ActionsServiceProvider') private _provider: ActionsServiceProvider

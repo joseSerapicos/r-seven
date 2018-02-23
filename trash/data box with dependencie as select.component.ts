@@ -4,12 +4,12 @@ import {Helper} from '../../../../../../AppBundle/Resources/public/ts/helper';
 import {ModalService} from '../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
 import {FormService, IForm} from '../../../../../../AppBundle/Resources/public/ts/form/form.service';
 import {TreeViewFormComponent, TreeViewProvider} from '../../../../../../AppBundle/Resources/public/tree-view/ts/tree-view-form.component';
-import {Actions, Popups, Popup} from '../../../../../../AppBundle/Resources/public/ts/data-box/data-box.component';
+import {Actions, Popups, Popup} from '../../../../../../AppBundle/Resources/public/data-box/ts/src/data-box.component';
 
 
 @Component({
     selector: '#js_main',
-    templateUrl: Helper.getGlobalVar('route') + 'admin/user-group-acl-menu/edit/0/0'
+    templateUrl: Helper.getAppVar('route') + 'admin/user-group-acl-menu/edit/0/0'
 })
 export class MainComponent extends TreeViewFormComponent implements IForm
 {
@@ -76,7 +76,7 @@ export class MainComponent extends TreeViewFormComponent implements IForm
     {
         // Update route with parents info
         let parentsPartialRoute = (
-            '\\' + this._helperService.getGlobalVar('conf')['object'][0]['id']
+            '\\' + this._helperService.getAppVar('conf')['object'][0]['id']
             + '\\' + this._formService.getObject()['storeObj']
         );
         this._dataService.setRoute('edit', this._baseRoute + 'edit' + parentsPartialRoute); // To save

@@ -13,89 +13,157 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
+use AppBundle\Service\HelperService;
 
 
 abstract class BaseType extends AbstractType
 {
-    protected $entityClass;
-    protected $entityRepositoryClass;
-    protected $entityDatabase;
-    protected $entityMetadata; // Can be predefined in local "init()" if you need special conditions
+    protected $conf = array(); // Form configuration
+    // Controls if form has been initialized
+    protected $isInitialized = false;
+
+    protected $entityMetadata = null;
+
 
     /**
-     * Initialization of variables. Implemented by child.
-     * @return mixed
+     * Initialization. Set all basic configuration
+     * This method should be override by child ever that you need to change the default configuration
+     * @return $this
      */
-    protected abstract function init();
+    protected function init()
+    {
+        // Set configuration only once
+        if ($this->isInitialized) { return $this; }
+        $this->isInitialized = true;
+
+        // Class names
+        $entityClass = str_replace("\\Form\\", "\\Entity\\", substr(get_class($this), 0 , -4)); // Removes the key "Type"
+        $entityRepositoryClass = ($entityClass . 'Repository');
+        // Necessary to get and persist object in the correct database
+        $entityDataBase = ((substr($entityClass, 0 , 8) == 'Sysadmin') ? 'app_database' : 'local_database');
+
+        $this->conf = array(
+            'entityClass' => $entityClass,
+            'entityRepositoryClass' => $entityRepositoryClass,
+            'entityDatabase' => $entityDataBase,
+            'class' => '', // CSS class to apply to the form
+            'buttons' => 'popup', // Determines which buttons should be rendered [popup, form, wizard, close, none]
+            'hasNgForm' => true, // Enables ngForm by default
+            'actionsService' => null, // Determines what service/component handles button actions ('_formService')
+            'hasFields' => true, // Determines if fields should be rendered
+            'localData' => null // Local specific custom data
+        );
+
+        return $this;
+    }
+
+    /**
+     * Set Entity Metadata
+     * This method should be override by child ever that you need to change the default metadata
+     * @return $this
+     */
+    protected function setEntityMetadata()
+    {
+        $class = $this->conf['entityRepositoryClass'];
+        $this->entityMetadata = $class::getMetadata();
+
+        return $this;
+    }
+
+    /**
+     * Get Entity Metadata
+     * Used to set correctly the entity metadata and return it, because class child can override the "conf" and the
+     * "entityMetadata" variable
+     * @return null
+     */
+    protected function getEntityMetadata()
+    {
+        if (!$this->entityMetadata) { $this->setEntityMetadata(); }
+
+        return $this->entityMetadata;
+    }
 
     /**
      * Build form
-     * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param FormBuilderInterface $formBuilder
+     * @param $options (Symfony form options array, we use the entry array('attr' => array('embed' => [boolean]))
+     * to indicate when it is a embed form (sub-form))
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $formBuilder, array $options)
     {
         // Initialize variables
         $this->init();
 
-        $repositoryClass = $this->entityRepositoryClass;
-        $entityFields = (empty($this->entityMetadata) ? $repositoryClass::getMetadata() : $this->entityMetadata);
+        // Option sent by embed forms (sub-forms) to define the form
+        $isEmbed = (isset($options['attr']) && isset($options['attr']['embed']) && $options['attr']['embed']);
 
-        foreach ($entityFields as $field => $fieldMetadata) {
-            // Remove common fields (already exists in the original merge entity)
-            if (in_array($field, array('id', 'insertTime', 'insertUser', 'isEnabled'))
-                || !empty($fieldMetadata['parent']) // Fields of other entities (added through parent entity form type)
-            ) {
-                continue;
+        $entityMetadata = $this->getEntityMetadata();
+
+        if($this->conf['hasFields']) {
+            foreach ($entityMetadata as $field => $fieldMetadata) {
+                // Remove common fields (already exists in the original merge entity)
+                if (
+                    // Fields of other entities (added through parent entity form type)
+                    !empty($fieldMetadata['parent'])
+                    // In case of 'embed', the base fields are already added from the child form
+                    || ($isEmbed && in_array($field, array('id', 'insertTime', 'insertUser', 'isEnabled')))
+                ) {
+                    continue;
+                }
+                $this->addControl($formBuilder, $field, $fieldMetadata);
             }
-            $this->addFormControl($builder, $field, $fieldMetadata);
+        }
+
+        if (!$isEmbed) {
+            $this->addButtons($formBuilder);
         }
     }
 
     /**
-     * Add form control
+     * Add control
      * @param $formBuilder
      * @param $field
      * @param $metadata
      * @return $this
      */
-    protected function addFormControl($formBuilder, $field, $metadata)
+    protected function addControl($formBuilder, $field, $metadata)
     {
-        $repositoryClass = $this->entityRepositoryClass;
+        $entityMetadata = $this->getEntityMetadata();
+        $entityRepositoryClass = $this->conf['entityRepositoryClass'];
 
         // Field attributes
-        $formType = $repositoryClass::getFieldMetadata($field, 'type', null, 'form');
-        $type = $repositoryClass::getFieldMetadata($field, 'type');
+        $formType = $entityRepositoryClass::getFieldMetadata($field, 'type', $entityMetadata, 'form');
         if ($formType == 'none') { // Not allowed field
             return $this;
         }
-        $isMapped = $repositoryClass::getFieldMetadata($field, 'isMapped');
+
+        $type = $entityRepositoryClass::getFieldMetadata($field, 'type', $entityMetadata);
+        $isMapped = $entityRepositoryClass::getFieldMetadata($field, 'isMapped', $entityMetadata);
+        $isFakeField = $entityRepositoryClass::getFieldMetadata($field, 'isFakeField', $entityMetadata);
         if ($isMapped === null) { // If not defined, guess it from acl
-            $isMapped = ($repositoryClass::getFieldMetadata($field, 'acl') == 'edit');
+            $isMapped = ($entityRepositoryClass::getFieldMetadata($field, 'acl', $entityMetadata) == 'edit');
         }
-        $placeholder = $repositoryClass::getFieldMetadata($field, 'placeholder');
-        $attr = $repositoryClass::getFieldMetadata($field, 'attr');
+        $placeholder = $entityRepositoryClass::getFieldMetadata($field, 'placeholder', $entityMetadata);
+        $attr = $entityRepositoryClass::getFieldMetadata($field, 'attr', $entityMetadata);
 
         // Base attributes
-        $baseAttrs = array(
+        $baseAttrArr = array(
             'attr' => (is_array($attr) ? $attr : array()),
             'mapped' => $isMapped
         );
         if ($placeholder) {
-            $baseAttrs['attr']['placeholder'] = $placeholder;
+            $baseAttrArr['attr']['placeholder'] = $placeholder;
         }
 
         // Required. Symfony cannot guess 'nullable' in some cases (not mapped fields and entity type)
-        $isRequired = $repositoryClass::getFieldMetadata($field, 'isRequired');
-        if ($isRequired !== null) { $baseAttrs['required'] = $isRequired; }
+        $isRequired = $entityRepositoryClass::getFieldMetadata($field, 'isRequired', $entityMetadata);
+        if ($isRequired !== null) { $baseAttrArr['required'] = $isRequired; }
 
         switch ($formType) {
-            case 'boolean':
-                $formBuilder->add($field, CheckboxType::class, $baseAttrs);
-                break;
             case 'datetime':
                 $formBuilder->add($field, DateTimeType::class, array_merge(
-                    $baseAttrs,
+                    $baseAttrArr,
                     array(
                         'input' => 'datetime',
                         'widget' => 'single_text',
@@ -105,7 +173,7 @@ abstract class BaseType extends AbstractType
                 break;
             case 'date':
                 $formBuilder->add($field, DateType::class, array_merge(
-                    $baseAttrs,
+                    $baseAttrArr,
                     array(
                         'input' => 'datetime',
                         'widget' => 'single_text'
@@ -118,10 +186,11 @@ abstract class BaseType extends AbstractType
             case 'tree-view':
             case 'html-select':
             case 'auto-complete':
+            case 'hidden-entity':
                 // Choices from static array
                 if ($type == 'enum') {
                     $formBuilder->add($field, ChoiceType::class, array_merge(
-                        $baseAttrs,
+                        $baseAttrArr,
                         array(
                             'choices' => $metadata['typeDetail']['choices']['value'],
                             'expanded' => in_array($formType, array('radio', 'checkbox')),
@@ -131,48 +200,163 @@ abstract class BaseType extends AbstractType
                 }
                 // Choices from entity (database)
                 else {
-                    $autoRefresh = $repositoryClass::getFieldMetadata($field, 'autoRefresh');
+                    $autoRefresh = $entityRepositoryClass::getFieldMetadata($field, 'autoRefresh', $entityMetadata);
                     if (!$autoRefresh) { // Auto refresh choices are loaded on init and rendered by Angular
                         // Determine query
-                        $query = $repositoryClass::getFieldMetadata($field, 'query'); // Specific query to get choices
+                        $query = $entityRepositoryClass::getFieldMetadata($field, 'query', $entityMetadata); // Specific query to get choices
                         if (empty($query)) { $query = 'getChoices'; } // Generic query to get choices
 
-                        $baseAttrs['query_builder'] = function($entityRepository) use ($query) {
+                        $baseAttrArr['query_builder'] = function($entityRepository) use ($query) {
                             return $entityRepository->$query(false);
                         };
                     }
                     $formBuilder->add($field, EntityType::class, array_merge(
-                        $baseAttrs,
+                        $baseAttrArr,
                         array(
-                            'class' => $repositoryClass::getFieldMetadata($field, 'entityClass'),
+                            'class' => $entityRepositoryClass::getFieldMetadata($field, 'entityClass', $entityMetadata),
                             'expanded' => in_array($formType, array('radio', 'checkbox')),
                             'multiple' => in_array($formType, array('checkbox')),
-                            'em' => $this->entityDatabase
+                            'em' => $this->conf['entityDatabase']
                         )
                     ));
                 }
                 break;
             case 'hidden':
-                $formBuilder->add($field, HiddenType::class, $baseAttrs);
+                $formBuilder->add($field, HiddenType::class, $baseAttrArr);
                 break;
             case 'password':
-                $formBuilder->add($field, PasswordType::class, $baseAttrs);
+                $formBuilder->add($field, PasswordType::class, $baseAttrArr);
                 break;
             case 'file':
                 // Use the static field 'file'
-                $formBuilder->add('file', FileType::class, $baseAttrs);
-                break;
-            case 'embed':
-                $formBuilder->add($field, $metadata['typeDetail']['formClass']);
+                $formBuilder->add('file', FileType::class, $baseAttrArr);
                 break;
             case 'textarea':
-                $formBuilder->add($field, TextareaType::class, $baseAttrs);
+                $formBuilder->add($field, TextareaType::class, $baseAttrArr);
                 break;
+            case 'embed':
+                $formBuilder->add($field, $metadata['typeDetail']['formClass'], array('attr' => array('embed' => true)));
+                break;
+            case 'boolean':
+                // If is mapped and not a fake field, use default case, so "nullables" can be guessed.
+                // In case of fake fields, there are no entity metadata to form guess the field type, so we need to
+                // determine the type by hand, otherwise the form would render the field as a simple input
+                // (like "paxIsClient" in "BookingBundle:Booking")
+                if (!$isMapped || $isFakeField) {
+                    $formBuilder->add($field, CheckboxType::class, $baseAttrArr);
+                    break;
+                }
             default:
-                $formBuilder->add($field, null, $baseAttrs);
+                $formBuilder->add($field, null, $baseAttrArr);
         }
 
         return $this;
+    }
+
+    /**
+     * Add buttons
+     * @param $formBuilder
+     * @return $this
+     */
+    protected function addButtons($formBuilder) {
+        // Determines the class (service/component) that holds the action methods
+        $actionsMethodPrefix = ($this->conf['actionsService']
+            ? ($this->conf['actionsService'].'.')
+            : ''
+        );
+
+        $buttonsProfiles = array(
+            'none' => array(),
+            'wizard' => array(),
+            'form' => array('reset', 'save'),
+            'popup' => array('reset', 'save', 'cancel', 'saveAndClose'),
+            // Use this profile when you want facility add entries
+            'popupWithNew' => array('reset', 'save', 'cancel', 'saveAndClose', 'saveAndNew'),
+            // Use this profile when you want facility the access to detail
+            'popupWithDetail' => array('reset', 'save', 'cancel', 'saveAndClose', 'saveAndEnter'),
+            'close' => array('close'),
+            'cancel' => array('cancel')
+        );
+
+        if (isset($buttonsProfiles[$this->conf['buttons']]) && (count($buttonsProfiles[$this->conf['buttons']]) > 0))
+        foreach ($buttonsProfiles[$this->conf['buttons']] as $button) {
+            switch ($button) {
+                case 'saveAndClose':
+                    $formBuilder->add('saveAndClose', ButtonType::class, array(
+                        'attr' => array(
+                            'class' => 'btn btn-primary',
+                            '(click)' => $actionsMethodPrefix . 'saveAndCloseAction($event)'
+                        ),
+                        'label' => 'Save and Close'
+                    ));
+                    break;
+                case 'cancel':
+                    $formBuilder->add('cancel', ButtonType::class, array(
+                        'attr' => array(
+                            'class' => 'btn',
+                            '(click)' => 'cancelAction($event)'
+                        ),
+                        'label' => 'Cancel'
+                    ));
+                    break;
+                case 'reset':
+                    $formBuilder->add('reset', ButtonType::class, array(
+                        'attr' => array(
+                            'class' => 'btn',
+                            '(click)' => $actionsMethodPrefix . 'resetAction($event)'
+                        ),
+                        'label' => 'Reset'
+                    ));
+                    break;
+                case 'save':
+                    $formBuilder->add('save', ButtonType::class, array(
+                        'attr' => array(
+                            'class' => 'btn btn-primary',
+                            '(click)' => $actionsMethodPrefix . 'saveAction($event)'
+                        ),
+                        'label' => 'Save'
+                    ));
+                    break;
+                case 'saveAndNew':
+                    $formBuilder->add('saveAndNew', ButtonType::class, array(
+                        'attr' => array(
+                            'class' => 'btn btn-primary',
+                            '(click)' => $actionsMethodPrefix . 'saveAndNewAction($event)'
+                        ),
+                        'label' => 'Save and Add'
+                    ));
+                    break;
+                case 'saveAndEnter':
+                    $formBuilder->add('saveAndEnter', ButtonType::class, array(
+                        'attr' => array(
+                            'class' => 'btn btn-primary',
+                            '(click)' => $actionsMethodPrefix . 'saveAndEnterAction($event)'
+                        ),
+                        'label' => 'Save and Enter'
+                    ));
+                    break;
+                case 'close':
+                    $formBuilder->add('close', ButtonType::class, array(
+                        'attr' => array(
+                            'class' => 'btn btn-primary',
+                            '(click)' => 'closeAction($event)'
+                        ),
+                        'label' => 'Finish'
+                    ));
+                    break;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Define form name and form fields prefix
+     * @return string
+     */
+    public function getBlockPrefix()
+    {
+        return ('form');
     }
 
     /**
@@ -183,8 +367,31 @@ abstract class BaseType extends AbstractType
         // Initialize variables
         $this->init();
 
+        // Form attributes
+        $formAttrArr = array('(ngSubmit)' => 'saveAction($event)');
+        if (!empty($this->conf['class'])) {
+            $formAttrArr['class'] = $this->conf['class'];
+        }
+        if ($this->conf['hasNgForm']) {
+            // Controls if FormService has been initialized the "formBuilder group",
+            // to avoid the component render the template form before and break.
+            // It's no more necessary, because we only create the form (open popup) after get the
+            // promise successful response (get, new or clone object), so this code is kept here for future consideration.
+            //$formAttrArr['*ngIf'] = '_formService.isInitialized()';
+            $formAttrArr['[formGroup]'] = '_formService.getForm()';
+        } else {
+            $formAttrArr['ngNoForm'] = '';
+        }
+
         $resolver->setDefaults(array(
-            'data_class' => $this->entityClass,
+            'data_class' => $this->conf['entityClass'],
+            'attr' => $formAttrArr,
+            // This parameter is used to generate the token. We need to use the same parameter value in forms,
+            // controllers and views, in order to generate always the same token regardless of the context
+            // (because static views).
+            // So we use the value defined in "./app/config/parameters.yml" "parameters:secret" for all contexts,
+            // to make it more generic and configurable.
+            'csrf_token_id' => HelperService::getGlobalVar('csrfTokenId')
         ));
     }
 }

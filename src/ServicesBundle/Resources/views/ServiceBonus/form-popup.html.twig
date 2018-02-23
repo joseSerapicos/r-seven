@@ -52,16 +52,16 @@
                         </div>
                         <div class="col-sm-4">
                             {% include 'AppBundle:form:input.html.twig' with {
-                                'field': 'bonusType',
-                                'formField': form['bonusType'],
-                                'metadata': fields['metadata']['bonusType']
+                                'field': 'bonusMethod',
+                                'formField': form['bonusMethod'],
+                                'metadata': fields['metadata']['bonusMethod']
                             } %}
                         </div>
                         <div class="col-sm-4">
                             {% include 'AppBundle:form:input.html.twig' with {
-                                'field': 'bonusValue',
-                                'formField': form['bonusValue'],
-                                'metadata': fields['metadata']['bonusValue']
+                                'field': 'user_bonusValue',
+                                'formField': form['user_bonusValue'],
+                                'metadata': fields['metadata']['user_bonusValue']
                             } %}
                         </div>
                     </div></div>
@@ -114,7 +114,7 @@
                 </div>
             {% elseif (field not in [
                 'ruleExpr', 'ruleValue',
-                'bonusType', 'bonusValue',
+                'bonusMethod', 'user_bonusValue',
                 'paxToApplyValue',
                 'daysToApplyValue'
             ]) %}

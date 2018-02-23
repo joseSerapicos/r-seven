@@ -27,13 +27,12 @@
     } %}
 {% endblock %}
 
-{% block body_container %}<div id="js_main"></div>{% endblock %}
-
 {% block local_javascripts %}
-    {% javascripts output="assets/entities/entity-group/detail/js/local.js"
-        '@EntitiesBundle/Resources/public/entity-group/detail/webpack_generated/common.js'
-        '@EntitiesBundle/Resources/public/entity-group/detail/webpack_generated/app.js'
-        '@EntitiesBundle/Resources/public/entity-group/detail/webpack_generated/main.js'
+    {% javascripts output="assets/entities/entity-group-acl/detail/js/local.js"
+        '@EntitiesBundle/Resources/public/entity-group/detail/ts/dist/inline.bundle.js'
+        '@EntitiesBundle/Resources/public/entity-group/detail/ts/dist/polyfills.bundle.js'
+        '@EntitiesBundle/Resources/public/entity-group/detail/ts/dist/vendor.bundle.js'
+        '@EntitiesBundle/Resources/public/entity-group/detail/ts/dist/main.bundle.js'
     %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}

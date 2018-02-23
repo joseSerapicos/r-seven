@@ -3,17 +3,32 @@
 namespace BookingBundle\Controller;
 
 use AppBundle\Controller\BaseEntityController;
-use AppBundle\Service\HelperService;
+use BookingBundle\Entity\BookingPax;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class BaseBookingController.
+ * Class BookingController.
  * Base booking controller for booking types
  * @package BookingBundle\Controller
  */
-class BaseBookingController extends BaseEntityController
+abstract class BaseBookingController extends BaseEntityController
 {
+    /**
+     * Get Local Booking Context (it needs to be implemented by children to get the correct context <travel, service, etc>).
+     * @return mixed (lowerCamelCase)
+     */
+    abstract protected function getLocalBookingContext();
+
+    /**
+     * Get booking context.
+     * @param $isUpperCase
+     * @return mixed (lowerCamelCase)
+     */
+    protected function getBookingContext($isUpperCase = false) {
+        return ($isUpperCase ? ucfirst($this->getLocalBookingContext()) : $this->getLocalBookingContext());
+    }
+
     /**
      * DEFINE ROUTE HERE
      *
@@ -27,8 +42,7 @@ class BaseBookingController extends BaseEntityController
     {
         // Set configuration
         $this->init($request);
-        $this->responseConf['localData']['controller'] =
-            HelperService::camelCaseToHyphenCase($this->localConf['entity']);
+        $this->templateConf['localData']['data']['bookingContext'] = $this->getBookingContext();
         return parent::detailAction($request, $id);
     }
 
@@ -50,7 +64,7 @@ class BaseBookingController extends BaseEntityController
         $obj = $this->getObject($id);
 
         // Build form
-        $form = $this->buildForm($request, $obj);
+        $form = $this->createForm($this->localConf['formTypeClass'], $obj);
 
         // Handle request
         $form->handleRequest($request);
@@ -60,37 +74,24 @@ class BaseBookingController extends BaseEntityController
             // Get request data
             $data = $this->getRequestData($request);
 
-            if($form->isValid()) {
-                // Add/Update/Remove client pax
-                $paxEntity = ($this->localConf['entity'] . 'Pax');
-                $paxEntityClass = ($this->localConf['entityClass'] . 'Pax');
-                $getPaxObjMethod = ('get' . $paxEntity . 'Obj');
-                $setPaxObjMethod = ('set' . $paxEntity . 'Obj');
-                $bookingPax = $obj->$getPaxObjMethod();
+            // Set response
+            // This is to avoid normalizing the object by the "saveForm",
+            // because we are still going to make changes on it (in "postSaveObject")
+            $this->responseConf['hasObject'] = false;
 
-                if (isset($data['form'])
-                    && !empty($data['form']['clientIsPax']) // Client is pax
-                    && $obj->getClientObj() // Client has been defined
-                ) {
-                    $entityObj = $obj->getClientObj()->getEntityObj();
-                    $setBookingObjMethod = ('set' . $this->localConf['entity'] . 'Obj');
+            if ($this->preSaveObject($obj, null)) {
+                $this->saveForm($form, $obj);
+            }
+            $this->postSaveObject($obj, $data['form']);
 
-                    $bookingPax = ($bookingPax ? $bookingPax : new $paxEntityClass());
-                    $bookingPax->setTitle($entityObj->getTitle());
-                    $bookingPax->setName($entityObj->getName());
-                    $bookingPax->setSurname($entityObj->getSurname());
-                    $bookingPax->setBirthDate($entityObj->getBirthDate());
-                    $bookingPax->$setBookingObjMethod($obj);
-                    parent::setObjectDefaultValues($bookingPax);
-                } elseif($bookingPax) {
-                    parent::deleteObject($bookingPax);
-                    $bookingPax = null;
-                }
-
-                $obj->$setPaxObjMethod($bookingPax);
+            // Set response
+            // Now the object can be normalized, all changes was made on it (after "postSaveObject")
+            $this->responseConf['hasObject'] = true;
+            // Check if object had success on save
+            if($this->responseConf['status'] == 1) {
+                $this->responseConf['object'] = $this->normalizeObject($obj);
             }
 
-            $this->saveForm($form, $obj);
             return $this->getResponse(true);
         }
 
@@ -155,28 +156,110 @@ class BaseBookingController extends BaseEntityController
     /**
      * Overrides parent method
      * @param $object
-     * @param $hasFlush (it determines if should be executed the flush method to persist data in database)
-     * @param $addToResponse (determines if object should be added to response)
+     * @param $data (usually the form data)
+     * @return boolean (true to continue, false to abort)
+     */
+    protected function preSaveObject(&$object, $data) {
+        $formContext = $this->getObjectFormContext($object);
+
+        if ($formContext == 'add') {
+            // Get Id of local menu
+            $moduleMenuObj = $this->getRepositoryService('ModuleMenu', 'AdminBundle')->execute(
+                'findOneByAppModuleMenuObj',
+                array($this->templateConf['selectedMenu']['menu'])
+            );
+
+            // Set moduleMenuObj
+            $bookingObj = $object->getBookingObj();
+            $bookingObj->setModuleMenuObj($moduleMenuObj);
+
+            // Flags (to generate the code)
+            $this->flags['setting'] = array(
+                'entity' => 'BookingSetting',
+                'criteria' => array(
+                    array(
+                        'field' => 'moduleMenuObj',
+                        'expr' => 'eq',
+                        'value' => $moduleMenuObj
+                    )
+                )
+            );
+        }
+
+        return true;
+    }
+
+    /**
+     * Overrides parent method
+     * @param $object
+     * @param $data (usually the form data)
      * @return $this
      */
-    protected function saveObject(&$object, $hasFlush = true, $addToResponse = false)
+    protected function postSaveObject($object, $data = null)
     {
-        // Flags
-        $this->flags['setting'] = array(
-            'entity' => 'BookingSetting',
-            'criteria' => array(
-                array(
-                    'field' => 'moduleMenuObj',
-                    'expr' => 'eq',
-                    'value' => $this->getRepositoryService('ModuleMenu', 'AdminBundle')->execute(
-                        'findOneByAppModuleMenuObj',
-                        array($this->templateConf['selectedMenu']['menu'])
-                    )->getId() // Get Id of local menu
-                )
-            )
-        );
+        // Check if object had success on save
+        if($this->responseConf['status'] == 1) {
+            // Add/Update/Remove client pax
+            $bookingContextUC = $this->getBookingContext(true);
 
-        parent::saveObject($object, $hasFlush, $addToResponse);
+            $bookingObj = $object->getBookingObj();
+            $bookingPaxObj = $bookingObj->getBookingPaxObj();
+            $localBookingPaxObj = null;
+
+            if ($bookingObj) {
+                if ($this->flags['storage'] == 'session') {
+                    $localBookingPaxObjArr = $this->container->get('app.service.session_storage')->getChildObjects(
+                        $object->getId(), // This is the parent of objects
+                        'PackageBookingPax'
+                    );
+                    $localBookingPaxObj = (empty($localBookingPaxObjArr) ? null : reset($localBookingPaxObjArr));
+                } else {
+                    $localBookingPaxObj = $this->getRepositoryService($bookingContextUC . 'BookingPax', 'BookingBundle')
+                        ->execute('findOneByBookingPaxObj', array($bookingPaxObj));
+                }
+            }
+
+            // Add/Update pax with client data
+            if (!empty($data['bookingObj']['clientIsPax']) // Client is pax
+                && $bookingObj->getClientObj() // Client has been defined
+            ) {
+                $clientObj = $bookingObj->getClientObj()->getEntityObj();
+
+                if (!$localBookingPaxObj) {
+                    $class = 'BookingBundle\Entity\\' . $bookingContextUC . 'BookingPax';
+                    $localBookingPaxObj = new $class();
+                    parent::setObjectDefaultValues_static($this, $localBookingPaxObj);
+                    $bookingPaxObj = new BookingPax();
+                    $localBookingPaxObj->setBookingPaxObj($bookingPaxObj);
+                }
+
+                $bookingPaxObj->setTitle($clientObj->getTitle());
+                $bookingPaxObj->setName($clientObj->getName());
+                $bookingPaxObj->setSurname($clientObj->getSurname());
+                $bookingPaxObj->setBirthDate($clientObj->getBirthDate());
+                $bookingPaxObj->setBookingObj($bookingObj);
+                parent::setObjectDefaultValues_static($this, $bookingPaxObj);
+
+                parent::saveObject_static($this, $localBookingPaxObj);
+            }
+            // Remove pax associated to the client
+            elseif($localBookingPaxObj) {
+                parent::deleteObject_static($this, $localBookingPaxObj);
+                $bookingPaxObj = null;
+            }
+
+            $bookingObj->setBookingPaxObj($bookingPaxObj);
+            if ($bookingPaxObj) {
+                if ($this->flags['storage'] == 'session') {
+                    $localParent = $this->flags['parent'];
+                    $this->flags['parent'] = $localBookingPaxObj->getId(); // With this parent cascade deletion works automatically
+                    $this->saveObjectToSS($bookingPaxObj);
+                    $this->flags['parent'] = $localParent; // Reset to local parent
+                } else {
+                    parent::saveObject_static($this, $bookingPaxObj);
+                }
+            }
+        }
 
         return $this;
     }
@@ -191,53 +274,99 @@ class BaseBookingController extends BaseEntityController
         parent::setObjectDefaultValues($object);
         // Set default data
         if (empty($object->getId())) {
-            $object->setSubTotalCost(0);
-            $object->setSubTotalSell(0);
-            $object->setTotalVatCost(0);
-            $object->setTotalVatSell(0);
-            $object->setTotalMargin(0);
-            $object->setTotalMarkup(0);
-            $object->setTotalProfit(0);
-            $object->setInvoiceStatus("NO");
-            $object->setConfirmationStatus("YES");
+            $bookingObj = $object->getBookingObj();
+            $bookingObj->setSubTotalCost(0);
+            $bookingObj->setSubTotalSell(0);
+            $bookingObj->setTotalVatCost(0);
+            $bookingObj->setTotalVatSell(0);
+            $bookingObj->setTotalMargin(0);
+            $bookingObj->setTotalMarkup(0);
+            $bookingObj->setTotalProfit(0);
+            $bookingObj->setInvoiceStatus("NO");
+            $bookingObj->setConfirmationStatus("YES");
         }
         return $this;
     }
 
     /**
-     * Set booking invoice status
+     * Set invoice status
      * @param $controller
-     * @param $documentObj
-     * @param $bookingContext <travelBooking, serviceBooking, etc>
-     * @param $entityContext <client, supplier>
+     * @param $bookingObj
      * @return mixed
      */
-    static function setBookingInvoiceStatus($controller, $documentObj, $bookingContext, $entityContext) {
-        $BookingContext = ucfirst($bookingContext);
-        $EntityContext = ucfirst($entityContext);
-
+    static function setInvoiceStatus($controller, $bookingObj) {
         // Check if there are no errors in previous updates and we work with real data (database storage)
         if (($controller->responseConf['status'] == 1) && ($controller->flags['storage'] == 'db')) {
-            $bookingDocumentObj = $controller->getRepositoryService($BookingContext . $EntityContext . 'Document', 'BookingBundle')
+            $controller->getRepositoryService('Booking', 'BookingBundle')
                 ->execute(
-                    'findOneBy' . $EntityContext . 'DocumentObj',
-                    array($documentObj)
-                );
-
-            // Check if there are a booking dependency to update
-            if (empty($bookingDocumentObj)) {
-                return $controller;
-            }
-
-            // Update booking invoice status
-            $bookingObj = $bookingDocumentObj->getBookingObj();
-            $controller->getRepositoryService($BookingContext . $EntityContext . 'Document', 'BookingBundle')
-                ->execute(
-                    'setBookingInvoiceStatus',
+                    'setInvoiceStatus',
                     array($bookingObj)
                 );
 
-            parent::saveObject($bookingObj);
+            self::saveObject_static($controller, $bookingObj);
+        }
+
+        return $controller;
+    }
+
+    /**
+     * Set totals
+     * @param $controller
+     * @param $bookingObj
+     * @return mixed
+     */
+    static function setTotals($controller, $bookingObj) {
+        // Check if there are no errors in previous updates and we work with real data (database storage)
+        if (($controller->responseConf['status'] == 1) && ($controller->flags['storage'] == 'db')) {
+            $controller->getRepositoryService('Booking', 'BookingBundle')
+                ->execute(
+                    'setTotals',
+                    array($bookingObj)
+                );
+
+            self::saveObject_static($controller, $bookingObj);
+        }
+
+        return $controller;
+    }
+
+    /**
+     * Set confirmation
+     * @param $controller
+     * @param $bookingObj
+     * @return mixed
+     */
+    static function setConfirmation($controller, $bookingObj) {
+        // Check if there are no errors in previous updates and we work with real data (database storage)
+        if (($controller->responseConf['status'] == 1) && ($controller->flags['storage'] == 'db')) {
+            $controller->getRepositoryService('Booking', 'BookingBundle')
+                ->execute(
+                    'setConfirmationStatus',
+                    array($bookingObj)
+                );
+
+            self::saveObject_static($controller, $bookingObj);
+        }
+
+        return $controller;
+    }
+
+    /**
+     * Set dates
+     * @param $controller
+     * @param $bookingObj
+     * @return mixed
+     */
+    static function setDates($controller, $bookingObj) {
+        // Check if there are no errors in previous updates and we work with real data (database storage)
+        if (($controller->responseConf['status'] == 1) && ($controller->flags['storage'] == 'db')) {
+            $controller->getRepositoryService('Booking', 'BookingBundle')
+                ->execute(
+                    'setDates',
+                    array($bookingObj)
+                );
+
+            self::saveObject_static($controller, $bookingObj);
         }
 
         return $controller;

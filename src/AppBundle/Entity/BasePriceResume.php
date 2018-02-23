@@ -36,8 +36,6 @@ class BasePriceResume extends BaseEntity
 
     /**
      * @ORM\Column(name="totalVatSell", type="decimal", scale=2, nullable=false, unique=false, options={"default":"0", "comment":"Total VAT of sell value"})
-     *
-     * Field calculated based in the sum in "BookingService"
      */
     protected $totalVatSell;
 

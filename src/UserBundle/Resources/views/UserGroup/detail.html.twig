@@ -27,13 +27,17 @@
     } %}
 {% endblock %}
 
-{% block body_container %}<div id="js_main"></div>{% endblock %}
+{% block body_container %}
+    <div class="js_appBasics"></div>
+    <div id="js_main"></div>
+{% endblock %}
 
-{% block local_javascripts %}
+{%  block local_javascripts %}
     {% javascripts output="assets/user/user-group/detail/js/local.js"
-        '@UserBundle/Resources/public/user-group/detail/webpack_generated/common.js'
-        '@UserBundle/Resources/public/user-group/detail/webpack_generated/app.js'
-        '@UserBundle/Resources/public/user-group/detail/webpack_generated/main.js'
+        '@UserBundle/Resources/public/user-group/detail/ts/dist/inline.bundle.js'
+        '@UserBundle/Resources/public/user-group/detail/ts/dist/polyfills.bundle.js'
+        '@UserBundle/Resources/public/user-group/detail/ts/dist/vendor.bundle.js'
+        '@UserBundle/Resources/public/user-group/detail/ts/dist/main.bundle.js'
     %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}

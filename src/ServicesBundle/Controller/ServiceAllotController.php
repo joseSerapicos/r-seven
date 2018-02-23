@@ -15,7 +15,7 @@ class ServiceAllotController extends BaseEntityChildController
      * @param $label (set label when you don't have the route in modules/menus tree)
      * @return $this
      */
-    protected function initChild(Request $request, $parents, $label = 'Allot/Allot')
+    protected function initChild(Request $request, $parents, $label = 'Allot')
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
@@ -145,5 +145,33 @@ class ServiceAllotController extends BaseEntityChildController
     public function confLocalChildAction(Request $request, $service)
     {
         return parent::confChildAction($request, array($service));
+    }
+
+    /**
+     * Get allot info by date
+     * @param $controller
+     * @param $serviceObj
+     * @param $date
+     * @param $allotTargetServiceObj (target service object, to get allot of specific service (like packages))
+     * @return array
+     */
+    static function getAllotInfoByDate($controller, $serviceObj, $date, $allotTargetServiceObj = null)
+    {
+        $totalAllot = $controller->getRepositoryService('ServiceAllot', 'ServicesBundle')->execute(
+            'getAllotByDate',
+            array($serviceObj, $date, $allotTargetServiceObj)
+        );
+
+        $busyAllot = $controller->getRepositoryService('BookingService', 'BookingBundle')->execute(
+            'getBusyAllotByDate',
+            array($serviceObj, $date, $allotTargetServiceObj)
+        );
+
+        return array(
+            'total' => $totalAllot,
+            'busy' => $busyAllot,
+            'free' => ($totalAllot - $busyAllot),
+            'type' => ($allotTargetServiceObj ? $allotTargetServiceObj->__toString() : 'Regular')
+        );
     }
 }

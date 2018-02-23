@@ -41,13 +41,6 @@ class EntityVideoController extends BaseEntityChildController
         );
 
         parent::initChild($request, $parents, $label);
-
-        /* Form */
-        $this->localConf['form']['route'] = 'add';
-        $this->localConf['form']['class'] = 'dropzone';
-        $this->localConf['form']['buttons'] = 'none';
-        $this->localConf['form']['hasNgForm'] = false;
-        /* /Form */
         
         // Templates
         $this->localConf['templates']['edit'] = 'AppBundle:file:form.html.twig';
@@ -121,23 +114,24 @@ class EntityVideoController extends BaseEntityChildController
         // Set configuration
         $this->flags['hasForm'] = true;
         $this->initChild($request, array($entity));
+
         if ($source != 'file') {
             // Change conf
-            $this->localConf['form']['class'] = null;
             $this->localConf['templates']['edit'] = 'AppBundle:form:form.html.twig';
             $this->localConf['entityFields']['path']['type'] = 'text';
-            $this->localConf['form']['hasNgForm'] = true;
-            $this->localConf['form']['hasFields'] = true;
+        } else {
+            if(empty($_FILES)) {
+                $this->localConf['formTypeClass'] = 'EntitiesBundle\Form\EntityVideoRenderFileSourceFormType';
+            } else {
+                $this->localConf['formTypeClass'] = 'EntitiesBundle\Form\EntityVideoSubmitFileSourceFormType';
+            }
         }
 
         // New object
         $obj = $this->newObject();
 
         // Build form
-        if(($source == 'file') && empty($_FILES)) {
-            $this->localConf['form']['hasFields'] = false;
-        }
-        $form = $this->buildForm($request, $obj);
+        $form = $this->createForm($this->localConf['formTypeClass'], $obj);
 
         // Handle request
         $form->handleRequest($request);
@@ -225,10 +219,17 @@ class EntityVideoController extends BaseEntityChildController
     {
         $obj = parent::newObject();
 
+        $parent = reset($this->parentConf);
+
+        $parentId = ($parent['obj'] ?
+            $parent['obj']->getId() :
+            0 // Needed when parent is not defined like to get edit template
+        );
+
         $obj->setDir(
             $this->get('session')->get('_app.system')['filesRepository']
             . 'entities/'
-            . $this->parentConf['entity']['obj']->getId()
+            . $parentId
             . '/video/'
         );
 

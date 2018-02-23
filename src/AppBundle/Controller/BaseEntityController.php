@@ -6,16 +6,6 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\ButtonType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use AppBundle\Service\HelperService;
 
 
@@ -85,6 +75,7 @@ abstract class BaseEntityController extends BaseController
         }
         $this->localConf['entityTable'] = ((($this->localConf['bundle'] == 'sysadmin')
                 ? 'app_' : '') . lcfirst($this->localConf['entity'])); // lowerCamelCase
+        // Necessary to get and persist object in the correct database
         $this->localConf['entityDataBase'] = (($this->localConf['bundle'] == 'sysadmin')
             ? 'app_database' : 'local_database');
         // Check if manager contains the object when database is persisted, it's necessary when the object
@@ -93,15 +84,14 @@ abstract class BaseEntityController extends BaseController
         /* /Entity */
 
         /* Form */
-        $this->localConf['form'] = array(
-            'route' => 'edit', // Route to render the form submit
-            'class' => '',
-            'buttons' => 'popup', // Determines which buttons should be rendered [popup, form, wizard, close, none]
-            'hasNgForm' => true, // Enables ngForm by default
-            'actionsService' => null, // Determines what service/component handles button actions ('_formService')
-            'hasFields' => true // Determines if fields should be rendered
-        );
+        $this->localConf['formTypeClass'] = ($this->localConf['Bundle'].'\Form\\'.$this->localConf['entity'].'Type');
         /* /Form */
+
+        /* General repository functions. Default function to be called in main method, can be override after "init()" */
+        $this->localConf['functions'] = array(
+            'getObjects' => 'getObjects'
+        );
+        /* /Functions */
 
         /* Templates: Default view/template for action */
         $this->localConf['templatesPath'] = ($this->localConf['Bundle'].':'.$this->localConf['entity'].':');
@@ -163,7 +153,7 @@ abstract class BaseEntityController extends BaseController
             );
 
             foreach ($this->localConf['entityFields'] as $field => $fieldMetadata) {
-                $type = $this->getFieldMetadata($field, 'type', $context);
+                $contextType = $this->getFieldMetadata($field, 'type', $context);
                 $formType = $this->getFieldMetadata($field, 'type', 'form');
 
                 // Object choices
@@ -180,22 +170,33 @@ abstract class BaseEntityController extends BaseController
                 }
 
                 // Add field
-                $hasField = false; // Controls if is needed to add the field metadata
-                if ($type != 'none') {
+                $notAllowedTypes = array(
                     // "hidden" and "fake" types is only used in form, but is used also in metadata as auxiliary field
                     // like the "type" in "BookingService".
-                    if (!in_array($type, array('hidden', 'fake')) || ($context == 'form')) {
-                        $this->templateConf['fields'][$context][] = $field;
-                    }
-                    $hasField = true;
-                }
-                if (($context == 'view') && ($formType != 'none')) {
-                    // View context needs also to send form fields to be used by Angular when build the form controls.
-                    // In turn, form context doesn't need to send the view fields because it's rendered
-                    // in twig as template of Angular form component.
+                    'view' => array('none', 'hidden', 'fake'),
+                    'form' => array('none', 'embed')
+                );
+                $hasField = false; // Controls if is needed to add the field metadata
+                switch ($context) {
+                    case 'form':
+                        if (!in_array($contextType, $notAllowedTypes['form'])) {
+                            $this->templateConf['fields'][$context][] = $field;
+                            $hasField = true;
+                        }
+                        break;
+                    default:
+                        if (!in_array($contextType, $notAllowedTypes['view'])) {
+                            $this->templateConf['fields'][$context][] = $field;
+                            $hasField = true;
+                        }
 
-                    $this->templateConf['fields']['form'][] = $field;
-                    $hasField = true;
+                        // View context needs also to send form fields to be used by Angular when build the form controls.
+                        // In turn, form context doesn't need to send the view fields because it's rendered
+                        // in twig as template of Angular form component.
+                        if (!in_array($formType, $notAllowedTypes['form'])) {
+                            $this->templateConf['fields']['form'][] = $field;
+                            $hasField = true;
+                        }
                 }
 
                 // Add field metadata
@@ -204,7 +205,7 @@ abstract class BaseEntityController extends BaseController
                         'label' => $fieldMetadata['label'],
                         // Determined according the context, but if is "none", the "form" context is used (field
                         // can be "none" in view but used only in form, like "startManualDate" in "BookingService")
-                        'type' => (in_array($type, array('none')) ? $formType : $type),
+                        'type' => (in_array($contextType, array('none')) ? $formType : $contextType),
                         'acl' => $fieldMetadata['acl'],
                         'isObject' => ($fieldMetadata['type'] == 'object'), // To be ignored by search
                         'parent' => (empty($fieldMetadata['parent']) ? null : $fieldMetadata['parent'])
@@ -245,20 +246,22 @@ abstract class BaseEntityController extends BaseController
         /* /Route */
 
         /* Search */
-        $orderByField = (isset($this->localConf['entityFields']['priority'])
-            ? 'priority'
-            : (isset($this->localConf['entityFields']['name'])
-                ? 'name'
-                : 'id'
-            )
-        );
+        $orderByField = array();
+        if (isset($this->localConf['entityFields']['priority'])) {
+            $orderByField = array('field' => 'priority', 'value' => 'ASC');
+        } elseif (isset($this->localConf['entityFields']['name'])) {
+            $orderByField = array('field' => 'name', 'value' => 'DESC');
+        } else {
+            $orderByField = array('field' => 'id', 'value' => 'ASC');
+        }
+
         $this->templateConf['search'] = array (
             'fields' => array('id', 'name', 'isEnabled'), // For all field use: $this->templateConf['fields']['view']
             'criteria' => array(
                 array('field' => 'isEnabled', 'expr' => 'eq', 'value' => 1)
             ),
             'orderBy' => array(
-                array('field' => $orderByField, 'value' => 'DESC')
+                $orderByField
             ),
             'limit' => 12, // Is good for pagination, allow alignment with it multiples (1, 2, 3, 4, ...)
             'offset' => 0,
@@ -418,6 +421,14 @@ abstract class BaseEntityController extends BaseController
     {
         // Set configuration
         $this->init($request);
+        // Redefine template criteria
+        $this->templateConf['search']['criteria'] = array(
+            array(
+                'field' => 'isEnabled',
+                'expr' => 'eq',
+                'value' => true
+            )
+        );
 
         $this->getAndProcessRequestData($request);
 
@@ -484,7 +495,7 @@ abstract class BaseEntityController extends BaseController
         $obj = $this->getObject($id);
 
         // Build form
-        $form = $this->buildForm($request, $obj);
+        $form = $this->createForm($this->localConf['formTypeClass'], $obj);
 
         // Handle request
         $form->handleRequest($request);
@@ -493,11 +504,12 @@ abstract class BaseEntityController extends BaseController
         if($form->isSubmitted()) {
             $data = $this->getRequestData($request);
 
-            $context = ((empty($id) || ($this->flags['storage'] == 'session')) ? 'add' : 'edit');
-            if ($this->preSaveObject($obj, $data, $context)) {
+            if ($this->preSaveObject($obj, $data['form'])) {
                 $this->saveForm($form, $obj);
             }
-            $this->postSaveObject($obj, 'edit');
+            // This method is executed independent of the success in save
+            // (check the $response['status'] if you need this information)
+            $this->postSaveObject($obj, $data['form']);
             return $this->getResponse(true);
         }
 
@@ -511,12 +523,12 @@ abstract class BaseEntityController extends BaseController
     /**
      * DEFINE ROUTE HERE
      *
-     * Action to disable and enable object (toggle the "isEnabled" field)
+     * Action to toggle isEnabled field
      * @param Request $request
      * @param $id
      * @return mixed
      */
-    public function disableAction(Request $request, $id)
+    public function cancelAction(Request $request, $id)
     {
         // Set configuration
         $this->init($request);
@@ -524,12 +536,21 @@ abstract class BaseEntityController extends BaseController
         // Get object
         $obj = $this->getObject($id);
 
-        // Toggle field
-        $obj->setIsEnabled(!$obj->getIsEnabled());
+        if ($this->preCancelObject($obj)) {
+            // Disable object
+            $obj->setIsEnabled(!$obj->getIsEnabled());
+            // Save object
+            $this->saveObject($obj, true, true);
+        }
+        $this->postCancelObject($obj);
 
-        // Save object
-        $this->saveObject($obj, true, true);
-
+        if ($this->responseConf['status'] == 1) {
+            $this->addFlashMessage( // Flash message to display to user
+                'The data has been '.($obj->getIsEnabled() ? 'enabled' : 'canceled'),
+                'Success',
+                'success'
+            );
+        }
         return $this->getResponse(true);
     }
 
@@ -559,7 +580,13 @@ abstract class BaseEntityController extends BaseController
         
         // Delete object/objects
         foreach($ids as $id) {
-            $this->deleteObject($this->getObject($id));
+            $obj = $this->getObject($id);
+            if ($this->preDeleteObject($obj, null)) {
+                $this->deleteObject($obj);
+            }
+            // This method is executed independent of the success in delete
+            // (check the $response['status'] if you need this information)
+            $this->postDeleteObject($obj, null);
 
             // Return in case of error
             if ($this->responseConf['status'] !== 1) {
@@ -680,6 +707,12 @@ abstract class BaseEntityController extends BaseController
     }
     /**
      * Static signature
+     * Can be used for general objects
+     * @param $controller
+     * @param $object
+     * @param bool $hasFlush
+     * @param bool $addToResponse
+     * @return mixed
      */
     static protected function saveObject_static($controller, &$object, $hasFlush = true, $addToResponse = false)
     {
@@ -702,21 +735,23 @@ abstract class BaseEntityController extends BaseController
      */
     protected function saveObjectToSS(&$object, $addToResponse = false)
     {
-        if (!$this->container->get('app.service.session_storage')->save($object, $this->flags['parent'])) {
-            // Config response
-            $this->responseConf['status'] = 0;
-            // Flash messages to display to user
-            $this->addFlashMessage(
-                'Please restart the process.',
-                'The data has expired.',
-                'warning'
-            );
-        }
+        if ($object) {
+            if (!$this->container->get('app.service.session_storage')->save($object, $this->flags['parent'])) {
+                // Config response
+                $this->responseConf['status'] = 0;
+                // Flash messages to display to user
+                $this->addFlashMessage(
+                    'Please restart the process.',
+                    'The data has expired.',
+                    'warning'
+                );
+            }
 
-        // If configure response is enabled, then set object to response
-        if ($addToResponse) {
-            if ($this->responseConf['hasObject']) {
-                $this->responseConf['object'] = $this->normalizeObject($object); // Object updated
+            // If configure response is enabled, then set object to response
+            if ($addToResponse) {
+                if ($this->responseConf['hasObject']) {
+                    $this->responseConf['object'] = $this->normalizeObject($object); // Object updated
+                }
             }
         }
 
@@ -786,10 +821,8 @@ abstract class BaseEntityController extends BaseController
                 $this->flushEm();
 
                 // If persisted in database with success and configure response is enabled, then set object to response
-                if ($addToResponse && ($this->responseConf['status'] == 1)) {
-                    if ($this->responseConf['hasObject']) {
-                        $this->responseConf['object'] = $this->normalizeObject($object); // Object updated
-                    }
+                if ($addToResponse && ($this->responseConf['status'] == 1) && ($this->responseConf['hasObject'])) {
+                    $this->responseConf['object'] = $this->normalizeObject($object); // Object updated
                 }
             }
         } /* else {
@@ -853,11 +886,23 @@ abstract class BaseEntityController extends BaseController
      */
     protected function deleteObject($object, $hasFlush = true)
     {
-        switch ($this->flags['storage']) {
+        return self::deleteObject_static($this, $object, $hasFlush);
+    }
+    /**
+     * Delete object
+     * Can be used for general objects
+     * @param $controller
+     * @param $object
+     * @param $hasFlush (it determines if should be executed the flush method to persist data in database)
+     * @return $this
+     */
+    static protected function deleteObject_static($controller, $object, $hasFlush = true)
+    {
+        switch ($controller->flags['storage']) {
             case 'session':
-                return $this->deleteObjectFromSS($object->getId());
+                return $controller->deleteObjectFromSS($object->getId());
             default:
-                return $this->deleteObjectFromDb($object, $hasFlush);
+                return $controller->deleteObjectFromDb($object, $hasFlush);
         }
     }
 
@@ -931,11 +976,16 @@ abstract class BaseEntityController extends BaseController
     }
     /**
      * Static signature
+     * Can be used for general objects
+     * @param $controller
+     * @param $object
+     * @return mixed
      */
     static protected function setObjectDefaultValues_static($controller, $object)
     {
-        // Set default data
+        // Only set default values if is a new object (without id)
         if (empty($object->getId())) {
+            // Set default data
             $object->setInsertTime(new \DateTime());
             $object->setInsertUser($controller->get('session')
                 ->get('_app.user')['username']
@@ -1018,117 +1068,6 @@ abstract class BaseEntityController extends BaseController
 
         return $this;
     }
-    
-    /**
-     * Build form
-     * @param Request $request
-     * @param $object
-     * @return mixed
-     */
-    protected function buildForm(Request $request, $object) {
-        // Validate parameters
-        $action = (isset($this->templateConf['route'][$this->localConf['form']['route']])
-            ? $this->localConf['form']['route'] : 'edit');
-        $buttons = (in_array($this->localConf['form']['buttons'], array('none', 'form', 'wizard', 'popup', 'close'))
-            ? $this->localConf['form']['buttons'] : 'popup');
-        
-        // Create form
-        $formAttrArr = array('(ngSubmit)' => 'saveAction($event)');
-        if (!empty($this->localConf['form']['class'])) {
-            $formAttrArr['class'] = $this->localConf['form']['class'];
-        }
-        if ($this->localConf['form']['hasNgForm']) {
-            $formAttrArr['[formGroup]'] = '_formService.getForm()';
-        } else {
-            $formAttrArr['ngNoForm'] = '';
-        }
-        $formBuilder = $this->createFormBuilder($object, array('attr' => $formAttrArr))
-            ->setAction($this->templateConf['route'][$action]['url'])
-            ->setMethod('POST');
-
-        // Add fields to form
-        if($this->localConf['form']['hasFields']) {
-            foreach($this->templateConf['fields']['form'] as $field) {
-                if (!empty($this->localConf['entityFields'][$field]['parent'])) {
-                    continue; // Fields of other entities (added through parent entity form type)
-                }
-                $this->addFormControl($formBuilder, $field);
-            }
-        }
-
-        // Add buttons to form
-        $buttonActionPrefix = ($this->localConf['form']['actionsService']
-            ? ($this->localConf['form']['actionsService'].'.')
-            : ''
-        );
-        switch ($buttons) {
-            case 'none':
-            case 'wizard':
-                break;
-            case 'popup':
-                // Add "Save and Detail" button when the controller has detail
-                if (!empty($this->templateConf['actions']['detail'])) {
-                    $formBuilder->add('saveAndEnter', ButtonType::class, array(
-                        'attr' => array(
-                            'class' => 'btn btn-primary',
-                            '(click)' => $buttonActionPrefix . 'saveAndEnterAction($event)'
-                        ),
-                        'label' => 'Save and Enter'
-                    ));
-                }
-                // If AddAction is defined, then there are different forms to add and edit, else the same form is used
-                elseif (empty($this->templateConf['actions']['add'])) {
-                    $formBuilder->add('saveAndNew', ButtonType::class, array(
-                        'attr' => array(
-                            'class' => 'btn btn-primary',
-                            '(click)' => $buttonActionPrefix . 'saveAndNewAction($event)'
-                        ),
-                        'label' => 'Save and Add'
-                    ));
-                }
-                $formBuilder->add('saveAndClose', ButtonType::class, array(
-                    'attr' => array(
-                        'class' => 'btn btn-primary',
-                        '(click)' => $buttonActionPrefix.'saveAndCloseAction($event)'
-                    ),
-                    'label' => 'Save and Close'
-                ));
-                $formBuilder->add('cancel', ButtonType::class, array(
-                    'attr' => array(
-                        'class' => 'btn',
-                        '(click)' => 'cancelAction($event)'
-                    ),
-                    'label' => 'Cancel'
-                ));
-            case 'form':
-                $formBuilder->add('reset', ButtonType::class, array(
-                    'attr' => array(
-                        'class' => 'btn',
-                        '(click)' => $buttonActionPrefix.'resetAction($event)'
-                    ),
-                    'label' => 'Reset'
-                ));
-                $formBuilder->add('save', ButtonType::class, array(
-                    'attr' => array(
-                        'class' => 'btn btn-primary',
-                        '(click)' => $buttonActionPrefix.'saveAction($event)'
-                    ),
-                    'label' => 'Save'
-                ));
-                break;
-            case 'close':
-                $formBuilder->add('close', ButtonType::class, array(
-                    'attr' => array(
-                        'class' => 'btn btn-primary',
-                        '(click)' => 'closeAction($event)'
-                    ),
-                    'label' => 'Finish'
-                ));
-                break;
-        }
-
-        return $formBuilder->getForm();
-    }
 
     /**
      * Handle Form Errors
@@ -1139,6 +1078,9 @@ abstract class BaseEntityController extends BaseController
         $this->responseConf['status'] = 0;
         $this->responseConf['errors'] = array();
         $flashMessage = ''; // Flash message to display to user
+
+        // Curiosity, you can use instead:
+        //$flashMessage = (string) $form->getErrors();
 
         // General errors (are shown to used through the flash message)
         foreach($form->getErrors() as $error) {
@@ -1163,134 +1105,12 @@ abstract class BaseEntityController extends BaseController
         if (empty($flashMessage)) {
             $flashMessage = 'Please check errors.';
         }
-        $this->addFlashMessage($flashMessage, 'Fail to persist object', 'error');
-
-        return $this;
-    }
-
-    /**
-     * Add control to form
-     * @param $formBuilder
-     * @param $field
-     * @return $this
-     */
-    protected function addFormControl($formBuilder, $field)
-    {
-        // Field attributes
-        $formType = $this->getFieldMetadata($field, 'type', 'form');
-        $type = $this->getFieldMetadata($field, 'type');
-        $isMapped = $this->getFieldMetadata($field, 'isMapped');
-        if ($isMapped === null) { // If not defined, guess it from acl
-            $isMapped = ($this->getFieldMetadata($field, 'acl') == 'edit');
-        }
-        $placeholder = $this->getFieldMetadata($field, 'placeholder');
-        $attr = $this->getFieldMetadata($field, 'attr');
-
-        // Base attributes
-        $baseAttrs = array(
-            'attr' => (is_array($attr) ? $attr : array()),
-            'mapped' => $isMapped
+        $this->addFlashMessage(
+            $flashMessage,
+            'Fail to persist object',
+            'error'
         );
-        if ($placeholder) {
-            $baseAttrs['attr']['placeholder'] = $placeholder;
-        }
 
-        // Required. Symfony cannot guess 'nullable' in some cases (not mapped fields and entity type)
-        $isRequired = $this->getFieldMetadata($field, 'isRequired');
-        if ($isRequired !== null) { $baseAttrs['required'] = $isRequired; }
-
-        switch ($formType) {
-            case 'datetime':
-                $formBuilder->add($field, DateTimeType::class, array_merge(
-                    $baseAttrs,
-                    array(
-                        'input' => 'datetime',
-                        'widget' => 'single_text',
-                        'format' => 'yyyy-MM-dd HH:mm:ss'
-                    )
-                ));
-                break;
-            case 'date':
-                $formBuilder->add($field, DateType::class, array_merge(
-                    $baseAttrs,
-                    array(
-                        'input' => 'datetime',
-                        'widget' => 'single_text'
-                    )
-                ));
-                break;
-            case 'radio':
-            case 'checkbox':
-            case 'select':
-            case 'tree-view':
-            case 'html-select':
-            case 'auto-complete':
-                // Choices from static array
-                if ($type == 'enum') {
-                    $formBuilder->add($field, ChoiceType::class, array_merge(
-                        $baseAttrs,
-                        array(
-                            'choices' => $this->templateConf['fieldsChoices'][$field]['value'],
-                            'expanded' => in_array($formType, array('radio', 'checkbox')),
-                            'multiple' => in_array($formType, array('checkbox'))
-                        )
-                    ));
-                }
-                // Choices from entity (database)
-                else {
-                    $autoRefresh = $this->getFieldMetadata($field, 'autoRefresh');
-                    if (!$autoRefresh) { // Auto refresh choices are loaded on init and rendered by Angular
-                        // Determine query
-                        $query = $this->getFieldMetadata($field, 'query'); // Specific query to get choices
-                        if (empty($query)) { $query = 'getChoices'; } // Generic query to get choices
-
-                        $baseAttrs['query_builder'] = function($entityRepository) use ($query) {
-                            return $entityRepository->$query(false);
-                        };
-                    }
-                    $formBuilder->add($field, EntityType::class, array_merge(
-                        $baseAttrs,
-                        array(
-                            'class' => $this->getFieldMetadata($field, 'entityClass'),
-                            'expanded' => in_array($formType, array('radio', 'checkbox')),
-                            'multiple' => in_array($formType, array('checkbox')),
-                            'em' => $this->localConf['entityDataBase']
-                        )
-                    ));
-                }
-                break;
-            case 'hidden':
-                $formBuilder->add($field, HiddenType::class, $baseAttrs);
-                break;
-            case 'password':
-                $formBuilder->add($field, PasswordType::class, $baseAttrs);
-                break;
-            case 'file':
-                // Use the static field 'file'
-                $formBuilder->add('file', FileType::class, $baseAttrs);
-                break;
-            case 'textarea':
-                $formBuilder->add($field, TextareaType::class, $baseAttrs);
-                break;
-            case 'embed':
-                $formBuilder->add($field, $this->localConf['entityFields'][$field]['typeDetail']['formClass']);
-                // Remove field to avoid to show the id in template
-                if(($key = array_search($field, $this->templateConf['fields']['form'])) !== false) {
-                    unset($this->templateConf['fields']['form'][$key]);
-                }
-                break;
-            case 'boolean':
-                // If is mapped use default case, so "nullables" can be guessed
-
-                //if ($isRequired == null) { $baseAttrs['required'] = false; } // This approach solve this problem
-
-                if (!$isMapped) { // No entity metadata (is a fake field, like "paxIsClient" in "BookingBundle:Booking")
-                    $formBuilder->add($field, CheckboxType::class, $baseAttrs);
-                    break;
-                }
-            default:
-                $formBuilder->add($field, null, $baseAttrs);
-        }
         return $this;
     }
 
@@ -1308,7 +1128,7 @@ abstract class BaseEntityController extends BaseController
             case 'session':
                 return $this->saveFormToSS($object);
             default:
-                return $this->saveFormToDb($form, $object, $hasValidation, $hasFlush);
+                return $this->saveFormToDb($form, $object, false, $hasFlush);
         }
     }
 
@@ -1408,9 +1228,10 @@ abstract class BaseEntityController extends BaseController
         }
 
         // Try get from database
+        $getFunction = $this->localConf['functions']['getObjects'];
         $objects = $this->getLocalRepositoryService()
             ->execute(
-                'getObjects',
+                $getFunction,
                 array($options)
             );
 
@@ -1422,7 +1243,40 @@ abstract class BaseEntityController extends BaseController
             }
         }
 
+        // Tree view mode
+        if (isset($this->templateConf['treeView'])
+            && isset($this->flags['treeViewMode']) && $this->flags['treeViewMode']
+        ) {
+            return $this->normalizeTreeViewObjects($objects);
+        }
+
         return $objects;
+    }
+
+    /**
+     * Normalize tree view objects
+     * @param $objects
+     * @return array
+     */
+    protected function normalizeTreeViewObjects($objects)
+    {
+        // If parentField is nor defined, put all objects in level '0' to simulate a tree-view of one level
+        // (it's used the tree-view template to show the objects)
+        if (!isset($this->templateConf['treeView']['localParentField'])) {
+            return ((is_array($objects) && (count($objects) > 0)) ? array(0 => $objects) : array());
+        }
+
+        $nodes = array();
+        if (is_array($objects) && (count($objects) > 0)) {
+            foreach ($objects as $obj) {
+                $index = (empty($obj[$this->templateConf['treeView']['localParentField']])
+                    ? 0 : $obj[$this->templateConf['treeView']['localParentField']]
+                );
+                $nodes[$index][] = $obj;
+            }
+        }
+
+        return $nodes;
     }
 
     /**
@@ -1470,8 +1324,10 @@ abstract class BaseEntityController extends BaseController
             $type = $this->getFieldMetadata($field, 'type');
             $renderType = $this->getFieldMetadata($field, 'type', 'form'); // Starts to render based in form type
             if ($renderType == 'none') {
-                if (in_array($fieldName, array('id', 'priority'))) {
-                    // 'id' is mandatory to handle objects, 'priority' is mandatory to order objects
+                if (in_array($fieldName, array(
+                    'id', // 'id' is mandatory to handle objects
+                    'priority' // 'priority' is mandatory to order objects
+                ))) {
                     $renderType = 'number';
                 } else {
                     // If form type is "disabled", render is based in view type
@@ -1788,6 +1644,26 @@ abstract class BaseEntityController extends BaseController
         $class = $this->localConf['entityClass'];
         $obj = new $class();
 
+        $entityMetadata = $this->localConf['entityFields'];
+
+        // Create "embed" children
+        if (is_array($entityMetadata)) {
+            foreach ($entityMetadata as $fieldName => $fieldMetadata) {
+                if (isset($fieldMetadata['typeDetail'])
+                    && isset($fieldMetadata['typeDetail']['metadata'])
+                    && isset($fieldMetadata['typeDetail']['metadata']['persist'])
+                    && $fieldMetadata['typeDetail']['metadata']['persist'] // true
+                ) {
+                    $class = ($fieldMetadata['typeDetail']['entityClass']);
+                    $childObj = new $class();
+                    // Use static method to avoid to call specific redefined method in child
+                    self::setObjectDefaultValues_static($this, $childObj);
+                    $setMethod = 'set' . ucfirst($fieldName);
+                    $obj->$setMethod($childObj);
+                }
+            }
+        }
+
         // Set default values
         $this->setObjectDefaultValues($obj);
 
@@ -1836,10 +1712,30 @@ abstract class BaseEntityController extends BaseController
     {
         // Template is a default search
         $search = $this->templateConf['search'];
+        $mandatorySearch = $this->localConf['search']; // Contents mandatory parameter to search independent of user preferences
 
-        // Merge with conf search, there are mandatory parameters
-        $search['fields'] = array_merge($search['fields'], $this->localConf['search']['fields']);
-        $search['criteria'] = array_merge($search['criteria'], $this->localConf['search']['criteria']);
+        // Merge search, with mandatory (array_unique remove duplication to avoid errors in database)
+        $search['fields'] = array_unique(array_merge($search['fields'], $mandatorySearch['fields']));
+        $search['criteria'] = array_merge($search['criteria'], $mandatorySearch['criteria']);
+        // Merge conf local data
+        $mandatoryConfLocalData = ((isset($mandatorySearch['conf']) && isset($mandatorySearch['conf']['localData'])) ?
+            $mandatorySearch['conf']['localData'] :
+            null
+        );
+        if ($mandatoryConfLocalData) {
+            $confLocalData = ((isset($search['conf']) && isset($search['conf']['localData'])) ?
+                $search['conf']['localData'] :
+                null
+            );
+
+            if (!isset($search['conf'])) {
+                $search['conf'] = array();
+            }
+            $search['conf']['localData'] = array_merge(
+                ($confLocalData ? $confLocalData : array()),
+                $mandatoryConfLocalData
+            );
+        }
 
         // 'id' is mandatory to handle objects
         if (!in_array('id', $search['fields'])) {
@@ -1956,6 +1852,17 @@ abstract class BaseEntityController extends BaseController
         }
     }
 
+    /**
+     * Get Object Form Context
+     * @param $object
+     * @return string
+     */
+    protected function getObjectFormContext($object)
+    {
+        $id = $object->getId();
+        return ((empty($id) || ($this->flags['storage'] == 'session')) ? 'add' : 'edit');
+    }
+
 
     ////////
     // Events/Callbacks
@@ -1964,21 +1871,58 @@ abstract class BaseEntityController extends BaseController
     /**
      * Pre (before) save object event. Use this function to handle event.
      * @param $object
-     * @param $data
-     * @param $context (context to help to determine actions)
+     * @param $data (usually the form data)
      * @return boolean (true to continue, false to abort)
      */
-    protected function preSaveObject($object, $data, $context = null) {
+    protected function preSaveObject(&$object, $data) {
         return true;
     }
 
     /**
      * Post (after) save object event. Use this function to handle event.
      * @param $object
+     * @param $data (usually the form data)
+     * @return $this
+     */
+    protected function postSaveObject($object, $data = null) {
+        return $this;
+    }
+
+    /**
+     * Pre (before) delete object event. Use this function to handle event.
+     * @param $object
+     * @param $context (context to help to determine actions)
+     * @return boolean (true to continue, false to abort)
+     */
+    protected function preDeleteObject($object, $context = null) {
+        return true;
+    }
+
+    /**
+     * Post (after) delete object event. Use this function to handle event.
+     * @param $object
      * @param $context (context to help to determine actions)
      * @return $this
      */
-    protected function postSaveObject($object, $context = null) {
+    protected function postDeleteObject($object, $context = null) {
+        return $this;
+    }
+
+    /**
+     * Pre (before) cancel object event. Use this function to handle event.
+     * @param $object
+     * @return boolean (true to continue, false to abort)
+     */
+    protected function preCancelObject($object) {
+        return true;
+    }
+
+    /**
+     * Post (after) cancel object event. Use this function to handle event.
+     * @param $object
+     * @return $this
+     */
+    protected function postCancelObject($object) {
         return $this;
     }
 }

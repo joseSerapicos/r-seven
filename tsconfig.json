@@ -1,35 +1,50 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "outDir": "./tsc-out/app",
+    "baseUrl": "./",
+    "module": "es2015",
+    "types": [
+      "../typings"
+    ],
     "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "removeComments": false,
-    "noImplicitAny": false
+    "target": "es5",
+    "noImplicitAny": false,
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "lib": [
+      "es2017",
+      "dom"
+    ]
   },
   "exclude": [
     "app",
     "bin",
     "bower_components",
+    "node_modules",
+    "trash",
+    "var",
+    "vendor",
+    "web",
     "bower.json",
     ".bowerrc",
     "composer.json",
     "composer.lock",
+    "gulpfile.js",
+    "ng-apps.conf.js",
     ".gitignore",
-    "node_modules",
     "package.json",
     "phpunit.xml.dist",
+    "polyfills.ts",
     "README.md",
     "tests",
     "tsconfig.json",
-    "typings.json",
-    "typings/main",
-    "typings/main.d.ts",
-    "var",
-    "vendor",
-    "web",
-    "trash"
+    "tslint.json",
+    "typings.json"
   ]
 }

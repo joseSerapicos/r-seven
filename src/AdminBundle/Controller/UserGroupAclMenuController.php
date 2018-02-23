@@ -41,9 +41,6 @@ class UserGroupAclMenuController extends BaseEntityChildController
         parent::initChild($request, $parents, $label);
 
         // Variables
-        $this->localConf['form']['buttons'] = ('form');
-        $this->localConf['form']['hasNgForm'] = false;
-        $this->localConf['form']['hasFields'] = false;
         $this->localConf['templates']['edit'] = 'AppBundle:tree-view:form.html.twig';
 
         // Search
@@ -62,11 +59,6 @@ class UserGroupAclMenuController extends BaseEntityChildController
         $this->templateConf['extraData'] = array(
             'template' => array(
                 'class' => '-merge-view'
-            ),
-            'service' => array(
-                'treeView' => array(
-                    'parentNodeField' => null
-                )
             )
         );
 
@@ -110,7 +102,7 @@ class UserGroupAclMenuController extends BaseEntityChildController
         $obj = $this->newObject();
 
         // Build form
-        $form = $this->buildForm($request, $obj);
+        $form = $this->createForm($this->localConf['formTypeClass'], $obj);
 
         // Handle request
         $form->handleRequest($request);

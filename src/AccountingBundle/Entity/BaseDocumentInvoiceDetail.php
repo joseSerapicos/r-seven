@@ -9,9 +9,23 @@ use AppBundle\Entity\BaseEntity;
 /**
  * @ORM\MappedSuperclass(repositoryClass="AccountingBundle\Entity\BaseDocumentInvoiceDetailRepository")
  * @ORM\HasLifecycleCallbacks()
+ *
+ * This class saves the VAT values, because the correct document VAT it's always the service VAT when the document
+ * was made, so we need to save this values to keep the inquiry of document independent of service VAT changes in time.
  */
-class BaseDocumentInvoiceDetail extends BaseEntity
+abstract class BaseDocumentInvoiceDetail extends BaseEntity
 {
+    /**
+     * PUT HERE THE DOCUMENT INVOICE DETAIL FOREIGN KEY
+     */
+
+    /**
+     * @ORM\ManyToOne(targetEntity="\BookingBundle\Entity\BookingServicePrice")
+     * @ORM\JoinColumn(name="fk_bookingServicePrice", referencedColumnName="id", nullable=true, unique=false, onDelete="RESTRICT")
+     * Links the invoice detail to the booking service price, to use the booking as base of invoicing.
+     */
+    protected $bookingServicePriceObj;
+
     /**
      * @ORM\ManyToOne(targetEntity="\ServicesBundle\Entity\Service")
      * @ORM\JoinColumn(name="fk_service", referencedColumnName="id", nullable=false, unique=false, onDelete="RESTRICT")
@@ -44,6 +58,11 @@ class BaseDocumentInvoiceDetail extends BaseEntity
     protected $quantity;
 
     /**
+     * @ORM\Column(name="isVatIncluded", type="boolean", nullable=true, unique=false, options={"default":0, "comment":"Controls how to return the fake fields user_..."})
+     */
+    protected $isVatIncluded;
+
+    /**
      * @ORM\Column(name="value", type="decimal", scale=4, nullable=false, unique=false, options={"default":"0", "comment":"Value"})
      * By default inherit from "BookingServicePrice" (if applicable).
      */
@@ -66,6 +85,27 @@ class BaseDocumentInvoiceDetail extends BaseEntity
      */
     protected $totalVat;
 
+
+    /**
+     * Set bookingServicePriceObj
+     * @param \BookingBundle\Entity\BookingServicePrice $bookingServicePriceObj
+     * @return $this
+     */
+    public function setBookingServicePriceObj(\BookingBundle\Entity\BookingServicePrice $bookingServicePriceObj = null)
+    {
+        $this->bookingServicePriceObj = $bookingServicePriceObj;
+        return $this;
+    }
+
+    /**
+     * Get bookingServicePriceObj
+     *
+     * @return \BookingBundle\Entity\BookingServicePrice
+     */
+    public function getBookingServicePriceObj()
+    {
+        return $this->bookingServicePriceObj;
+    }
 
     /**
      * Set serviceObj
@@ -131,7 +171,7 @@ class BaseDocumentInvoiceDetail extends BaseEntity
     {
         return $this->vatCodeObj;
     }
-    
+
     /**
      * Set quantity
      * @param integer $quantity
@@ -150,6 +190,26 @@ class BaseDocumentInvoiceDetail extends BaseEntity
     public function getQuantity()
     {
         return $this->quantity;
+    }
+
+    /**
+     * Set isVatIncluded
+     * @param $isVatIncluded
+     * @return $this
+     */
+    public function setIsVatIncluded($isVatIncluded)
+    {
+        $this->isVatIncluded = $isVatIncluded;
+        return $this;
+    }
+
+    /**
+     * Get isVatIncluded
+     * @return \DateTime
+     */
+    public function getIsVatIncluded()
+    {
+        return $this->isVatIncluded;
     }
 
     /**
@@ -252,18 +312,10 @@ class BaseDocumentInvoiceDetail extends BaseEntity
         return round($this->subTotal + $this->totalVat, 2);
     }
 
+
     ////////
     // Fake methods to keep default values
     ////////////////////////////////
-
-    /**
-     * Get isVatIncluded
-     * @return boolean
-     */
-    public function getIsVatIncluded()
-    {
-        return true;
-    }
 
     /**
      * Get user_value
@@ -271,7 +323,12 @@ class BaseDocumentInvoiceDetail extends BaseEntity
      */
     public function getUser_value()
     {
-        return $this->getTotalUnit();
+        // Value, according with the "getIsVatIncluded" returned value
+        if ($this->getIsVatIncluded()) {
+            return $this->getTotalUnit();
+        }
+
+        return $this->getValue();
     }
 
 }

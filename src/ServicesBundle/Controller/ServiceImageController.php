@@ -5,6 +5,7 @@ namespace ServicesBundle\Controller;
 use AppBundle\Controller\BaseEntityChildController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
+use AppBundle\Service\HelperService;
 
 class ServiceImageController extends BaseEntityChildController
 {
@@ -35,20 +36,20 @@ class ServiceImageController extends BaseEntityChildController
             ),
             'delete' => array(
                 'name' => '_services__service_image__delete',
+            ),
+            'thumbnail' => array(
+                'name' => '_services__service_image__thumbnail',
             )
         );
 
         parent::initChild($request, $parents, $label);
 
+        // Form (set submit context as default, because this is the most used)
+        $this->localConf['formTypeClass'] = ('ServicesBundle\Form\ServiceImageSubmitFormType');
+
         /* Templates */
-        $this->localConf['templatesPath'] = ($this->localConf['Bundle'].'ServiceImage');
+        $this->localConf['templatesPath'] = ($this->localConf['Bundle'].':ServiceImage');
         /* /Templates */
-        
-        /* Form */
-        $this->localConf['form']['class'] = 'dropzone';
-        $this->localConf['form']['buttons'] = 'none';
-        $this->localConf['form']['hasNgForm'] = false;
-        /* /Form */
 
         // Templates
         $this->localConf['templates']['edit'] = 'AppBundle:file:form-popup.html.twig';
@@ -70,10 +71,7 @@ class ServiceImageController extends BaseEntityChildController
             'class' => '-merge-view',
             'imageCrop' => array(
                 'label' => 'Set image profile',
-                'ActionUrl' => $this->generateUrl(
-                    '_services__service__thumbnail',
-                    array('id' => $this->parentConf['service']['obj']->getId())
-                )
+                'ActionUrl' => $this->templateConf['route']['thumbnail']['url']
             )
         );
 
@@ -120,10 +118,10 @@ class ServiceImageController extends BaseEntityChildController
 
         // Build form
         if(empty($_FILES)) {
-            // Fields is not necessary, the plugin render the control
-            $this->localConf['form']['hasFields'] = false;
+            // Fields is necessary, to submit data, to render in view the plugin makes the work
+            $this->localConf['formTypeClass'] = 'ServicesBundle\Form\ServiceImageRenderFormType';
         }
-        $form = $this->buildForm($request, $obj);
+        $form = $this->createForm($this->localConf['formTypeClass'], $obj);
 
         // Handle request
         $form->handleRequest($request);
@@ -174,6 +172,72 @@ class ServiceImageController extends BaseEntityChildController
     }
 
     /**
+     * @Route("/services/service-image/thumbnail/{service}",
+     *     name="_services__service_image__thumbnail"
+     * )
+     *
+     * Action to edit/add thumbnail using the form
+     * @param Request $request
+     * @param $service
+     * @return mixed
+     */
+    public function thumbnailAction(Request $request, $service)
+    {
+        // Set configuration
+        $this->flags['hasForm'] = true;
+        $this->initChild($request, array($service));
+
+        // Get object
+        $obj = $this->getObject();
+
+        // Create form
+        $form = $this->createForm('ServicesBundle\Form\ServiceImageThumbnailType', $obj);
+
+        // Handle request
+        $form->handleRequest($request);
+
+        // Check if is submitted
+        if($form->isSubmitted()) {
+            if (!$this->validateForm($form)) {
+                return $this->getResponse(true);
+            }
+
+            // Get data
+            $content = $request->getContent();
+            $fields = array();
+            parse_str($content, $fields);
+
+            // Get object
+            $serviceObj = $this->getParentConf()['obj'];
+            $serviceObj->setThumbnail(HelperService::cropImage(
+                $this->container->get('liip_imagine.data.manager'),
+                $this->container->get('liip_imagine.filter.manager'),
+                $fields['path'],
+                $fields['width'],
+                $fields['height'],
+                $fields['x'],
+                $fields['y']
+            ));
+
+            // Save (use a static general method, not a local method)
+            self::saveObject_static($this, $serviceObj);
+            if ($this->responseConf['status'] === 1) {
+                $this->addFlashMessage( // Flash messages to display to user
+                    'The data has been updated',
+                    'Success',
+                    'success'
+                );
+            }
+            return $this->getResponse(true);
+        }
+
+        // Render form
+        return $this->render('AppBundle:image:crop-form-popup.html.twig', array(
+            '_form' => $form->createView()
+        ));
+    }
+
+    /**
      * New object
      * @return object
      */
@@ -181,10 +245,17 @@ class ServiceImageController extends BaseEntityChildController
     {
         $obj = parent::newObject();
 
+        $parent = reset($this->parentConf);
+
+        $parentId = ($parent['obj'] ?
+            $parent['obj']->getId() :
+            0 // Needed when parent is not defined like to get edit template
+        );
+
         $obj->setDir(
             $this->get('session')->get('_app.system')['filesRepository']
             . 'services/'
-            . $this->parentConf['service']['obj']->getId()
+            . $parentId
             . '/img/'
         );
 

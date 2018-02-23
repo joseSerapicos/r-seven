@@ -74,6 +74,17 @@ class ModuleController extends BaseEntityController
             )
         );
 
+        // Tree view configuration
+        $this->flags['treeViewMode'] = true;
+        $this->templateConf['treeView'] = array(
+            'iconField' => 'icon',
+            'localParentField' => 'appParentModuleObj',
+            'parentTargetField' => 'appModuleObj'
+        );
+
+        // Search. Local conf search, mandatory fields and criteria.
+        $this->localConf['search']['fields'][] = 'appParentModuleObj'; // To get parent for tree view (is mandatory)
+
         return $this;
     }
 
@@ -126,31 +137,6 @@ class ModuleController extends BaseEntityController
     }
 
     /**
-     * @Route("/admin/module/edit/{id}",
-     *     name="_admin__module__edit",
-     *     defaults={"id" = null},
-     * )
-     *
-     * Action to edit objects using the form
-     * @param Request $request
-     * @param $id
-     * @return mixed
-     */
-    public function editAction(Request $request, $id)
-    {
-        // Set configuration
-        $this->flags['hasForm'] = true;
-        $this->init($request);
-
-        // Only visible in add mode
-        if(($key = array_search('appModuleObj', $this->templateConf['fields']['form'])) !== false) {
-            unset($this->templateConf['fields']['form'][$key]);
-        }
-
-        return parent::editAction($request, $id);
-    }
-
-    /**
      * @Route("/admin/module/add",
      *     name="_admin__module__add"
      * )
@@ -169,8 +155,7 @@ class ModuleController extends BaseEntityController
         $obj = $this->newObject();
 
         // Build form
-        $this->localConf['form'] = array_merge($this->localConf['form'], array('route' => 'add', 'buttons' => 'wizard'));
-        $form = $this->buildForm($request, $obj);
+        $form = $this->createForm('AdminBundle\Form\ModuleAddFormType', $obj);
 
         // Handle request
         $form->handleRequest($request);
@@ -194,6 +179,31 @@ class ModuleController extends BaseEntityController
                 )
             )
         ));
+    }
+
+    /**
+     * @Route("/admin/module/edit/{id}",
+     *     name="_admin__module__edit",
+     *     defaults={"id" = null},
+     * )
+     *
+     * Action to edit objects using the form
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function editAction(Request $request, $id)
+    {
+        // Set configuration
+        $this->flags['hasForm'] = true;
+        $this->init($request);
+
+        // Only visible in add mode
+        if(($key = array_search('appModuleObj', $this->templateConf['fields']['form'])) !== false) {
+            unset($this->templateConf['fields']['form'][$key]);
+        }
+
+        return parent::editAction($request, $id);
     }
 
     /**

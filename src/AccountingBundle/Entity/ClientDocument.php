@@ -67,4 +67,17 @@ class ClientDocument extends BaseDocument {
     {
         return $this->clientObj;
     }
+
+    /**
+     * Representation of object for dropdown (name/label for object)
+     * @return mixed
+     */
+    public function __toString()
+    {
+        return (
+            $this->getCode()
+            . ' (' . $this->getClientDocumentTypeObj()->getName()
+            . ': ' . $this->getRemainSettlement() . ')'
+        );
+    }
 }

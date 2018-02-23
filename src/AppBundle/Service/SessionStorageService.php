@@ -188,10 +188,13 @@ class SessionStorageService
         }
 
         // Store object (at root of storage)
-        $storage[$object->getId()] = array(
-            'obj' => $object,
-            'childrenObj' => array()
-        );
+        if (!isset($storage[$object->getId()])) {
+            $storage[$object->getId()] = array(
+                'obj' => null,
+                'childrenObj' => array()
+            );
+        }
+        $storage[$object->getId()]['obj'] = $object;
 
         // Save storage in session
         $this->session->set('_storage', $storage);
@@ -204,15 +207,15 @@ class SessionStorageService
      * @param $limit (hhmmssuuuuuu)
      * @return $this
      */
-    public function clear($limit = 20000000000) { // Default 2 hours
+    public function clear($limit = 10000000000) { // Default 1 hours
         $storage = $this->session->get('_storage');
 
         $now = $this->generateId();
         $limitTime = ($now - $limit); // hhmmssuuuuuu
 
         foreach ($storage as $time => $value) {
-            if (($time < $limitTime) // All entries saved more than 2 hours (until 0h to $now-2h)
-                || ($time > $now) // All entries saved more than 2 hours but in an hour bigger then $now
+            if (($time < $limitTime) // All entries saved more than 1 hours (until 0h to $now-1h)
+                || ($time > $now) // All entries saved more than 1 hours but in an hour bigger then $now
                 // (saved in previous days) (until $now to 23:59)
             ) {
                 $this->delete($time, null, $storage);
@@ -242,7 +245,7 @@ class SessionStorageService
         } else {
             $storage = $this->session->get('_storage');
         }
-
+        
         // Check if object is set, the object may have expired and been removed
         if (isset($storage[$id])) {
             // Delete children objects
@@ -327,7 +330,7 @@ class SessionStorageService
         $micro = sprintf("%06d", ($t - floor($t)) * 1000000);
         $dateTime = new \DateTime(date('Y-m-d H:i:s.' . $micro, $t));
 
-        // Due to the expiration time (2 hours) this identifier will never be repeated
+        // Due to the expiration time (1 hours) this identifier will never be repeated
         return intval($dateTime->format("Hisu"));
     }
 
@@ -345,6 +348,7 @@ class SessionStorageService
         $storage = $this->session->get('_storage');
         if (is_array($storage)) {
             foreach ($storage as $objKey => $obj) {
+                echo('<hr>');
                 echo('<div><span>' . $objKey . ': ' . get_class($obj['obj']) . '</span>');
                 if (count($obj['childrenObj']) > 0) {
                     foreach ($obj['childrenObj'] as $childrenObjKey => $childrenArr) {

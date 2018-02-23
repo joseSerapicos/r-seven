@@ -7,13 +7,13 @@
     {% if (form and fields) %}
         {% for field in fields['form'] %}
             {% if field == 'requiresSysadminRole' %}
-                <template [ngIf]="_userRole == 'ROLE_SYSADMIN'">
+                <ng-template [ngIf]="_userRole == 'ROLE_SYSADMIN'">
                     {% include 'AppBundle:form:field.html.twig' with {
                         'field': field,
                         'metadata': fields['metadata'][field],
                         'form': form
                     } %}
-                </template>
+                </ng-template>
             {% else %}
                 {% include 'AppBundle:form:field.html.twig' with {
                     'field': field,

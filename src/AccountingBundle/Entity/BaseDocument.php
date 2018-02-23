@@ -143,6 +143,11 @@ class BaseDocument extends BaseEntity {
      */
     protected $remainSettlement;
 
+    /**
+     * @ORM\Column(name="isAccessed", type="boolean", nullable=false, unique=false, options={"default":0, "comment":"Determines if the document was accessed (accessed to the PDF file)"})
+     */
+    protected $isAccessed;
+
 
     /**
      * Set codePrefix
@@ -729,5 +734,25 @@ class BaseDocument extends BaseEntity {
         if ($this->getRemainSettlement() == 0) { return 'YES'; }
         if ($this->getRemainSettlement() == $this->getTotal()) { return 'NO'; }
         return 'PARTIAL';
+    }
+
+    /**
+     * Set isAccessed
+     * @param boolean $isAccessed
+     * @return $this
+     */
+    public function setIsAccessed($isAccessed)
+    {
+        $this->isAccessed = $isAccessed;
+        return $this;
+    }
+
+    /**
+     * Get isAccessed
+     * @return boolean
+     */
+    public function getIsAccessed()
+    {
+        return $this->isAccessed;
     }
 }

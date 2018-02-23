@@ -67,4 +67,17 @@ class SupplierDocument extends BaseDocument {
     {
         return $this->supplierObj;
     }
+
+    /**
+     * Representation of object for dropdown (name/label for object)
+     * @return mixed
+     */
+    public function __toString()
+    {
+        return (
+            $this->getCode()
+            . ' (' . $this->getSupplierDocumentTypeObj()->getName()
+            . ': ' . $this->getRemainSettlement() . ')'
+        );
+    }
 }

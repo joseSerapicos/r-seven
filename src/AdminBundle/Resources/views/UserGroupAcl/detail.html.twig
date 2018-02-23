@@ -34,13 +34,12 @@
     } %}
 {% endblock %}
 
-{% block body_container %}<div id="js_main"></div>{% endblock %}
-
 {% block local_javascripts %}
     {% javascripts output="assets/admin/user-group-acl/detail/js/local.js"
-        '@AdminBundle/Resources/public/user-group-acl/detail/webpack_generated/common.js'
-        '@AdminBundle/Resources/public/user-group-acl/detail/webpack_generated/app.js'
-        '@AdminBundle/Resources/public/user-group-acl/detail/webpack_generated/main.js'
+        '@AdminBundle/Resources/public/user-group-acl/detail/ts/dist/inline.bundle.js'
+        '@AdminBundle/Resources/public/user-group-acl/detail/ts/dist/polyfills.bundle.js'
+        '@AdminBundle/Resources/public/user-group-acl/detail/ts/dist/vendor.bundle.js'
+        '@AdminBundle/Resources/public/user-group-acl/detail/ts/dist/main.bundle.js'
     %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}

@@ -12,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
  *         @ORM\UniqueConstraint(name="unq_entityGroupEntity", columns={"fk_entityGroup", "fk_entity"})
  *     }
  * )
+ *
+ * Association of others entities to the group of determined entity
  */
 class EntityGroupEntity extends BaseEntity {
     /**

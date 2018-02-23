@@ -12,6 +12,33 @@ use AppBundle\Service\HelperService;
  */
 class ClientDocumentReceiptPaymentRepository extends BaseDocumentReceiptPaymentRepository
 {
+    static protected $metadata = null;
+
+    /**
+     * Defines parent method
+     * @return string
+     */
+    protected function getLocalEntityContext()
+    {
+        return 'client';
+    }
+
+    /**
+     * Get field metadata
+     * @param $field
+     * @param $attribute
+     * @param $metadata (uses this metadata instead of local metadata)
+     * @param $context ('view'|'form'|'none')
+     * @return null
+     */
+    static public function getFieldMetadata($field, $attribute, $metadata = null, $context = 'none')
+    {
+        if (!$metadata) {
+            $metadata = self::getMetadata();
+        }
+        return self::getLocalFieldMetadata($field, $attribute, $metadata, $context);
+    }
+
     /**
      * Get entity metadata
      * @return mixed

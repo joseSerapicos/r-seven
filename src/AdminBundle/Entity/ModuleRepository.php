@@ -60,6 +60,14 @@ class ModuleRepository extends BaseEntityRepository
                 ),
                 'form' => array('type' => 'radio')
             ),
+            // Used to determines the parent in tree view (app_module.appModuleObj)
+            'appParentModuleObj' => array('field' => 'appModuleObj', 'table' => 'app_module', 'label' => 'Parent Module',
+                'type' => 'object', 'acl' => 'read', 'dependency' => 'appModuleObj', 'typeDetail' =>
+                    array(
+                        'table' => 'app_module', 'tableAlias' => 'appParentModule',
+                        'field' => 'id', 'bundle' => 'sysadmin', 'type' => 'none'
+                    )
+            ),
             'name' => array('label' => 'Name', 'type' => 'text', 'acl' => 'edit'),
             'description' => array('label' => 'Description', 'type' => 'text', 'acl' => 'read', 'table' => 'app_module', 'dependency' => 'appModuleObj'),
             'priority' => array('label' => 'Priority', 'type' => 'number', 'acl' => 'edit'),
@@ -70,7 +78,6 @@ class ModuleRepository extends BaseEntityRepository
                     'table' => 'app_icon', 'bundle' => 'sysadmin', 'type' => 'none')),
             'icon' => array('table' => 'app_icon', 'field' => 'icon', 'label' => 'Icon', 'type' => 'icon',
                 'acl' => 'read', 'dependency' => 'appIconObj'),
-
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
             'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)

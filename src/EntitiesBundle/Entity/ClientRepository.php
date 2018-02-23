@@ -46,9 +46,7 @@ class ClientRepository extends BaseEntityRepository
     static function getMetadata()
     {
         // Process metadata only once
-        if (self::$metadata) {
-            return self::$metadata;
-        }
+        if (self::$metadata) { return self::$metadata; }
 
         $localTable = lcfirst(substr(strrchr(get_called_class(), '\\'), 1, -10));
 
@@ -62,6 +60,10 @@ class ClientRepository extends BaseEntityRepository
                 'typeDetail' => array(
                     'table' => 'entity', 'bundle' => 'entities', 'type' => 'none', 'fieldInView' => 'name',
                     'metadata' => array('method' => 'join', 'pushAfterField' => 'code')
+                ),
+                'attr' => array(
+                    '(onChange)' => 'onEntityChange($event)',
+                    '[placeholder]' => "'Entity'"
                 ),
                 'form' => array('type' => 'auto-complete')
             ),

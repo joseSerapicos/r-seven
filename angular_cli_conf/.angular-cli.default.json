@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "project": {
+    "name": "my-project"
+  },
+  "apps": [
+    {
+      "root": "src",
+      "outDir": "dist",
+      "assets": [],
+      "index": "index.html",
+      "main": "main.ts",
+      "polyfills": "polyfills.ts",
+      "test": "",
+      "tsconfig": "tsconfig.json",
+      "testTsconfig": "",
+      "prefix": "app",
+      "styles": [],
+      "scripts": [],
+      "environmentSource": "environments/environment.ts",
+      "environments": {
+        "dev": "environments/environment.ts",
+        "prod": "environments/environment.prod.ts"
+      }
+    }
+  ],
+  "e2e": {},
+  "lint": [
+    {
+      "project": "tsconfig.json",
+      "exclude": "**/node_modules/**"
+    }
+  ],
+  "test": {},
+  "defaults": {
+    "styleExt": "css",
+    "component": {}
+  }
+}

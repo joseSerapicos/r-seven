@@ -10,13 +10,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                <template ngFor let-obj [ngForOf]="_dataService.getProviderAttr('objects')" let-objIndex="index"><tr
+                <ng-template ngFor let-obj [ngForOf]="_dataService.getProviderAttr('objects')" let-objIndex="index"><tr
                           (dblclick)="editAction($event, objIndex)">
                         <td class="txt-align-l"><small><span class="m-r-xs">Original&nbsp;Doc:</span><span class="m-r-xs"
-                            [innerHTML]="obj['originalClientDocumentType_name']"></span><span class="m-r-xs"
-                            [innerHTML]="obj['originalClientDocument_code']"></span></small><div><strong><span
+                            [innerHTML]="obj['originalDocumentType_name']"></span><span class="m-r-xs"
+                            [innerHTML]="obj['originalDocument_code']"></span></small><div><strong><span
                             [innerHTML]="obj['service_icon']" class="m-r-xs"></span><span
-                            [innerHTML]="obj['bookingService_name'] || obj['service_name']"></span></strong></div><small><span
+                            [innerHTML]="obj['service_name']"></span></strong></div><small><span
                             [innerHTML]="obj['description']"></span></small></td>
                         <td *ngFor="let field of ['quantity', 'totalUnit', 'vatCode_name', 'total']"
                             [ngClass]="getColAlign(field)"
@@ -31,16 +31,16 @@
                                    value="{% verbatim %}{{objIndex}}{% endverbatim %}"
                                    [ngModel]="checkAll"/>
                             <div class="pull-right actions no-user-select" (click)="triggerAction($event)">
-                                <template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
+                                <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
                                     <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
                                        [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
                                        class="fa"
                                        [attr.data-action]="action"
                                        [attr.data-value]="objIndex"></a>
-                                </template>
+                                </ng-template>
                             </div>
                         </td>
-                    </tr></template>
+                    </tr></ng-template>
                 </tbody>
             </table>
         </form>

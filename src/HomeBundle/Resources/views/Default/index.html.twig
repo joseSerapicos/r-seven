@@ -26,14 +26,6 @@
     </div>
 {% endblock %}
 
-{% block body_container %}
-    <div class="row">
-        <div class="col-sm-8">
-            <div class='js_calendarComponent'></div>
-        </div>
-    </div>
-{% endblock %}
-
 {% block vendor_javascripts %}
     {{ parent() }}
 
@@ -46,11 +38,22 @@
 {% endblock %}
 
 {% block local_javascripts %}
-    {% javascripts output="assets/home/default/index/js/local.js"
-        '@HomeBundle/Resources/public/default/index/webpack_generated/common.js'
-        '@HomeBundle/Resources/public/default/index/webpack_generated/app.js'
-        '@HomeBundle/Resources/public/default/index/webpack_generated/main.js'
-    %}
-        <script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+    {# if (asset_exists('@HomeBundle/Resources/public/default/index/ts/dist/vendor.bundle.js')) #}
+        {% javascripts output="assets/home/default/index/js/local.js"
+            '@HomeBundle/Resources/public/default/index/ts/dist/inline.bundle.js'
+            '@HomeBundle/Resources/public/default/index/ts/dist/polyfills.bundle.js'
+            '@HomeBundle/Resources/public/default/index/ts/dist/vendor.bundle.js'
+            '@HomeBundle/Resources/public/default/index/ts/dist/main.bundle.js'
+        %}
+            <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {# else %}
+        {% javascripts output="assets/home/default/index/js/local.js"
+            '@HomeBundle/Resources/public/default/index/ts/dist/inline.bundle.js'
+            '@HomeBundle/Resources/public/default/index/ts/dist/polyfills.bundle.js'
+            '@HomeBundle/Resources/public/default/index/ts/dist/main.bundle.js'
+        %}
+            <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% endif #}
 {% endblock %}

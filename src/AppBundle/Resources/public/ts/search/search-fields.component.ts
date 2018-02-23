@@ -8,10 +8,10 @@ import {DataService} from '../data-service/data.service';
     <js_expander [label]="'Fields'" [hasIcon]="false" [customClass]="'action'" (onChange)="toggleIsExpanded($event, 'fields')"></js_expander>
     <div [hidden]="!_isExpanded" class="col-xs-12 col-sm-12 white-dropdown search-fields">
         <select multiple size="6" [(ngModel)]="_search['fields']" class="form-control">
-            <template ngFor let-field [ngForOf]="_fields">
+            <ng-template ngFor let-field [ngForOf]="_fields">
                 <option *ngIf="!_helperService.inArray(_fieldsMetadata[field]['type'], _deniedTypes)"
                         value="{{field}}">{{_fieldsMetadata[field]['label']}}</option>
-            </template>
+            </ng-template>
         </select>
     </div>
     `,
