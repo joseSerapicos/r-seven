@@ -6,31 +6,66 @@
 
     {% if (form and fields) %}
         {% for field in fields['form'] %}
-            {% if field == 'durationStartDay' %}
+            {% if field == 'durationType' %}
                 <div class="form-group">
                     {% include 'AppBundle:form:label.html.twig' with {
                         'formField': form[field],
                         'metadata': fields['metadata'][field]
                     } %}
                     <div class="col-sm-10"><div class="row">
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             {% include 'AppBundle:form:input.html.twig' with {
                                 'field': field,
                                 'formField': form[field],
                                 'metadata': fields['metadata'][field]
                             } %}
                         </div>
-                        <label class="col-sm-4 control-label">Duration</label>
-                        <div class="col-sm-4">
+                        <div *ngIf="_formService.getObject().{{field}} == 'FIXED'"  class="col-sm-6">
                             {% include 'AppBundle:form:input.html.twig' with {
-                                'field': 'durationDays',
-                                'formField': form['durationDays'],
-                                'metadata': fields['metadata']['durationDays']
+                            'field': 'durationDays',
+                            'formField': form['durationDays'],
+                            'metadata': fields['metadata']['durationDays']
                             } %}
                         </div>
                     </div></div>
                 </div>
-            {% elseif (field not in ['durationDays']) %}
+            {% elseif field == 'quantityType' %}
+                <div class="form-group">
+                    {% include 'AppBundle:form:label.html.twig' with {
+                    'formField': form[field],
+                    'metadata': fields['metadata'][field]
+                    } %}
+                    <div class="col-sm-10"><div class="row">
+                        <div class="col-sm-6">
+                            {% include 'AppBundle:form:input.html.twig' with {
+                            'field': field,
+                            'formField': form[field],
+                            'metadata': fields['metadata'][field]
+                            } %}
+                        </div>
+                        <div *ngIf="_formService.getObject().{{field}} == 'FIXED'"  class="col-sm-6">
+                            {% include 'AppBundle:form:input.html.twig' with {
+                            'field': 'quantity',
+                            'formField': form['quantity'],
+                            'metadata': fields['metadata']['quantity']
+                            } %}
+                        </div>
+                    </div></div>
+                </div>
+            {% elseif field == 'placeObj' %}
+                <ng-template [ngIf]="_formService.getObject()['type'] == 'TRAVEL'">
+                    {% include 'AppBundle:form:field.html.twig' with {
+                    'field': field,
+                    'metadata': fields['metadata'][field],
+                    'form': form
+                    } %}
+                    {% include 'AppBundle:form:field.html.twig' with {
+                    'field': 'placeToObj',
+                    'metadata': fields['metadata']['placeToObj'],
+                    'form': form
+                    } %}
+                </ng-template>
+            {% elseif (field not in ['durationDays', 'placeToObj']) %}
                 {% include 'AppBundle:form:field.html.twig' with {
                     'field': field,
                     'metadata': fields['metadata'][field],

@@ -87,7 +87,9 @@ class UserCalendarRepository extends BaseEntityRepository {
                 'table' => 'store', 'bundle' => 'admin', 'type' => 'select'), 'isRequired' => false),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'none', 'acl' => 'read', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 

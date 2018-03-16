@@ -58,116 +58,12 @@ class PackageBookingServiceRepository extends BaseEntityRepository
                 ),
                 'form' => array('type' => 'embed')
             ),
-            'placeObj' => array('label' => 'From', 'type' => 'object', 'acl' => 'edit',
-                'typeDetail' => array(
-                    'table' => 'place', 'bundle' => 'common', 'type' => 'none', 'fieldInView' => 'place_name'),
-                'isRequired' => false,
-                'form' => array('type' => 'auto-complete')
-            ),
-            'place_name' => array('table' => 'place', 'field' => 'name', 'label' => 'From (Name)', 'type' => 'text',
-                'acl' => 'read', 'dependency' => 'placeObj', 'form' => array('type' => 'none')),
-            'place_iata' => array('table' => 'place', 'field' => 'iataCode', 'label' => 'From', 'type' => 'text',
-                'acl' => 'read', 'dependency' => 'placeObj', 'form' => array('type' => 'none')),
-            'placeToObj' => array('label' => 'To', 'type' => 'object', 'acl' => 'edit',
-                'typeDetail' => array(
-                    'table' => 'place', 'tableAlias' => 'place_to', 'bundle' => 'common', 'type' => 'none',
-                    'fieldInView' => 'placeTo_name'),
-                'isRequired' => false,
-                'form' => array('type' => 'auto-complete')
-            ),
-            'placeTo_name' => array('table' => 'place_to', 'field' => 'name', 'label' => 'To (Name)', 'type' => 'text',
-                'acl' => 'read', 'dependency' => 'placeToObj', 'form' => array('type' => 'none')),
-            'placeTo_iata' => array('table' => 'place_to', 'field' => 'iataCode', 'label' => 'To', 'type' => 'text',
-                'acl' => 'read', 'dependency' => 'placeToObj', 'form' => array('type' => 'none')),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
             // Handled by cancel action
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'read', 'form' => array('type' => 'none'))
-        ));
-    }
-
-    /**
-     * Set places to package booking (from booking service objects)
-     * This function need to be here, so we can get directly the object to set in bookingObj
-     * @param $packageBookingObj
-     * @return mixed
-     */
-    public function setPackageBookingPlaces($packageBookingObj)
-    {
-        $baseCriteria = array(
-            array(
-                'field' => 'isEnabled',
-                'expr' => 'eq',
-                'value' => true
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'read',
+                'form' => array('type' => 'none'), 'view' => array('keepOriginalNormalizer' => true)
             )
-        );
-
-
-        // Place (from). First place in services.
-        $placeOptions = array(
-            'criteria' => array_merge(
-                $baseCriteria,
-                array(
-                    array(
-                        'field' => 'placeObj',
-                        'expr' => 'isNotNull',
-                        'value' => null
-                    )
-                )
-            ),
-            'orderBy' => array(
-                array('field' => 'startDate', 'value' => 'ASC'),
-                //array('field' => 'priority', 'value' => 'ASC')
-            ),
-            'limit' => 1
-        );
-
-        // Get query builder
-        $qb = $this->queryBuilder($placeOptions, false);
-
-        // Get booking service
-        $qb->innerJoin('packageBookingService.bookingServiceObj',
-            'bookingService',
-            'WITH',
-            '(bookingService.bookingObj = ' . $packageBookingObj->getBookingObj()->getId() . ')' // Booking criteria is used here
-        );
-
-        $obj = $this->executeQueryBuilder($qb, 'getOneOrNullResult');
-        $packageBookingObj->setPlaceObj($obj ? $obj->getPlaceObj() : null);
-
-
-        // PlaceTo (to). Last place in services.
-        $placeToOptions = array(
-            'criteria' => array_merge(
-                $baseCriteria,
-                array(
-                    array(
-                        'field' => 'placeToObj',
-                        'expr' => 'isNotNull',
-                        'value' => null
-                    )
-                )
-            ),
-            'orderBy' => array(
-                array('field' => 'endDate', 'value' => 'DESC'),
-                //array('field' => 'priority', 'value' => 'DESC')
-            ),
-            'limit' => 1
-        );
-
-        // Get query builder
-        $qb = $this->queryBuilder($placeToOptions, false);
-
-        // Get booking service
-        $qb->innerJoin('packageBookingService.bookingServiceObj',
-            'bookingService',
-            'WITH',
-            '(bookingService.bookingObj = ' . $packageBookingObj->getBookingObj()->getId() . ')' // Booking criteria is used here
-        );
-
-        $obj = $this->executeQueryBuilder($qb, 'getOneOrNullResult');
-        $packageBookingObj->setPlaceToObj($obj ? $obj->getPlaceToObj() : null);
-
-        return $packageBookingObj;
+        ));
     }
 }

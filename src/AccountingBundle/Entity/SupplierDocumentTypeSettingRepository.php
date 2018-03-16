@@ -33,7 +33,7 @@ class SupplierDocumentTypeSettingRepository extends BaseDocumentTypeSettingRepos
                 'form' => array('type' => 'select')
             ),
             'documentType_name' => array('field' => 'name', 'table' => 'supplierDocumentType', 'label' => 'Document Type',
-                'type' => 'text', 'acl' => 'read', 'dependency' => 'supplierDocumentTypeObj',
+                'type' => 'text', 'acl' => 'read', 'isDefault' => true, 'dependency' => 'supplierDocumentTypeObj',
                 'form' => array('type' => 'none')
             )
         ));

@@ -44,11 +44,42 @@ class PackageServiceService extends BaseEntity
     protected $durationStartDay;
 
     /**
-     * @ORM\Column(name="durationDays", type="smallint", nullable=false, unique=false, options={"unsigned":true, "default":0, "comment":"Days of duration of service"})
+     * @ORM\Column(name="durationType", type="string", length=16, nullable=false, unique=false, options={"comment":"Type of duration"})
+     */
+    protected $durationType; // [FIXED, END_DATE]
+
+    /**
+     * @ORM\Column(name="durationDays", type="smallint", nullable=true, unique=false, options={"unsigned":true, "default":0, "comment":"Days of duration of service"})
      *
-     * Days of duration of service
+     * Days of duration of service (if durationType = 'END_DATE') this value is not filled
      */
     protected $durationDays;
+
+    /**
+     * @ORM\Column(name="quantityType", type="string", length=16, nullable=false, unique=false, options={"comment":"Type of quantity"})
+     */
+    protected $quantityType; // [PER_PAX, FIXED, FREE]
+
+    /**
+     * @ORM\Column(name="quantity", type="smallint", nullable=true, unique=false, options={"unsigned":true, "default":0, "comment":"Fixed quantity"})
+     *
+     * Only filled if quantityType = "FIXED"
+     */
+    protected $quantity;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="\CommonBundle\Entity\Place")
+     * @ORM\JoinColumn(name="fk_place", referencedColumnName="id", nullable=true, unique=false, onDelete="RESTRICT")
+     */
+    protected $placeObj;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="\CommonBundle\Entity\Place")
+     * @ORM\JoinColumn(name="fk_placeTo", referencedColumnName="id", nullable=true, unique=false, onDelete="RESTRICT")
+     *
+     * Only used in services of type "TRAVEL" (and in this cases should not be null)
+     */
+    protected $placeToObj;
 
     /**
      * @ORM\Column(name="isOptional", type="boolean", nullable=true, unique=false, options={"default":0, "comment":"Determines if the service is optional"})
@@ -174,6 +205,33 @@ class PackageServiceService extends BaseEntity
     }
 
     /**
+     * Set durationType
+     *
+     * @param string $durationType
+     *
+     * @return $this
+     */
+    public function setDurationType($durationType)
+    {
+        if (!in_array($durationType, array("END_DATE", "FIXED"))) {
+            throw new \InvalidArgumentException("Invalid duration type");
+        }
+        $this->durationType = $durationType;
+
+        return $this;
+    }
+
+    /**
+     * Get durationType
+     *
+     * @return string
+     */
+    public function getDurationType()
+    {
+        return $this->durationType;
+    }
+
+    /**
      * Set durationDays
      * @param integer $durationDays
      * @return $this
@@ -191,6 +249,101 @@ class PackageServiceService extends BaseEntity
     public function getDurationDays()
     {
         return $this->durationDays;
+    }
+
+    /**
+     * Set quantityType
+     *
+     * @param string $quantityType
+     *
+     * @return $this
+     */
+    public function setQuantityType($quantityType)
+    {
+        if (!in_array($quantityType, array("PER_PAX", "FIXED", "FREE"))) {
+            throw new \InvalidArgumentException("Invalid quantity type");
+        }
+        $this->quantityType = $quantityType;
+
+        return $this;
+    }
+
+    /**
+     * Get quantityType
+     *
+     * @return string
+     */
+    public function getQuantityType()
+    {
+        return $this->quantityType;
+    }
+
+    /**
+     * Set quantity
+     * @param integer $quantity
+     * @return $this
+     */
+    public function setQuantity($quantity)
+    {
+        $this->quantity = $quantity;
+        return $this;
+    }
+
+    /**
+     * Get quantity
+     * @return integer
+     */
+    public function getQuantity()
+    {
+        return $this->quantity;
+    }
+
+    /**
+     * Set placeObj
+     *
+     * @param \CommonBundle\Entity\Place $placeObj
+     *
+     * @return $this
+     */
+    public function setPlaceObj(\CommonBundle\Entity\Place $placeObj = null)
+    {
+        $this->placeObj = $placeObj;
+
+        return $this;
+    }
+
+    /**
+     * Get placeObj
+     *
+     * @return \CommonBundle\Entity\Place
+     */
+    public function getPlaceObj()
+    {
+        return $this->placeObj;
+    }
+
+    /**
+     * Set placeToObj
+     *
+     * @param \CommonBundle\Entity\Place $placeToObj
+     *
+     * @return $this
+     */
+    public function setPlaceToObj(\CommonBundle\Entity\Place $placeToObj = null)
+    {
+        $this->placeToObj = $placeToObj;
+
+        return $this;
+    }
+
+    /**
+     * Get placeToObj
+     *
+     * @return \CommonBundle\Entity\Place
+     */
+    public function getPlaceToObj()
+    {
+        return $this->placeToObj;
     }
 
     /**

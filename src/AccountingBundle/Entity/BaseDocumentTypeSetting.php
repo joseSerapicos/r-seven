@@ -25,6 +25,11 @@ class BaseDocumentTypeSetting extends BaseEntity {
      */
     protected $seriesNumber;
 
+    /**
+     * @ORM\Column(name="footer", type="string", length=526, nullable=true, unique=false, options={"comment":"Footer data"})
+     */
+    protected $footer;
+
 
     /**
      * Set storeObj
@@ -84,5 +89,25 @@ class BaseDocumentTypeSetting extends BaseEntity {
     public function getSeriesNumber()
     {
         return $this->seriesNumber;
+    }
+
+    /**
+     * Set footer
+     * @param string $footer
+     * @return $this
+     */
+    public function setFooter($footer)
+    {
+        $this->footer = $footer;
+        return $this;
+    }
+
+    /**
+     * Get footer
+     * @return string
+     */
+    public function getFooter()
+    {
+        return $this->footer;
     }
 }

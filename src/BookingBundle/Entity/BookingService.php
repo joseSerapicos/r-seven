@@ -69,6 +69,20 @@ class BookingService extends BasePriceResume
     protected $durationDays;
 
     /**
+     * @ORM\ManyToOne(targetEntity="\CommonBundle\Entity\Place")
+     * @ORM\JoinColumn(name="fk_place", referencedColumnName="id", nullable=true, unique=false, onDelete="RESTRICT")
+     */
+    protected $placeObj;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="\CommonBundle\Entity\Place")
+     * @ORM\JoinColumn(name="fk_placeTo", referencedColumnName="id", nullable=true, unique=false, onDelete="RESTRICT")
+     *
+     * Only used in services of type "Regular" (and in this cases should not be null)
+     */
+    protected $placeToObj;
+
+    /**
      * @ORM\Column(name="quantity", type="smallint", nullable=false, unique=false, options={"unsigned":true, "comment":"Quantity"})
      *
      * This quantity controls the allot/capacity (if enabled in service)
@@ -106,33 +120,30 @@ class BookingService extends BasePriceResume
 
     /**
      * @ORM\ManyToOne(targetEntity="BookingService")
-     * @ORM\JoinColumn(name="fk_groupingBookingService", referencedColumnName="id", nullable=true, unique=false, onDelete="RESTRICT")
+     * @ORM\JoinColumn(name="fk_grouperBookingService", referencedColumnName="id", nullable=true, unique=false, onDelete="RESTRICT")
      *
-     * It's a self reference for BookingService to link grouped service to the grouping service.
-     * If this value is defined, all grouped services are invoiced in a single line (the line of the grouping service)
-     * with a single VAT (the VAT of the grouping service), however the supplier invoices do not suffer any change in
+     * It's a self reference for BookingService to link grouped service to the grouper service.
+     * If this value is defined, all grouped services are invoiced in a single line (the line of the grouper service)
+     * with a single VAT (the VAT of the grouper service), however the supplier invoices do not suffer any change in
      * their behavior.
-     * The grouping service count all sell values of your grouped services in your own values, while the grouped
-     * services does not count any sell value in your values, only count the cost values without any change.
-     * The grouping process can be reverted setting "NULL" this field, for this delete the associated grouping service
-     * (and updating the sell values again), since the grouping service is not yet associated to any document.
+     * The grouper service sum all sell values of your grouped services in your own values, while the grouped
+     * services does not have any sell value in your values (they are setted to zero), only keep the cost values without any change.
+     * The grouping process can be reverted setting "NULL" this field, for this delete the associated grouper service
+     * (and updating the sell values again), since the grouper service is not yet associated to any document.
      */
-    protected $groupingBookingServiceObj;
+    protected $grouperBookingServiceObj;
 
     /**
-     * @ORM\Column(name="groupingSubTotalSell", type="decimal", scale=2, nullable=false, unique=false, options={"default":"0", "comment":"Grouping sub total sell"})
+     * @ORM\ManyToOne(targetEntity="BookingServicePrice", cascade={"persist"})
+     * @ORM\JoinColumn(name="fk_grouperBookingServicePrice", referencedColumnName="id", nullable=true, unique=false, onDelete="RESTRICT")
      *
-     * Field calculated based in the sum in of "BookingServicePrice" of BookingService
-     * and associated BookingService trough the groupingBookingServiceObj
+     * It's a foreign key to the BookingServicePrice that sum/merge all sell values of all BookingServicePrice objects
+     * of this BookingService object.
+     * This BookingServicePrice is the only one that will be used in the client current account processes,
+     * and since it's defined, it means that the BookingService is a GrouperBookingService.
      */
-    //protected $groupingSubTotalSell; // Check in the future if it's needed
+    protected $grouperBookingServicePriceObj;
 
-    /**
-     * @ORM\Column(name="groupingTotalVatSell", type="decimal", scale=2, nullable=false, unique=false, options={"default":"0", "comment":"Grouping total VAT of sell value"})
-     *
-     * Field calculated based in the sum in "BookingService"
-     */
-    //protected $groupingTotalVatSell; // Check in the future if it's needed
 
     // FAKE FIELDS TO HANDLE WITH CONTROLS
     protected $isAutoAvailability;
@@ -310,6 +321,55 @@ class BookingService extends BasePriceResume
         return $this->durationDays;
     }
 
+
+    /**
+     * Set placeObj
+     *
+     * @param \CommonBundle\Entity\Place $placeObj
+     *
+     * @return $this
+     */
+    public function setPlaceObj(\CommonBundle\Entity\Place $placeObj = null)
+    {
+        $this->placeObj = $placeObj;
+
+        return $this;
+    }
+
+    /**
+     * Get placeObj
+     *
+     * @return \CommonBundle\Entity\Place
+     */
+    public function getPlaceObj()
+    {
+        return $this->placeObj;
+    }
+
+    /**
+     * Set placeToObj
+     *
+     * @param \CommonBundle\Entity\Place $placeToObj
+     *
+     * @return $this
+     */
+    public function setPlaceToObj(\CommonBundle\Entity\Place $placeToObj = null)
+    {
+        $this->placeToObj = $placeToObj;
+
+        return $this;
+    }
+
+    /**
+     * Get placeToObj
+     *
+     * @return \CommonBundle\Entity\Place
+     */
+    public function getPlaceToObj()
+    {
+        return $this->placeToObj;
+    }
+
     /**
      * Set reference
      *
@@ -481,73 +541,93 @@ class BookingService extends BasePriceResume
     }
 
     /**
-     * Set groupingBookingServiceObj
-     * @param \BookingBundle\Entity\BookingService $groupingBookingServiceObj
+     * Set grouperBookingServiceObj
+     * @param \BookingBundle\Entity\BookingService $grouperBookingServiceObj
      * @return $this
      */
-    public function setGroupingBookingServiceObj(\BookingBundle\Entity\BookingService $groupingBookingServiceObj)
+    public function setGrouperBookingServiceObj(\BookingBundle\Entity\BookingService $grouperBookingServiceObj = null)
     {
-        $this->groupingBookingServiceObj = $groupingBookingServiceObj;
+        $this->grouperBookingServiceObj = $grouperBookingServiceObj;
         return $this;
     }
 
     /**
-     * Get groupingBookingServiceObj
+     * Get grouperBookingServiceObj
      * @return \BookingBundle\Entity\BookingService
      */
-    public function getGroupingBookingServiceObj()
+    public function getGrouperBookingServiceObj()
     {
-        return $this->groupingBookingServiceObj;
+        return $this->grouperBookingServiceObj;
     }
 
     /**
-     * Set groupingSubTotalSell
-     * @param string $groupingSubTotalSell
+     * Set grouperBookingServicePriceObj
+     * @param \BookingBundle\Entity\BookingServicePrice $grouperBookingServicePriceObj
      * @return $this
      */
-    /*public function setGroupingSubTotalSell($groupingSubTotalSell)
+    public function setGrouperBookingServicePriceObj(\BookingBundle\Entity\BookingServicePrice $grouperBookingServicePriceObj = null)
     {
-        $this->groupingSubTotalSell = $groupingSubTotalSell;
+        $this->grouperBookingServicePriceObj = $grouperBookingServicePriceObj;
+        return $this;
+    }
+
+    /**
+     * Get grouperBookingServicePriceObj
+     * @return \BookingBundle\Entity\BookingServicePrice
+     */
+    public function getGrouperBookingServicePriceObj()
+    {
+        return $this->grouperBookingServicePriceObj;
+    }
+
+    /**
+     * Set groupedSubTotalSell
+     * @param string $groupedSubTotalSell
+     * @return $this
+     */
+    /*public function setGroupedSubTotalSell($groupedSubTotalSell)
+    {
+        $this->groupedSubTotalSell = $groupedSubTotalSell;
         return $this;
     }*/
 
     /**
-     * Get groupingSubTotalSell
+     * Get groupedSubTotalSell
      * @return string
      */
-    /*public function getGroupingSubTotalSell()
+    /*public function getGroupedSubTotalSell()
     {
-        return $this->groupingSubTotalSell;
+        return $this->groupedSubTotalSell;
     }*/
 
     /**
-     * Set groupingTotalVatSell
-     * @param string $groupingTotalVatSell
+     * Set groupedTotalVatSell
+     * @param string $groupedTotalVatSell
      * @return $this
      */
-    /*public function setGroupingTotalVatSell($groupingTotalVatSell)
+    /*public function setGroupedTotalVatSell($groupedTotalVatSell)
     {
-        $this->groupingTotalVatSell = $groupingTotalVatSell;
+        $this->groupedTotalVatSell = $groupedTotalVatSell;
         return $this;
     }*/
 
     /**
-     * Get groupingTotalVatSell
+     * Get groupedTotalVatSell
      * @return string
      */
-    /*public function getGroupingTotalVatSell()
+    /*public function getGroupedTotalVatSell()
     {
-        return $this->groupingTotalVatSell;
+        return $this->groupedTotalVatSell;
     }*/
 
     /**
-     * Get grouping total sell
+     * Get grouped total sell
      * @return string
      */
-    /*public function getGroupingTotalSell()
+    /*public function getGroupedTotalSell()
     {
         // For direct queries use "SUM()"
-        return round($this->groupingSubTotalSell + $this->groupingTotalVatSell, 2);
+        return round($this->groupedSubTotalSell + $this->groupedTotalVatSell, 2);
     }*/
 
 

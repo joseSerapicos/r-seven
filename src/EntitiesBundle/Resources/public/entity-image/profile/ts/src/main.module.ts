@@ -24,7 +24,8 @@ import {EditExtModule} from '../../../index/ts/src/edit.ext-module';
 // Define templateUrl to component at runtime
 import {ImageCropPopupExtModule} from '../../../index/ts/src/image-crop-popup.ext-module';
 let localData = {
-    imageCropPopupModule: ImageCropPopupExtModule
+    imageCropPopupModule: ImageCropPopupExtModule,
+    imageCropPopupComponent: 'ImageCropPopupComponent'
 };
 
 

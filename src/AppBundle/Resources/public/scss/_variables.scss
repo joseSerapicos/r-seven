@@ -13,7 +13,130 @@ https://github.com/twbs/bootstrap-sass#d-npm--nodejs
 */
 
 
-/* Color */
+/////////////////////////
+// media queries
+//////////////////////////////
+$screen-xs-max: 767px;
+$screen-sm-min: 768px;
+$screen-sm-max: 991px;
+$screen-md-min: 992px;
+$screen-md-max: 1199px;
+$screen-lg-min: 1200px;
+
+// xs
+//@media screen and (max-width: $screen-xs-max) {}
+// sm
+//@media screen and (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {}
+// md
+//@media screen and (min-width: $screen-md-min) and (max-width: $screen-md-max) {}
+// lg
+//@media screen and (min-width: $screen-lg-min) {}
+
+
+/////////////////////////
+// colors
+//////////////////////////////
+$mixColorMultiplier: 10% !global;
+
+$baseColors: (
+  'base': #293846,
+  'default': #676a6c,
+  'primary': #1ab394,
+  'info': #23c6c8,
+  'warning': #f7a54a,
+  'danger': #ec4758,
+  'success': #1c84c6
+);
+
+// Using: getColor('primary')
+@function getColor($baseColor) {
+  @return $baseColors($baseColor);
+}
+
+// Using: getLightColor('primary', 1)
+@function getLightColor($baseColor, $level: 0) {
+  $color: $baseColors($baseColor);
+  $mixColor: if($level < 0, black, white);
+
+  @return $color; //mix($mixColor, $color, $level * $mixColorMultiplier);
+}
+
+// Generate colors
+@mixin setColor($baseColor) {
+  color: getColor($baseColor);
+
+  /*&-darker { getLightColor($baseColor, -2); }
+  &-dark { getLightColor($baseColor, -1); }
+  &-light { getLightColor($baseColor, 1); }
+  &-lighter { getLightColor($baseColor, 2); }*/
+}
+
+// Generate background colors
+@mixin setBackgroundColor($baseColor) {
+  background-color: getColor($baseColor);
+
+  /*&-darker { getLightColor($baseColor, -2); }
+  &-dark { getLightColor($baseColor, -1); }
+  &-light { getLightColor($baseColor, 1); }
+  &-lighter { getLightColor($baseColor, 2); }*/
+}
+
+// Base (usually used for text)
+$colorBaseDarker: #000000;
+$colorBaseDark: #000000;
+$colorBase: #293846;
+$colorBaseLight: #676a6c;
+$colorBaseLighter: #a7b1c2;
+// Default (usually used for background)
+$colorDefaultDarker: getLightColor('default', -2);
+$colorDefaultDark: getLightColor('default', -1);
+$colorDefault: getColor('default');
+$colorDefaultLight: getLightColor('default', 1);
+$colorDefaultLighter: getLightColor('default', 2);
+// Primary (usually used for background)
+$colorPrimaryDarker: getLightColor('primary', -2);
+$colorPrimaryDark: getLightColor('primary', -1);
+$colorPrimary: getColor('primary');
+$colorPrimaryLight: getLightColor('primary', 1);
+$colorPrimaryLighter: getLightColor('primary', 2);
+// Info (usually used for background)
+$colorInfoDarker: getLightColor('info', -2);
+$colorInfoDark: getLightColor('info', -1);
+$colorInfo: getColor('info');
+$colorInfoLight: getLightColor('info', 1);
+$colorInfoLighter: getLightColor('info', 2);
+// Warning (usually used for background)
+$colorWarningDarker: getLightColor('warning', -2);
+$colorWarningDark: getLightColor('warning', -1);
+$colorWarning: getColor('warning');
+$colorWarningLight: getLightColor('warning', 1);
+$colorWarningLighter: getLightColor('warning', 2);
+// Danger (usually used for background)
+$colorDangerDarker: getLightColor('danger', -2);
+$colorDangerDark: getLightColor('danger', -1);
+$colorDanger: getColor('danger');
+$colorDangerLight: getLightColor('danger', 1);
+$colorDangerLighter: getLightColor('danger', 2);
+// Success (usually used for background)
+$colorSuccessDarker: getLightColor('success', -2);
+$colorSuccessDark: getLightColor('success', -1);
+$colorSuccess: getColor('success');
+$colorSuccessLight: getLightColor('success', 1);
+$colorSuccessLighter: getLightColor('success', 2);
+// Neutral (usually used for text, to override/neutralize any color)
+$colorNeutral: #fff;
+// Logo
+$colorLogoPrimary: #02bcfa;
+$colorLogoSecondary: #fad102;
+
+
+
+
+
+
+
+
+// @TODO CLEAR THIS BELLOW
 // Links/Actions
 $link_color_primary: #999c9e;
 $link_color_secondary: #fff;
@@ -22,17 +145,6 @@ $link-hover_color: #1ab394;
 $link-active_color: #18a689;
 // Border
 $border_color_primary: #cbd5dd;
-/* /Color */
-
-
-
-
-
-
-
-
-
-
 
 
 /* Font size */

@@ -82,6 +82,17 @@ class Store extends BaseEntity {
     protected $shareCurrentAccounts; // [ALL, CLIENTS, SUPPLIERS]
 
     /**
+     * @ORM\Column(name="thumbnail", type="string", length=128, nullable=true, unique=false, options={"comment":"Thumbnail"})
+     *
+     * Thumbnail is used as logo in all documents.
+     */
+    protected $thumbnail;
+
+    // Extra fields to handle file upload
+    private $filesRepository;
+
+
+    /**
      * Get name
      * @return String
      */
@@ -331,5 +342,60 @@ class Store extends BaseEntity {
     public function getShareCurrentAccounts()
     {
         return $this->shareCurrentAccounts;
+    }
+
+    /**
+     * Set thumbnail
+     * @param string $thumbnail
+     * @return $this
+     */
+    public function setThumbnail($thumbnail)
+    {
+        $this->thumbnail = $thumbnail;
+        return $this;
+    }
+
+    /**
+     * Get thumbnail
+     * @return string
+     */
+    public function getThumbnail()
+    {
+        return $this->thumbnail;
+    }
+
+
+    /**
+     * @ORM\PreRemove()
+     *
+     * Prepare to free resources. Save path of uploads to remove after delete the object (after delete "id" is
+     * no more available to determine the path)
+     * @return $this
+     */
+    public function preRemove()
+    {
+        // Save files repository to free resources after delete object
+        $this->filesRepository = (empty($this->getId())
+            ? null
+            : (HelperService::getGlobalVar('filesRepository') . 'admin/' . $this->getId())
+        );
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PostRemove()
+     *
+     * Remove entity files and dir
+     * @return $this
+     */
+    public function postRemove()
+    {
+        // Remove entity directory
+        if ($this->filesRepository) {
+            HelperService::rmDirR($this->filesRepository);
+        }
+
+        return $this;
     }
 }

@@ -1,42 +1,35 @@
 <?php
 
+/*
+ * This file is part of the `liip/LiipImagineBundle` project.
+ *
+ * (c) https://github.com/liip/LiipImagineBundle/graphs/contributors
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
+ */
+
 namespace Liip\ImagineBundle\Imagine\Filter\Loader;
 
-use Imagine\Filter\Basic\Resize;
-use Imagine\Image\ImageInterface;
-use Imagine\Image\Box;
-
 /**
- * downscale filter.
+ * Downscale filter.
+ *
+ * @author Devi Prasad <https://github.com/deviprsd21>
  */
-class DownscaleFilterLoader implements LoaderInterface
+class DownscaleFilterLoader extends ScaleFilterLoader
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function load(ImageInterface $image, array $options = array())
+    public function __construct()
     {
-        if (!isset($options['max'])) {
-            throw new \InvalidArgumentException('Missing max option.');
-        }
+        parent::__construct('max', 'by', false);
+    }
 
-        list($width, $height) = $options['max'];
+    protected function calcAbsoluteRatio($ratio)
+    {
+        return 1 - ($ratio > 1 ? $ratio - floor($ratio) : $ratio);
+    }
 
-        $size = $image->getSize();
-        $origWidth = $size->getWidth();
-        $origHeight = $size->getHeight();
-
-        if ($origWidth > $width || $origHeight > $height) {
-            $widthRatio = $width / $origWidth;
-            $heightRatio = $height / $origHeight;
-
-            $ratio = $widthRatio > $heightRatio ? $widthRatio : $heightRatio;
-
-            $filter = new Resize(new Box($origWidth * $ratio, $origHeight * $ratio));
-
-            return $filter->apply($image);
-        }
-
-        return $image;
+    protected function isImageProcessable($ratio)
+    {
+        return $ratio < 1;
     }
 }

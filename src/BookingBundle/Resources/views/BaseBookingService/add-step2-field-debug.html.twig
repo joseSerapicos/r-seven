@@ -12,7 +12,7 @@
                     <span class="status -{% verbatim %}{{ _statusMap[debugDetail['status']] || 'danger' }}{% endverbatim %}"></span><span
                     >&nbsp;{% verbatim %}{{debugDetail['date']}}{% endverbatim %}</span>
 
-                    <span *ngIf="panel == 'allot'">&nbsp;({% verbatim %}{{debugDetail['free']}}/{{debugDetail['total']}} - {{debugDetail['type']}}{% endverbatim %})</span>
+                    <span *ngIf="panel == 'allot'">&nbsp;({% verbatim %}{{debugDetail['free']}}/{{debugDetail['total']}} - <span [innerHTML]="debugDetail['type']"></span>{% endverbatim %})</span>
                     <ul *ngIf="panel == 'price'"><li *ngFor="let priceDetail of debugDetail['price'];">
                             {% verbatim %}{{priceDetail['description']}}{% endverbatim %}:&nbsp;
                             <strong>Cost:</strong>&nbsp;{% verbatim %}{{priceDetail['costValue']}}{% endverbatim %}&nbsp;<strong>Sell:</strong>&nbsp;{% verbatim %}{{priceDetail['sellValue']}}{% endverbatim %}

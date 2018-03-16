@@ -149,4 +149,27 @@ class VatCodeController extends BaseEntityController
     {
         return parent::deleteAction($request, $id);
     }
+
+    /**
+     * @Route("/accounting/vat-code/get-percentage/{id}",
+     *     name="_accounting__vat_code__get_percentage"
+     * )
+     *
+     * Action to get the percentage of object
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function getPercentageAction(Request $request, $id)
+    {
+        // Set configuration
+        $this->init($request);
+
+        $obj = $this->getObject($id);
+
+        $this->templateConf['localData']['data']['percentage']
+            = ($obj ? $obj->getPercentage() : null);
+
+        return $this->getResponse(true);
+    }
 }

@@ -57,7 +57,9 @@ class UserGroupAclMenuRepository extends BaseEntityRepository
                 'table' => 'moduleMenu', 'bundle' => 'admin', 'field' => 'id', 'type' => 'none')),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'none', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'none', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'none', 'acl' => 'read', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            ),
         ));
     }
 }

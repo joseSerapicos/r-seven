@@ -275,9 +275,8 @@ abstract class BaseDocumentInvoiceRectificationController extends BaseEntityChil
     protected function preSaveObject(&$object, $data)
     {
         $entityContextUC = $this->getEntityContext(true);
-        $priceService = $this->get('app.service.price');
 
-        // Get DocumentObj
+        // Get DocumentInvoiceDetail object
         $getMethod = ('get' . $entityContextUC . 'DocumentInvoiceDetailObj');
         $documentInvoiceDetailObj = $object->$getMethod();
         $getMethod = ('get' . $entityContextUC . 'DocumentObj');
@@ -300,14 +299,14 @@ abstract class BaseDocumentInvoiceRectificationController extends BaseEntityChil
         );
         $defaultObject = reset($defaultObject); // First element
 
+        // Calc and validate values
+        $priceService = $this->get('app.service.price');
+
         $vatCodeObj = $documentInvoiceDetailObj->getVatCodeObj();
         $vatCodePercentage = $vatCodeObj->getPercentage();
         $quantity = $documentInvoiceDetailObj->getQuantity();
-        $user_value = $data['user_value'];
-        $isVatIncluded = (!empty($data['isVatIncluded']));
-        echo("Fix this values and test with: 10 12,3 25");
-        var_dump($user_value);exit;
-        $totalUnitDetail = $priceService->getTotalUnitDetail($user_value, $vatCodePercentage, $isVatIncluded);
+        $value = $data['value'];
+        $totalUnitDetail = $priceService->getTotalUnitDetail($value, $vatCodePercentage, false);
         $totalUnit = round($totalUnitDetail['value'] + $totalUnitDetail['vatValue'], 2);
         $total = $priceService->calcTotal($totalUnit, $quantity);
 
@@ -317,6 +316,7 @@ abstract class BaseDocumentInvoiceRectificationController extends BaseEntityChil
         if ($priceService->isGreater($total, $defaultObject['notRectifiedValue'])) {
             $errorMessage = ($total.' Should be <= to the rectification document ('.$defaultObject['notRectifiedValue'].')');
         }
+        // Remaining checks are made in "BaseDocumentInvoiceDetailController::validateFormAndSetTotals"
 
         // Set error
         if ($errorMessage) {
@@ -492,17 +492,16 @@ abstract class BaseDocumentInvoiceRectificationController extends BaseEntityChil
      * @param Request $request
      * @param $parents
      * @param $booking (booking id, to filter by booking)
-     * @param $label (set label when you don't have the route in modules/menus tree)
      * @return $this
      */
-    protected function initForRectification(Request $request, $parents, $booking = null, $label = 'Detail')
+    protected function initForRectification(Request $request, $parents, $booking = null)
     {
         $entityContext = $this->getEntityContext();
 
         // Set configuration only once
         if($this->isInitialized) { return $this; }
 
-        $this->initChild($request, $parents, $label);
+        parent::initChild($request, $parents);
 
         // Local conf
         array_pop($this->localConf['search']['criteria']); // Remove last criteria (the parent filter)
@@ -656,16 +655,22 @@ abstract class BaseDocumentInvoiceRectificationController extends BaseEntityChil
         // Set values
         $priceService = $controller->get('app.service.price');
         foreach ($objects as &$obj) {
-            // Normalize quantity (can be returned a negative value)
-            $obj['quantity'] = (($obj['notRectifiedQuantity'] > 0) ? $obj['notRectifiedQuantity'] : 1);
-            $totalUnitValue = $priceService->calcUnitFromTotal($obj['notRectifiedValue'], $obj['quantity']);
-            echo("Fix this values and test with: 10 12,3 25");
-            var_dump($totalUnitValue);exit;
-            $values = $priceService->getTotalUnitDetail($totalUnitValue, $obj['vatCode_percentage'], true);
-            $obj['value'] = $values['value'];
-            $obj['vatValue'] = $values['vatValue'];
+            // Check if this entry has previous rectifications
+            if (!$priceService->isEqual($obj['notRectifiedValue'], $obj['total'])) {
+                // This entry has already rectifications associated, so we need to determine the individual values
+                // from the total not rectified value
+
+                // Normalize quantity (can be returned a negative value)
+                $obj['quantity'] = (($obj['notRectifiedQuantity'] > 0) ? $obj['notRectifiedQuantity'] : 1);
+
+                $totalUnitValue = $priceService->calcUnitFromTotal($obj['notRectifiedValue'], $obj['quantity']);
+                $totalUnitValueDetail = $priceService->getTotalUnitDetail($totalUnitValue, $obj['vatCode_percentage'], true);
+                $obj['value'] = $totalUnitValueDetail['value'];
+                $obj['vatValue'] = $totalUnitValueDetail['vatValue'];
+            }
+
             $obj['totalUnit'] = round($obj['value'] + $obj['vatValue'], 2);
-            $obj['totalVat'] = $priceService->calcTotal($values['vatValue'], $obj['quantity']);
+            $obj['totalVat'] = $priceService->calcTotal($obj['vatValue'], $obj['quantity']);
             // Do not use "subTotal" nor "totalVat" to get the "total", because this values are already rounded,
             // and in some cases the sum of 2 rounded values cause inquiries.
             // Before multiply round the sum to get a coherent total unit value

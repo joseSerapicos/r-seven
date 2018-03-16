@@ -57,16 +57,11 @@ export class PostService {
                     }
 
                     // Error
-                    let errors = (postResponse['errors'] || {});
-                    // Add data exception into errors
-                    if (postResponse['data']) {
-                        if (postResponse['data']['localData']) {
-                            errors['localData'] = postResponse['data']['localData'];
-                        }
-                        if (postResponse['data']['object']) {
-                            errors['object'] = postResponse['data']['object'];
-                        }
-                    }
+                    let errors = {
+                        errors: (postResponse['errors'] || {}),
+                        data: (postResponse['data'] || {})
+                    };
+
                     that._tasksLoaderManagerService.delTask('POSTING_DATA');
                     return reject(errors);
                 }
@@ -100,6 +95,7 @@ export class PostService {
     {
         // Request failed, no response has been returned.
         if (!('status' in postResponse)) {
+            console.log(postResponse);
             this._flashMessageService.message(
                 'Something went wrong, no response has been returned.',
                 'Unknown error',

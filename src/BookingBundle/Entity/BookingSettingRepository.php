@@ -55,8 +55,9 @@ class BookingSettingRepository extends BaseEntityRepository
                 'table' => 'store', 'bundle' => 'admin', 'type' => 'none'), 'isRequired' => false,
                 'form' => array('type' => 'select')
             ),
-            'store_name' => array('table' => 'store', 'field' => 'name', 'label' => 'Store', 'type' => 'text',
-                'acl' => 'read', 'dependency' => 'storeObj', 'form' => array('type' => 'none')),
+            // Disabled 02/03/2018
+            /*'store_name' => array('table' => 'store', 'field' => 'name', 'label' => 'Store', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'storeObj', 'form' => array('type' => 'none')),*/
             'moduleMenuObj' => array('label' => 'Booking Type', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(
                 'table' => 'moduleMenu', 'bundle' => 'admin', 'type' => 'none',
                 'choices' => array('query' => 'getChoicesForBookingSetting')),
@@ -68,7 +69,9 @@ class BookingSettingRepository extends BaseEntityRepository
             'seriesNumber' => array('label' => 'Series Number', 'type' => 'number', 'acl' => 'edit'),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'none', 'acl' => 'edit', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 }

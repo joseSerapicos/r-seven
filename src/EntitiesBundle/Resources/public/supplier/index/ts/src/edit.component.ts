@@ -17,6 +17,7 @@ export class EditComponent extends FormPopupExtensionComponent
         @Inject('Provider') provider: FormProvider,
         formService: FormService,
         @Inject('DataService') dataService: any,
+        @Inject('HelperService') protected _helperService: any
     ) {
         super();
         super.initFormPopupExtensionComponent(
@@ -28,14 +29,27 @@ export class EditComponent extends FormPopupExtensionComponent
         );
     }
 
+
     /**
      * onEntityChange
-     * @param data
+     * @param value
      */
-    protected onEntityChange(data: any): void {
-        // Refresh object if has been edited in auto-complete popup (with the same id, to update associated data)
-        if (this._formService.getOriginalObject()['entityObj'] == data) {
-            this._dataService.refreshObject();
-        }
+    protected onEntityChange(value: any): void {
+        let that = this;
+
+        this._dataService.runAction(
+            (this._helperService.getAppVar('route')
+                + 'entities/client/change-entity/'
+                + value
+                + (this._formService.getObject()['id'] ? ('/' + this._formService.getObject()['id']) : '')
+            )
+        ).then(
+            data => {
+                if (data['object']) {
+                    that._dataService.setObject(data['object']);
+                }
+            },
+            errors => { console.log(errors); return; }
+        );
     }
 }

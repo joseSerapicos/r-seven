@@ -88,8 +88,9 @@ export class ServiceBonusEditComponent extends FormPopupExtensionComponent
             ).toFixed(this.decimalConf.unit.value)
         );
 
-        // If used method is "FIXED", then value is used directly,
-        // so we need to calc value according with isVatIncluded user preferences.
+        // If used method is "FIXED", then the value represents the bonus value
+        // (the others methods are percentages not values),
+        // so we need to calc the value according with isVatIncluded user preferences.
         if (method == 'FIXED') {
             // Calc values without VAT
             if (vatPercentage > 0) {

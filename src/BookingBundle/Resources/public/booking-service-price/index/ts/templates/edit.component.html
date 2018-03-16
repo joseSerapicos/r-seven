@@ -15,7 +15,7 @@
                     <div class="ibox-content">        
                                         
 
-            <div class="form-group" *ngIf="_formService.getObject().booking_code">
+                <div class="form-group" *ngIf="_formService.getObject().booking_code">
 
                         <label class="col-sm-2 control-label" for="form_booking_code">Booking</label>
     
@@ -28,7 +28,7 @@
         </div>
                                                     
 
-            <div class="form-group" *ngIf="_formService.getObject().supplier_code">
+                <div class="form-group" *ngIf="_formService.getObject().supplier_code">
 
                         <label class="col-sm-2 control-label" for="form_supplier_code">Supplier</label>
     
@@ -41,7 +41,7 @@
         </div>
                                                     
 
-            <div class="form-group" *ngIf="_formService.getObject().client_code">
+                <div class="form-group" *ngIf="_formService.getObject().client_code">
 
                         <label class="col-sm-2 control-label" for="form_client_code">Client</label>
     
@@ -54,7 +54,7 @@
         </div>
                                                     
 
-            <div class="form-group" *ngIf="_formService.getObject().serviceObj">
+                <div class="form-group" *ngIf="_formService.getObject().serviceObj">
 
                         <label class="col-sm-2 control-label required" for="form_serviceObj">Service</label>
     
@@ -67,7 +67,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label" for="form_description">Description</label>
     
@@ -78,7 +78,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_postingType">Operation</label>
     
@@ -94,7 +94,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label">VAT included</label>
     
@@ -106,11 +106,11 @@
         </div>
                                                     
 
-                                        <input type="hidden" id="form_costValue" name="form[costValue]" [(ngModel)]="_formService.getObject().costValue" formControlName="costValue" [class.error]="_formService.getErrors().costValue &amp;&amp; _formService.getErrors().costValue.length &gt; 0" />
+                                            <input type="hidden" id="form_costValue" name="form[costValue]" [(ngModel)]="_formService.getObject().costValue" formControlName="costValue" [class.error]="_formService.getErrors().costValue &amp;&amp; _formService.getErrors().costValue.length &gt; 0" />
                 <label class="error" *ngFor="let error of _formService.getErrors().costValue">{{error}}</label>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_quantity">Quantity</label>
     
@@ -121,7 +121,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label" for="form_user_costValue">Cost</label>
     
@@ -150,11 +150,11 @@
                 </div>
                                                                     
 
-                                        <input type="hidden" id="form_sellValue" name="form[sellValue]" [(ngModel)]="_formService.getObject().sellValue" formControlName="sellValue" [class.error]="_formService.getErrors().sellValue &amp;&amp; _formService.getErrors().sellValue.length &gt; 0" />
+                                            <input type="hidden" id="form_sellValue" name="form[sellValue]" [(ngModel)]="_formService.getObject().sellValue" formControlName="sellValue" [class.error]="_formService.getErrors().sellValue &amp;&amp; _formService.getErrors().sellValue.length &gt; 0" />
                 <label class="error" *ngFor="let error of _formService.getErrors().sellValue">{{error}}</label>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label" for="form_user_sellValue">Sell</label>
     
@@ -165,7 +165,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label" for="form_subTotalSell">Sub Total</label>
     
@@ -176,7 +176,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label" for="form_totalVatSell">Total VAT</label>
     
@@ -187,7 +187,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label" for="form_totalSell">Total</label>
     
@@ -198,11 +198,11 @@
         </div>
                                                     
 
-                                        <input type="hidden" id="form_userFieldTyped" name="form[userFieldTyped]" [(ngModel)]="_formService.getObject().userFieldTyped" formControlName="userFieldTyped" [class.error]="_formService.getErrors().userFieldTyped &amp;&amp; _formService.getErrors().userFieldTyped.length &gt; 0" />
+                                            <input type="hidden" id="form_userFieldTyped" name="form[userFieldTyped]" [(ngModel)]="_formService.getObject().userFieldTyped" formControlName="userFieldTyped" [class.error]="_formService.getErrors().userFieldTyped &amp;&amp; _formService.getErrors().userFieldTyped.length &gt; 0" />
                 <label class="error" *ngFor="let error of _formService.getErrors().userFieldTyped">{{error}}</label>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label">Enabled</label>
     
@@ -239,7 +239,7 @@
                                 </div>
         </div>
     </div>                        
-    <input type="hidden" id="form__token" name="form[_token]" value="TcyNUc0ivaNc2Bzv96jY_ov6RXK7ED_ZXIRcdRl89Ag" /></form>
+    <input type="hidden" id="form__token" name="form[_token]" value="y_X653isBIPUjhTqIFoEMS38F6y1pjJHhEkNvonaMMU" /></form>
                 </div>
             </div>
         </div>

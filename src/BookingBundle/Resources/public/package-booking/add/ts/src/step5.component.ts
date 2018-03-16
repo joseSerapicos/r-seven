@@ -1,41 +1,29 @@
-import {Component, Inject, Injector, ViewContainerRef, Renderer} from '@angular/core';
+import {Component, ElementRef, Inject, Optional, Injector, Renderer} from '@angular/core';
+import {FormBuilder} from '@angular/forms';
 import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
-import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts/actions/actions.service';
-import {DataBoxExtensionComponent, DataBoxProvider, Popups, Popup} from '../../../../../../../AppBundle/Resources/public/data-box/ts/src/data-box.extension-component';
-import {ModalService} from '../../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
-import {TasksLoaderManagerService} from '../../../../../../../AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service';
-import {Step4Component as BaseBookingServiceAddStep4Component} from '../../../../base-booking-service/add/ts/src/step4.component';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {Step3Component as BaseBookingServiceAddStep3Component, FormProvider} from '../../../../base-booking-service/add/ts/src/step3.component';
 
 
 @Component({
     selector: '#js_addStep5',
     templateUrl: '../templates/step5.component.html'
 })
-export class Step5Component extends BaseBookingServiceAddStep4Component
+export class Step5Component extends BaseBookingServiceAddStep3Component
 {
     constructor(
-        viewContainerRef: ViewContainerRef,
+        elementRef: ElementRef,
         renderer: Renderer,
-        @Inject('Provider') dataBoxProvider: DataBoxProvider,
-        @Inject('DataService') dataService: any,
-        tasksLoaderManagerService: TasksLoaderManagerService,
-        actionsService: ActionsService,
-        modalService: ModalService,
-        @Inject('Popups') popups: Popups | Popup,
-        injector: Injector,
-        @Inject('ParentDataService') parentDataService: any // Used in view
+        @Inject('Provider') provider: FormProvider,
+        formService: FormService,
+        @Inject('DataService') dataService: any
     ) {
         super(
-            viewContainerRef,
+            elementRef,
             renderer,
-            dataBoxProvider,
-            dataService,
-            tasksLoaderManagerService,
-            actionsService,
-            modalService,
-            popups,
-            injector,
-            parentDataService
+            provider,
+            formService,
+            dataService
         );
     }
 }

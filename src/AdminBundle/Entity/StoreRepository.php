@@ -52,6 +52,7 @@ class StoreRepository extends BaseEntityRepository
         }
         return self::$metadata = self::processMetadata(array(
             'id' => array('label' => 'Id', 'type' => 'number', 'acl' => 'read'),
+            'thumbnail' => array('label' => 'Thumbnail', 'type' => 'img', 'acl' => 'read'),
             'name' => array('label' => 'Name', 'type' => 'text', 'acl' => 'edit'),
             'fallbackStoreObj' => array('label' => 'Fallback Store', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(
                 'table' => 'store', 'bundle' => 'admin', 'type' => 'select'), 'isRequired' => false),
@@ -106,7 +107,9 @@ class StoreRepository extends BaseEntityRepository
                 'table' => 'store', 'bundle' => 'admin', 'type' => 'select'), 'isRequired' => false),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 

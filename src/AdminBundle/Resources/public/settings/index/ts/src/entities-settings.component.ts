@@ -84,7 +84,8 @@ export class EntitiesSettingsComponent extends AccordionComponent implements IAc
             ActionsService,
             {provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data)},
             {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
-            {provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data)}
+            {provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data)},
+            {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)}
         ];
 
         switch (index) {

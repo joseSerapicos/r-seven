@@ -41,17 +41,15 @@ class SupplierDocumentTypeSettingController extends BaseEntityController
         parent::init($request);
         
         // Search
-        $this->templateConf['search']['fields'] = $this->templateConf['fields']['view'];
         $this->templateConf['search']['orderBy'] = array(
             array('field' => 'storeObj', 'value' => 'DESC')
         );
-        // Empty criteria to be able to see all registers because "search" action is disabled.
-        $this->templateConf['search']['criteria'] = array();
 
         // Actions for template/view
         $this->templateConf['actions'] = array_merge(
             $this->templateConf['actions'],
             array(
+                'search' => true,
                 'copy' => $this->templateConf['acl']['add']
             )
         );

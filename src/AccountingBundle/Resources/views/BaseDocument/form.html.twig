@@ -10,14 +10,18 @@
 
     <div class="row">
         <div class="col-sm-6">
+            <img *ngIf="_dataService.getLocalDataAttr('storeLogo')"
+                 height="96"
+                 alt="logo"
+                 class="m-b-md"
+                 [src]="_helperService.getUploadWebPath(_dataService.getLocalDataAttr('storeLogo'), 'resize_96')">
             <address>
                 <strong>{{'{{_formService.getObject().storeLegalName}}'}}</strong><br>
                 {% for field in ['storeStreet1', 'storeStreet2', 'storePostCode', 'storeRegion'] %}<ng-template
                     [ngIf]="_formService.getObject().{{field}}"
                     ><span>{{'{{_formService.getObject().' ~ field ~ '}}'}}{% if (field == 'storePostCode') %} {{'{{_formService.getObject().storeCity}}'}}{% endif %}</span><br></ng-template>{% endfor %}
             </address>
-            <ng-template
-                ngFor let-field [ngForOf]="_dataService.getProviderAttr('localData')['storeInfo']"><span
+            <ng-template ngFor let-field [ngForOf]="_dataService.getLocalDataAttr('storeInfo')"><span
                     [innerHtml]="field"></span><br></ng-template>
             <p class="m-t-sm">Tax Number: {{'{{_formService.getObject().storeTaxNumber}}'}}</p>
         </div>
@@ -86,7 +90,7 @@
 
     {% block total %}<div class="row">
         <div class="col-sm-8">
-            <ng-template [ngIf]="_dataService.getProviderAttr('localData')['totalVatSplitByCode']">
+            <ng-template [ngIf]="_dataService.getLocalDataAttr('totalVatSplitByCode')">
             <span>TAX Resume</span>
             <div class="well document-tax-resume">
                 <table class="table">
@@ -99,7 +103,7 @@
                         <th>TAX</th>
                         <th>Total</th>
                     </tr>
-                    <tr *ngFor="let obj of _dataService.getProviderAttr('localData')['totalVatSplitByCode']">
+                    <tr *ngFor="let obj of _dataService.getLocalDataAttr('totalVatSplitByCode')">
                         <td>{% verbatim %}{{ obj['name'] }}{% endverbatim %}</td>
                         <td>{% verbatim %}{{ obj['description'] }}{% endverbatim %}</td>
                         <td class="text-right">{% verbatim %}{{ obj['percentage'] }}%{% endverbatim %}</td>
@@ -144,7 +148,7 @@
         </div>
     </div>{% endblock %}
 
-    <div class="well m-t">
-        It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less
-    </div>
+    <div *ngIf="_dataService.getLocalDataAttr('documentInfo') && _dataService.getLocalDataAttr('documentInfo')['footer']"
+         class="well m-t"
+         [innerHTML]="_dataService.getLocalDataAttr('documentInfo')['footer']"></div>
 {% endif %}

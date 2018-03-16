@@ -73,7 +73,9 @@ class ServiceRepository extends BaseEntityRepository
             'isEnabledPrice' => array('label' => 'Enable Price', 'type' => 'boolean', 'acl' => 'edit'),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 
@@ -81,7 +83,7 @@ class ServiceRepository extends BaseEntityRepository
     /**
      * Get choices for booking service
      * The booking service form filed by the user, only can handle with RegularServices.
-     * Other type of services (like grouping, package, etc) are handle by automatically processes.
+     * Other type of services (like grouper, package, etc) are handle by automatically processes.
      * @param bool $hasExecute
      * @param string $executeMethod
      * @param $options (array with queryBuilder options format)

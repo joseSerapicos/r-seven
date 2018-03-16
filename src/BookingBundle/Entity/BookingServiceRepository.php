@@ -77,14 +77,14 @@ class BookingServiceRepository extends BasePriceResumeRepository
                     'table' => 'app_icon', 'bundle' => 'sysadmin', 'type' => 'none')
             ),
             'icon' => array('table' => 'app_icon', 'label' => 'Icon', 'type' => 'icon',
-                'acl' => 'read', 'dependency' => 'appIconObj'),
+                'acl' => 'read', 'isDefault' => true, 'dependency' => 'appIconObj'),
             'name' => array('table' => 'service', 'label' => 'Name', 'type' => 'text',
-                'acl' => 'read', 'dependency' => 'serviceObj'),
+                'acl' => 'read', 'isDefault' => true, 'dependency' => 'serviceObj'),
             'type' => array('table' => 'service', 'label' => '', 'type' => 'fake',
                 'acl' => 'read', 'dependency' => 'serviceObj', 'form' => array('type' => 'none')),
             'thumbnail' => array('table' => 'service', 'label' => 'Thumbnail', 'type' => 'img', 'acl' => 'read',
-                'dependency' => 'serviceObj'),
-            'startDate' => array('label' => 'Start Date', 'type' => 'date', 'acl' => 'read'),
+                'isDefault' => true, 'dependency' => 'serviceObj'),
+            'startDate' => array('label' => 'Start Date', 'type' => 'date', 'acl' => 'read', 'isDefault' => true),
             // Fake field to control the startDate in edit mode (can't be edited if is auto allot or auto availability)
             'startDateManual' => array('label' => 'Start Date', 'type' => 'date', 'acl' => 'edit',
                 'view' => array(
@@ -112,8 +112,29 @@ class BookingServiceRepository extends BasePriceResumeRepository
                 ),
                 'form' => array('isMapped' => false)
             ),
-            'durationDays' => array('label' => 'Duration', 'type' => 'number', 'acl' => 'read'),
-            'quantity' => array('label' => 'Quantity', 'type' => 'number', 'acl' => 'read'),
+            'durationDays' => array('label' => 'Duration', 'type' => 'number', 'acl' => 'read', 'isDefault' => true),
+            'placeObj' => array('label' => 'From', 'type' => 'object', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'table' => 'place', 'bundle' => 'common', 'type' => 'none', 'fieldInView' => 'place_name'),
+                'isRequired' => false,
+                'form' => array('type' => 'auto-complete')
+            ),
+            'place_name' => array('table' => 'place', 'field' => 'name', 'label' => 'From (Name)', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'placeObj', 'form' => array('type' => 'none')),
+            'place_iata' => array('table' => 'place', 'field' => 'iataCode', 'label' => 'From', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'placeObj', 'form' => array('type' => 'none')),
+            'placeToObj' => array('label' => 'To', 'type' => 'object', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'table' => 'place', 'tableAlias' => 'place_to', 'bundle' => 'common', 'type' => 'none',
+                    'fieldInView' => 'placeTo_name'),
+                'isRequired' => false,
+                'form' => array('type' => 'auto-complete')
+            ),
+            'placeTo_name' => array('table' => 'place_to', 'field' => 'name', 'label' => 'To (Name)', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'placeToObj', 'form' => array('type' => 'none')),
+            'placeTo_iata' => array('table' => 'place_to', 'field' => 'iataCode', 'label' => 'To', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'placeToObj', 'form' => array('type' => 'none')),
+            'quantity' => array('label' => 'Quantity', 'type' => 'number', 'acl' => 'read', 'isDefault' => true),
             // Fake field to control the quantity in edit mode (can't be edited if is auto allot)
             'quantityManual' => array('label' => 'Quantity', 'type' => 'number', 'acl' => 'edit',
                 'view' => array('type' => 'none'),
@@ -125,7 +146,7 @@ class BookingServiceRepository extends BasePriceResumeRepository
                     'table' => 'service', 'bundle' => 'services', 'type' => 'none'
                 )
             ),
-            'confirmationStatus' => array('label' => 'Confirmation', 'type' => 'status', 'acl' => 'read'),
+            'confirmationStatus' => array('label' => 'Confirmation', 'type' => 'status', 'acl' => 'read', 'isDefault' => true),
             // Fake field to skip the auto confirmation status
             'confirmationStatusManual' => array('field' => 'confirmationStatus', 'label' => 'Confirmation',
                 'type' => 'enum', 'acl' => 'edit',
@@ -152,7 +173,7 @@ class BookingServiceRepository extends BasePriceResumeRepository
                 'acl' => 'read', 'dependency' => 'serviceObj', 'form' => array('type' => 'none')),
             // To control the way how user handles with allot
             // (this is not a manual field, is saved in database to control allot)
-            'isAutoAllot' => array('label' => 'Auto Allot', 'type' => 'boolean', 'acl' => 'edit'),
+            'isAutoAllot' => array('label' => 'Auto Allot', 'type' => 'boolean', 'acl' => 'edit', 'isDefault' => true),
             'isEnabledPrice' => array('table' => 'service', 'label' => '', 'type' => 'fake',
                 'acl' => 'read', 'dependency' => 'serviceObj', 'form' => array('type' => 'none')),
             // To control the way how user handles with price
@@ -160,7 +181,7 @@ class BookingServiceRepository extends BasePriceResumeRepository
                 'isRequired' => false,
                 'form' => array('type' => 'boolean', 'isFakeField' => true) // Fake field defined in entity
             ),
-            'description' => array('label' => 'Description', 'type' => 'text', 'acl' => 'edit'),
+            'description' => array('label' => 'Description', 'type' => 'text', 'acl' => 'edit', 'isDefault' => true),
             'supplierObj' => array('label' => 'Supplier', 'type' => 'object', 'acl' => 'edit',
                 'typeDetail' => array(
                     'table' => 'supplier', 'bundle' => 'entities', 'type' => 'none', 'fieldInView' => 'supplier_name'),
@@ -173,19 +194,25 @@ class BookingServiceRepository extends BasePriceResumeRepository
             ),
             'supplier_name' => array('table' => 'entity', 'field' => 'name', 'label' => 'Supplier',
                 'type' => 'text', 'acl' => 'read', 'dependency' => 'entityObj', 'form' => array('type' => 'none')),
-            'reference' => array('label' => 'Reference', 'type' => 'text', 'acl' => 'edit'),
-            // Check in the future if it's needed
-            /*'groupingSubTotalSell' => array('label' => 'Group. Sell (no VAT)', 'type' => 'none', 'acl' => 'read'),
-            'groupingTotalVatSell' => array('label' => 'Group. Sell VAT', 'type' => 'none', 'acl' => 'read'),
-            'groupingTotalSell' => array('label' => 'Group. Total Sell', 'type' => 'monetary', 'acl' => 'read',
-                'field' => '('.$localTable.'.groupingSubTotalSell + '.$localTable.'.groupingTotalVatSell)', 'table' => '',
-                'attr' => array('readonly' => 'readonly'), 'isRequired' => false,
-                'form' => array('type' => 'number', 'isMapped' => false),
-                'normalizer' => array('method' => 'getGroupingTotalSell')
-            ),*/
+            'reference' => array('label' => 'Reference', 'type' => 'text', 'acl' => 'edit', 'isDefault' => true),
+            // Field used in view to determine grouped service
+            'grouperBookingServiceObj' => array('label' => '', 'type' => 'object', 'acl' => 'read',
+                'typeDetail' => array(
+                    'table' => 'bookingService', 'tableAlias' => 'grouperBookingService',
+                    'bundle' => 'booking', 'type' => 'none'
+                )
+            ),
+            // Field used in view to determine grouper service
+            'grouperBookingServicePriceObj' => array('label' => '', 'type' => 'object', 'acl' => 'read',
+                'typeDetail' => array(
+                    'table' => 'bookingServicePrice', 'bundle' => 'booking', 'type' => 'none'
+                )
+            ),
             'priority' => array('label' => 'Priority', 'type' => 'none', 'acl' => 'read'),
             // Handled by cancel action
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'read', 'form' => array('type' => 'none'))
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'read',
+                'form' => array('type' => 'none'), 'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
 
         return self::$metadata = HelperService::pushIntoArray($parentMetadata, $localMetadata, 'id');
@@ -196,7 +223,8 @@ class BookingServiceRepository extends BasePriceResumeRepository
      * @param $bookingServiceObj
      * @return mixed
      */
-    public function setTotals($bookingServiceObj)
+    // Disabled, because not contemplate grouping services
+    /*public function setTotals($bookingServiceObj)
     {
         $localTable = $this->getLocalTable();
 
@@ -230,51 +258,13 @@ class BookingServiceRepository extends BasePriceResumeRepository
         $totals = $this->executeQueryBuilder($qb);
         $totals = reset($totals); // First element of array
 
-        // If the object belongs to a grouping service, then the object does not handles with sell values,
-        // they are handled by grouping service
-        if ($bookingServiceObj->getGroupingBookingServiceObj()) {
-            $totals['subTotalSell'] = 0;
-            $totals['totalVatSell'] = 0;
-        } else {
-            /////////////////////////////////////
-            // Grouping Booking Service Price
-            //////////////////////////////////////
-            $options = array(
-                'fields' => array(
-                    "SUM(bookingService.subTotalSell) AS subTotalSell"
-                ),
-                'criteria' => array(
-                    array(
-                        'field' => 'isEnabled',
-                        'expr' => 'eq',
-                        'value' => true
-                    ),
-                    array(
-                        'field' => 'groupingBookingServiceObj',
-                        'expr' => 'eq',
-                        'value' => $bookingServiceObj->getId()
-                    )
-                )
-            );
-
-            $qb = $this->queryBuilder($options);
-
-            $groupingTotals = $this->executeQueryBuilder($qb);
-            $groupingTotals = reset($groupingTotals); // First element of array
-
-            $totals['subTotalSell'] += $groupingTotals['subTotalSell'];
-            // Note: totalVatSell needs to be calculated again according with the
-            // updated "subTotalSell" (from grouped services that can have other VAT code)
-            $totals['totalVatSell'] = 0;
-        }
-
         $bookingServiceObj->setSubTotalCost($totals['subTotalCost']);
         $bookingServiceObj->setSubTotalSell($totals['subTotalSell']);
         $bookingServiceObj->setTotalVatCost($totals['totalVatCost']);
         $bookingServiceObj->setTotalVatSell($totals['totalVatSell']);
 
         return $bookingServiceObj;
-    }
+    }*/
 
     /**
      * Get busy allot by date
@@ -321,5 +311,64 @@ class BookingServiceRepository extends BasePriceResumeRepository
         $busyAllot = $this->executeQueryBuilder($qb);
         $busyAllot = reset($busyAllot); // Get first element
         return (empty($busyAllot['busy']) ? 0 : $busyAllot['busy']);
+    }
+
+    /**
+     * Set places to booking object (from booking service objects)
+     * This function needs to be here, so we can get directly the object to set in bookingObj
+     * @param $bookingObj
+     * @return mixed
+     */
+    public function setBookingPlaces($bookingObj)
+    {
+        $localTable = $this->getLocalTable();
+
+        $options = array(
+            'criteria' => array(
+                array(
+                    'field' => 'bookingObj',
+                    'expr' => 'eq',
+                    'value' => $bookingObj->getId()
+                ),
+                array(
+                    'field' => 'placeObj',
+                    'expr' => 'isNotNull',
+                    'value' => null
+                ),
+                array(
+                    'field' => 'isEnabled',
+                    'expr' => 'eq',
+                    'value' => true
+                )
+            ),
+            'orderBy' => array(
+                array('field' => 'bookingService.priority', 'value' => 'ASC'),
+                array('field' => 'bookingService.startDate', 'value' => 'ASC')
+            )
+        );
+
+        // Get query builder
+        $placesObsArr = $this->queryBuilder($options, true, 'getResult');
+
+        if (is_array($placesObsArr) && (count($placesObsArr) > 0)) {
+            $firstPlaceObj = reset($placesObsArr);
+            $lastPlaceObj = end($placesObsArr);
+
+            // First place, usually where travel starts, the origin
+            $bookingObj->setPlaceObj($firstPlaceObj->getPlaceObj());
+            // Last place, usually where travel ends, the last destination (here the placeToObj should be the origin again)
+            $bookingObj->setPlaceToObj($lastPlaceObj->getPlaceObj());
+
+            if ($bookingObj->getPlaceObj() == $bookingObj->getPlaceToObj()) {
+                // If origin and destination are the same, can occurs that there are only one service of travel,
+                // so the placeTo is used
+                $bookingObj->setPlaceToObj($lastPlaceObj->getPlaceToObj());
+            }
+        } else {
+            $bookingObj->setPlaceObj(null);
+            $bookingObj->setPlaceToObj(null);
+        }
+
+        return $bookingObj;
     }
 }

@@ -1,0 +1,51 @@
+// Vendor
+$fa-font-path: "../../../vendor/font-awesome/fonts"; // Override "font-awesome" variable
+@import "../../../../../../bower_components/font-awesome/scss/font-awesome.scss";
+
+@import "../../../../../AppBundle/Resources/public/styles/style";
+@import "../../../../../AppBundle/Resources/public/scss/helper";
+
+.head {
+  border-radius: 0 0 64px 64px;
+  padding: 5px;
+
+  .slogan {
+    h2 {
+      margin: 8px 0;
+    }
+  }
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+hr {
+  background-color: $colorBase;
+  height: 1px;
+  border: 0;
+}
+
+.links {
+  i {
+    width: 20px;
+    text-align: left;
+  }
+}
+
+.devices {
+  i {
+    font-size: 32px;
+    padding: 25px 15px 0;
+  }
+}
+
+
+// xs
+@media screen and (max-width: $screen-xs-max) {
+  .slogan {
+    text-align: center;
+  }
+}

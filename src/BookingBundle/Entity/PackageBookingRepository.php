@@ -62,27 +62,11 @@ class PackageBookingRepository extends BaseEntityRepository
                 'typeDetail' => array(
                 'table' => 'packageService', 'bundle' => 'services', 'type' => 'none')
             ),
-            'store_name' => array('table' => 'store', 'field' => 'name', 'label' => 'Store', 'type' => 'text',
-                'acl' => 'read', 'dependency' => 'storeObj', 'form' => array('type' => 'none')),
-            'placeObj' => array('label' => 'From', 'type' => 'object', 'acl' => 'read',
-                'typeDetail' => array(
-                    'table' => 'place', 'bundle' => 'common', 'type' => 'none')
-            ),
-            'place_name' => array('table' => 'place', 'field' => 'name', 'label' => 'From (Name)', 'type' => 'text',
-                'acl' => 'read', 'dependency' => 'placeObj', 'form' => array('type' => 'none')),
-            'place_iata' => array('table' => 'place', 'field' => 'iataCode', 'label' => 'From', 'type' => 'text',
-                'acl' => 'read', 'dependency' => 'placeObj', 'form' => array('type' => 'none')),
-            'placeToObj' => array('label' => 'To', 'type' => 'object', 'acl' => 'read',
-                'typeDetail' => array(
-                    'table' => 'place', 'tableAlias' => 'place_to', 'bundle' => 'common', 'type' => 'none')
-            ),
-            'placeTo_name' => array('table' => 'place_to', 'field' => 'name', 'label' => 'To (Name)', 'type' => 'text',
-                'acl' => 'read', 'dependency' => 'placeToObj', 'form' => array('type' => 'none')),
-            'placeTo_iata' => array('table' => 'place_to', 'field' => 'iataCode', 'label' => 'To', 'type' => 'text',
-                'acl' => 'read', 'dependency' => 'placeToObj', 'form' => array('type' => 'none')),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'read', 'form' => array('type' => 'none'))
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'read',
+                'form' => array('type' => 'none'), 'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 }

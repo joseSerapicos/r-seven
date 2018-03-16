@@ -9,13 +9,18 @@ use Symfony\Component\HttpFoundation\Request;
 class ServiceBonusController extends BaseEntityChildController
 {
     /**
+     * Get label/title to display child in parent
+     * @return mixed
+     */
+    static function getLabel() { return 'Bonus'; }
+
+    /**
      * Overrides parent method
      * @param Request $request
      * @param $parents
-     * @param $label (set label when you don't have the route in modules/menus tree)
      * @return $this
      */
-    protected function initChild(Request $request, $parents, $label = 'Bonus')
+    protected function initChild(Request $request, $parents)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
@@ -38,7 +43,7 @@ class ServiceBonusController extends BaseEntityChildController
             )
         );
 
-        parent::initChild($request, $parents, $label);
+        parent::initChild($request, $parents);
 
         // Search
         $this->templateConf['search']['fields'] = $this->templateConf['fields']['view'];
@@ -162,24 +167,17 @@ class ServiceBonusController extends BaseEntityChildController
      */
     protected function preSaveObject(&$object, $data)
     {
+        // For now only the value is sent, is not sent vatValue nor totalUnitValue, so there are no validations to make
+        return true;
+
+        /*
         $data = (isset($data['form']) ? $data['form'] : $data);
         $isVatIncluded = (isset($data['isVatIncluded']) ? $data['isVatIncluded'] : false);
         $priceService = $this->get('app.service.price');
         $vatCodePercentage = $object->getBonusServiceObj()->getVatCodeObj()->getPercentage();
         $errorMessage = null;
 
-        // If used method is "FIXED", then value is used directly,
-        // so we need to calc value according with isVatIncluded user preferences.
-        if (isset($data['bonusMethod']) && ($data['bonusMethod'] == 'FIXED')) {
-            echo("Fix this values and test with: 10 12,3 25");
-            var_dump($data);exit;
-            $splitValue = $priceService->getTotalUnitDetail($data['user_bonusValue'], $vatCodePercentage, $isVatIncluded);
-            if (!$priceService->isEqual($data['bonusValue'], $splitValue['value'])) {
-                $errorMessage = ('Invalid value was detected:<br/>'
-                    . $data['bonusValue'] . ' Does not match with ' . $splitValue['value']
-                );
-            }
-        }
+        // Validations...
 
         // Set error
         if ($errorMessage) {
@@ -193,5 +191,6 @@ class ServiceBonusController extends BaseEntityChildController
         }
 
         return true;
+        */
     }
 }

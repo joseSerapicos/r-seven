@@ -1,8 +1,16 @@
 <?php
 
+/*
+ * This file is part of the `liip/LiipImagineBundle` project.
+ *
+ * (c) https://github.com/liip/LiipImagineBundle/graphs/contributors
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
+ */
+
 namespace Liip\ImagineBundle\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
@@ -11,7 +19,7 @@ use Symfony\Component\DependencyInjection\Reference;
  *
  * @author Konstantin Tjuterev <kostik.lv@gmail.com>
  */
-class PostProcessorsCompilerPass implements CompilerPassInterface
+class PostProcessorsCompilerPass extends AbstractCompilerPass
 {
     /**
      * {@inheritdoc}
@@ -25,6 +33,7 @@ class PostProcessorsCompilerPass implements CompilerPassInterface
 
             foreach ($tags as $id => $tag) {
                 $manager->addMethodCall('addPostProcessor', array($tag[0]['post_processor'], new Reference($id)));
+                $this->log($container, 'Registered imagine-bundle filter post-processor: %s', array($id));
             }
         }
     }

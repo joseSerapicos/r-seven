@@ -24,11 +24,11 @@ export class ImageSlideComponent extends ImageComponent
         @Inject('Provider') provider: ImageProvider,
         @Inject('DataService') dataService: any,
         tasksLoaderManagerService: TasksLoaderManagerService,
+        @Inject('HelperService') helperService: any,
         actionsService: ActionsService,
         modalService: ModalService,
         @Inject('Popups') popups: Popups | Popup,
-        injector: Injector,
-        @Inject('HelperService') helperService: any
+        injector: Injector
     ) {
         // Call parent
         super(
@@ -37,11 +37,11 @@ export class ImageSlideComponent extends ImageComponent
             provider,
             dataService,
             tasksLoaderManagerService,
+            helperService,
             actionsService,
             modalService,
             popups,
-            injector,
-            helperService
+            injector
         );
     }
 

@@ -101,6 +101,8 @@ class ClientDocumentController extends BaseDocumentController
         // Actions for template/view
         unset($this->templateConf['actions']['delete']);
         $this->templateConf['actions']['search'] = true;
+        $this->templateConf['actions']['pdf'] = true;
+        $this->templateConf['actions']['email'] = true;
         $this->templateConf['actions']['cancel'] = true;
 
         return $this;

@@ -31,7 +31,7 @@ abstract class BasePriceResumeRepository extends BaseEntityRepository
                 'form' => array('type' => 'number', 'isMapped' => false),
                 'normalizer' => array('method' => 'getTotalCost')
             ),
-            'totalSell' => array('label' => 'Total Sell', 'type' => 'monetary', 'acl' => 'read',
+            'totalSell' => array('label' => 'Total Sell', 'type' => 'monetary', 'acl' => 'read', 'isDefault' => true,
                 'field' => '('.$localTable.'.subTotalSell + '.$localTable.'.totalVatSell)', 'table' => '',
                 'attr' => array('readonly' => 'readonly'), 'isRequired' => false,
                 'form' => array('type' => 'number', 'isMapped' => false),
@@ -42,7 +42,9 @@ abstract class BasePriceResumeRepository extends BaseEntityRepository
             'totalProfit' => array('label' => 'Profit (net)', 'type' => 'monetary', 'acl' => 'read'),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read', 'form' => array('type' => 'none')),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 }

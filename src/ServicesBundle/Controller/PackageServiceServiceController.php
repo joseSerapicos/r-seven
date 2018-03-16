@@ -9,13 +9,18 @@ use Symfony\Component\HttpFoundation\Request;
 class PackageServiceServiceController extends BaseEntityChildController
 {
     /**
+     * Get label/title to display child in parent
+     * @return mixed
+     */
+    static function getLabel() { return 'Allot'; }
+
+    /**
      * Overrides parent method
      * @param Request $request
      * @param $parents
-     * @param $label (set label when you don't have the route in modules/menus tree)
      * @return $this
      */
-    protected function initChild(Request $request, $parents, $label = 'Allot')
+    protected function initChild(Request $request, $parents)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
@@ -36,21 +41,18 @@ class PackageServiceServiceController extends BaseEntityChildController
             'delete' => array(
                 'name' => '_services__package_service_service__delete',
             ),
+            'detail' => array(
+                'name' => '_services__package_service_service__detail'
+            ),
             'order' => array(
                 'name' => '_services__package_service_service__order',
             )
         );
 
-        parent::initChild($request, $parents, $label);
+        parent::initChild($request, $parents);
 
         // Templates
         $this->localConf['templates']['edit'] = $this->localConf['templatesPath'].'edit.html.twig';
-
-        // Set route for regular service detail
-        $this->templateConf['route']['detail'] = array(
-            'name' => '_services__regular_service__detail',
-            'url' => $this->generateUrl('_services__regular_service__detail')
-        );
 
         // Search
         $this->templateConf['search']['fields'] = array('id', 'icon', 'name', 'description', 'durationStartDay',
@@ -123,6 +125,43 @@ class PackageServiceServiceController extends BaseEntityChildController
     public function deleteLocalChildAction(Request $request, $packageService, $id)
     {
         return parent::deleteChildAction($request, array($packageService), $id);
+    }
+
+    /**
+     * @Route("/services//package-service-service/detail/{packageService}/{id}",
+     *     name="_services__package_service_service__detail",
+     *     defaults={"id" = null},
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $packageService
+     * @param $id
+     * @return mixed
+     */
+    public function detailLocalChildAction(Request $request, $packageService, $id)
+    {
+        // Set configuration
+        $this->initChild($request, array($packageService));
+
+        $obj = $this->getObject($id);
+
+        // NOTE: You can make here a switch case in case of PackageServiceService has multiple types of Service
+
+        // Get the RegularService id correspondent
+        $regularServiceObj = $this->getRepositoryService('RegularService', 'ServicesBundle')
+            ->execute(
+                'findOneByServiceObj',
+                array($obj->getServiceObj())
+            );
+
+
+        // Return to the correspondent action
+        $request->attributes->set('_route', '_services__regular_service__detail');
+        return $this->forward('ServicesBundle\Controller\RegularServiceController::detailAction', array(
+            'request' => $request,
+            'id'  => $regularServiceObj->getId()
+        ));
     }
 
     /**

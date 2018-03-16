@@ -31,6 +31,7 @@
     "adminUserGroupAclUserIndex": { "bundle": "admin", "controller": "user-group-acl-user", "action": "index" },
     "adminStoreIndex": { "bundle": "admin", "controller": "store", "action": "index" },
     "adminStoreDetail": { "bundle": "admin", "controller": "store", "action": "detail" },
+    "adminStoreLogoImageIndex": { "bundle": "admin", "controller": "store-logo-image", "action": "index" },
     "adminSettingsIndex": { "bundle": "admin", "controller": "settings", "action": "index" },
 
     "userUserCalendarIndex": { "bundle": "user", "controller": "user-calendar", "action": "index" },
@@ -72,7 +73,7 @@
     "servicesPackageServiceIndex": { "bundle": "services", "controller": "package-service", "action": "index" },
     "servicesPackageServiceDetail": { "bundle": "services", "controller": "package-service", "action": "detail" },
 
-    "servicesGroupingServiceIndex": { "bundle": "services", "controller": "grouping-service", "action": "index" },
+    "servicesGrouperServiceIndex": { "bundle": "services", "controller": "grouper-service", "action": "index" },
 
     "bookingBookingSettingIndex": { "bundle": "booking", "controller": "booking-setting", "action": "index" },
     "bookingBaseBookingPaxIndex": { "bundle": "booking", "controller": "base-booking-pax", "action": "index" },
@@ -82,15 +83,10 @@
     "bookingBookingFileIndex": { "bundle": "booking", "controller": "booking-file", "action": "index" },
     "bookingBookingObservationIndex": { "bundle": "booking", "controller": "booking-observation", "action": "index" },
 
-    "bookingBasicBookingServiceAdd": { "bundle": "booking", "controller": "basic-booking-service", "action": "add" },
-    "bookingBasicBookingServiceEdit": { "bundle": "booking", "controller": "basic-booking-service", "action": "edit" },
-    "bookingBasicBookingIndex": { "bundle": "booking", "controller": "basic-booking", "action": "index" },
-    "bookingBasicBookingDetail": { "bundle": "booking", "controller": "basic-booking", "action": "detail" },
-
-    "bookingTravelBookingServiceAdd": { "bundle": "booking", "controller": "travel-booking-service", "action": "add" },
-    "bookingTravelBookingServiceEdit": { "bundle": "booking", "controller": "travel-booking-service", "action": "edit" },
-    "bookingTravelBookingIndex": { "bundle": "booking", "controller": "travel-booking", "action": "index" },
-    "bookingTravelBookingDetail": { "bundle": "booking", "controller": "travel-booking", "action": "detail" },
+    "bookingRegularBookingServiceAdd": { "bundle": "booking", "controller": "regular-booking-service", "action": "add" },
+    "bookingRegularBookingServiceEdit": { "bundle": "booking", "controller": "regular-booking-service", "action": "edit" },
+    "bookingRegularBookingIndex": { "bundle": "booking", "controller": "regular-booking", "action": "index" },
+    "bookingRegularBookingDetail": { "bundle": "booking", "controller": "regular-booking", "action": "detail" },
 
     "bookingPackageBookingServiceAdd": { "bundle": "booking", "controller": "package-booking-service", "action": "add" },
     "bookingPackageBookingServiceEdit": { "bundle": "booking", "controller": "package-booking-service", "action": "edit" },

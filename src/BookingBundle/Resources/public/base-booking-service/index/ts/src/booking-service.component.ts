@@ -19,6 +19,7 @@ export class BookingServiceComponent extends DataBoxExtensionComponent
         @Inject('Provider') dataBoxProvider: DataBoxProvider,
         @Inject('DataService') dataService: any,
         tasksLoaderManagerService: TasksLoaderManagerService,
+        @Inject('HelperService') helperService: any,
         actionsService: ActionsService,
         modalService: ModalService,
         @Inject('Popups') popups: Popups | Popup,
@@ -33,6 +34,7 @@ export class BookingServiceComponent extends DataBoxExtensionComponent
             dataBoxProvider,
             dataService,
             tasksLoaderManagerService,
+            helperService,
             actionsService,
             modalService,
             popups,
@@ -41,34 +43,29 @@ export class BookingServiceComponent extends DataBoxExtensionComponent
     }
 
     /**
-     * Overrides parent
-     * @param $event
-     * @param data
+     * Overrides parent method
+     * @param object
+     * @returns {DataBoxExtensionComponent}
      */
-    public deleteAction($event: any, data: any): void
+    protected postCancelObject(object)
     {
-        if ($event) { $event.preventDefault(); }
+        return this.postDeleteObject(object);
+    }
 
-        let that = this;
+    /**
+     * Overrides parent method
+     * @param object
+     * @return any
+     */
+    protected postDeleteObject(object)
+    {
+        // Refresh parent values
+        this._parentDataService.refreshObject();
 
-        // Dialog message
-        this._modalService.dialog('Are you sure to remove?').then(
-            hasConfirm => {
-                if (hasConfirm) {
-                    that._dataService.delete(data).then(
-                        data => {
-                            that._parentDataService.refreshObject();
-                            return;
-                        },
-                        errors => { return; }
-                    );
-                } else {
-                    return;
-                }
-            },
-            errors => {
-                console.log(errors);
-            }
-        );
+        // If is a grouped service, so refresh all services to update the grouper service
+        if (object['grouperBookingServiceObj']) {
+            this._dataService.refresh();
+        }
+        return this;
     }
 }

@@ -6,6 +6,9 @@ import {FieldTypesExtensionModule} from '../../../../../../../AppBundle/Resource
 import {Step5Component} from './step5.component';
 
 
+/**
+ * Note: This file is never used. It's only here as example to check injection dependencies
+ */
 @NgModule({
     imports: [CommonModule, FormsModule, ReactiveFormsModule, NgbModule, FieldTypesExtensionModule],
     declarations: [

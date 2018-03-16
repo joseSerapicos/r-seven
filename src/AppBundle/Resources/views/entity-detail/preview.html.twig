@@ -1,0 +1,26 @@
+{% set entityDetail_status = false %}
+{% extends 'AppBundle:entity-detail:default.html.twig' %}
+{% block entityDetail_actions %}{% endblock %}
+{% block entityDetail_status %}{% endblock %}
+
+{% block afterContainer %}
+    <div class="table-responsive" *ngFor="let dependency of _dependenciesArr">
+        <h5 class="m-t-md" [innerHTML]="_dependencies[dependency].label"></h5>
+        <table class="data-table table table-striped table-hover dataTables-example table-bordered">
+            <thead>
+            <tr>
+                <th *ngFor="let field of _dependencies[dependency].fields['view']">{% verbatim %}{{ _dependencies[dependency].fields.metadata[field].label }}{% endverbatim %}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <ng-template ngFor let-obj [ngForOf]="_dependencies[dependency].objects" let-index="index">
+                <tr>
+                    <td *ngFor="let field of _dependencies[dependency].fields['view']"
+                        [ngClass]="_helperService.getColAlign(_dependencies[dependency].fields['metadata'][field]['type'])"
+                        [innerHTML]="obj[field]"></td>
+                </tr>
+            </ng-template>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

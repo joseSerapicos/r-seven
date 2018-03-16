@@ -1,5 +1,5 @@
 import {Component, ElementRef, Inject, Renderer, QueryList, ViewContainerRef, ViewChildren, Optional} from '@angular/core';
-import {BaseComponent, BaseProvider} from '../../../../../../AppBundle/Resources/public/ts/base/base.component';
+import {BaseExtensionComponent, BaseProvider} from '../../../../../../AppBundle/Resources/public/ts/base/base.extension-component';
 import {NavManagerService, INavManager as IAccordion, LazyLoadData} from '../../../ts/nav-manager/nav-manager.service';
 
 // Reexports
@@ -10,7 +10,7 @@ export {IAccordion, LazyLoadData, BaseProvider};
     selector: 'js_accordion',
     template: '' // Define template in child component
 })
-export abstract class AccordionComponent extends BaseComponent {
+export abstract class AccordionComponent extends BaseExtensionComponent {
     // For NavManagerService
     @ViewChildren('js_lazyLoadContainer', {read: ViewContainerRef}) lazyLoadViewContainerRefQL: QueryList<ViewContainerRef>;
 
@@ -21,7 +21,8 @@ export abstract class AccordionComponent extends BaseComponent {
         @Inject('HelperService') protected _helperService: any,
         protected _navManagerService: NavManagerService
     ) {
-        super(
+        super();
+        super.initBaseExtensionComponent(
             elementRef,
             renderer,
             provider || {}

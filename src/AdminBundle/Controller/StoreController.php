@@ -44,7 +44,7 @@ class StoreController extends BaseEntityController
         
         // Search
         $this->templateConf['search']['fields'] =
-            array('id', 'name', 'taxNumber', 'city', 'country', 'isEnabled');
+            array('id', 'thumbnail', 'name', 'taxNumber', 'city', 'country', 'isEnabled');
         // Empty criteria to be able to see all registers because "search" action is disabled.
         $this->templateConf['search']['criteria'] = array();
 
@@ -226,6 +226,9 @@ class StoreController extends BaseEntityController
             '_containers' => array(
                 array(
                     'label' => 'Contacts'
+                ),
+                array(
+                    'label' => 'Logo Image'
                 )
             )
         ));

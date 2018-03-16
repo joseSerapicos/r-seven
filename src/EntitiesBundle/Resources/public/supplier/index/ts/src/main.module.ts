@@ -28,7 +28,7 @@ import {AutoCompleteProviders} from '../../../../../../../AppBundle/Resources/pu
 // Entity dependency
 import {EditExtModule as EntitiesEntityEditExtModule} from '../../../../entity/index/ts/src/edit.ext-module';
 let autoCompleteProviders: AutoCompleteProviders = {
-    entityObj: {
+    selectEntityObj: {
         urlConf: (Helper.getAppVar('route') + 'entities/entity/conf'),
         control: 'edit',
         popups: {
@@ -67,6 +67,7 @@ let autoCompleteProviders: AutoCompleteProviders = {
         {provide: 'DataServiceProvider', useValue: Helper.getDataServiceProvider(_app.conf)},
         {provide: 'Provider', useValue: Helper.getDataBoxProvider(_app.conf)},
         {provide: 'ActionsServiceProvider', useValue: Helper.getActionsServiceProvider(_app.conf)},
+        {provide: 'LegendProvider', useValue: Helper.getLegendProvider(_app.conf)},
         {provide: 'Popups', useValue: {
             module: EditExtModule,
             component: 'EditComponent',

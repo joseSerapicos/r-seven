@@ -173,8 +173,9 @@ class ServicePriceException extends BasePriceException {
      */
     public function getUser_costValue()
     {
-        // Value, according with the "getIsVatIncluded" returned value
-        // (only valid for 'FIXED' method, because this method used the value directly over price)
+        // If used method is "FIXED", then the value represents the cost value
+        // (the others methods are percentages not values),
+        // so we need to calc the value according with isVatIncluded user preferences.
         if ($this->getIsVatIncluded() && ($this->getCostMethod() == 'FIXED')) {
             $splitPrice = PriceService::getTotalUnitDetail(
                 $this->getCostValue(),
@@ -194,8 +195,9 @@ class ServicePriceException extends BasePriceException {
      */
     public function getUser_marginValue()
     {
-        // Value, according with the "getIsVatIncluded" returned value
-        // (only valid for 'FIXED' method, because this method used the value directly over price)
+        // If used method is "FIXED", then the value represents the sell value
+        // (the others methods are percentages not values),
+        // so we need to calc the value according with isVatIncluded user preferences.
         if ($this->getIsVatIncluded() && ($this->getMarginMethod() == 'FIXED')) {
             $splitPrice = PriceService::getTotalUnitDetail(
                 $this->getMarginValue(),

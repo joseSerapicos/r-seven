@@ -2,6 +2,7 @@
 
 namespace BookingBundle\Controller;
 
+use BookingBundle\Entity\BookingServicePrice;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -35,17 +36,8 @@ class PackageBookingController extends BaseBookingController
             'addStep1' => array(
                 'name' => '_booking__package_booking__add_step1'
             ),
-            'addStep2' => array(
-                'name' => '_booking__package_booking__add_step2',
-            ),
-            'addStep3' => array(
-                'name' => '_booking__package_booking__add_step3',
-            ),
-            'addStep4' => array(
-                'name' => '_booking__package_booking__add_step4',
-            ),
-            'addStep5' => array(
-                'name' => '_booking__package_booking__add_step5',
+            'addStep6' => array(
+                'name' => '_booking__package_booking__add_step6',
             ),
             'edit' => array(
                 'name' => '_booking__package_booking__edit'
@@ -218,228 +210,203 @@ class PackageBookingController extends BaseBookingController
         ));
     }
 
-    /**
-     * @Route("/booking/package-booking/add-step2/{id}",
-     *     name="_booking__package_booking__add_step2",
-     *     defaults={"id" = null}
-     * )
-     *
-     * Action to add dates, allot and price of object
-     * @param Request $request
-     * @param $id
-     * @return mixed
-     */
-    public function addStep2Action(Request $request, $id)
-    {
-        $bookingContextUC = $this->getBookingContext(true);
-
-        // Set configuration
-        $this->flags['storage'] = 'session'; // Session storage is used
-        $this->flags['hasForm'] = true;
-        $this->init($request);
-        $this->templateConf['fields']['form'] = array(
-            'startDateManual', 'endDateManual', 'quantityManual',
-            'confirmationStatus', 'confirmationStatusManual',
-            'isAutoAvailability', 'isAutoAllot', 'isAutoPrice'
-        );
-
-        $obj = $this->getObject($id);
-
-
-        // Build form
-        $form = $this->createForm('BookingBundle\Form\\' . $bookingContextUC . 'BookingServiceAddStep2Type', $obj);
-
-        // Handle request
-        $form->handleRequest($request);
-
-        // Check if is submitted
-        if($form->isSubmitted()) {
-            $data = $this->getRequestData($request);
-            $bookingServiceObj = $obj->getBookingServiceObj();
-
-            // Validate quantity
-            if ($data['form']['bookingServiceObj']['quantityManual'] < 1) {
-                $this->responseConf['status'] = 0;
-                $this->addFlashMessage(
-                    'Invalid quantity was detected.',
-                    'Error',
-                    'error'
-                );
-                return $this->getResponse(true);
-            }
-            // Set quantity manually (from the fake field)
-            $bookingServiceObj->setQuantity($data['form']['bookingServiceObj']['quantityManual']);
-
-            // Control errors. We need to call always the availability, allot and price to sent the debug update to user
-            $hasError = false;
-
-            // Availability
-            // Set dates manually (from the fake fields)
-            $bookingServiceObj->setStartDate(new \DateTime($data['form']['bookingServiceObj']['startDateManual']));
-            $bookingServiceObj->setEndDate(new \DateTime($data['form']['bookingServiceObj']['endDateManual']));
-            if (!self::handleAvailability($this, $bookingServiceObj)) {
-                $hasError = true;
-            }
-
-            // Allot
-            // @TODO: this is necessary????: Default value (if auto allot is enabled this value will be override)
-            $bookingServiceObj->setConfirmationStatus($data['form']['bookingServiceObj']['confirmationStatusManual']);
-            if (!self::handleAllot($this, $bookingServiceObj)) {
-                // @TODO: try avoid this: Set object updated with the allotStatus to response
-                //$this->responseConf['hasObject'] = true;
-                //$this->responseConf['object'] = $this->normalizeObject($obj);
-                $hasError = true;
-            }
-
-            // Price
-            if (!self::handlePrice($this, $bookingServiceObj)) {
-                $hasError = true;
-            }
-
-            if ($hasError) {
-                $this->clearFlashMessage();
-                $this->addFlashMessage(
-                    'Selected dates have no confirmation.',
-                    'Error',
-                    'error'
-                );
-            }
-
-            $this->saveForm($form, $obj);
-
-            return $this->getResponse(true);
-        }
-
-        // Render form
-        return $this->render($this->localConf['templates']['addStep2'], array(
-            '_conf' => $this->templateConf,
-            '_form' => $form->createView()
-        ));
-    }
+    //////////////////////////
+    // REMAIN STEPS ARE IN PackageBookingServiceController
+    ///////////////////////////////////////////////////////
 
     /**
-     * @Route("/booking/package-booking/add-step3/{id}",
-     *     name="_booking__package_booking__add_step3",
-     *     defaults={"id" = null}
+     * @Route("/booking/package-booking/add-step6/{id}/{service}",
+     *     name="_booking__package_booking__add_step6",
+     *     defaults={"id" = null, "service" = null}
      * )
-     *
-     * Action to add detail info of object
-     * @param Request $request
-     * @param $id
-     * @return mixed
-     */
-    public function addStep3Action(Request $request, $id)
-    {
-        $bookingContextUC = $this->getBookingContext(true);
-
-        // Set configuration only if not initialized (can be initialized by a children)
-        if (!$this->isInitialized) {
-            $this->flags['storage'] = 'session'; // Session storage is used
-            $this->flags['hasForm'] = true;
-            $this->init($request);
-            $this->templateConf['fields']['form'] = array(
-                'icon', 'name', 'description', 'supplierObj', 'reference'
-            );
-        }
-
-        $obj = $this->getObject($id);
-
-        // Build form
-        $form = $this->createForm('BookingBundle\Form\\' . $bookingContextUC . 'BookingServiceAddStep3Type', $obj);
-
-        // Handle request
-        $form->handleRequest($request);
-
-        // Check if is submitted
-        if($form->isSubmitted()) {
-            $this->saveForm($form, $obj);
-
-            return $this->getResponse(true);
-        }
-
-        // Render form
-        return $this->render($this->localConf['templates']['addStep3'], array(
-            '_conf' => $this->templateConf,
-            '_form' => $form->createView()
-        ));
-    }
-
-    /**
-     * @Route("/booking/package-booking/add-step4/{id}",
-     *     name="_booking__package_booking__add_step4",
-     *     defaults={"id" = null}
-     * )
-     *
      * Action to save all objects in database
      * @param Request $request
      * @param $id
+     * @param $service
      * @return mixed
      */
-    public function addStep4Action(Request $request, $id)
+    public function addStep6Action(Request $request, $id, $service)
     {
-        $bookingContextUC = $this->getBookingContext(true);
-
         $this->flags['storage'] = 'session'; // Session storage is used
         $this->flags['hasForm'] = true;
         $this->init($request);
 
-        $obj = $this->getObject($id);
+        ///////////////////////////////////////////
+        // Set PackageService to PackageBooking
+        //////////////////////////////////////////
+        $packageBookingObj = $this->getObjectFromSS($id);
+        $bookingObj = $packageBookingObj->getBookingObj();
+        // PackageBookingService of package
+        $packageBookingServiceObj_package = $this->getObjectFromSS($service);
+        // BookingService of package
+        $bookingServiceObj_package = $packageBookingServiceObj_package->getBookingServiceObj();
+        // Service of package
+        $serviceObj_package = $bookingServiceObj_package->getServiceObj();
+        // Get PackageService object (get from $serviceObj that is the your inherited object)
+        $packageServiceObj = $this->getRepositoryService('PackageService', 'ServicesBundle')
+            ->execute('findOneByServiceObj', array($serviceObj_package));
+        $packageBookingObj->setPackageServiceObj($packageServiceObj);
 
-        $bookingServiceObj = $obj->getBookingServiceObj();
 
-        // Check dates (ensure that dates continues valid)
-        if (!self::handleAvailability($this, $bookingServiceObj)) {
-            return $this->getResponse(true);
+        ///////////////////////////////////////////
+        // Check services auto controls to ensure that they continue valid
+        /////////////////////////////////////////////////////////////////////////
+        // Booking Service
+        $packageBookingServiceObjArr = $this->getChildObjectsFromSS($bookingObj->getId(), 'PackageBookingService');
+
+        if (is_array($packageBookingServiceObjArr)) {
+            foreach ($packageBookingServiceObjArr as $packageBookingServiceObj) {
+                $bookingServiceObj = $packageBookingServiceObj->getBookingServiceObj();
+
+                // Get Service in PackageServiceService to get auto controls (if the service is the PackageService,
+                // then there are no PackageServiceService associated to get the auto controls)
+                $autoControls = null;
+                if ($bookingServiceObj != $bookingServiceObj_package) {
+                    $packageServiceServiceObj = $this->getRepositoryService('PackageServiceService', 'ServicesBundle')
+                        ->execute(
+                            'findOneBy',
+                            array(array(
+                                'packageServiceObj' => $packageServiceObj,
+                                'serviceObj' => $bookingServiceObj->getServiceObj()
+                            ))
+                        );
+                    $autoControls = PackageBookingServiceController::getPackageServiceServiceAutoControls($packageServiceServiceObj);
+                }
+
+                // Check allot (ensure that allot continue valid)
+                $targetServiceObj = ($autoControls ? $autoControls['allot']['targetService'] : null);
+                if (!BaseBookingServiceController::handleAllot($this, $bookingServiceObj, $targetServiceObj)) {
+                    return $this->getResponse(true);
+                }
+            }
         }
 
-        // Check allot (ensure that allot continue valid)
-        if (!self::handleAllot($this, $bookingServiceObj)) {
-            return $this->getResponse(true);
+
+        ///////////////////////////////////////////
+        // Set clones
+        //////////////////////////////////////////
+        $clonedObjects = array();
+
+        // NOTE: Session storage objects needs to be getted again to set foreign objects, otherwise the save will fail,
+        // because entity manager does not recognize the foreign objects saved in session storage
+
+        // Booking
+        $clonedObjects[$packageBookingObj->getId()] = clone $packageBookingObj;
+        $clonedObjects[$bookingObj->getId()] = clone $bookingObj;
+
+        // Booking Pax
+        if ($bookingPaxObj = $bookingObj->getBookingPaxObj()) {
+            $packageBookingPaxObj = $this->container->get('app.service.session_storage')->getParentObj($bookingPaxObj->getId());
+            $clonedObjects[$packageBookingPaxObj->getId()] = clone $packageBookingPaxObj;
+            $clonedObjects[$bookingPaxObj->getId()] = clone $bookingPaxObj;
         }
 
-        // NOTE: Price is not checked here, because in the previous step the user can change and customize the prices
+        // Booking Service
+        $packageBookingServiceObjArr = $this->getChildObjectsFromSS($bookingObj->getId(), 'PackageBookingService');
+        if (is_array($packageBookingServiceObjArr)) {
+            foreach ($packageBookingServiceObjArr as $packageBookingServiceObj) {
+                $clonedObjects[$packageBookingServiceObj->getId()] = clone $packageBookingServiceObj;
 
-        // Save session ids to remove or restore objects in session storage.
-        $sessionIds = array(
-            'localBookingService' => $obj->getId(),
-            'bookingService' => $bookingServiceObj->getId(),
-            'bookingServicePrice' => array()
-        );
+                $bookingServiceObj = $packageBookingServiceObj->getBookingServiceObj();
+                $bookingServiceObj = $this->getObjectFromSS($bookingServiceObj->getId());
+                $clonedObjects[$bookingServiceObj->getId()] = clone $bookingServiceObj;
 
-        // Get detail objects
-        $detailObjects = $this->container->get('app.service.session_storage')->getChildObjects(
-            $bookingServiceObj->getId(), // This is the parent of objects
-            'BookingServicePrice'
-        );
+                // Booking Service Price
+                $bookingServicePriceObjArr = $this->getChildObjectsFromSS($bookingServiceObj->getId(), 'BookingServicePrice');
+                if (is_array($bookingServicePriceObjArr)) {
+                    foreach ($bookingServicePriceObjArr as $bookingServicePriceObj) {
+                        $bookingServicePriceObj = $this->getObjectFromSS($bookingServicePriceObj->getId());
+                        $clonedObjects[$bookingServicePriceObj->getId()] = clone $bookingServicePriceObj;
+                    }
+                }
+            }
+        }
 
-        // Clear id to may be saved in database
-        $obj->setId(null);
-        $bookingServiceObj->setId(null);
+
+        ///////////////////////////////////////////
+        // Set object to save in database
+        //////////////////////////////////////////
+        $objectsToSaveInDb = array();
+
+        // Booking
+        $packageBookingObj_cloned = $clonedObjects[$packageBookingObj->getId()];
+        $packageBookingObj_cloned->setBookingObj($clonedObjects[$packageBookingObj_cloned->getBookingObj()->getId()]);
+        $objectsToSaveInDb[] = $packageBookingObj_cloned;
+
+        $bookingObj_cloned = $clonedObjects[$bookingObj->getId()];
+        $bookingObj_cloned->setBookingPaxObj($clonedObjects[$bookingObj_cloned->getBookingPaxObj()->getId()]);
+
+        // Booking Pax
+        if ($bookingPaxObj = $bookingObj->getBookingPaxObj()) {
+            $packageBookingPaxObj = $this->container->get('app.service.session_storage')->getParentObj($bookingPaxObj->getId());
+            $packageBookingPaxObj_cloned = $clonedObjects[$packageBookingPaxObj->getId()];
+            $packageBookingPaxObj_cloned->setBookingPaxObj($clonedObjects[$packageBookingPaxObj_cloned->getBookingPaxObj()->getId()]);
+            $objectsToSaveInDb[] = $packageBookingPaxObj_cloned;
+
+            $bookingPaxObj_cloned = $clonedObjects[$bookingPaxObj->getId()];
+            $bookingPaxObj_cloned->setBookingObj($clonedObjects[$bookingPaxObj_cloned->getBookingObj()->getId()]);
+        }
+
+        // Booking Service
+        $packageBookingServiceObjArr = $this->getChildObjectsFromSS($bookingObj->getId(), 'PackageBookingService');
+        if (is_array($packageBookingServiceObjArr)) {
+            foreach ($packageBookingServiceObjArr as $packageBookingServiceObj) {
+                $packageBookingServiceObj_cloned = $clonedObjects[$packageBookingServiceObj->getId()];
+                $packageBookingServiceObj_cloned->setBookingServiceObj($clonedObjects[$packageBookingServiceObj_cloned->getBookingServiceObj()->getId()]);
+                $objectsToSaveInDb[] = $packageBookingServiceObj_cloned;
+
+                $bookingServiceObj = $packageBookingServiceObj->getBookingServiceObj();
+                $bookingServiceObj_cloned = $clonedObjects[$bookingServiceObj->getId()];
+                $bookingServiceObj_cloned->setBookingObj($clonedObjects[$bookingServiceObj_cloned->getBookingObj()->getId()]);
+                if ($bookingServiceObj->getGrouperBookingServiceObj()) {
+                    $bookingServiceObj_cloned->setGrouperBookingServiceObj($clonedObjects[$bookingServiceObj_cloned->getGrouperBookingServiceObj()->getId()]);
+                }
+                if ($bookingServiceObj->getGrouperBookingServicePriceObj()) {
+                    $bookingServiceObj_cloned->setGrouperBookingServicePriceObj($clonedObjects[$bookingServiceObj_cloned->getGrouperBookingServicePriceObj()->getId()]);
+                }
+
+                // Booking Service Price
+                $bookingServicePriceObjArr = $this->getChildObjectsFromSS($bookingServiceObj->getId(), 'BookingServicePrice');
+                if (is_array($bookingServicePriceObjArr)) {
+                    foreach ($bookingServicePriceObjArr as $bookingServicePriceObj) {
+                        $bookingServicePriceObj_cloned = $clonedObjects[$bookingServicePriceObj->getId()];
+                        $bookingServicePriceObj_cloned->setBookingServiceObj($clonedObjects[$bookingServicePriceObj_cloned->getBookingServiceObj()->getId()]);
+                        if ($bookingServicePriceObj->getGrouperBookingServicePriceObj()) {
+                            $bookingServicePriceObj_cloned->setGrouperBookingServicePriceObj($clonedObjects[$bookingServicePriceObj_cloned->getGrouperBookingServicePriceObj()->getId()]);
+                        }
+                        if ($bookingServicePriceObj->getGroupedBookingServicePriceObj()) {
+                            $bookingServicePriceObj_cloned->setGroupedBookingServicePriceObj($clonedObjects[$bookingServicePriceObj_cloned->getGroupedBookingServicePriceObj()->getId()]);
+                        }
+
+                        $objectsToSaveInDb[] = $bookingServicePriceObj_cloned;
+                    }
+                }
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////
 
         // Save object in entity manager
         $this->flags['storage'] = 'db'; // Switch storage to database
-        $this->saveObject($obj, false); // Doesn't flush data until all objects are inserted
-
-        // Save detail objects in database
-        foreach ($detailObjects as $detailObj) {
-            // Get object to set again foreign objects, otherwise the save will fail,
-            // because entity manager does not recognize the foreign objects saved in session storage
-            $detailObj = $this->getObjectFromSS($detailObj->getId());
-
-            // Clear id to may be saved in database
-            $sessionIds['bookingServicePrice'][] = $detailObj->getId();
-            $detailObj->setId(null);
-
-            parent::saveObject($detailObj, false); // Doesn't flush data until all objects are inserted
+        if ($this->preSaveObject($packageBookingObj_cloned, null)) {
+            foreach ($objectsToSaveInDb as $objectToSaveInDb) {
+                $this->saveObject($objectToSaveInDb, false); // Doesn't flush data until all objects are inserted
+            }
         }
-
-        // Flush (persist) all objects in database
-        $this->flushEm();
-        $this->postSaveObject($obj);
+        $this->flushEm();// Flush (persist) all objects in database
+        $this->postSaveObject($packageBookingObj_cloned);
 
         if ($this->responseConf['status'] == 1) {
+            // Update booking
+            BaseBookingController::setTotals($this, $bookingObj_cloned);
+            BaseBookingController::setConfirmation($this, $bookingObj_cloned);
+            BaseBookingController::setDates($this, $bookingObj_cloned);
+            // Update bellow us not needed, because current account are untouched
+            //BaseBookingController::setInvoiceStatus($this, $bookingObj_clone);
+            BaseBookingController::setPlaces($this, $bookingObj_cloned);
+
             // Remove objects from session
-            $this->deleteObjectFromSS($sessionIds['bookingService']);
+            $this->deleteObjectFromSS($packageBookingObj->getId());
 
             // Refresh to update fields choices
             $this->refreshConf();
@@ -450,126 +417,11 @@ class PackageBookingController extends BaseBookingController
                 'Success',
                 'success'
             );
-        } else {
-            // Restore session storage id
-            $obj->setId($sessionIds['localBookingService']);
-            $bookingServiceObj->setId($sessionIds['bookingService']);
 
-            $documentDetailIndex = 0;
-            foreach ($detailObjects as $detailObj) {
-                $detailObj->setId($sessionIds['bookingServicePrice'][$documentDetailIndex]);
-                $documentDetailIndex++;
-            }
+            // Configure response
+            $this->responseConf['hasObject'] = true;
+            $this->responseConf['object'] = $this->normalizeObject($packageBookingObj_cloned);
         }
-
-        // Configure response
-        $this->responseConf['hasObject'] = true;
-        $this->responseConf['object'] = $this->normalizeObject($obj); // Object updated
-
-        return $this->getResponse(true);
-    }
-
-    /**
-     * @Route("/booking/package-booking/add-step5/{id}",
-     *     name="_booking__package_booking__add_step5",
-     *     defaults={"id" = null}
-     * )
-     *
-     * Action to save all objects in database
-     * @param Request $request
-     * @param $id
-     * @return mixed
-     */
-    public function addStep5Action(Request $request, $id)
-    {
-        $bookingContextUC = $this->getBookingContext(true);
-
-        $this->flags['storage'] = 'session'; // Session storage is used
-        $this->flags['hasForm'] = true;
-        $this->init($request);
-
-        $obj = $this->getObject($id);
-
-        $bookingServiceObj = $obj->getBookingServiceObj();
-
-        // Check dates (ensure that dates continues valid)
-        if (!self::handleAvailability($this, $bookingServiceObj)) {
-            return $this->getResponse(true);
-        }
-
-        // Check allot (ensure that allot continue valid)
-        if (!self::handleAllot($this, $bookingServiceObj)) {
-            return $this->getResponse(true);
-        }
-
-        // NOTE: Price is not checked here, because in the previous step the user can change and customize the prices
-
-        // Save session ids to remove or restore objects in session storage.
-        $sessionIds = array(
-            'localBookingService' => $obj->getId(),
-            'bookingService' => $bookingServiceObj->getId(),
-            'bookingServicePrice' => array()
-        );
-
-        // Get detail objects
-        $detailObjects = $this->container->get('app.service.session_storage')->getChildObjects(
-            $bookingServiceObj->getId(), // This is the parent of objects
-            'BookingServicePrice'
-        );
-
-        // Clear id to may be saved in database
-        $obj->setId(null);
-        $bookingServiceObj->setId(null);
-
-        // Save object in entity manager
-        $this->flags['storage'] = 'db'; // Switch storage to database
-        $this->saveObject($obj, false); // Doesn't flush data until all objects are inserted
-
-        // Save detail objects in database
-        foreach ($detailObjects as $detailObj) {
-            // Get object to set again foreign objects, otherwise the save will fail,
-            // because entity manager does not recognize the foreign objects saved in session storage
-            $detailObj = $this->getObjectFromSS($detailObj->getId());
-
-            // Clear id to may be saved in database
-            $sessionIds['bookingServicePrice'][] = $detailObj->getId();
-            $detailObj->setId(null);
-
-            parent::saveObject($detailObj, false); // Doesn't flush data until all objects are inserted
-        }
-
-        // Flush (persist) all objects in database
-        $this->flushEm();
-        $this->postSaveObject($obj);
-
-        if ($this->responseConf['status'] == 1) {
-            // Remove objects from session
-            $this->deleteObjectFromSS($sessionIds['bookingService']);
-
-            // Refresh to update fields choices
-            $this->refreshConf();
-
-            // Flash messages to display to user
-            $this->addFlashMessage(
-                'The data has been updated',
-                'Success',
-                'success'
-            );
-        } else {
-            // Restore session storage id
-            $obj->setId($sessionIds['localBookingService']);
-            $bookingServiceObj->setId($sessionIds['bookingService']);
-
-            $documentDetailIndex = 0;
-            foreach ($detailObjects as $detailObj) {
-                $detailObj->setId($sessionIds['bookingServicePrice'][$documentDetailIndex]);
-                $documentDetailIndex++;
-            }
-        }
-
-        // Configure response
-        $this->responseConf['hasObject'] = true;
-        $this->responseConf['object'] = $this->normalizeObject($obj); // Object updated
 
         return $this->getResponse(true);
     }

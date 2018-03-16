@@ -1,3 +1,4 @@
 {
-  "entity-detail": "http://weboffice.whs.dev.com/app_dev.php/template/app/partial/dynamic-entity-detail"
+  "entity-detail": "http://weboffice.whs.dev.com/app_dev.php/template/app/entity-detail/default",
+  "entity-detail-preview": "http://weboffice.whs.dev.com/app_dev.php/template/app/entity-detail/preview"
 }

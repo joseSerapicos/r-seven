@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the `liip/LiipImagineBundle` project.
+ *
+ * (c) https://github.com/liip/LiipImagineBundle/graphs/contributors
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
+ */
+
 namespace Liip\ImagineBundle\Model;
 
 use Liip\ImagineBundle\Binary\FileBinaryInterface;
@@ -22,7 +31,7 @@ class FileBinary implements FileBinaryInterface
     protected $format;
 
     /**
-     * @param string $content
+     * @param string $path
      * @param string $mimeType
      * @param string $format
      */

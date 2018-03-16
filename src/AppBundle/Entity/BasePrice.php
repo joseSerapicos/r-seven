@@ -156,7 +156,7 @@ class BasePrice extends BaseEntity
     /**
      * Get sellValue
      *
-     * @return string
+     * @return float
      */
     public function getSellValue()
     {

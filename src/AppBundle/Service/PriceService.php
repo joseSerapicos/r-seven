@@ -102,6 +102,23 @@ class PriceService
     }
 
     /**
+     * Calc subtotal value
+     *
+     * Sub total is determined in this way, because in some cases the sum of "subTotal" and "totalVat"
+     * rounded does not match with the correct total, given that this values are rounded to 2 decimals
+     * and lost precision, so in this way we keep the calculus with coherence giving preference to keep
+     * "totalVat" untouched (legal values).
+     *
+     * @param $total
+     * @param $totalVat
+     * @return float|int
+     */
+    public function calcSubTotal($total, $totalVat)
+    {
+        return round($total - $totalVat, self::DECIMAL_CONF['total']);
+    }
+
+    /**
      * Get Total Unit Value Detail
      * @param $unitValue
      * @param $vatPercentage

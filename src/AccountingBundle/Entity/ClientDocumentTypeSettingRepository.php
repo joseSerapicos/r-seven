@@ -33,7 +33,7 @@ class ClientDocumentTypeSettingRepository extends BaseDocumentTypeSettingReposit
                 'form' => array('type' => 'select')
             ),
             'documentType_name' => array('field' => 'name', 'table' => 'clientDocumentType', 'label' => 'Document Type',
-                'type' => 'text', 'acl' => 'read', 'dependency' => 'clientDocumentTypeObj',
+                'type' => 'text', 'acl' => 'read', 'isDefault' => true, 'dependency' => 'clientDocumentTypeObj',
                 'form' => array('type' => 'none')
             )
         ));

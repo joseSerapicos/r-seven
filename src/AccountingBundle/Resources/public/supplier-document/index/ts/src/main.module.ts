@@ -7,6 +7,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {SearchModule} from '../../../../../../../AppBundle/Resources/public/ts/search/search.module';
 import {SearchPaginationModule} from '../../../../../../../AppBundle/Resources/public/ts/search/search-pagination.module';
 import {ExpanderModule} from '../../../../../../../AppBundle/Resources/public/ts/expander/expander.module';
+import {LegendExtModule} from '../../../../../../../AppBundle/Resources/public/legend/ts/src/legend.ext-module';
 import {Helper} from '../../../../../../../AppBundle/Resources/public/ts/helper';
 import {TasksLoaderManagerService} from '../../../../../../../AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service';
 import {PostService} from '../../../../../../../AppBundle/Resources/public/ts/post.service';
@@ -113,7 +114,8 @@ formProvider['preventObjectOverride'] = false;
         AppBasicsExtModule,
         SearchModule,
         SearchPaginationModule,
-        ExpanderModule
+        ExpanderModule,
+        LegendExtModule
     ],
     declarations: [
         MainComponent
@@ -132,6 +134,7 @@ formProvider['preventObjectOverride'] = false;
         {provide: 'DataServiceProvider', useValue: Helper.getDataServiceProvider(_app.conf)},
         {provide: 'Provider', useValue: Helper.getDataBoxProvider(_app.conf)},
         {provide: 'ActionsServiceProvider', useValue: Helper.getActionsServiceProvider(_app.conf)},
+        {provide: 'LegendProvider', useValue: Helper.getLegendProvider(_app.conf)},
         {provide: 'Popups', useValue: {
             add: {
                 module: SupplierDocumentAddFormPopupExtModule,

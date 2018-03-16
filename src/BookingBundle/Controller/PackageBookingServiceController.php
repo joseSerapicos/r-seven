@@ -8,6 +8,12 @@ use Symfony\Component\HttpFoundation\Request;
 class PackageBookingServiceController extends BaseBookingServiceController
 {
     /**
+     * Get label/title to display child in parent
+     * @return mixed
+     */
+    static function getLabel() { return 'Services'; }
+
+    /**
      * Get Local Booking Context.
      * @return mixed (lowerCamelCase)
      */
@@ -20,10 +26,9 @@ class PackageBookingServiceController extends BaseBookingServiceController
      * Overrides parent method
      * @param Request $request
      * @param $parents
-     * @param $label (set label when you don't have the route in modules/menus tree)
      * @return $this
      */
-    protected function initChild(Request $request, $parents, $label = 'Services')
+    protected function initChild(Request $request, $parents)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
@@ -59,8 +64,14 @@ class PackageBookingServiceController extends BaseBookingServiceController
             'addStep3ForBooking' => array(
                 'name' => '_booking__package_booking_service__add_step3_for_booking',
             ),
+            'addStep3ForBookingChange' => array(
+                'name' => '_booking__package_booking_service__add_step3_for_booking_change',
+            ),
             'addStep4ForBooking' => array(
                 'name' => '_booking__package_booking_service__add_step4_for_booking',
+            ),
+            'addStep5ForBooking' => array(
+                'name' => '_booking__package_booking_service__add_step5_for_booking',
             ),
             'edit' => array(
                 'name' => '_booking__package_booking_service__edit',
@@ -76,7 +87,7 @@ class PackageBookingServiceController extends BaseBookingServiceController
             )
         );
 
-        parent::initChild($request, $parents, $label);
+        parent::initChild($request, $parents);
 
         // Templates
         $this->localConf['templates']['addStep1'] = 'BookingBundle:BaseBookingService:add-step1.html.twig';
@@ -104,6 +115,15 @@ class PackageBookingServiceController extends BaseBookingServiceController
                 'order' => true
             )
         );
+
+        /* Legend for template/view */
+        $this->templateConf['controls']['legend'][] = array(
+            'label' => 'Grouped Service', 'class' => 'bg-warning-light', 'field' => 'grouperBookingServiceObj'
+        );
+        $this->templateConf['controls']['legend'][] = array(
+            'label' => 'Grouper Service', 'class' => 'bg-warning', 'field' => 'grouperBookingServicePriceObj'
+        );
+        /* /Legend for template/view */
 
         // Extra data
         $this->templateConf['extraData']['template'] = array(
@@ -271,13 +291,43 @@ class PackageBookingServiceController extends BaseBookingServiceController
 
         // Configure response
         $obj = $this->getObject($id);
-        $packageServiceServices = $this->getAndSetPackageServiceServices($obj);
+        $bookingServiceObj = $obj->getBookingServiceObj($id);
+
+        // Reset previous services
+        $this->resetPackageServiceServicesFromSS($bookingServiceObj);
+
+        $packageServiceServices = null;
+        if (!isset($this->flags['hasPackageServiceServices']) || $this->flags['hasPackageServiceServices']) {
+            $packageServiceServices = $this->getAndSetPackageServiceServices($obj);
+        }
+
         $this->responseConf['hasObject'] = true;
-        // Object updated with totals after grouping child services are updated
+        // Object updated with totals after children services of grouper service are updated
         $this->responseConf['object'] = $this->normalizeObject($obj);
+        // Send updated objects or empty list to update the price in view according with "hasPackageServiceServices"
         $this->responseConf['hasObjects'] = true;
         $this->responseConf['objects'] = $packageServiceServices;
+
         return $this->getResponse(true);
+    }
+
+    /**
+     * @Route("/booking/package-booking-service/add-step3-for-booking-change/{booking}/{id}",
+     *     name="_booking__package_booking_service__add_step3_for_booking_change",
+     *     defaults={"id" = null}
+     * )
+     *
+     * Action to set services of package
+     * @param Request $request
+     * @param $booking
+     * @param $id
+     * @return mixed
+     */
+    public function addStep3ForBookingChangeAction(Request $request, $booking, $id)
+    {
+        // Avoid to set PackageServiceServices and return a different total (with grouped PackageServiceServices)
+        $this->flags['hasPackageServiceServices'] = false;
+        return $this->addStep3ForBookingAction($request, $booking, $id);
     }
 
     /**
@@ -311,10 +361,51 @@ class PackageBookingServiceController extends BaseBookingServiceController
 
         // Config response
         $this->responseConf['hasObject'] = true;
-        // Object updated with totals after grouping child services are updated
+        // Object updated with totals after children services of grouper service are updated
         $this->responseConf['object'] = $this->normalizeObject($obj);
         $this->responseConf['hasObjects'] = true;
         $this->responseConf['objects'] = $packageServiceServices;
+
+        return $this->getResponse(true);
+    }
+
+    /**
+     * @Route("/booking/package-booking-service/add-step5-for-booking/{booking}/{id}",
+     *     name="_booking__package_booking_service__add_step5_for_booking",
+     *     defaults={"id" = null}
+     * )
+     *
+     * Action to add detail info of object
+     * @param Request $request
+     * @param $booking
+     * @param $id
+     * @return mixed
+     */
+    public function addStep5ForBookingAction(Request $request, $booking, $id)
+    {
+        $this->flags['storage'] = 'session'; // Session storage is used
+        $this->flags['hasForm'] = true;
+        $this->initChild($request, array($booking));
+        // Keep session storage flag, because the child form is merged with the parent form,
+        // otherwise the child is added to objects list in template and we want to handle them manually
+        $this->responseConf['addObjectSessionStorageFlag'] = true;
+        $this->localConf['templates']['addStep3'] = 'BookingBundle:PackageBooking:add-step5.html.twig';
+        $this->templateConf['fields']['form'] = array(
+            'icon', 'name', 'description', 'supplierObj', 'reference', 'placeObj', 'placeToObj'
+        );
+
+        if (empty($id)) { // When you get the view, id is not defined
+            return parent::addStep3Action($request, $booking, $id);
+        }
+
+        parent::addStep3Action($request, $booking, $id);
+
+        if ($this->responseConf['status'] == 1) {
+            $bookingObj = $this->getParentConf()['obj'];
+            $packageBookingObj = $this->container->get('app.service.session_storage')->getParentObj($bookingObj->getId());
+            $this->templateConf['localData']['data']['preview']
+                = PackageBookingController::getPreview($this, $packageBookingObj);
+        }
 
         return $this->getResponse(true);
     }
@@ -327,31 +418,24 @@ class PackageBookingServiceController extends BaseBookingServiceController
      * @return array
      */
     protected function getAndSetPackageServiceServices($object, $data = null) {
-        $bookingServiceObj = $object->getBookingServiceObj();
-        $bookingObj = $bookingServiceObj->getBookingObj();
-        $serviceObj = $bookingServiceObj->getServiceObj();
+        $bookingServiceObj_package = $object->getBookingServiceObj();
+        $bookingObj = $bookingServiceObj_package->getBookingObj();
+        $serviceObj = $bookingServiceObj_package->getServiceObj();
         $packageServiceServices = array(); // Array with services to sent in response
 
-        // Remove previous PackageBookingService
-        // Remove only child services (those that are the groupingBookingService filled)
-        $packageBookingServiceObjArr = $this->container->get('app.service.session_storage')->getChildObjects(
-            $bookingObj->getId(), // This is the parent of objects
-            'PackageBookingService'
-        );
-        if (is_array($packageBookingServiceObjArr) && (count($packageBookingServiceObjArr) > 1)) {
-            foreach ($packageBookingServiceObjArr as $packageBookingServiceObj) {
-                if ($packageBookingServiceObj->getBookingServiceObj()->getGroupingBookingServiceObj()) {
-                    $this->container->get('app.service.session_storage')
-                        ->delete($packageBookingServiceObj->getId(), $bookingObj->getId());
-                }
-            }
-        }
+        // Reset previous services associated
+        $this->resetPackageServiceServicesFromSS($bookingServiceObj_package);
 
         // Get services of package
         if ($serviceObj) {
             // Get PackageService object (get from $serviceObj that is the your inherited object)
             $packageServiceObj = $this->getRepositoryService('PackageService', 'ServicesBundle')
                 ->execute('findOneByServiceObj', array($serviceObj));
+
+            $grouperBookingServiceObj = ($packageServiceObj->getHasGroupingServices() ?
+                $bookingServiceObj_package :
+                null
+            );
 
             // Get Services of PackageService
             $packageServiceServiceObjArr = $this->getRepositoryService('PackageServiceService', 'ServicesBundle')
@@ -362,91 +446,73 @@ class PackageBookingServiceController extends BaseBookingServiceController
                 $hasValidation = !empty($data);
 
                 foreach ($packageServiceServiceObjArr as $packageServiceServiceObj) {
+                    // To distinct optional services not selected by the user, but used to simulate the price
+                    $isSimulationService = false;
+                    if ($packageServiceServiceObj->getIsOptional() // It's an optional service
+                        && (
+                            // Data is not submitted yet
+                            empty($data)
+                            // There are no data submitted about optional service
+                            || !isset($data[$packageServiceServiceObj->getId()])
+                            || !isset($data[$packageServiceServiceObj->getId()]['hasService'])
+                            // Submitted data has the optional service unselected
+                            || !$data[$packageServiceServiceObj->getId()]['hasService']
+                            // Need to use " == 'false'" because boolean coming as string
+                            || ($data[$packageServiceServiceObj->getId()]['hasService'] == "false")
+                        )
+                    ) {
+                        $isSimulationService = true;
+                    }
+
                     $newObj = $this->newObject();
                     $newBookingServiceObj = $newObj->getBookingServiceObj();
-                    $newBookingServiceObj->setGroupingBookingServiceObj($bookingServiceObj);
 
-                    $packageServiceService_serviceObj = $packageServiceServiceObj->getServiceObj();
-
-                    //////////////////////////////////////////////////////////////////////
                     // Override Service autoControls to PackageServiceService values
-                    ////////////////////////////////////////////////////////////////////////////////
-
-                    // AVAILABILITY
-                    $availabilityType = $packageServiceServiceObj->getAvailability();
-                    $isEnabledAvailability = false;
-                    $availabilityTargetServiceObj = null;
-                    switch ($availabilityType) {
-                        case 'SERVICE':
-                            $isEnabledAvailability = $packageServiceService_serviceObj->getIsEnabledAvailability();
-                            //$availabilityTargetServiceObj = null; // (setted as default value)
-                            break;
-                        case 'PACKAGE':
-                            $isEnabledAvailability = true;
-                            $availabilityTargetServiceObj = $packageServiceService_serviceObj;
-                            break;
-                        case 'NONE':
-                            //$isEnabledAvailability = false; // (setted as default value)
-                            //$availabilityTargetServiceObj = null; // (setted as default value)
-                            break;
-                    }
-                    // ALLOT
-                    $allotType = $packageServiceServiceObj->getAllot();
-                    $isEnabledAllot = false;
-                    $allotTargetServiceObj = null;
-                    switch ($allotType) {
-                        case 'SERVICE':
-                            $isEnabledAllot = $packageServiceService_serviceObj->getIsEnabledAllot();
-                            //$allotTargetServiceObj = null; // (setted as default value)
-                            break;
-                        case 'PACKAGE':
-                            $isEnabledAllot = true;
-                            $allotTargetServiceObj = $packageServiceService_serviceObj;
-                            break;
-                        case 'NONE':
-                            //$isEnabledAllot = false; // (setted as default value)
-                            //$allotTargetServiceObj = null; // (setted as default value)
-                            break;
-                    }
-                    // PRICE
-                    $priceType = $packageServiceServiceObj->getPrice();
-                    $isEnabledPrice = false;
-                    $priceTargetServiceObj = null;
-                    switch ($priceType) {
-                        case 'SERVICE':
-                            $isEnabledPrice = $packageServiceService_serviceObj->getIsEnabledPrice();
-                            //$priceTargetServiceObj = null; // (setted as default value)
-                            break;
-                        case 'PACKAGE':
-                            $isEnabledPrice = true;
-                            $priceTargetServiceObj = $packageServiceService_serviceObj;
-                            break;
-                        case 'NONE':
-                            //$isEnabledPrice = false; // (setted as default value)
-                            //$priceTargetServiceObj = null; // (setted as default value)
-                            break;
-                    }
-
-                    $packageServiceService_serviceObj->setIsEnabledAvailability($isEnabledAvailability);
-                    $packageServiceService_serviceObj->setIsEnabledAllot($isEnabledAllot);
-                    $packageServiceService_serviceObj->setIsEnabledPrice($isEnabledPrice);
-
-                    ////////////////////////////////////////////////////////////////////////////////////////
+                    $autoControls = $this->getPackageServiceServiceAutoControls($packageServiceServiceObj);
+                    $packageServiceService_serviceObj = $packageServiceServiceObj->getServiceObj();
+                    $packageServiceService_serviceObj->setIsEnabledAvailability($autoControls['availability']['isEnabled']);
+                    $packageServiceService_serviceObj->setIsEnabledAllot($autoControls['allot']['isEnabled']);
+                    $packageServiceService_serviceObj->setIsEnabledPrice($autoControls['price']['isEnabled']);
 
                     $newBookingServiceObj->setServiceObj($packageServiceService_serviceObj);
 
                     // Data to be setted as default
                     $newObjDefaultData = array();
                     // We use "-1" to calculate the dates, because duration starts in "1" that is the day itself
-                    $newObjDefaultData['startDate'] = (new \DateTime($bookingServiceObj->getStartDate()->format('Y-m-d')
+                    $newObjDefaultData['startDate'] = (new \DateTime($bookingServiceObj_package->getStartDate()->format('Y-m-d')
                         .' +'.($packageServiceServiceObj->getDurationStartDay()-1).' day')
                     );
-                    $newObjDefaultData['endDate'] = (new \DateTime($newObjDefaultData['startDate']->format('Y-m-d')
-                        .' +'.($packageServiceServiceObj->getDurationDays()-1).' day')
-                    );
-                    $newObjDefaultData['priority'] = $packageServiceServiceObj->getPriority();
-                    $newObjDefaultData['description'] = $packageServiceServiceObj->getDescription();
+                    // End date
+                    switch ($packageServiceServiceObj->getDurationType()) {
+                        case 'FIXED':
+                            $newObjDefaultData['endDate'] = (new \DateTime($newObjDefaultData['startDate']->format('Y-m-d')
+                                .' +'.($packageServiceServiceObj->getDurationDays()-1).' day')
+                            );
+                            break;
+                        default: // 'END_DATE'
+                            $newObjDefaultData['endDate'] = $bookingServiceObj_package->getEndDate();
+                    }
+                    // Quantity
+                    switch ($packageServiceServiceObj->getQuantityType()) {
+                        case 'FIXED':
+                            $newObjDefaultData['quantity'] = $packageServiceServiceObj->getQuantity();
+                            break;
+                        case 'FREE':
+                            $newObjDefaultData['quantity'] = ((!empty($data)
+                                && isset($data[$packageServiceServiceObj->getId()])
+                                && isset($data[$packageServiceServiceObj->getId()]['quantity']))
+                                ? $data[$packageServiceServiceObj->getId()]['quantity']
+                                : $bookingServiceObj_package->getQuantity() // One per pax by default
+                            );
+                            break;
+                        default: // 'PER_PAX'
+                            $newObjDefaultData['quantity'] = $bookingServiceObj_package->getQuantity();
+                    }
                     $this->setObjectDefaultValues($newObj, $newObjDefaultData);
+                    $newBookingServiceObj->setPriority($packageServiceServiceObj->getPriority());
+                    $newBookingServiceObj->setDescription($packageServiceServiceObj->getDescription());
+                    $newBookingServiceObj->setPlaceObj($packageServiceServiceObj->getPlaceObj());
+                    $newBookingServiceObj->setPlaceToObj($packageServiceServiceObj->getPlaceToObj());
 
                     // Merge with submitted form data
                     if (!empty($data) && isset($data[$packageServiceServiceObj->getId()])) {
@@ -469,35 +535,29 @@ class PackageBookingServiceController extends BaseBookingServiceController
                         );
                     }
 
-                    // Add object if is not optional, or is optional but selected
-                    if (!$packageServiceServiceObj->getIsOptional()
-                        || ($packageServiceServiceObj->getIsOptional()
-                            && !empty($data)
-                            && isset($data[$packageServiceServiceObj->getId()])
-                            && $data[$packageServiceServiceObj->getId()]['hasOptional']
-                            // Need to use " != 'false'" because boolean coming as string
-                            && ($data[$packageServiceServiceObj->getId()]['hasOptional'] != "false")
-                        )
-                    ) {
-                        // Object is saved in session
-                        $localParent = $this->flags['parent'];
-                        $this->flags['parent'] = $bookingObj->getId();
-                        $this->saveObjectToSS($newObj);
-                        // Save $bookingServiceObj also, because it is the parent of BookingServicePrice
-                        $this->flags['parent'] = $newObj->getId(); // With this parent cascade deletion works automatically
-                        $this->saveObjectToSS($newBookingServiceObj);
-                        $this->flags['parent'] = $localParent; // Reset to local parent
+                    // Object is saved in session
+                    $localParent = $this->flags['parent'];
+                    $this->flags['parent'] = $bookingObj->getId();
+                    $this->saveObjectToSS($newObj);
+                    // Save $newBookingServiceObj also, because it is the parent of BookingServicePrice
+                    $this->flags['parent'] = $newObj->getId(); // With this parent cascade deletion works automatically
+                    $this->saveObjectToSS($newBookingServiceObj);
+                    $this->flags['parent'] = $localParent; // Reset to local parent
 
-                        // Handle controls here after save the BookingService object
-                        $this->handleAvailability($newBookingServiceObj, $availabilityTargetServiceObj, $hasValidation, false); // Set dates
-                        $this->handleAllot($newBookingServiceObj, $allotTargetServiceObj, $hasValidation); // Set allot
-                        $this->handlePrice($newBookingServiceObj, $priceTargetServiceObj, $hasValidation); // Reset price
-                    } else {
-                        // Disable controls
-                        $packageServiceService_serviceObj->setIsEnabledAvailability(false);
-                        $packageServiceService_serviceObj->setIsEnabledAllot(false);
-                        $packageServiceService_serviceObj->setIsEnabledPrice(false);
-                    }
+                    // Set grouperBookingServiceObj
+                    $newBookingServiceObj->setGrouperBookingServiceObj($isSimulationService ?
+                        null :
+                        $grouperBookingServiceObj
+                    );
+
+                    // Handle controls here after save the BookingService object
+                    $this->handleAvailability($newBookingServiceObj, $autoControls['availability']['targetService'], $hasValidation, false, false); // Set dates
+                    $this->handleAllot($this, $newBookingServiceObj, $autoControls['allot']['targetService'], $hasValidation); // Set allot
+                    // We set the last parameter to "false" to avoid set totals to grouper service
+                    // for each grouped service. Set totals of grouper service only after add all grouped services
+                    $this->handlePrice(
+                        $newBookingServiceObj, $autoControls['price']['targetService'], $hasValidation, false
+                    ); // Reset price
 
                     $packageServiceServices[] = array(
                         'packageServiceServiceObj' => $packageServiceServiceObj->getId(),
@@ -508,6 +568,7 @@ class PackageBookingServiceController extends BaseBookingServiceController
                         'description' => $newBookingServiceObj->getDescription(),
                         'startDate' => $newBookingServiceObj->normalizeDate($newBookingServiceObj->getStartDate()),
                         'endDate' => $newBookingServiceObj->normalizeDate($newBookingServiceObj->getEndDate()),
+                        'quantityType' => $packageServiceServiceObj->getQuantityType(),
                         'quantity' => $newBookingServiceObj->getQuantity(),
                         'isEnabledAvailability' => $packageServiceService_serviceObj->getIsEnabledAvailability(),
                         'isEnabledAllot' => $packageServiceService_serviceObj->getIsEnabledAllot(),
@@ -516,16 +577,138 @@ class PackageBookingServiceController extends BaseBookingServiceController
                         'isAutoAllot' => $newBookingServiceObj->getIsAutoAllot(),
                         'isAutoPrice' => $newBookingServiceObj->getIsAutoPrice(),
                         'totalSell' => $newBookingServiceObj->getTotalSell(),
+                        'grouperBookingServiceObj' => ($newBookingServiceObj->getGrouperBookingServiceObj() ?
+                            $newBookingServiceObj->getGrouperBookingServiceObj()->getId() : null
+                        ),
                         'isOptional' => $packageServiceServiceObj->getIsOptional(),
                         // This field controls if the optional service is to add or not (false by default)
                         // If the new object has id, then it was saved and service was added
-                        'hasOptional' => ($newObj->getId() ? true : false),
+                        'hasService' => !$isSimulationService,
                     );
+
+                    // Remove form session storage the object if is optional and is not selected by the user.
+                    // The object was added before to get the price, so the user can see the price of optional
+                    // services without select them.
+                    if ($isSimulationService) {
+                        // BookingService and PackageBookingService has the Booking as parent
+                        $this->deleteObjectFromSS($newBookingServiceObj->getId(), $bookingObj->getId());
+                        $this->deleteObjectFromSS($newObj->getId(), $bookingObj->getId());
+                    }
+                }
+
+                // Set totals to grouper service after add all grouped services
+                if ($grouperBookingServiceObj) {
+                    BaseBookingServiceController::setTotals($this, $grouperBookingServiceObj);
                 }
             }
         }
 
         return $packageServiceServices;
+    }
+
+    /**
+     * Get PackageServiceService auto controls
+     * @param $packageServiceServiceObj
+     * @return array
+     */
+    static function getPackageServiceServiceAutoControls($packageServiceServiceObj)
+    {
+        $autoControls = array(
+            'availability' => array(
+                'isEnabled' => false,
+                'targetService' => null
+            ),
+            'allot' => array(
+                'isEnabled' => false,
+                'targetService' => null
+            ),
+            'price' => array(
+                'isEnabled' => false,
+                'targetService' => null
+            )
+        );
+
+        $packageService_serviceObj = $packageServiceServiceObj->getPackageServiceObj()->getServiceObj(); // Target service
+        $packageServiceService_serviceObj = $packageServiceServiceObj->getServiceObj();
+
+        // AVAILABILITY
+        $availabilityType = $packageServiceServiceObj->getAvailability();
+        switch ($availabilityType) {
+            case 'SERVICE':
+                $autoControls['availability']['isEnabled']
+                    = $packageServiceService_serviceObj->getIsEnabledAvailability();
+                break;
+            case 'PACKAGE':
+                $autoControls['availability']['isEnabled'] = true;
+                $autoControls['availability']['targetService'] = $packageService_serviceObj;
+                break;
+            case 'NONE':
+                // Values are already defined as default
+                break;
+        }
+
+        // ALLOT
+        $allotType = $packageServiceServiceObj->getAllot();
+        switch ($allotType) {
+            case 'SERVICE':
+                $autoControls['allot']['isEnabled'] = $packageServiceService_serviceObj->getIsEnabledAllot();
+                break;
+            case 'PACKAGE':
+                $autoControls['allot']['isEnabled'] = true;
+                $autoControls['allot']['targetService'] = $packageService_serviceObj;
+                break;
+            case 'NONE':
+                // Values are already defined as default
+                break;
+        }
+
+        // PRICE
+        $priceType = $packageServiceServiceObj->getPrice();
+        switch ($priceType) {
+            case 'SERVICE':
+                $autoControls['price']['isEnabled'] = $packageServiceService_serviceObj->getIsEnabledPrice();
+                break;
+            case 'PACKAGE':
+                $autoControls['price']['isEnabled'] = true;
+                $autoControls['price']['targetService'] = $packageService_serviceObj;
+                break;
+            case 'NONE':
+                // Values are already defined as default
+                break;
+        }
+
+        return $autoControls;
+    }
+
+    /**
+     * Reset package service services from session storage
+     * @param $bookingServiceObj
+     * @return $this
+     */
+    protected function resetPackageServiceServicesFromSS($bookingServiceObj)
+    {
+        $bookingObj = $bookingServiceObj->getBookingObj();
+
+        $packageBookingServiceObjArr = $this->container->get('app.service.session_storage')->getChildObjects(
+            $bookingObj->getId(), // This is the parent of objects
+            'PackageBookingService'
+        );
+
+        if (is_array($packageBookingServiceObjArr) && (count($packageBookingServiceObjArr) > 1)) { // > 1 because 1 it's the BookingService itself
+            foreach ($packageBookingServiceObjArr as $packageBookingServiceObj) {
+                // Remove only child services (those that are different of main BookingService)
+                if ($packageBookingServiceObj->getBookingServiceObj() != $bookingServiceObj) {
+                    // Remove the BookingService manually because is not associated as child od PackageBookingService
+                    $this->container->get('app.service.session_storage')
+                        ->delete($packageBookingServiceObj->getBookingServiceObj()->getId(), $bookingObj->getId());
+                    // Remove PackageBookingService
+                    $this->container->get('app.service.session_storage')
+                        ->delete($packageBookingServiceObj->getId(), $bookingObj->getId());
+                }
+            }
+        }
+
+        return $this;
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -588,11 +771,7 @@ class PackageBookingServiceController extends BaseBookingServiceController
      */
     public function deleteLocalChildAction(Request $request, $booking, $id)
     {
-        $response = parent::deleteChildAction($request, $booking, $id);
-        if ($this->responseConf['status'] == 1) {
-            $this->setDependenciesPlaces();
-        }
-        return $response;
+        return parent::deleteChildAction($request, $booking, $id);
     }
 
     /**
@@ -658,6 +837,8 @@ class PackageBookingServiceController extends BaseBookingServiceController
         $this->initChild($request, array($booking));
         // Avoid DataService normalization (boolean)
         $this->templateConf['fields']['metadata']['isAutoAllot']['type'] = 'number';
+        // Keep original value to sum objects in view
+        $this->templateConf['fields']['metadata']['totalSell']['keepOriginalNormalizer'] = true;
         $this->templateConf['actions'] = array('refresh' => false);
         return parent::confChildAction($request, array($booking));
     }
@@ -671,68 +852,26 @@ class PackageBookingServiceController extends BaseBookingServiceController
      */
     protected function setEndDate($bookingServiceObj, $defaultDate)
     {
+        // Notice that this method is called yet when you add regular services in detail action
         $serviceObj = $bookingServiceObj->getServiceObj();
-        $endDate = null;
+        $endDate = $defaultDate;
 
         if ($serviceObj) {
             // Get PackageService object (get from $serviceObj that is the your inherited object)
             $packageServiceObj = $this->getRepositoryService('PackageService', 'ServicesBundle')
                 ->execute('findOneByServiceObj', array($serviceObj));
 
-            if ($packageServiceObj) {
-                if (!$packageServiceObj->getHasFixedDuration()) { // No fixed duration
-                    $endDate = $defaultDate;
-                } else {
-                    $fixedDurationDays = $packageServiceObj->getFixedDurationDays();
-                    $startDate = $bookingServiceObj->getStartDate();
-                    $endDate = new \DateTime($startDate->format('Y-m-d'));
-                    $endDate->modify('+' . $fixedDurationDays . ' day');
-                }
+            // Is a PackageService and has fixed duration
+            if ($packageServiceObj && $packageServiceObj->getHasFixedDuration()) {
+                $fixedDurationDays = $packageServiceObj->getFixedDurationDays();
+                $startDate = $bookingServiceObj->getStartDate();
+                $endDate = new \DateTime($startDate->format('Y-m-d'));
+                $endDate->modify('+' . $fixedDurationDays . ' day');
             }
         }
 
         $bookingServiceObj->setEndDate($endDate);
         $bookingServiceObj->setDurationDays(null);
-
-        return $this;
-    }
-
-    /**
-     * Set places for dependencies
-     * @return $this
-     */
-    protected function setDependenciesPlaces() {
-        // Check if there are no errors in previous updates and the object is in database
-        if (($this->responseConf['status'] == 1) && ($this->flags['storage'] == 'db')) {
-            // Update package booking places
-            $bookingObj = reset($this->parentConf)['obj']; // First parent
-            $packageBookingObj = $this->getRepositoryService('PackageBooking', 'BookingBundle')
-                ->execute('findOneByBookingObj', array($bookingObj));
-
-            $this->getLocalRepositoryService()
-                ->execute(
-                    'setPackageBookingPlaces',
-                    array($packageBookingObj)
-                );
-            parent::saveObject_static($this, $bookingObj);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Overrides parent method.
-     * @param $object
-     * @param $data (usually the form data)
-     * @return $this
-     */
-    protected function postSaveObject($object, $data = null) {
-        parent::postSaveObject($object, $data);
-
-        // Check if there are no errors in previous updates
-        if ($this->responseConf['status'] == 1) {
-            $this->setDependenciesPlaces();
-        }
 
         return $this;
     }

@@ -179,7 +179,9 @@
     line-height: 22px; // For lines with buttons
 }
 
+/////////////////////////
 // font-size and badge
+/////////////////////////
 .txt-xs,
 .badge.-badge-xs { // extra small
     font-size: 10px;
@@ -201,7 +203,9 @@
     font-size: 24px;
 }
 
+/////////////////////////
 // font-weight
+//////////////////////////////
 .txt-normal {
     font-weight: normal;
 }
@@ -209,25 +213,125 @@
     font-weight: bold;
 }
 
+/////////////////////////
 // font-color
+//////////////////////////////
 .txt-default {
-    color: #676a6c;
+  @include setColor('default');
 }
 .txt-primary {
-    color: #1ab394;
+    @include setColor('primary');
 }
 .txt-info {
-    color: #23c6c8;
+    @include setColor('info');
 }
 .txt-warning {
-    color: #f7a54a;
+    @include setColor('warning');
 }
 .txt-danger {
-    color: #ec4758;
+    @include setColor('danger');
 }
 .txt-success {
-    color: #1c84c6;
+    @include setColor('success');
 }
+.txt-base {
+    @include setColor('base');
+}
+.txt-base {
+    color: $colorBase;
+}
+.txt-neutral {
+    color: $colorNeutral;
+}
+.txt-logo-primary {
+    color: $colorLogoPrimary;
+}
+.txt-logo-secondary {
+    color: $colorLogoSecondary;
+}
+
+/////////////////////////
+// background-color
+//////////////////////////////
+.bg-default {
+    @include setBackgroundColor('default');
+}
+.bg-primary {
+    @include setBackgroundColor('primary');
+}
+.bg-info {
+    @include setBackgroundColor('info');
+}
+.bg-warning {
+    @include setBackgroundColor('warning');
+}
+.bg-danger {
+    @include setBackgroundColor('danger');
+}
+.bg-success {
+    @include setBackgroundColor('success');
+}
+.bg-base {
+    background-color: $colorBase;
+}
+.bg-neutral {
+    background-color: $colorNeutral;
+}
+.bg-logo-primary {
+    background-color: $colorLogoPrimary;
+}
+.bg-logo-secondary {
+    background-color: $colorLogoSecondary;
+}
+
+/////////////////////////
+// radios (next value = round(prev value + prev value / 2))
+/////////////////////////
+.rad-xs { // extra small
+    border-radius: 4px;
+}
+.rad-sm { // small
+    border-radius: 6px;
+}
+.rad-md { // medium
+    border-radius: 9px;
+}
+.rad-lg { // large
+    border-radius: 15px;
+}
+.rad-xl { // extra large
+    border-radius: 21px;
+}
+
+////////////////////////
+// grid
+///////////////////////////
+.row {
+    &-eq-height {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+    }
+}
+
+////////////////////////
+// positioning
+///////////////////////////
+.nowrap {
+    white-space: nowrap;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 // badge
 .badge {

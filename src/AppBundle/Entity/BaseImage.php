@@ -14,6 +14,18 @@ class BaseImage extends BaseFile {
     private $liipImagineDataManager;
     private $liipImagineFilterManager;
 
+
+    /**
+     * Get Image Variations
+     * Defines an array of image variations that should be handled by class automatically
+     * @return array
+     */
+    protected function getImageVariations() {
+        return array(
+            'thumbnail_128' // Thumbnail for gallery
+        );
+    }
+
     /**
      * Set liipImagineDataManager (from controller)
      * @param string $liipImagineDataManager
@@ -45,31 +57,30 @@ class BaseImage extends BaseFile {
         parent::saveFile();
 
         if (!empty($this->file)) {
-            $imgFilter = 'img';
-            $thumbnailFilter = 'thumbnail_128';
+            $imgFilterNameTermination = 'img';
             switch ($this->extension) {
                 case 'jpeg':
-                    $imgFilter = 'img_jpeg';
-                    $thumbnailFilter = 'thumbnail_128_jpeg';
+                    $imgFilterNameTermination = '_jpeg';
                     break;
                 case 'png':
-                    $imgFilter = 'img_png';
-                    $thumbnailFilter = 'thumbnail_128_png';
+                    $imgFilterNameTermination = '_png';
                     break;
             }
 
             $localPath = substr($this->path, strpos($this->path, 'upload/'));
 
             // Compress file
-            $image = $this->liipImagineDataManager->find($imgFilter, $localPath);
-            $response = $this->liipImagineFilterManager->applyFilter($image, $imgFilter);
+            $image = $this->liipImagineDataManager->find('img'.$imgFilterNameTermination, $localPath);
+            $response = $this->liipImagineFilterManager->applyFilter($image, 'img'.$imgFilterNameTermination);
             $file = $response->getContent();
             $fileSize = strlen($file);
 
             // Replace file to save size!
             if ($fileSize < $this->size) {
+                // Backup of original image disabled (for best performance and save space)
                 // Save original file
-                rename($this->path, $this->dir . $this->filename . '.original.' . $this->extension);
+                //rename($this->path, $this->dir . $this->filename . '.original.' . $this->extension);
+
                 file_put_contents(
                     $this->path,
                     $file
@@ -77,13 +88,20 @@ class BaseImage extends BaseFile {
                 $this->size = $fileSize;
             }
 
-            // Create a thumbnail to list in gallery
-            $image = $this->liipImagineDataManager->find($thumbnailFilter, $localPath);
-            $response = $this->liipImagineFilterManager->applyFilter($image, $thumbnailFilter);
-            file_put_contents(
-                $this->dir . $this->filename . '.thumbnail-128.' . $this->extension,
-                $response->getContent()
-            );
+            // Create variation of the image according with configuration
+            $imageVariations = $this->getImageVariations();
+            if (is_array($imageVariations)) {
+                foreach ($imageVariations as $imageVariation) {
+                    $image = $this->liipImagineDataManager->find($imageVariation.$imgFilterNameTermination, $localPath);
+                    $response = $this->liipImagineFilterManager->applyFilter(
+                        $image, $imageVariation.$imgFilterNameTermination
+                    );
+                    file_put_contents(
+                        ($this->dir . $this->filename . '.' . $imageVariation . '.' . $this->extension),
+                        $response->getContent()
+                    );
+                }
+            }
         }
 
         return $this;
@@ -103,11 +121,24 @@ class BaseImage extends BaseFile {
             $firstPartialPath = substr($path, 0, strripos($path, '.'));
             $lastPartialPath = substr($path, strripos($path, '.'));
 
-            if (file_exists($firstPartialPath . '.rectification' . $lastPartialPath)) { // Backup of original file
-                unlink($firstPartialPath . '.rectification' . $lastPartialPath);
+            // Backup of original image disabled (for best performance and save space)
+            /*if (file_exists($firstPartialPath . '.original' . $lastPartialPath)) { // Backup of original file
+                unlink($firstPartialPath . '.original' . $lastPartialPath);
+            }*/
+
+            // Remove all image variations created before according with configuration
+            $imageVariations = $this->getImageVariations();
+            if (is_array($imageVariations)) {
+                foreach ($imageVariations as $imageVariation) {
+                    if (file_exists($firstPartialPath . '.' . $imageVariation . $lastPartialPath)) {
+                        unlink($firstPartialPath . '.' . $imageVariation . $lastPartialPath);
+                    }
+                }
             }
-            if (file_exists($firstPartialPath . '.thumbnail-128' . $lastPartialPath)) { // Thumbnail of 128px of file
-                unlink($firstPartialPath . '.thumbnail-128' . $lastPartialPath);
+
+            // Remove crop if defined
+            if (file_exists($firstPartialPath . '.crop_48' . $lastPartialPath)) { // Image crop of 48px
+                unlink($firstPartialPath . '.crop_48' . $lastPartialPath);
             }
         }
 

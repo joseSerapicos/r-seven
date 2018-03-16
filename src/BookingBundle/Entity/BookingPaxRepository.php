@@ -53,7 +53,7 @@ class BookingPaxRepository extends BaseEntityRepository
             'id' => array('label' => 'Id', 'type' => 'number', 'acl' => 'read'),
             'bookingObj' => array('label' => '', 'type' => 'object', 'acl' => 'read', 'typeDetail' => array(
                 'table' => 'booking', 'bundle' => 'booking', 'type' => 'none')),
-            'title' => array('label' => 'Title', 'type' => 'enum', 'acl' => 'edit',
+            'title' => array('label' => 'Title', 'type' => 'enum', 'acl' => 'edit', 'isDefault' => true,
                 'typeDetail' => array(
                     'type' => 'text', 'choices' => array(
                         'value' => array(
@@ -62,12 +62,14 @@ class BookingPaxRepository extends BaseEntityRepository
                     )),
                 'form' => array('type' => 'select')
             ),
-            'name' => array('label' => 'Name', 'type' => 'text', 'acl' => 'edit'),
-            'surname' => array('label' => 'Surname', 'type' => 'text', 'acl' => 'edit'),
-            'birthDate' => array('label' => 'Birth Date', 'type' => 'date', 'acl' => 'edit', 'isRequired' => false),
+            'name' => array('label' => 'Name', 'type' => 'text', 'acl' => 'edit', 'isDefault' => true),
+            'surname' => array('label' => 'Surname', 'type' => 'text', 'acl' => 'edit', 'isDefault' => true),
+            'birthDate' => array('label' => 'Birth Date', 'type' => 'date', 'acl' => 'edit', 'isRequired' => false, 'isDefault' => true),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 }

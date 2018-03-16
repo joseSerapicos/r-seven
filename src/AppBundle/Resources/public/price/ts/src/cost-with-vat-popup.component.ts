@@ -48,6 +48,31 @@ export class CostWithVatPopupComponent extends FormPopupExtensionComponent
     }
 
     /**
+     * onVatCodeChange
+     * @param value
+     */
+    protected onVatCodeChange(value: string): void
+    {
+        let that = this;
+
+        this._dataService.runAction(
+            (this._helperService.getAppVar('route')
+                + 'accounting/vat-code/get-percentage/'
+                + value
+            )
+        ).then(
+            data => {
+                if (data['localData'] && data['localData']['data']) {
+                    that._formService.getObject()['vatCode_percentage']
+                        = (data['localData']['data']['percentage'] || null);
+                    that.setPriceValue();
+                }
+            },
+            errors => { console.log(errors); return; }
+        );
+    }
+
+    /**
      * onCostValueEnterKey
      * @param value
      */

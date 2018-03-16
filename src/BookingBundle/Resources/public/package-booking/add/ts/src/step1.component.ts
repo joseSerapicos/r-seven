@@ -16,6 +16,7 @@ import {Step2ExtModule} from './step2.ext-module';
 import {Step3ExtModule} from './step3.ext-module';
 import {Step4ExtModule} from './step4.ext-module';
 import {Step5ExtModule} from './step5.ext-module';
+import {Step6ExtModule} from './step6.ext-module';
 
 /* /Import dependencies */
 
@@ -112,10 +113,27 @@ export class Step1Component extends WizardFormPopupComponent implements IWizard
                         errors => { return reject(false); }
                     );
                 case 4:
+                    // Save form
+                    componentRef = that._wizardManagerService.getComponentRef(index);
+                    route = (that._packageBookingService_dataService.getRoute('addStep5ForBooking'));
+                    return componentRef.instance._formService.save(route).then(
+                        data => {
+                            // Update preview info
+                            componentRef = that._wizardManagerService.getComponentRef(index + 1);
+                            if (componentRef) {
+                                componentRef.instance.init(that._packageBookingService_dataService.getLocalDataAttr('preview'));
+                            }
+
+                            return resolve(true);
+                        },
+                        errors => { return reject(false); }
+                    );
+                case 5:
                     // Confirm all data to save from session storage to database
                     route = (
-                        that._dataService.getRoute('addStep5')
+                        that._dataService.getRoute('addStep6')
                         + '/' + that._formService.getObject()['id']
+                        + '/' + that._packageBookingService_formService.getObject()['id']
                     );
                     return that._dataService.runAction(route, null, true).then(
                         data => { return resolve(true); },
@@ -160,14 +178,18 @@ export class Step1Component extends WizardFormPopupComponent implements IWizard
                     injector: this._packageBookingService_injector
                 };
             case 4:
-                let bookingServiceId = this._dataService.getObject()['bookingServiceObj'];
                 return {
                     module: Step5ExtModule,
                     component: 'Step5Component',
-                    urlProvider: (this._helperService.getAppVar('route')
-                        + 'booking/package-booking-service/data/'
-                        + bookingServiceId
-                    )
+                    dataProvider: this._packageBookingService_dataProvider,
+                    injector: this._packageBookingService_injector
+                };
+            case 5:
+                return {
+                    module: Step6ExtModule,
+                    component: 'Step6Component',
+                    dataProvider: this._packageBookingService_dataProvider,
+                    injector: this._packageBookingService_injector
                 };
         }
 
@@ -194,6 +216,7 @@ export class Step1Component extends WizardFormPopupComponent implements IWizard
                     {provide: 'FormServiceProvider', useValue: {}}
                 ];
             case 2:
+            case 4:
                 return [
                     FormService,
                     {provide: 'Provider', useValue: this._helperService.getFormProvider(data)},
@@ -208,23 +231,9 @@ export class Step1Component extends WizardFormPopupComponent implements IWizard
                     {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
                     {provide: 'Popups', useValue: null}
                 ];
-            case 4:
+            case 5:
                 return [
-                    {provide: 'DataService', useClass: DataService},
-                    ActionsService,
-                    {provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data)},
-                    {provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data)},
-                    {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
-                    {provide: 'Popups', useValue: {
-                        module: this._provider['modules']['bookingServicePriceEdit']['module'],
-                        component: this._provider['modules']['bookingServicePriceEdit']['component'],
-                        providers: [
-                            FormService,
-                            // Reset FormServiceProvider to use DataServiceProvider as default values
-                            {provide: 'FormServiceProvider', useValue: {}},
-                            {provide: 'Provider', useValue: this._helperService.getFormProvider(data)}
-                        ]
-                    }}
+                    {provide: 'Provider', useValue: this._helperService.getEntityDetailPreviewProvider(data['localData']['data']['preview'])},
                 ];
         }
 
@@ -244,7 +253,22 @@ export class Step1Component extends WizardFormPopupComponent implements IWizard
             return null;
         }
 
-        return (this._packageBookingService_formService.getViewObject()[attribute] || null);
+        switch (attribute) {
+            case 'totalSell': // Sum all services
+                let totalSell = (this._packageBookingService_formService.getViewObject()['__totalSell'] || 0),
+                    objects = this._packageBookingService_dataService.getProviderAttr('objects');
+                if (objects && (objects.length > 0)) {
+                    for (let object of objects) {
+                        // Only objects enabled and not grouped (if grouped your value is sum in the grouped service)
+                        if (object['hasService'] && !object['grouperBookingServiceObj']) {
+                            totalSell += (object['__totalSell'] || 0);
+                        }
+                    }
+                }
+                return (totalSell+'€');
+            default:
+                return (this._packageBookingService_formService.getViewObject()[attribute] || null);
+        }
     }
 
     /**

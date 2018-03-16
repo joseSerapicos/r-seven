@@ -33,6 +33,26 @@ class BookingServicePrice extends BasePriceWithVat
      */
     protected $postingType; // [CREDIT (for margin/discount), DEBIT]
 
+    /**
+     * @ORM\ManyToOne(targetEntity="BookingServicePrice")
+     * @ORM\JoinColumn(name="fk_grouperBookingServicePrice", referencedColumnName="id", nullable=true, unique=false, onDelete="RESTRICT")
+     *
+     * It's a foreign key to the BookingServicePrice to the grouper BookingServicePrice object. When the BookingService
+     * is grouped, each of your BookingServicePrice has a copy in the grouper BookingService with the changed sell
+     * values according with the VAT code of the grouper BookingService.
+     */
+    protected $grouperBookingServicePriceObj;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="BookingServicePrice")
+     * @ORM\JoinColumn(name="fk_groupedBookingServicePrice", referencedColumnName="id", nullable=true, unique=false, onDelete="CASCADE")
+     *
+     * It's a foreign key to the BookingServicePrice to the grouped BookingServicePrice object.
+     * Keeping this reference we can add consistence more easy to database, so when the original/grouped object
+     * is deleted, the copy/grouper object is deleted yet.
+     */
+    protected $groupedBookingServicePriceObj;
+
 
     /**
      * Set bookingServiceObj
@@ -103,5 +123,58 @@ class BookingServicePrice extends BasePriceWithVat
     public function getPostingType()
     {
         return $this->postingType;
+    }
+
+    /**
+     * Set grouperBookingServicePriceObj
+     * @param \BookingBundle\Entity\BookingServicePrice $grouperBookingServicePriceObj
+     * @return $this
+     */
+    public function setGrouperBookingServicePriceObj(\BookingBundle\Entity\BookingServicePrice $grouperBookingServicePriceObj = null)
+    {
+        $this->grouperBookingServicePriceObj = $grouperBookingServicePriceObj;
+        return $this;
+    }
+
+    /**
+     * Get grouperBookingServicePriceObj
+     * @return \BookingBundle\Entity\BookingServicePrice
+     */
+    public function getGrouperBookingServicePriceObj()
+    {
+        return $this->grouperBookingServicePriceObj;
+    }
+
+    /**
+     * Set groupedBookingServicePriceObj
+     * @param \BookingBundle\Entity\BookingServicePrice $groupedBookingServicePriceObj
+     * @return $this
+     */
+    public function setGroupedBookingServicePriceObj(\BookingBundle\Entity\BookingServicePrice $groupedBookingServicePriceObj = null)
+    {
+        $this->groupedBookingServicePriceObj = $groupedBookingServicePriceObj;
+        return $this;
+    }
+
+    /**
+     * Get groupedBookingServicePriceObj
+     * @return \BookingBundle\Entity\BookingServicePrice
+     */
+    public function getGroupedBookingServicePriceObj()
+    {
+        return $this->groupedBookingServicePriceObj;
+    }
+
+    /**
+     * Get grouped total sell (total sell of grouper BookingServicePrice associated)
+     * @return string
+     */
+    public function getGroupedTotalSell()
+    {
+        // For direct queries use "SUM()"
+        if ($this->grouperBookingServicePriceObj) {
+            return $this->grouperBookingServicePriceObj->getTotalSell();
+        }
+        return null;
     }
 }

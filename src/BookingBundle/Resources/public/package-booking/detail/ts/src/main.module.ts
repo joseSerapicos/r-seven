@@ -127,12 +127,14 @@ let autoCompleteProviders = {
 import {EditExtModule as BookingServicePriceEditExtModule} from '../../../../booking-service-price/index/ts/src/edit.ext-module';
 import {Step2ExtModule as PackageBookingServiceAddStep2ExtModule} from '../../../../package-booking-service/add/ts/src/step2.ext-module';
 import {Step3ExtModule as PackageBookingServiceAddStep3ExtModule} from '../../../../package-booking-service/add/ts/src/step3.ext-module';
-let baseBookingServiceAddProvider = {modules: { // Put here modules dependencies
-    step2: {module: PackageBookingServiceAddStep2ExtModule, component: 'Step2Component'},
-    step3: {module: PackageBookingServiceAddStep3ExtModule, component: 'Step3Component'},
-    bookingServicePriceEdit: {module: BookingServicePriceEditExtModule, component: 'EditComponent'},
-    servicesUrlProvider: (Helper.getAppVar('route') + 'services/regular-service/data-for-booking-service')
-}};
+let baseBookingServiceAddProvider = {
+    servicesUrlProvider: (Helper.getAppVar('route') + 'services/regular-service/data-for-booking-service'),
+    modules: { // Put here modules dependencies
+        step2: {module: PackageBookingServiceAddStep2ExtModule, component: 'Step2Component'},
+        step3: {module: PackageBookingServiceAddStep3ExtModule, component: 'Step3Component'},
+        bookingServicePriceEdit: {module: BookingServicePriceEditExtModule, component: 'EditComponent'}
+    }
+};
 
 
 // Base Booking Service Edit Provider

@@ -9,13 +9,18 @@ use Symfony\Component\HttpFoundation\Request;
 class EntityFileController extends BaseEntityChildController
 {
     /**
+     * Get label/title to display child in parent
+     * @return mixed
+     */
+    static function getLabel() { return 'Files'; }
+
+    /**
      * Overrides parent method
      * @param Request $request
      * @param $parents
-     * @param $label (set label when you don't have the route in modules/menus tree)
      * @return $this
      */
-    protected function initChild(Request $request, $parents, $label = 'Files')
+    protected function initChild(Request $request, $parents)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
@@ -38,7 +43,7 @@ class EntityFileController extends BaseEntityChildController
             )
         );
 
-        parent::initChild($request, $parents, $label);
+        parent::initChild($request, $parents);
 
         // Form (set submit context as default, because this is the most used)
         $this->localConf['formTypeClass'] = ('EntitiesBundle\Form\EntityFileSubmitFormType');

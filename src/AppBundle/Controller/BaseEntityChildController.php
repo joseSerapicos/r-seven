@@ -16,21 +16,27 @@ abstract class BaseEntityChildController extends BaseEntityController
     protected $parentConf = array();
 
     /**
+     * Get label/title to display child in parent
+     * @return mixed
+     */
+    static function getLabel() { return 'Detail'; }
+
+    /**
      * Initialization. Set all basic configuration
      * @param Request $request
      * @param $parents (Array of parent ids, each id is an entry in array. The order of the entries in array is the
      * same that is used when the parent routes are defined (in the child class, init method). If no array is provided,
-     * the value of the parameter is used as id (it works for one parent only)     
-     * @param $label (set label when you don't have the route in modules/menus tree)
+     * the value of the parameter is used as id (it works for one parent only)
      * @return $this
      * @throws \Exception
      */
-    protected function initChild(Request $request, $parents, $label = null)
+    protected function initChild(Request $request, $parents)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
 
         /* Menu label (title) and ACL (selectedMenu) */
+        $label = $this->getLabel();
         if ($label) { $this->templateConf['label'] = $label; }
         if (count($this->parentConf) < 1) {
             throw new \Exception('Configuration cannot be set, missing arguments (parent)!');
@@ -264,6 +270,23 @@ abstract class BaseEntityChildController extends BaseEntityController
     /**
      * DEFINE ROUTE HERE
      *
+     * Detail action
+     * @param Request $request
+     * @param $parents
+     * @param $id
+     * @return mixed
+     */
+    public function detailChildAction(Request $request, $parents, $id)
+    {
+        // Set configuration
+        $this->initChild($request, $parents);
+
+        return parent::detailAction($request, $id);
+    }
+
+    /**
+     * DEFINE ROUTE HERE
+     *
      * Action to order object by your "priority" field
      * @param Request $request
      * @param $parents
@@ -379,16 +402,7 @@ abstract class BaseEntityChildController extends BaseEntityController
             $parentId = (!empty($parentConf['obj']) ? $parentConf['obj']->getId() : null);
 
             if ($parentId) {
-                $childObjects = $this->container->get('app.service.session_storage')->getChildObjects(
-                    $parentId,
-                    $this->localConf['entity']
-                );
-
-                $objects = array();
-                foreach ($childObjects as $childObj) {
-                    $childObj = $this->getObjectFromSS($childObj->getId());
-                    $objects[] = $this->normalizeObject($childObj);
-                }
+                $objects = $this->getChildObjectsFromSS($parentId, $this->localConf['entity'], true);
             }
         }
         return $objects;

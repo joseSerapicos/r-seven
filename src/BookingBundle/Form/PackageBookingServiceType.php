@@ -17,8 +17,6 @@ class PackageBookingServiceType extends BaseType
         // Redefine fields
         $this->entityMetadata = array(
             'bookingServiceObj' => $this->entityMetadata['bookingServiceObj'],
-            'placeObj' => $this->entityMetadata['placeObj'],
-            'placeToObj' => $this->entityMetadata['placeToObj'],
             'isEnabled' => $this->entityMetadata['isEnabled']
         );
         $this->entityMetadata['bookingServiceObj']['typeDetail']['formClass'] = 'BookingBundle\Form\BookingServiceType';

@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 abstract class BaseBookingController extends BaseEntityController
 {
     /**
-     * Get Local Booking Context (it needs to be implemented by children to get the correct context <travel, service, etc>).
+     * Get Local Booking Context (it needs to be implemented by children to get the correct context <regular, package, etc>).
      * @return mixed (lowerCamelCase)
      */
     abstract protected function getLocalBookingContext();
@@ -25,7 +25,7 @@ abstract class BaseBookingController extends BaseEntityController
      * @param $isUpperCase
      * @return mixed (lowerCamelCase)
      */
-    protected function getBookingContext($isUpperCase = false) {
+    public function getBookingContext($isUpperCase = false) {
         return ($isUpperCase ? ucfirst($this->getLocalBookingContext()) : $this->getLocalBookingContext());
     }
 
@@ -200,63 +200,67 @@ abstract class BaseBookingController extends BaseEntityController
         // Check if object had success on save
         if($this->responseConf['status'] == 1) {
             // Add/Update/Remove client pax
-            $bookingContextUC = $this->getBookingContext(true);
+            if ($data) {
+                $bookingContextUC = $this->getBookingContext(true);
 
-            $bookingObj = $object->getBookingObj();
-            $bookingPaxObj = $bookingObj->getBookingPaxObj();
-            $localBookingPaxObj = null;
+                $bookingObj = $object->getBookingObj();
+                $bookingPaxObj = $bookingObj->getBookingPaxObj();
+                $localBookingPaxObj = null;
 
-            if ($bookingObj) {
-                if ($this->flags['storage'] == 'session') {
-                    $localBookingPaxObjArr = $this->container->get('app.service.session_storage')->getChildObjects(
-                        $object->getId(), // This is the parent of objects
-                        'PackageBookingPax'
-                    );
-                    $localBookingPaxObj = (empty($localBookingPaxObjArr) ? null : reset($localBookingPaxObjArr));
-                } else {
-                    $localBookingPaxObj = $this->getRepositoryService($bookingContextUC . 'BookingPax', 'BookingBundle')
-                        ->execute('findOneByBookingPaxObj', array($bookingPaxObj));
-                }
-            }
-
-            // Add/Update pax with client data
-            if (!empty($data['bookingObj']['clientIsPax']) // Client is pax
-                && $bookingObj->getClientObj() // Client has been defined
-            ) {
-                $clientObj = $bookingObj->getClientObj()->getEntityObj();
-
-                if (!$localBookingPaxObj) {
-                    $class = 'BookingBundle\Entity\\' . $bookingContextUC . 'BookingPax';
-                    $localBookingPaxObj = new $class();
-                    parent::setObjectDefaultValues_static($this, $localBookingPaxObj);
-                    $bookingPaxObj = new BookingPax();
-                    $localBookingPaxObj->setBookingPaxObj($bookingPaxObj);
+                if ($bookingObj) {
+                    if ($this->flags['storage'] == 'session') {
+                        $localBookingPaxObjArr = $this->container->get('app.service.session_storage')->getChildObjects(
+                            $object->getId(), // This is the parent of objects
+                            'PackageBookingPax'
+                        );
+                        $localBookingPaxObj = (empty($localBookingPaxObjArr) ? null : reset($localBookingPaxObjArr));
+                    } else {
+                        $localBookingPaxObj = $this->getRepositoryService($bookingContextUC . 'BookingPax', 'BookingBundle')
+                            ->execute('findOneByBookingPaxObj', array($bookingPaxObj));
+                    }
                 }
 
-                $bookingPaxObj->setTitle($clientObj->getTitle());
-                $bookingPaxObj->setName($clientObj->getName());
-                $bookingPaxObj->setSurname($clientObj->getSurname());
-                $bookingPaxObj->setBirthDate($clientObj->getBirthDate());
-                $bookingPaxObj->setBookingObj($bookingObj);
-                parent::setObjectDefaultValues_static($this, $bookingPaxObj);
+                // Add/Update pax with client data
+                if (!empty($data['bookingObj']['clientIsPax']) // Client is pax
+                    && $bookingObj->getClientObj() // Client has been defined
+                ) {
+                    $clientObj = $bookingObj->getClientObj()->getEntityObj();
 
-                parent::saveObject_static($this, $localBookingPaxObj);
-            }
-            // Remove pax associated to the client
-            elseif($localBookingPaxObj) {
-                parent::deleteObject_static($this, $localBookingPaxObj);
-                $bookingPaxObj = null;
-            }
+                    if (!$localBookingPaxObj) {
+                        $class = 'BookingBundle\Entity\\' . $bookingContextUC . 'BookingPax';
+                        $localBookingPaxObj = new $class();
+                        parent::setObjectDefaultValues_static($this, $localBookingPaxObj);
+                        $bookingPaxObj = new BookingPax();
+                        $localBookingPaxObj->setBookingPaxObj($bookingPaxObj);
+                    }
 
-            $bookingObj->setBookingPaxObj($bookingPaxObj);
-            if ($bookingPaxObj) {
-                if ($this->flags['storage'] == 'session') {
-                    $localParent = $this->flags['parent'];
-                    $this->flags['parent'] = $localBookingPaxObj->getId(); // With this parent cascade deletion works automatically
-                    $this->saveObjectToSS($bookingPaxObj);
-                    $this->flags['parent'] = $localParent; // Reset to local parent
-                } else {
-                    parent::saveObject_static($this, $bookingPaxObj);
+                    $bookingPaxObj->setTitle($clientObj->getTitle());
+                    $bookingPaxObj->setName($clientObj->getName());
+                    $bookingPaxObj->setSurname($clientObj->getSurname());
+                    $bookingPaxObj->setBirthDate($clientObj->getBirthDate());
+                    $bookingPaxObj->setBookingObj($bookingObj);
+                    parent::setObjectDefaultValues_static($this, $bookingPaxObj);
+
+                    parent::saveObject_static($this, $localBookingPaxObj);
+                } // Remove pax associated to the client
+                elseif ($localBookingPaxObj) {
+                    parent::deleteObject_static($this, $localBookingPaxObj);
+                    $bookingPaxObj = null;
+                }
+
+                $bookingObj->setBookingPaxObj($bookingPaxObj);
+                if ($bookingPaxObj) {
+                    if ($this->flags['storage'] == 'session') {
+                        $localParent = $this->flags['parent'];
+                        $this->flags['parent'] = $localBookingPaxObj->getId(); // With this parent cascade deletion works automatically
+                        $this->saveObjectToSS($bookingPaxObj);
+                        $this->flags['parent'] = $localParent; // Reset to local parent
+                    } else {
+                        parent::saveObject_static($this, $bookingPaxObj);
+                        // NOTE: This line bellow it's no necessary, because the flush made above persist all objects
+                        // with changes, that are already attached to Entity Manager
+                        //parent::saveObject_static($this, $bookingObj);
+                    }
                 }
             }
         }
@@ -370,5 +374,110 @@ abstract class BaseBookingController extends BaseEntityController
         }
 
         return $controller;
+    }
+
+    /**
+     * Set places
+     * @param $controller
+     * @param $bookingObj
+     * @return $this
+     */
+    static function setPlaces($controller, $bookingObj) {
+        // Check if there are no errors in previous updates
+        if ($controller->responseConf['status'] == 1) {
+            $controller->getRepositoryService('BookingService', 'BookingBundle')
+                ->execute(
+                    'setBookingPlaces',
+                    array($bookingObj)
+                );
+
+            parent::saveObject_static($controller, $bookingObj);
+        }
+
+        return $controller;
+    }
+
+    /**
+     * Get booking preview
+     * @param $controller
+     * @param $object
+     * @return array
+     */
+    static function getPreview($controller, $object)
+    {
+        $bookingObj = $object->getBookingObj();
+        $bookingContextUC = $controller->getBookingContext(true);
+
+        // Save local entity conf to be replaced after get all objects
+        $localEntityClass = $controller->localConf['entityClass'];
+        $localEntityFields = $controller->localConf['entityFields'];
+
+        // Set booking configuration
+        $controller->flags['hasForm'] = false;
+        $controller->localConf['entityClass'] = ('BookingBundle\Entity\Booking');
+        $controller->localConf['entityFields'] =
+            $controller->getRepositoryService('Booking', 'BookingBundle')->execute('getMetadata');
+        $templateFieldsConf = $controller->getTemplateFieldsConf('defaultSelection');
+
+        if ($controller->flags['storage'] == 'session') {
+            // Limit fields, because some fields like totals, dates, paces, invoice status, confirmation status, etc.,
+            // are only updated when the object is in database
+            $templateFieldsConf['fields']['view'] = array(
+                'client_name', 'client_avatar', 'operator_name', 'operator_avatar'
+            );
+        }
+
+        $preview = array(
+            'object' => $controller->normalizeObject($bookingObj),
+            'fields' => $templateFieldsConf['fields'],
+            'fieldsChoices' => $templateFieldsConf['fieldsChoices'],
+            'dependencies' => array(
+                'pax' => array(),
+                'service' => array()
+            )
+        );
+        $preview['object']['_isSessionStorage'] = true; // To avoid show the session storage id
+
+        switch ($controller->flags['storage']) {
+            case 'session':
+                // Set pax configuration
+                $className = 'BookingBundle\Entity\\' . $bookingContextUC . 'BookingPax';
+                $controller->localConf['entityClass'] = ($className);
+                $controller->localConf['entityFields'] =
+                    $controller->getRepositoryService($bookingContextUC . 'BookingPax', 'BookingBundle')->execute('getMetadata');
+                $templateFieldsConf = $controller->getTemplateFieldsConf('defaultSelection');
+                $className = 'BookingBundle\Controller\\' . $bookingContextUC . 'BookingPaxController';
+                $preview['dependencies']['pax'] = array(
+                    'label' => $className::getLabel(),
+                    'objects' => $controller->getChildObjectsFromSS($object->getId(), $bookingContextUC . 'BookingPax', true),
+                    'fields' => $templateFieldsConf['fields'],
+                    'fieldsChoices' => $templateFieldsConf['fieldsChoices']
+                );
+
+                // Set service configuration
+                $className = 'BookingBundle\Entity\\' . $bookingContextUC . 'BookingService';
+                $controller->localConf['entityClass'] = ($className);
+                $controller->localConf['entityFields'] =
+                    $controller->getRepositoryService($bookingContextUC . 'BookingService', 'BookingBundle')->execute('getMetadata');
+                $templateFieldsConf = $controller->getTemplateFieldsConf('defaultSelection');
+                // Override view fields
+                $templateFieldsConf['fields']['view'] = array('thumbnail', 'icon', 'name', 'description', 'startDate',
+                    'durationDays', 'quantity', 'totalSell', 'confirmationStatus', 'isAutoAllot'
+                );
+                $className = 'BookingBundle\Controller\\' . $bookingContextUC . 'BookingServiceController';
+                $preview['dependencies']['service'] = array(
+                    'label' => $className::getLabel(),
+                    'objects' => $controller->getChildObjectsFromSS($bookingObj->getId(), $bookingContextUC . 'BookingService', true),
+                    'fields' => $templateFieldsConf['fields'],
+                    'fieldsChoices' => $templateFieldsConf['fieldsChoices']
+                );
+                break;
+            default: // db
+        }
+
+        $controller->localConf['entityClass'] = $localEntityClass;
+        $controller->localConf['entityFields'] = $localEntityFields;
+
+        return $preview;
     }
 }

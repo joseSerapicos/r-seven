@@ -43,7 +43,7 @@ export class Step3Component extends BaseBookingServiceAddStep2Component
     {
         if ($event) { $event.preventDefault(); }
 
-        let route = this._dataService.getRoute('addStep3ForBooking');
+        let route = this._dataService.getRoute('addStep3ForBookingChange');
 
         this._formService.save(route).then(
             data => { return; },

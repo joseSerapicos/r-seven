@@ -67,7 +67,9 @@ class CountryRepository extends BaseEntityRepository
             'languages' => array('label' => 'Languages', 'type' => 'text', 'acl' => 'edit'),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'none', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'none', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'none', 'acl' => 'read', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 }

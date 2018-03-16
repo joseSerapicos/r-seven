@@ -137,6 +137,7 @@ export class MainComponent extends TabsExtComponent implements ITabs
                             {provide: 'Provider', useValue: this._helperService.getFormProvider(data)}
                         ]
                     }},
+                    {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)},
                     {provide: 'ParentDataService', useValue: this._dataService}
                 ];
                 break;
@@ -148,8 +149,8 @@ export class MainComponent extends TabsExtComponent implements ITabs
 
                 // Merge the providers to get the complete "BaseBookingServiceAddProvider"
                 let addProvider = this._helperService.getWizardPopupProvider(data),
-                    addProviderModules = this._injector.get('BaseBookingServiceAddProvider');
-                addProvider['modules'] = addProviderModules['modules'];
+                    baseBookingServiceAddProvider = this._injector.get('BaseBookingServiceAddProvider');
+                addProvider = this._helperService.mergeObjects(addProvider, baseBookingServiceAddProvider);
 
                 providers = [
                     {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
@@ -175,6 +176,7 @@ export class MainComponent extends TabsExtComponent implements ITabs
                             ]
                         }
                     }},
+                    {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)},
                     {provide: 'ParentDataService', useValue: this._dataService}
                 ];
                 break;

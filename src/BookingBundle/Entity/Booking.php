@@ -31,8 +31,8 @@ class Booking extends BasePriceResume
      *
      * This is an auxiliary field to generates the code. This field allows to differentiate all booking types automatically
      * from it's module menu id, and so we can have separated codes by booking type, for instance:
-     *   - BasicBooking (moduleMenuObj = 31, codePrefix = '', codeNumber = 1)
-     *   - TravelBooking (moduleMenuObj = 32, codePrefix = '', codeNumber = 1)
+     *   - RegularBooking (moduleMenuObj = 'x', codePrefix = '', codeNumber = 1)
+     *   - PackageBooking (moduleMenuObj = 'y', codePrefix = '', codeNumber = 1)
      * This approach is used also in bookingSettings.
      */
     protected $moduleMenuObj;
@@ -80,6 +80,22 @@ class Booking extends BasePriceResume
      * This field is automatically determined based in the larger date in "BookingService", but is here to performance search and reports.
      */
     protected $endDate;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="\CommonBundle\Entity\Place")
+     * @ORM\JoinColumn(name="fk_place", referencedColumnName="id", nullable=true, unique=false, onDelete="SET NULL")
+     *
+     * Determined automatically based on the place of the first service in "BookingService"
+     */
+    protected $placeObj;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="\CommonBundle\Entity\Place")
+     * @ORM\JoinColumn(name="fk_placeTo", referencedColumnName="id", nullable=true, unique=false, onDelete="SET NULL")
+     *
+     * Determined automatically based on the place of the last service in "BookingService"
+     */
+    protected $placeToObj;
 
     /**
      * @ORM\Column(name="invoiceStatus", type="string", length=8, nullable=false, unique=false, options={"default":"NO", "comment":"Invoice status"})
@@ -308,6 +324,54 @@ class Booking extends BasePriceResume
     public function getEndDate()
     {
         return $this->endDate;
+    }
+
+    /**
+     * Set placeObj
+     *
+     * @param \CommonBundle\Entity\Place $placeObj
+     *
+     * @return $this
+     */
+    public function setPlaceObj(\CommonBundle\Entity\Place $placeObj = null)
+    {
+        $this->placeObj = $placeObj;
+
+        return $this;
+    }
+
+    /**
+     * Get placeObj
+     *
+     * @return \CommonBundle\Entity\Place
+     */
+    public function getPlaceObj()
+    {
+        return $this->placeObj;
+    }
+
+    /**
+     * Set placeToObj
+     *
+     * @param \CommonBundle\Entity\Place $placeToObj
+     *
+     * @return $this
+     */
+    public function setPlaceToObj(\CommonBundle\Entity\Place $placeToObj = null)
+    {
+        $this->placeToObj = $placeToObj;
+
+        return $this;
+    }
+
+    /**
+     * Get placeToObj
+     *
+     * @return \CommonBundle\Entity\Place
+     */
+    public function getPlaceToObj()
+    {
+        return $this->placeToObj;
     }
 
     /**

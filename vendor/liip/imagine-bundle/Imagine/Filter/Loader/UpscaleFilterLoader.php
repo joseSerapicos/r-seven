@@ -1,44 +1,36 @@
 <?php
 
-namespace Liip\ImagineBundle\Imagine\Filter\Loader;
+/*
+ * This file is part of the `liip/LiipImagineBundle` project.
+ *
+ * (c) https://github.com/liip/LiipImagineBundle/graphs/contributors
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
+ */
 
-use Imagine\Filter\Basic\Resize;
-use Imagine\Image\ImageInterface;
-use Imagine\Image\Box;
+namespace Liip\ImagineBundle\Imagine\Filter\Loader;
 
 /**
  * Upscale filter.
  *
  * @author Maxime Colin <contact@maximecolin.fr>
+ * @author Devi Prasad <https://github.com/deviprsd21>
  */
-class UpscaleFilterLoader implements LoaderInterface
+class UpscaleFilterLoader extends ScaleFilterLoader
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function load(ImageInterface $image, array $options = array())
+    public function __construct()
     {
-        if (!isset($options['min'])) {
-            throw new \InvalidArgumentException('Missing min option.');
-        }
+        parent::__construct('min', 'by', false);
+    }
 
-        list($width, $height) = $options['min'];
+    protected function calcAbsoluteRatio($ratio)
+    {
+        return 1 + $ratio;
+    }
 
-        $size = $image->getSize();
-        $origWidth = $size->getWidth();
-        $origHeight = $size->getHeight();
-
-        if ($origWidth < $width || $origHeight < $height) {
-            $widthRatio = $width / $origWidth;
-            $heightRatio = $height / $origHeight;
-
-            $ratio = $widthRatio > $heightRatio ? $widthRatio : $heightRatio;
-
-            $filter = new Resize(new Box(round($origWidth * $ratio), round($origHeight * $ratio)));
-
-            return $filter->apply($image);
-        }
-
-        return $image;
+    protected function isImageProcessable($ratio)
+    {
+        return $ratio > 1;
     }
 }

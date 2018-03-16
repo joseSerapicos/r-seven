@@ -135,8 +135,9 @@ class ServiceBonus extends BaseBonus {
      */
     public function getUser_bonusValue()
     {
-        // Value, according with the "getIsVatIncluded" returned value
-        // (only valid for 'FIXED' method, because this method used the value directly over price)
+        // If used method is "FIXED", then the value represents the bonus value
+        // (the others methods are percentages not values),
+        // so we need to calc the value according with isVatIncluded user preferences.
         if ($this->getIsVatIncluded() && ($this->getBonusMethod() == 'FIXED')) {
             $splitPrice = PriceService::getTotalUnitDetail(
                 $this->getBonusValue(),

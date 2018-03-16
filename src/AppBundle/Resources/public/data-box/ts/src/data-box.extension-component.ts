@@ -30,6 +30,7 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
     protected _viewContainerRef: ViewContainerRef;
     protected _dataService: any;
     protected _tasksLoaderManagerService: any;
+    protected _helperService: any;
     protected _actionsService: ActionsService;
     protected _modalService: ModalService;
     protected _popups: Popups | Popup;
@@ -57,6 +58,7 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
         provider: DataBoxProvider,
         dataService: any, // Any is used, otherwise you get an error "[Class] is not defined"
         tasksLoaderManagerService: any,
+        helperService: any,
         actionsService: ActionsService,
         modalService: ModalService,
         // You can provide a popup by action:
@@ -81,6 +83,7 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
         this._viewContainerRef = viewContainerRef;
         this._dataService = dataService;
         this._tasksLoaderManagerService = tasksLoaderManagerService;
+        this._helperService = helperService;
         this._actionsService = actionsService;
         this._modalService = modalService;
         this._popups = popups;
@@ -96,6 +99,9 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
      */
     protected getColAlign(field: string): string
     {
+        // @TODO call helperservice
+        // return this.helperService.getColAlign(this._dataService.getFields('metadata')[field]['type']);
+
         switch (this._dataService.getFields('metadata')[field].type) {
             case 'number':
             case 'percentage':
@@ -111,6 +117,47 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
             default:
                 return 'txt-align-l';
         }
+    }
+
+    /**
+     * Get legend classes
+     * @param object
+     * @returns {string}
+     */
+    public getLegendClasses(object: any)
+    {
+        let legend = this._provider['controls']['legend'],
+            hasClass: boolean;
+
+        if (!object || !legend) {
+            return '';
+        }
+
+        for (let legendControl of legend) {
+            hasClass = false;
+            let field = legendControl['field'],
+                expr = (legendControl['expr'] || 'notNull'),
+                isExprNotNull = (expr == 'notNull'),
+                // Check in original field first if defined
+                fieldValue = ((object['__'+field] !== undefined) ? object['__'+field] : object[field]);
+
+            // Normalize value
+            if (this._dataService.getFields('metadata')[field]) { // In case of foreign objects, metadata can be not defined
+                switch (this._dataService.getFields('metadata')[field].type) {
+                    case 'boolean':
+                        fieldValue = this._helperService.castToBoolean(fieldValue);
+                        break;
+                }
+            }
+
+            if ((fieldValue && isExprNotNull) || (!fieldValue && !isExprNotNull)) {
+                // Apply only the class of the first legend to avoid override of classes,
+                // "Cancel" legend class should be priority and never override
+                return legendControl['class'];
+            }
+        }
+
+        return '';
     }
 
     /**
@@ -205,7 +252,8 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
     {
         if ($event) { $event.preventDefault(); }
 
-        let that = this;
+        let that = this,
+            object = this._dataService.getObject(data);
 
         // Dialog message
         this._modalService.dialog('Are you sure to cancel/enable?').then(
@@ -213,7 +261,7 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
                 if (hasConfirm) {
                     that._dataService.cancel(data).then(
                         data => {
-                            that.postCancelObject();
+                            that.postCancelObject(object);
                             return;
                         },
                         errors => { return; }
@@ -237,7 +285,8 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
     {
         if ($event) { $event.preventDefault(); }
 
-        let that = this;
+        let that = this,
+            object = this._dataService.getObject(data);
 
         // Dialog message
         this._modalService.dialog('Are you sure to remove?').then(
@@ -245,7 +294,7 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
                 if (hasConfirm) {
                     that._dataService.delete(data).then(
                         data => {
-                            that.postDeleteObject();
+                            that.postDeleteObject(object);
                             return;
                         },
                         errors => { return; }
@@ -390,18 +439,20 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
 
     /**
      * Post (after) cancel object event. Use this function to handle event.
-     * @return any
+     * @param object
+     * @returns {DataBoxExtensionComponent}
      */
-    protected postCancelObject()
+    protected postCancelObject(object)
     {
         return this;
     }
 
     /**
      * Post (after) delete object event. Use this function to handle event.
+     * @param object
      * @return any
      */
-    protected postDeleteObject()
+    protected postDeleteObject(object)
     {
         return this;
     }

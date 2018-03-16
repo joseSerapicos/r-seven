@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the `liip/LiipImagineBundle` project.
+ *
+ * (c) https://github.com/liip/LiipImagineBundle/graphs/contributors
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
+ */
+
 namespace Liip\ImagineBundle\Binary;
 
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesserInterface as SymfonyMimeTypeGuesserInterface;
@@ -24,7 +33,9 @@ class SimpleMimeTypeGuesser implements MimeTypeGuesserInterface
      */
     public function guess($binary)
     {
-        $tmpFile = tempnam(sys_get_temp_dir(), 'liip-imagine-bundle');
+        if (false === $tmpFile = tempnam(sys_get_temp_dir(), 'liip-imagine-bundle')) {
+            throw new \RuntimeException(sprintf('Temp file can not be created in "%s".', sys_get_temp_dir()));
+        }
 
         try {
             file_put_contents($tmpFile, $binary);

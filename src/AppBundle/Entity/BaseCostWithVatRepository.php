@@ -31,20 +31,21 @@ abstract class BaseCostWithVatRepository extends BaseEntityRepository
             'id' => array('label' => 'Id', 'type' => 'none', 'acl' => 'read'),
             'vatCodeObj' => array('label' => 'VAT Code', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(
                 'table' => 'vatCode', 'bundle' => 'accounting', 'type' => 'none'),
+                'attr' => array('(change)' => 'onVatCodeChange($event.target.value)'),
                 'form' => array('type' => 'select')
             ),
             'vatCode_percentage' => array('table' => 'vatCode', 'field' => 'percentage', 'label' => '', 'type' => 'percentage',
                 'acl' => 'read', 'dependency' => 'vatCodeObj', 'form' => array('type' => 'none')),
             'vatCode_name' => array('table' => 'vatCode', 'field' => 'name', 'label' => 'VAT Code', 'type' => 'text',
                 'acl' => 'read', 'dependency' => 'vatCodeObj', 'form' => array('type' => 'none')),
-            'vatValueCost' => array('label' => 'VAT Value', 'type' => 'monetary', 'acl' => 'edit',
-                'attr' => array('readonly' => 'readonly'), 'isRequired' => false,
-                'form' => array('type' => 'number'),
-            ),
             // Field to control how to show the fake field "user_[...]"
             'isVatIncluded' => array('label' => 'VAT included', 'type' => 'none', 'acl' => 'edit', 'default' => true,
                 'attr' => array('(change)' => 'onIsVatIncludedChange($event.target.checked)'),
                 'form' => array('type' => 'boolean')
+            ),
+            'vatValueCost' => array('label' => 'VAT Value', 'type' => 'monetary', 'acl' => 'edit',
+                'attr' => array('readonly' => 'readonly'), 'isRequired' => false,
+                'form' => array('type' => 'number'),
             ),
             // Original field is hidden
             'costValue' => array('label' => 'Cost', 'type' => 'monetary', 'acl' => 'edit',
@@ -65,7 +66,9 @@ abstract class BaseCostWithVatRepository extends BaseEntityRepository
             ),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read', 'form' => array('type' => 'none')),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 }

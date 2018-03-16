@@ -56,6 +56,7 @@ class PackageServiceServiceRepository extends BaseEntityRepository
                 'typeDetail' => array(
                     'table' => 'service', 'bundle' => 'services', 'type' => 'none', 'fieldInView' => 'name',
                     'choices' => array('query' => 'getChoicesForServicePackageService')),
+                'attr' => array('(onChange)' => 'onServiceChange($event)'),
                 'form' => array('type' => 'html-select')
             ),
             'vatCodeObj' => array('table' => 'service', 'label' => 'nd', 'type' => 'object', 'acl' => 'read', 'dependency' => 'serviceObj',
@@ -78,7 +79,47 @@ class PackageServiceServiceRepository extends BaseEntityRepository
             'description' => array('label' => 'Description', 'type' => 'text', 'acl' => 'edit'),
             'priority' => array('label' => 'Priority', 'type' => 'number', 'acl' => 'edit'),
             'durationStartDay' => array('label' => 'Start Day', 'type' => 'number', 'acl' => 'edit'),
+            'durationType' => array('label' => 'Duration', 'type' => 'enum', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'type' => 'text', 'choices' => array(
+                        'value' => array(
+                            'Until End' => 'END_DATE', 'Fixed Days' => 'FIXED'
+                        )
+                    )),
+                'form' => array('type' => 'select')
+            ),
             'durationDays' => array('label' => 'Duration', 'type' => 'number', 'acl' => 'edit'),
+            'quantityType' => array('label' => 'Quantity', 'type' => 'enum', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'type' => 'text', 'choices' => array(
+                        'value' => array(
+                            'Per Pax' => 'PER_PAX', 'Fixed' => 'FIXED', 'Free' => 'FREE'
+                        )
+                    )),
+                'form' => array('type' => 'select')
+            ),
+            'quantity' => array('label' => 'Quantity', 'type' => 'number', 'acl' => 'edit'),
+            'placeObj' => array('label' => 'From', 'type' => 'object', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'table' => 'place', 'bundle' => 'common', 'type' => 'none', 'fieldInView' => 'place_name'),
+                'isRequired' => false,
+                'form' => array('type' => 'auto-complete')
+            ),
+            'place_name' => array('table' => 'place', 'field' => 'name', 'label' => 'From (Name)', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'placeObj', 'form' => array('type' => 'none')),
+            'place_iata' => array('table' => 'place', 'field' => 'iataCode', 'label' => 'From', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'placeObj', 'form' => array('type' => 'none')),
+            'placeToObj' => array('label' => 'To', 'type' => 'object', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'table' => 'place', 'tableAlias' => 'place_to', 'bundle' => 'common', 'type' => 'none',
+                    'fieldInView' => 'placeTo_name'),
+                'isRequired' => false,
+                'form' => array('type' => 'auto-complete')
+            ),
+            'placeTo_name' => array('table' => 'place_to', 'field' => 'name', 'label' => 'To (Name)', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'placeToObj', 'form' => array('type' => 'none')),
+            'placeTo_iata' => array('table' => 'place_to', 'field' => 'iataCode', 'label' => 'To', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'placeToObj', 'form' => array('type' => 'none')),
             'isOptional' => array('label' => 'Is Optional', 'type' => 'boolean', 'acl' => 'edit', 'default' => false),
             'availability' => array('label' => 'Availability', 'type' => 'enum', 'acl' => 'edit',
                 'typeDetail' => array(
@@ -109,7 +150,9 @@ class PackageServiceServiceRepository extends BaseEntityRepository
             ),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 }

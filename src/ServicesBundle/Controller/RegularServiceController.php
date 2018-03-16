@@ -115,6 +115,21 @@ class RegularServiceController extends BaseServiceController
     }
 
     /**
+     * @Route("/services/regular-service/get-description/{id}",
+     *     name="_services__regular_service__get_description"
+     * )
+     *
+     * Action to get the description of object
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function getDescriptionAction(Request $request, $id)
+    {
+        return parent::getDescriptionAction($request, $id);
+    }
+
+    /**
      * @Route("/services/regular-service/edit/{id}",
      *     name="_services__regular_service__edit",
      *     defaults={"id" = null},

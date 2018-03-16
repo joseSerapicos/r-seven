@@ -16,7 +16,7 @@ use AppBundle\Service\HelperService;
 abstract class BaseServiceController extends BaseEntityController
 {
     /**
-     * Get Local Service Context (it needs to be implemented by children to get the correct context <travel, service, etc>).
+     * Get Local Service Context (it needs to be implemented by children to get the correct context <regular, package, etc>).
      * @return mixed (lowerCamelCase)
      */
     abstract protected function getLocalServiceContext();
@@ -73,6 +73,29 @@ abstract class BaseServiceController extends BaseEntityController
 
         $this->responseConf['localData']['vatCodePercentage']
             = ($obj->getVatCodeObj() ? $obj->getVatCodeObj()->getPercentage() : null);
+
+        return $this->getResponse(true);
+    }
+
+    /**
+     * DEFINE ROUTE HERE
+     *
+     * Action to get the description of object
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function getDescriptionAction(Request $request, $id)
+    {
+        // Set configuration
+        $this->init($request);
+
+        // Get raw service, no the service type current context
+        $serviceObj = $this->getRepositoryService('Service', 'ServicesBundle')
+            ->execute('findOneById', array($id));
+
+        $this->templateConf['localData']['data']['description']
+            = ($serviceObj ? $serviceObj->getDescription() : null);
 
         return $this->getResponse(true);
     }

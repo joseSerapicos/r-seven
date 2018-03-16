@@ -94,7 +94,7 @@ export class FieldTypeDatePickerDirective {
                         }
 
                         // Limit available dates to ranges
-                        let dateRanges = (this._dataService.getProviderAttr('localData')['data'][rule['value']] || []);
+                        let dateRanges = (this._dataService.getLocalDataAttr(rule['value']) || []);
                         // Function to check if date is valid (is in range)
                         this.control['markDisabled'] = (date: any) => {
                             let dateToCheck = new Date(date.year, date.month - 1, date.day);

@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the `liip/LiipImagineBundle` project.
+ *
+ * (c) https://github.com/liip/LiipImagineBundle/graphs/contributors
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
+ */
+
 namespace Liip\ImagineBundle\DependencyInjection;
 
 use Liip\ImagineBundle\DependencyInjection\Factory\Loader\LoaderFactoryInterface;
@@ -100,7 +109,9 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('driver')->defaultValue('gd')
                     ->validate()
-                        ->ifTrue(function ($v) { return !in_array($v, array('gd', 'imagick', 'gmagick')); })
+                        ->ifTrue(function ($v) {
+                            return !in_array($v, array('gd', 'imagick', 'gmagick'));
+                        })
                         ->thenInvalid('Invalid imagine driver specified: %s')
                     ->end()
                 ->end()
@@ -113,6 +124,7 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('filter_action')->defaultValue('liip_imagine.controller:filterAction')->end()
                         ->scalarNode('filter_runtime_action')->defaultValue('liip_imagine.controller:filterRuntimeAction')->end()
+                        ->scalarNode('redirect_response_code')->defaultValue(301)->end()
                     ->end()
                 ->end()
                 ->arrayNode('filter_sets')
@@ -146,6 +158,10 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+            ->end()
+            ->booleanNode('enqueue')
+                ->defaultFalse()
+                ->info('Enables integration with enqueue if set true. Allows resolve image caches in background by sending messages to MQ.')
             ->end()
         ->end();
 

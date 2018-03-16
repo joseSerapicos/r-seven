@@ -37,6 +37,7 @@ export class TreeViewExtComponent extends DataBoxExtensionComponent
         @Inject('Provider') provider: TreeViewProvider,
         @Inject('DataService') dataService: any, // Any is used, otherwise you get an error "[Class] is not defined"
         tasksLoaderManagerService: any,
+        @Inject('HelperService') helperService: any,
         actionsService: any, // Any is used, otherwise you get an error "[Class] is not defined"
         modalService: any, // Any is used, otherwise you get an error "[Class] is not defined"
         @Inject('Popups') popups: Popups | Popup,
@@ -48,6 +49,7 @@ export class TreeViewExtComponent extends DataBoxExtensionComponent
             provider,
             dataService,
             tasksLoaderManagerService,
+            helperService,
             actionsService,
             modalService,
             popups,

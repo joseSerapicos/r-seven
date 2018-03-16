@@ -56,6 +56,9 @@ abstract class BaseDocumentController extends BaseEntityController
             // Set store info to be used in template
             $this->setResponseStoreInfo($object->getStoreObj());
 
+            // Set document info to be used in template
+            $this->setResponseDocumentInfo($object);
+
             // Set Total Vat Split By Code to be used in template
             $this->setResponseDocumentTotalVatSplitByCode($object);
 
@@ -1130,7 +1133,7 @@ abstract class BaseDocumentController extends BaseEntityController
         }
 
         // Set limit date range for template validations
-        $this->responseConf['localData']['dateRange'] = array(array(
+        $this->templateConf['localData']['data']['dateRange'] = array(array(
             'startDate' => $object->normalizeDate($limitDateRange['min']),
             'endDate' => $object->normalizeDate($limitDateRange['max'])
         ));
@@ -1146,13 +1149,66 @@ abstract class BaseDocumentController extends BaseEntityController
      */
     protected function setResponseStoreInfo($storeObj) {
         // Set store optional info in local data (this info is not saved in document, is dynamic)
-        $this->responseConf['localData']['storeInfo'] = array_merge(
+        $this->templateConf['localData']['data']['storeInfo'] = array_merge(
             $this->getRepositoryService('StorePhone', 'AdminBundle')
                 ->execute('getForDocumentsByStore', array($storeObj)),
             $this->getRepositoryService('StoreEmail', 'AdminBundle')
                 ->execute('getForDocumentsByStore', array($storeObj)),
             $this->getRepositoryService('StoreLink', 'AdminBundle')
                 ->execute('getForDocumentsByStore', array($storeObj))
+        );
+
+        $storeLogoImageObj = $this->getRepositoryService('StoreLogoImage', 'AdminBundle')
+            ->execute(
+                'findOneBy',
+                array(array(
+                    'storeObj' => $storeObj,
+                    'isEnabled' => true
+                ))
+            );
+
+        $this->templateConf['localData']['data']['storeLogo']
+            = ($storeLogoImageObj ? $storeLogoImageObj->getPath() : null);
+
+        return $this;
+    }
+
+    /**
+     * Set Response Document Info
+     * Document info to be used in template
+     * @param $object
+     * @return $this
+     */
+    protected function setResponseDocumentInfo($object) {
+        $entityContextUC = $this->getEntityContext(true);
+        $entityContext = $this->getEntityContext();
+
+        $getMethod = ('get' . ucfirst($this->getEntityContext()) . 'DocumentTypeObj');
+        $documentTypeSettingObj = $this->getRepositoryService($entityContextUC.'DocumentTypeSetting', 'AccountingBundle')
+            ->execute(
+                'findOneBy',
+                array(array(
+                    ($entityContext.'DocumentTypeObj') => $object->$getMethod(),
+                    'storeObj' => $object->getStoreObj(),
+                    'isEnabled' => true
+                ))
+            );
+
+        // If document type setting specific by store is not defined, so try to get the general setting for all stores
+        if (!$documentTypeSettingObj) {
+            $documentTypeSettingObj = $this->getRepositoryService($entityContextUC.'DocumentTypeSetting', 'AccountingBundle')
+                ->execute(
+                    'findOneBy',
+                    array(array(
+                        ($entityContext.'DocumentTypeObj') => $object->$getMethod(),
+                        'storeObj' => null,
+                        'isEnabled' => true
+                    ))
+                );
+        }
+
+        $this->templateConf['localData']['data']['documentInfo'] = array(
+            'footer' => ($documentTypeSettingObj ? $documentTypeSettingObj->getFooter() : null)
         );
 
         return $this;
@@ -1318,10 +1374,10 @@ abstract class BaseDocumentController extends BaseEntityController
                     }
                 }
 
-                $this->responseConf['localData']['totalVatSplitByCode'] = array_values($totalVatSplitByCode);
+                $this->templateConf['localData']['data']['totalVatSplitByCode'] = array_values($totalVatSplitByCode);
                 break;
             default:
-                $this->responseConf['localData']['totalVatSplitByCode']
+                $this->templateConf['localData']['data']['totalVatSplitByCode']
                     = $this->getRepositoryService($entityContextUC . 'DocumentInvoiceDetail', 'AccountingBundle')
                     ->execute(
                         'getDocumentTotalVatSplitByCode',
@@ -1916,11 +1972,10 @@ abstract class BaseDocumentController extends BaseEntityController
      * @param Request $request
      * @param $targetDocument (target document to filter by entity and document type operation)
      * @param $booking (booking id, to filter by booking)
-     * @param $label (set label when you don't have the route in modules/menus tree)
      * @return $this
      * @throws \Exception
      */
-    protected function initForSettlement(Request $request, $targetDocument, $booking = null, $label = 'Detail')
+    protected function initForSettlement(Request $request, $targetDocument, $booking = null)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }

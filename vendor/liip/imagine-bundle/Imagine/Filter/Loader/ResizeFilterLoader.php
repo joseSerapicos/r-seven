@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the `liip/LiipImagineBundle` project.
+ *
+ * (c) https://github.com/liip/LiipImagineBundle/graphs/contributors
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
+ */
+
 namespace Liip\ImagineBundle\Imagine\Filter\Loader;
 
 use Imagine\Filter\Basic\Resize;
@@ -18,7 +27,8 @@ class ResizeFilterLoader implements LoaderInterface
      */
     public function load(ImageInterface $image, array $options = array())
     {
-        list($width, $height) = $options['size'];
+        $width = isset($options['size'][0]) ? $options['size'][0] : null;
+        $height = isset($options['size'][1]) ? $options['size'][1] : null;
 
         $filter = new Resize(new Box($width, $height));
 

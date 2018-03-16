@@ -1,9 +1,17 @@
 <?php
 
+/*
+ * This file is part of the `liip/LiipImagineBundle` project.
+ *
+ * (c) https://github.com/liip/LiipImagineBundle/graphs/contributors
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
+ */
+
 namespace Liip\ImagineBundle\Imagine\Filter\Loader;
 
 use Imagine\Image\ImageInterface;
-use Imagine\Exception\InvalidArgumentException;
 
 /**
  * AutoRotateFilterLoader - rotates an Image based on its EXIF Data.
@@ -24,9 +32,7 @@ class AutoRotateFilterLoader implements LoaderInterface
     {
         if ($orientation = $this->getOrientation($image)) {
             if ($orientation < 1 || $orientation > 8) {
-                throw new InvalidArgumentException(
-                    sprintf('The image has wrong EXIF orientation tag (%d)', $orientation)
-                );
+                return $image;
             }
 
             // Rotates if necessary.

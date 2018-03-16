@@ -27,7 +27,7 @@
                     <span class="status -{{ _statusMap[debugDetail['status']] || 'danger' }}"></span><span
                     >&nbsp;{{debugDetail['date']}}</span>
 
-                    <span *ngIf="panel == 'allot'">&nbsp;({{debugDetail['free']}}/{{debugDetail['total']}} - {{debugDetail['type']}})</span>
+                    <span *ngIf="panel == 'allot'">&nbsp;({{debugDetail['free']}}/{{debugDetail['total']}} - <span [innerHTML]="debugDetail['type']"></span>)</span>
                     <ul *ngIf="panel == 'price'"><li *ngFor="let priceDetail of debugDetail['price'];">
                             {{priceDetail['description']}}:&nbsp;
                             <strong>Cost:</strong>&nbsp;{{priceDetail['costValue']}}&nbsp;<strong>Sell:</strong>&nbsp;{{priceDetail['sellValue']}}

@@ -53,11 +53,17 @@ class BaseDocumentTypeSettingRepository extends BaseEntityRepository
             'id' => array('label' => 'Id', 'type' => 'number', 'acl' => 'read'),
             'storeObj' => array('label' => 'Store', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(
                 'table' => 'store', 'bundle' => 'admin', 'type' => 'select'), 'isRequired' => false),
-            'seriesPrefix' => array('label' => 'Series Prefix', 'type' => 'text', 'acl' => 'edit'),
-            'seriesNumber' => array('label' => 'Series Number', 'type' => 'number', 'acl' => 'edit'),
+            'store_name' => array('table' => 'store', 'field' => 'name', 'label' => 'Store', 'type' => 'text',
+                'acl' => 'read', 'isDefault' => true, 'dependency' => 'storeObj', 'form' => array('type' => 'none')),
+            'seriesPrefix' => array('label' => 'Series Prefix', 'type' => 'text', 'acl' => 'edit', 'isDefault' => true),
+            'seriesNumber' => array('label' => 'Series Number', 'type' => 'number', 'acl' => 'edit', 'isDefault' => true),
+            'footer' => array('label' => 'Footer', 'type' => 'textarea', 'acl' => 'edit',
+                'attr' => array('rows' => '3'), 'isRequired' => false),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'none', 'acl' => 'edit', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 }

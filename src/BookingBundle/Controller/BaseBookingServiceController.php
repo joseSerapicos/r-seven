@@ -22,11 +22,11 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
     abstract protected function getLocalBookingContext();
 
     /**
-     * Get booking context (it needs to be implemented by children to get the correct context <travel, service, etc>)
+     * Get booking context (it needs to be implemented by children to get the correct context <regular, package, etc>)
      * @param $isUpperCase
      * @return mixed (lowerCamelCase)
      */
-    protected function getBookingContext($isUpperCase = false) {
+    public function getBookingContext($isUpperCase = false) {
         return ($isUpperCase ? ucfirst($this->getLocalBookingContext()) : $this->getLocalBookingContext());
     }
 
@@ -77,7 +77,7 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
 
             // Handle controls here after save the BookingService object
             $this->handleAvailability($bookingServiceObj, null, false, true); // Set dates
-            $this->handleAllot($bookingServiceObj, null, false); // Set allot
+            $this->handleAllot($this, $bookingServiceObj, null, false); // Set allot
             $this->handlePrice($bookingServiceObj, null, false); // Reset price
 
             // Set response
@@ -172,7 +172,7 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
             // Allot
             // @TODO: this is necessary????: Default value (if auto allot is enabled this value will be override)
             $bookingServiceObj->setConfirmationStatus($data['form']['bookingServiceObj']['confirmationStatusManual']);
-            if (!$this->handleAllot($bookingServiceObj)) {
+            if (!$this->handleAllot($this, $bookingServiceObj)) {
                 // @TODO: try avoid this: Set object updated with the allotStatus to response
                 //$this->responseConf['hasObject'] = true;
                 //$this->responseConf['object'] = $this->normalizeObject($obj);
@@ -224,7 +224,7 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
             $this->flags['hasForm'] = true;
             $this->initChild($request, array($booking));
             $this->templateConf['fields']['form'] = array(
-                'icon', 'name', 'description', 'supplierObj', 'reference'
+                'icon', 'name', 'description', 'supplierObj', 'reference', 'placeObj', 'placeToObj'
             );
         }
 
@@ -277,7 +277,7 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
         }
 
         // Check allot (ensure that allot continue valid)
-        if (!$this->handleAllot($bookingServiceObj)) {
+        if (!$this->handleAllot($this, $bookingServiceObj)) {
             return $this->getResponse(true);
         }
 
@@ -371,7 +371,7 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
             $this->flags['hasForm'] = true;
             $this->initChild($request, array($booking));
             $this->templateConf['fields']['form'] = array(
-                'icon', 'name', 'description', 'supplierObj', 'reference',
+                'icon', 'name', 'description', 'supplierObj', 'reference', 'placeObj', 'placeToObj',
                 'startDate', 'endDate',
                 'quantity', 'confirmationStatus',
                 'isEnabled');
@@ -495,8 +495,6 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
             $this->saveForm($form, $obj);
             // Update all dependencies, values can be changed or service "isEnabled" may have been changed
             $this->postSaveObject($obj);
-            $this->setDependenciesConfirmation();
-            $this->setDependenciesDates();
 
             return $this->getResponse(true);
         }
@@ -529,7 +527,7 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
         // If object will be enabled (is disabled) and has autoAllot, we need to check the allot,
         // allot can be not available any more.
         if (!$bookingServiceObj->getIsEnabled()) {
-            if (!$this->handleAllot($bookingServiceObj)) {
+            if (!$this->handleAllot($this, $bookingServiceObj, $bookingServiceObj->getAllotTargetServiceObj())) {
                 return $this->getResponse(true);
             }
         }
@@ -579,13 +577,8 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
         // otherwise object is new and there are no info.
         if ($serviceObj = $bookingServiceObj->getServiceObj()) {
             $bookingServiceObj->setServiceObj($serviceObj);
-            $priority = (isset($defaultData['priority']) ? $defaultData['priority'] : 1);
-            $bookingServiceObj->setPriority($priority);
-            $description = (isset($defaultData['description'])
-                ? $defaultData['description']
-                : $serviceObj->getDescription()
-            );
-            $bookingServiceObj->setDescription($description);
+            $bookingServiceObj->setPriority(1);
+            $bookingServiceObj->setDescription($serviceObj->getDescription());
             $quantity = (isset($defaultData['quantity']) ? $defaultData['quantity'] : 1);
             $bookingServiceObj->setQuantity($quantity);
             $bookingServiceObj->setIsAutoAllot($serviceObj->getIsEnabledAllot());
@@ -626,11 +619,16 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
      * @param $availabilityTargetServiceObj (target service object, to get availability of specific service (like packages))
      * @param $hasValidation
      * @param $hasDefaultValues
+     * @param $hasDatePickerControl (if enabled add entry for date picker control)
      * @return bool
      */
-    protected function handleAvailability($bookingServiceObj, $availabilityTargetServiceObj = null, $hasValidation = true, $hasDefaultValues = false)
-    {
-        $currentAvailabilityDateRanges = $this->getCurrentAvailability($bookingServiceObj, $availabilityTargetServiceObj);
+    protected function handleAvailability(
+        $bookingServiceObj, $availabilityTargetServiceObj = null, $hasValidation = true,
+        $hasDefaultValues = false, $hasDatePickerControl = true
+    ) {
+        $currentAvailabilityDateRanges = $this->getCurrentAvailability(
+            $bookingServiceObj, $availabilityTargetServiceObj, $hasDatePickerControl
+        );
 
         // Set default dates
         if ($hasDefaultValues) {
@@ -653,7 +651,6 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
                 $endDate = new \DateTime($startDate->format('Y-m-d'));
                 $endDate->modify('+2 day');
             }
-
             $bookingServiceObj->setStartDate($startDate);
             $this->setEndDate($bookingServiceObj, $endDate);
         }
@@ -686,10 +683,12 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
      * Get current availability date ranges
      * @param $bookingServiceObj
      * @param $availabilityTargetServiceObj (target service object, to get availability of specific service (like packages))
+     * @param $hasDatePickerControl (if enabled add entry for date picker control)
      * @return array
      */
-    protected function getCurrentAvailability($bookingServiceObj, $availabilityTargetServiceObj = null)
-    {
+    protected function getCurrentAvailability(
+        $bookingServiceObj, $availabilityTargetServiceObj = null, $hasDatePickerControl = true
+    ) {
         $currentAvailability = null;
 
         $serviceObj = $bookingServiceObj->getServiceObj();
@@ -705,6 +704,10 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
 
         // Set response configuration
         $this->templateConf['localData']['data'][$bookingServiceObj->getId()]['availability'] = $currentAvailability;
+        if ($hasDatePickerControl) {
+            // Used to limit date ranges in date picker control (only should be added for main service)
+            $this->templateConf['localData']['data']['availability'] = $currentAvailability;
+        }
 
         return $currentAvailability;
     }
@@ -812,14 +815,15 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
 
     /**
      * Handle Allot
+     * @param $controller
      * @param $bookingServiceObj
      * @param $allotTargetServiceObj (target service object, to get allot of specific service (like packages))
      * @param $hasValidation
      * @return boolean
      */
-    protected function handleAllot($bookingServiceObj, $allotTargetServiceObj = null, $hasValidation = true)
+    static function handleAllot($controller, $bookingServiceObj, $allotTargetServiceObj = null, $hasValidation = true)
     {
-        $debug = $this->getCurrentAllotAndSetDebug($bookingServiceObj, $allotTargetServiceObj);
+        $debug = self::getCurrentAllotAndSetDebug($controller, $bookingServiceObj, $allotTargetServiceObj);
 
         // Check if allot is enabled
         if ($bookingServiceObj->getIsAutoAllot()) {
@@ -832,7 +836,7 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
         }
 
         if ($hasValidation) {
-            return $this->validateAllot($bookingServiceObj);
+            return self::validateAllot($controller, $bookingServiceObj);
         }
 
         return true;
@@ -840,11 +844,12 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
 
     /**
      * Get current allot and set debug
+     * @param $controller
      * @param $bookingServiceObj
      * @param $allotTargetServiceObj (target service object, to get allot of specific service (like packages))
      * @return array
      */
-    protected function getCurrentAllotAndSetDebug($bookingServiceObj, $allotTargetServiceObj = null)
+    static function getCurrentAllotAndSetDebug($controller, $bookingServiceObj, $allotTargetServiceObj = null)
     {
         $debug = array(
             'status' => 'NO',
@@ -864,7 +869,7 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
             $endTime = strtotime($endDate->format('Y-m-d'));
             while (strtotime($date) <= $endTime) {
                 $allotInfo = ServiceAllotController
-                    ::getAllotInfoByDate($this, $serviceObj, $date, $allotTargetServiceObj);
+                    ::getAllotInfoByDate($controller, $serviceObj, $date, $allotTargetServiceObj);
                 $status = (($allotInfo['free'] < $quantityToValidate) ? 'NO' : 'YES');
 
                 $debug['detail'][] = array(
@@ -891,31 +896,32 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
         }
 
         // Set response configuration (booking id is needed to distinguish the service in case of packages)
-        $this->templateConf['localData']['data'][$bookingServiceObj->getId()]['allotDebug'] = $debug;
+        $controller->templateConf['localData']['data'][$bookingServiceObj->getId()]['allotDebug'] = $debug;
 
         return $debug;
     }
 
     /**
      * Validate allot
+     * @param $controller
      * @param $bookingServiceObj
      * @return bool
      */
-    protected function validateAllot($bookingServiceObj)
+    static function validateAllot($controller, $bookingServiceObj)
     {
         $errorMessage = null;
 
         if ($bookingServiceObj->getIsAutoAllot()
             // Status should be setted before by "getCurrentAllotAndSetDebug" called by "handleAllot"
-            && ($this->templateConf['localData']['data'][$bookingServiceObj->getId()]['allotDebug']['status'] != 'YES')
+            && ($controller->templateConf['localData']['data'][$bookingServiceObj->getId()]['allotDebug']['status'] != 'YES')
         ) {
             $errorMessage = 'Allot not available.';
         }
 
         // Set error
         if ($errorMessage) {
-            $this->responseConf['status'] = 0;
-            $this->addFlashMessage(
+            $controller->responseConf['status'] = 0;
+            $controller->addFlashMessage(
                 $errorMessage,
                 'Data not persisted',
                 'error'
@@ -936,10 +942,15 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
      * @param $bookingServiceObj
      * @param $priceTargetServiceObj (target service object, to get price of specific service (like packages))
      * @param $hasValidation
+     * @param $hasUpdateGrouperService (determines if the grouperService will be updated. Generally the grouperService
+     *     must be updated, however in some cases you can want update the groupService only after finish a loop that
+     *     handles with multiple grouped services, thus avoiding update de grouperService for each grouped service
+     *     that is handled in the loop)
      * @return boolean
      */
-    protected function handlePrice($bookingServiceObj, $priceTargetServiceObj = null, $hasValidation = true)
-    {
+    protected function handlePrice($bookingServiceObj, $priceTargetServiceObj = null,
+                                   $hasValidation = true, $hasUpdateGrouperService = true
+    ) {
         $debug = array(
             'status' => 'NO',
             'detail' => array()
@@ -948,7 +959,7 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
         $serviceObj = $bookingServiceObj->getServiceObj();
 
         // Reset any price setted before
-        $this->resetServicePriceFromSS($bookingServiceObj);
+        $this->resetServicePriceFromSS($bookingServiceObj, $hasUpdateGrouperService);
 
         // Check if price is enabled
         if ($bookingServiceObj->getIsAutoPrice()) {
@@ -1012,11 +1023,11 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
                         'description' => $price['description'],
                         'costValue' => (
                             $totalUnitCostDetail['totalUnit']
-                            . ' (' . $totalUnitCostDetail['value'] . ' + ' . $totalUnitCostDetail['vatValue'] . ' VAT)'
+                            . ' (' . $totalUnitCostDetail['value'] . ' + ' . $totalUnitCostDetail['vatValue'] . ' VAT' . $vatCodePercentage . '%)'
                         ),
                         'sellValue' => (
                             $totalUnitSellDetail['totalUnit']
-                            . ' (' . $totalUnitSellDetail['value'] . ' + ' . $totalUnitSellDetail['vatValue'] . ' VAT)'
+                            . ' (' . $totalUnitSellDetail['value'] . ' + ' . $totalUnitSellDetail['vatValue'] . ' VAT' . $vatCodePercentage . '%)'
                         ),
                     );
 
@@ -1117,11 +1128,11 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
                         'description' => $price['description'],
                         'costValue' => (
                             $totalUnitCostDetail['totalUnit']
-                            . ' (' . $totalUnitCostDetail['value'] . ' + ' . $totalUnitCostDetail['vatValue'] . ' VAT)'
+                            . ' (' . $totalUnitCostDetail['value'] . ' + ' . $totalUnitCostDetail['vatValue'] . ' VAT' . $vatCodePercentage . '%)'
                         ),
                         'sellValue' => (
                             $totalUnitSellDetail['totalUnit']
-                            . ' (' . $totalUnitSellDetail['value'] . ' + ' . $totalUnitSellDetail['vatValue'] . ' VAT)'
+                            . ' (' . $totalUnitSellDetail['value'] . ' + ' . $totalUnitSellDetail['vatValue'] . ' VAT' . $vatCodePercentage . '%)'
                         ),
                     );
 
@@ -1212,7 +1223,7 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
             }
 
             // Update service totals
-            self::setTotals($this, $bookingServiceObj);
+            self::setTotals($this, $bookingServiceObj, $hasUpdateGrouperService);
 
             // Set general status
             if ($statusCounter['YES'] == $statusCounter['TOTAL']) {
@@ -1237,9 +1248,13 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
     /**
      * Reset service price from session storage
      * @param $bookingServiceObj
+     * @param $hasUpdateGrouperService (determines if the grouperService will be updated. Generally the grouperService
+     *     must be updated, however in some cases you can want update the groupService only after finish a loop that
+     *     handles with multiple grouped services, thus avoiding update de grouperService for each grouped service
+     *     that is handled in the loop)
      * @return $this
      */
-    protected function resetServicePriceFromSS($bookingServiceObj)
+    protected function resetServicePriceFromSS($bookingServiceObj, $hasUpdateGrouperService = true)
     {
         $bookingServiceId = $bookingServiceObj->getId();
         if ($bookingServiceId) {
@@ -1247,7 +1262,7 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
                 ->deleteChildObjects($bookingServiceId);
 
             // Update service and booking totals
-            self::setTotals($this, $bookingServiceObj);
+            self::setTotals($this, $bookingServiceObj, $hasUpdateGrouperService);
         }
 
         return $this;
@@ -1351,121 +1366,249 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
     }
 
     /**
+     * Set invoice for dependencies
+     * @return $this
+     */
+    protected function setDependenciesPlaces() {
+        // Check if there are no errors in previous updates and we work with real data (database storage)
+        if (($this->responseConf['status'] == 1) && ($this->flags['storage'] == 'db')) {
+            // Update booking invoice status
+            $parentConf = reset($this->parentConf);
+            $bookingObj = $parentConf['obj'];
+            BaseBookingController::setPlaces($this, $bookingObj);
+        }
+
+        return $this;
+    }
+
+    /**
      * Set totals
      * @param $controller
      * @param $bookingServiceObj
+     * @param $hasUpdateGrouperService (determines if the grouperService will be updated. Generally the grouperService
+     *     must be updated, however in some cases you can want update the groupService only after finish a loop that
+     *     handles with multiple grouped services, thus avoiding update de grouperService for each grouped service
+     *     that is handled in the loop)
      * @return mixed
      */
-    static function setTotals($controller, $bookingServiceObj) {
+    static function setTotals($controller, $bookingServiceObj, $hasUpdateGrouperService = true)
+    {
         // Check if there are no errors in previous updates and we work with real data (database storage)
+        if ($controller->responseConf['status'] == 0) {
+            return $controller;
+        }
+
+        $sessionStorageService = $controller->container->get('app.service.session_storage');
+
+        // Check if is a grouped service
+        $grouperBookingServiceObj = $bookingServiceObj->getGrouperBookingServiceObj();
+
+        // Check if is a grouper service
+        $isGrouperService = false;
+        $bookingServicePriceObjects = array();
         switch ($controller->flags['storage']) {
             case 'session':
-                $bookingService_subTotalCost = 0;
-                $bookingService_subTotalSell = 0;
-                $bookingService_totalVatCost = 0;
-                $bookingService_totalVatSell = 0;
-
                 // Get detail objects
-                $bookingServicePriceObjects = $controller->container->get('app.service.session_storage')->getChildObjects(
+                $bookingServicePriceObjects = $sessionStorageService->getChildObjects(
                     $bookingServiceObj->getId(), // This is the parent of objects
                     'BookingServicePrice'
                 );
-
-                // Update BookingService object totals (object is in session storage)
-                foreach ($bookingServicePriceObjects as $bookingServicePriceObj) {
-                    $subTotalCost = $bookingServicePriceObj->getSubTotalSell();
-                    $subTotalSell = $bookingServicePriceObj->getSubTotalSell();
-                    $totalVatCost = $bookingServicePriceObj->getTotalVatCost();
-                    $totalVatSell = $bookingServicePriceObj->getTotalVatSell();
-                    switch ($bookingServicePriceObj->getPostingType()) {
-                        case 'CREDIT':
-                            $bookingService_subTotalCost -= $subTotalCost;
-                            $bookingService_subTotalSell -= $subTotalSell;
-                            $bookingService_totalVatCost -= $totalVatCost;
-                            $bookingService_totalVatSell -= $totalVatSell;
+                if (is_array($bookingServicePriceObjects) && (count($bookingServicePriceObjects) > 0)) {
+                    foreach ($bookingServicePriceObjects as $bookingServicePriceObj) {
+                        if ($bookingServicePriceObj->getGroupedBookingServicePriceObj()) {
+                            $isGrouperService = true;
                             break;
-                        default:
-                            $bookingService_subTotalCost += $subTotalCost;
-                            $bookingService_subTotalSell += $subTotalSell;
-                            $bookingService_totalVatCost += $totalVatCost;
-                            $bookingService_totalVatSell += $totalVatSell;
-                    }
-                }
-var_dump($bookingService_subTotalSell);
-                var_dump($bookingServiceObj->getGroupingBookingServiceObj());
-                // If the object belongs to a grouping service, then the object does not handles with sell values,
-                // they are handled by grouping service
-                if ($groupingBookingServiceObj = $bookingServiceObj->getGroupingBookingServiceObj()) {
-                    $bookingService_subTotalSell = 0;
-                    $bookingService_totalVatSell = 0;
-                } else {
-                    // Get all BookingService to check if there are any object grouped with this
-                    $packageBookingServiceObjects = $controller->container->get('app.service.session_storage')->getChildObjects(
-                        $controller->flags['parent'], // This is the parent of objects
-                        'PackageBookingService'
-                    );
-                    if (count($packageBookingServiceObjects) > 0) {
-                        foreach ($packageBookingServiceObjects as $groupedPackageBookingServiceObj) {
-                            $groupedBookingServiceObj = $groupedPackageBookingServiceObj->getBookingServiceObj();
-                            if ($groupedBookingServiceObj->getGroupingBookingServiceObj() == $bookingServiceObj) {
-                                $bookingService_subTotalSell = $groupedBookingServiceObj->getSubTotalSell();
-                            }
                         }
-
-                        // Recalculate VAT according with object VAT code and the
-                        // updated "subTotalSell" (from grouped services that can have other VAT code)
-                        $priceService = $controller->get('app.service.price');
-                        $vatCodeObj = $bookingServiceObj->getServiceObj()->getVatCodeObj();
-                        $vatCodePercentage = $vatCodeObj->getPercentage();
-                        $quantity = $bookingServiceObj->getQuantity();
-                        $totalSellDetail = $priceService->getTotalUnitDetail(
-                            $bookingService_subTotalSell/$quantity,
-                            $vatCodePercentage,
-                            false
-                        );
-
-                        $bookingService_subTotalSell = $priceService->calcTotal($totalSellDetail['value'], $quantity);
-                        $bookingService_totalVatSell = $priceService->calcTotal($totalSellDetail['vatValue'], $quantity);
                     }
                 }
-
-                $bookingServiceObj->setSubTotalCost($bookingService_subTotalCost);
-                $bookingServiceObj->setSubTotalSell($bookingService_subTotalSell);
-                $bookingServiceObj->setTotalVatCost($bookingService_totalVatCost);
-                $bookingServiceObj->setTotalVatSell($bookingService_totalVatSell);
                 break;
-            default:
-                $controller->getRepositoryService('BookingService', 'BookingBundle')
-                    ->execute(
-                        'setTotals',
-                        array($bookingServiceObj)
-                    );
-
-                // Recalculate VAT according with object VAT code and the
-                // updated "subTotalSell" (from grouped services that can have other VAT code)
-                $priceService = $controller->get('app.service.price');
-                $vatCodeObj = $bookingServiceObj->getServiceObj()->getVatCodeObj();
-                $vatCodePercentage = $vatCodeObj->getPercentage();
-                $quantity = $bookingServiceObj->getQuantity();
-                $totalSellDetail = $priceService->getTotalUnitDetail(
-                    $bookingServiceObj->getSubTotalSell() / $quantity,
-                    $vatCodePercentage,
-                    false
-                );
-
-                $bookingServiceObj->setSubTotalSell($priceService->calcTotal($totalSellDetail['value'], $quantity));
-                $bookingServiceObj->setTotalVatSell($priceService->calcTotal($totalSellDetail['vatValue'], $quantity));
-                self::saveObject_static($controller, $bookingServiceObj);
+            default: // db storage
+                $tmpGroupedBookingServiceObj = $controller->getRepositoryService('BookingService', 'BookingBundle')
+                    ->execute('findOneByGrouperBookingServiceObj', array($bookingServiceObj));
+                $isGrouperService = !empty($tmpGroupedBookingServiceObj);
         }
 
-        // If the object belongs to a grouping, so the grouping service should be updated yet
-        if ($groupingBookingServiceObj = $bookingServiceObj->getGroupingBookingServiceObj()) {
-            self::setTotals($controller, $groupingBookingServiceObj);
+        // If is a grouper service, reset the main grouper booking service price
+        $mainGrouperBookingServicePriceObj = $bookingServiceObj->getGrouperBookingServicePriceObj();
+        if ($isGrouperService) {
+            if (!$mainGrouperBookingServicePriceObj) {
+                // If grouper BookingServicePrice is not already defined, so let's define them
+                $mainGrouperBookingServicePriceObj = new BookingServicePrice();
+                $bookingServiceObj->setGrouperBookingServicePriceObj($mainGrouperBookingServicePriceObj);
+                $mainGrouperBookingServicePriceObj->setBookingServiceObj($bookingServiceObj);
+            }
+        }
+
+        $totals = array(
+            'subTotalCost' => 0,
+            'totalVatCost' => 0,
+            'subTotalSell' => 0,
+            'totalVatSell' => 0
+        );
+
+        // Get BookingPriceObjects
+        switch ($controller->flags['storage']) {
+            case 'session':
+                // In case of session need to get again objects because main grouped BookingServicePrice can be changed
+                $bookingServicePriceObjects = $sessionStorageService->getChildObjects(
+                    $bookingServiceObj->getId(), // This is the parent of objects
+                    'BookingServicePrice'
+                );
+                break;
+            default: // db storage
+                // Notice that disabled objects are getted yet, to update the correspondent grouper object if exists
+                $bookingServicePriceObjects = $controller->getRepositoryService('BookingServicePrice', 'BookingBundle')
+                    ->execute('findByBookingServiceObj',array($bookingServiceObj));
+        }
+
+        if (is_array($bookingServicePriceObjects) && (count($bookingServicePriceObjects) > 0)) {
+            foreach ($bookingServicePriceObjects as $bookingServicePriceObj) {
+                if ($isGrouperService && ($mainGrouperBookingServicePriceObj == $bookingServicePriceObj)) {
+                    // The grouper BookingServicePrice it's to to groups sell values, should not be sum
+                    continue;
+                }
+                $bookingServicePriceObj_sellValues = $bookingServicePriceObj;
+
+                // In case of session storage, check if grouped object continue valid, because session does not
+                // delete cascade automatically like database
+                if ($controller->flags['storage'] == 'session') {
+                    if ($groupedBookingServicePriceObj = $bookingServicePriceObj->getGroupedBookingServicePriceObj()) {
+                        if (!$sessionStorageService->get($groupedBookingServicePriceObj->getId())) {
+                            // Grouped object is not valid anymore, so delete the grouper object
+                            $currentParentFlag = $controller->flags['parent'];
+                            $controller->flags['parent'] = $bookingServicePriceObj->getBookingServiceObj()->getId();
+                            parent::deleteObject_static($controller, $bookingServicePriceObj);
+                            $controller->flags['parent'] = $currentParentFlag;
+                            continue;
+                        }
+                    }
+                }
+
+                // If grouping service is enabled, so we need to copy all BookingServicePrice to the
+                // grouper service redefining the sell values according with the VAT code of
+                // the grouper service.
+                // NOTE: The sell values of this BookingService are calculated based in the copies of BookingServicePrice
+                // in the grouper BookingService, because these are the objects that will be used in bill/invoice processes,
+                // in order to avoid turn the user confused with this values, put a flag in grouped BookingService and show
+                // in the grouped BookingServicePrice the sell values of your correspond copy in grouper BookingServicePrice.
+                if ($grouperBookingServiceObj) {
+                    // Set grouperBookingServicePriceObj
+                    if (($grouperBookingServicePriceObj = $bookingServicePriceObj->getGrouperBookingServicePriceObj())) {
+                        // If grouper BookingServicePrice is already defined, so delete them to create another one
+                        $bookingServicePriceObj->setGrouperBookingServicePriceObj(null);
+
+                        // Delete deprecated grouper BookingServicePrice
+                        $currentParentFlag = $controller->flags['parent'];
+                        $controller->flags['parent'] = $grouperBookingServicePriceObj->getBookingServiceObj()->getId();
+                        parent::deleteObject_static($controller, $grouperBookingServicePriceObj, false); // No flush, flush only at end
+                        $controller->flags['parent'] = $currentParentFlag;
+                    }
+
+                    // Create a new grouper BookingServicePrice object based on the original
+                    $grouperBookingServicePriceObj = clone $bookingServicePriceObj;
+                    $bookingServicePriceObj->setGrouperBookingServicePriceObj($grouperBookingServicePriceObj);
+                    $grouperBookingServicePriceObj->setGroupedBookingServicePriceObj($bookingServicePriceObj);
+                    $grouperBookingServicePriceObj->setBookingServiceObj($grouperBookingServiceObj);
+                    $grouperBookingServicePriceObj->setVatCodeObj(
+                        $grouperBookingServiceObj->getServiceObj()->getVatCodeObj()
+                    );
+                    $grouperBookingServicePriceObj->setCostValue(0);
+                    BookingServicePriceController::validateAndSetBookingServicePrice(
+                        $controller,
+                        $grouperBookingServicePriceObj
+                    );
+                    // Set isEnabled. Only is enabled if Service and servicePrice is enabled both
+                    $isEnabled = ($bookingServicePriceObj->getIsEnabled() && $bookingServiceObj->getIsEnabled());
+                    $grouperBookingServicePriceObj->setIsEnabled($isEnabled);
+
+                    // Save new grouper BookingServicePrice
+                    $currentParentFlag = $controller->flags['parent'];
+                    $controller->flags['parent'] = $grouperBookingServicePriceObj->getBookingServiceObj()->getId();
+                    parent::saveObject_static($controller, $grouperBookingServicePriceObj, false); // No flush, flush only at end
+                    $controller->flags['parent'] = $currentParentFlag;
+
+                    $bookingServicePriceObj_sellValues = $grouperBookingServicePriceObj;
+                }
+
+                // If is a grouper service, so group all BookingServicePrice in the main grouper BookingServicePrice
+                if ($isGrouperService) {
+                    $bookingServicePriceObj->setGrouperBookingServicePriceObj($mainGrouperBookingServicePriceObj);
+                }
+
+                // Add values only if object is enabled
+                if (!$bookingServicePriceObj->getIsEnabled()) { continue; }
+                switch ($bookingServicePriceObj->getPostingType()) {
+                    case 'CREDIT':
+                        $totals['subTotalCost'] -= $bookingServicePriceObj->getSubTotalCost();
+                        $totals['totalVatCost'] -= $bookingServicePriceObj->getTotalVatCost();
+                        $totals['subTotalSell'] -= $bookingServicePriceObj_sellValues->getSubTotalSell();
+                        $totals['totalVatSell'] -= $bookingServicePriceObj_sellValues->getTotalVatSell();
+                        break;
+                    default:
+                        $totals['subTotalCost'] += $bookingServicePriceObj->getSubTotalCost();
+                        $totals['totalVatCost'] += $bookingServicePriceObj->getTotalVatCost();
+                        $totals['subTotalSell'] += $bookingServicePriceObj_sellValues->getSubTotalSell();
+                        $totals['totalVatSell'] += $bookingServicePriceObj_sellValues->getTotalVatSell();
+                }
+            }
+        }
+
+        // Add totals to grouper BookingServicePrice and default values
+        if ($isGrouperService) {
+            parent::setObjectDefaultValues_static($controller, $mainGrouperBookingServicePriceObj);
+            $mainGrouperBookingServicePriceObj->setDescription($bookingServiceObj->getDescription());
+            $mainGrouperBookingServicePriceObj->setVatCodeObj($bookingServiceObj->getServiceObj()->getVatCodeObj());
+            $mainGrouperBookingServicePriceObj->setQuantity($bookingServiceObj->getQuantity());
+            $mainGrouperBookingServicePriceObj->setIsVatIncluded(true); // Only for user view
+            $mainGrouperBookingServicePriceObj->setCostValue(0);
+            $mainGrouperBookingServicePriceObj->setVatValueCost(0);
+            $mainGrouperBookingServicePriceObj->setSubTotalCost(0);
+            $mainGrouperBookingServicePriceObj->setTotalVatCost(0);
+            $mainGrouperBookingServicePriceObj->setMarginMethod(null);
+            $mainGrouperBookingServicePriceObj->setMarginValue(0);
+            $mainGrouperBookingServicePriceObj->setUserFieldTyped('SELL');
+            $postingType = (($totals['subTotalSell'] < 0) ? 'CREDIT' : 'DEBIT');
+            $mainGrouperBookingServicePriceObj->setPostingType($postingType);
+
+            $priceService = $controller->get('app.service.price');
+            $sellValue = $priceService->calcUnitFromTotal(abs($totals['subTotalSell']), $bookingServiceObj->getQuantity());
+
+            $mainGrouperBookingServicePriceObj->setSellValue($sellValue);
+            BookingServicePriceController::validateAndSetBookingServicePrice(
+                $controller,
+                $mainGrouperBookingServicePriceObj
+            );
+
+            // Update totals for service based in main grouper BookingServicePrice to avoid inquiries caused by rounding
+            $totals['subTotalSell'] = (($postingType == 'CREDIT') ?
+                ($mainGrouperBookingServicePriceObj->getSubTotalSell() * -1) :
+                $mainGrouperBookingServicePriceObj->getSubTotalSell()
+            );
+            $totals['totalVatSell'] = (($postingType == 'CREDIT') ?
+                ($mainGrouperBookingServicePriceObj->getTotalVatSell() * -1) :
+                $mainGrouperBookingServicePriceObj->getTotalVatSell()
+            );
+
+            // Save main grouper BookingServicePrice
+            $currentParentFlag = $controller->flags['parent'];
+            $controller->flags['parent'] = $bookingServiceObj->getId();
+            parent::saveObject_static($controller, $mainGrouperBookingServicePriceObj);
+            $controller->flags['parent'] = $currentParentFlag;
+        }
+
+        $bookingServiceObj->setSubTotalCost($totals['subTotalCost']);
+        $bookingServiceObj->setTotalVatCost($totals['totalVatCost']);
+        $bookingServiceObj->setSubTotalSell($totals['subTotalSell']);
+        $bookingServiceObj->setTotalVatSell($totals['totalVatSell']);
+        self::saveObject_static($controller, $bookingServiceObj); // Flush all objects now
+
+        // If the object belongs to a grouping, so the grouper service should be updated yet
+        if ($grouperBookingServiceObj && $hasUpdateGrouperService) {
+            self::setTotals($controller, $grouperBookingServiceObj);
         }
 
         return $controller;
     }
-
 
     /**
      * Overrides parent method.
@@ -1485,6 +1628,7 @@ var_dump($bookingService_subTotalSell);
             $this->setDependenciesDates();
             $this->setDependenciesConfirmation();
             $this->setDependenciesInvoice();
+            $this->setDependenciesPlaces();
         }
 
         return $this;

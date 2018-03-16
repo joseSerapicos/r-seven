@@ -3,12 +3,22 @@
                             <li (click)="_navManagerService.navToAction(0)"
                     [class.active]="0 == _navManagerService.getIndex()"><a
                             [attr.data-index]="0" data-toggle="tab" href="#tab0">Contacts</a></li>
+                            <li (click)="_navManagerService.navToAction(1)"
+                    [class.active]="1 == _navManagerService.getIndex()"><a
+                            [attr.data-index]="1" data-toggle="tab" href="#tab1">Logo Image</a></li>
                     </ul>
         <div class="tab-content">
                             <div id="tab0"
                      class="tab-pane"
                      [class.active]="0 == _navManagerService.getIndex()">
                     <div class="panel-body js_lazyLoadContainer_0">
+                        <ng-template #js_lazyLoadContainer></ng-template>
+                    </div>
+                </div>
+                            <div id="tab1"
+                     class="tab-pane"
+                     [class.active]="1 == _navManagerService.getIndex()">
+                    <div class="panel-body js_lazyLoadContainer_1">
                         <ng-template #js_lazyLoadContainer></ng-template>
                     </div>
                 </div>

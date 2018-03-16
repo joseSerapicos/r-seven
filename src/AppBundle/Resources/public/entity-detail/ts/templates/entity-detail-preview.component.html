@@ -1,0 +1,37 @@
+<ng-template [ngIf]="_object && _object['id']">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2 class="valign-div-container" *ngIf="!_object['_isSessionStorage']"><span [innerHTML]="_object['code'] || _object['id']"></span><span *ngIf="_object['name']">&nbsp;&nbsp;@&nbsp;&nbsp;{{ _object['name'] }}</span></h2>
+            <div class="row m-l-xs">
+                <ng-template ngFor let-field [ngForOf]="_fields['view']">
+                    <div class="col-sm-6"
+                         *ngIf="!_helperService.inArray(field, ['id', 'code', 'name', 'isEnabled', 'insertTime', 'insertUser']) && _object[field]">
+                        <p *ngIf="_helperService.inArray(_fields['metadata'][field]['type'], ['number', 'percentage', 'monetary', 'icon'])"><strong>{{ _fields['metadata'][field]['label'] }}</strong>:&nbsp;<span [innerHTML]="_object[field]"></span></p>
+                        <p *ngIf="_helperService.inArray(_fields['metadata'][field]['type'], ['boolean', 'status'])"><span [innerHTML]="_object[field]"></span>&nbsp;<strong>{{ _fields['metadata'][field]['label'] }}</strong></p>
+                        <p *ngIf="_helperService.inArray(_fields['metadata'][field]['type'], ['avatar', 'img'])"><span [innerHTML]="_object[field]"></span></p>
+                        <p *ngIf="!_helperService.inArray(_fields['metadata'][field]['type'], ['number', 'percentage', 'monetary', 'status', 'icon', 'boolean', 'avatar', 'img'])"><strong>{{ _fields['metadata'][field]['label'] }}</strong><br/><span [innerHTML]="_object[field]"></span></p>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+            </div>
+</ng-template>
+    <div class="table-responsive" *ngFor="let dependency of _dependenciesArr">
+        <h5 class="m-t-md" [innerHTML]="_dependencies[dependency].label"></h5>
+        <table class="data-table table table-striped table-hover dataTables-example table-bordered">
+            <thead>
+            <tr>
+                <th *ngFor="let field of _dependencies[dependency].fields['view']">{{ _dependencies[dependency].fields.metadata[field].label }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <ng-template ngFor let-obj [ngForOf]="_dependencies[dependency].objects" let-index="index">
+                <tr>
+                    <td *ngFor="let field of _dependencies[dependency].fields['view']"
+                        [ngClass]="_helperService.getColAlign(_dependencies[dependency].fields['metadata'][field]['type'])"
+                        [innerHTML]="obj[field]"></td>
+                </tr>
+            </ng-template>
+            </tbody>
+        </table>
+    </div>

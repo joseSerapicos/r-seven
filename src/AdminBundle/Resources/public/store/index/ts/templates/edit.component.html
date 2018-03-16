@@ -15,7 +15,7 @@
                     <div class="ibox-content">        
                                         
 
-            <div class="form-group" *ngIf="_formService.getObject().id">
+                <div class="form-group" *ngIf="_formService.getObject().id">
 
                         <label class="col-sm-2 control-label required" for="form_id">Id</label>
     
@@ -28,7 +28,20 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" *ngIf="_formService.getObject().thumbnail">
+
+                        <label class="col-sm-2 control-label" for="form_thumbnail">Thumbnail</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_thumbnail"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().thumbnail"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().thumbnail">{{error}}</label>
+            </div>
+        </div>
+                                                    
+
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_name">Name</label>
     
@@ -39,7 +52,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label" for="form_fallbackStoreObj">Fallback Store</label>
     
@@ -55,7 +68,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label" for="form_legalName">Legal Name</label>
     
@@ -66,7 +79,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label" for="form_taxNumber">Tax Number</label>
     
@@ -77,7 +90,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_storeAddressObj_street1">Street 1/2</label>
     
@@ -88,7 +101,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label" for="form_storeAddressObj_street2">Street 2/2</label>
     
@@ -99,7 +112,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_storeAddressObj_postCode">Post Code</label>
     
@@ -110,7 +123,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_storeAddressObj_city">City</label>
     
@@ -121,7 +134,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label" for="form_storeAddressObj_region">Region</label>
     
@@ -132,7 +145,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_storeAddressObj_country">Country</label>
     
@@ -143,7 +156,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label" for="form_color">Color</label>
     
@@ -161,7 +174,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label required">Privacy</label>
     
@@ -209,7 +222,7 @@
     <label class="col-sm-12 m-t-sm">Resources</label>
     <div class="col-sm-12"><div class="form-control-box">                                
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label" for="form_shareEntities">Entities</label>
     
@@ -225,7 +238,7 @@
         </div>
                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label" for="form_shareCurrentAccounts">Current Accounts</label>
     
@@ -244,7 +257,7 @@
                 </div>
                                                                                                             
 
-            <div class="form-group" *ngIf="_formService.getObject().insertTime">
+                <div class="form-group" *ngIf="_formService.getObject().insertTime">
 
                         <label class="col-sm-2 control-label required" for="form_insertTime">Insert Time</label>
     
@@ -257,7 +270,7 @@
         </div>
                                                     
 
-            <div class="form-group" *ngIf="_formService.getObject().insertUser">
+                <div class="form-group" *ngIf="_formService.getObject().insertUser">
 
                         <label class="col-sm-2 control-label required" for="form_insertUser">Insert User</label>
     
@@ -270,7 +283,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="form-group" >
 
                         <label class="col-sm-2 control-label">Enabled</label>
     
@@ -307,7 +320,7 @@
                                 </div>
         </div>
     </div>                        
-    <input type="hidden" id="form__token" name="form[_token]" value="TcyNUc0ivaNc2Bzv96jY_ov6RXK7ED_ZXIRcdRl89Ag" /></form>
+    <input type="hidden" id="form__token" name="form[_token]" value="y_X653isBIPUjhTqIFoEMS38F6y1pjJHhEkNvonaMMU" /></form>
                 </div>
             </div>
         </div>

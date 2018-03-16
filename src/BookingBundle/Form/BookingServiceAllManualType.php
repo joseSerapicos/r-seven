@@ -40,6 +40,8 @@ class BookingServiceAllManualType extends BaseType
             'reference' => $this->entityMetadata['reference'],
             'startDate' => $this->entityMetadata['startDate'],
             'endDate' => $this->entityMetadata['endDate'],
+            'placeObj' => $this->entityMetadata['placeObj'],
+            'placeToObj' => $this->entityMetadata['placeToObj'],
             'quantity' => $this->entityMetadata['quantity'],
             'confirmationStatus' => $this->entityMetadata['confirmationStatus'],
             'startDateManual' => $this->entityMetadata['startDateManual'],

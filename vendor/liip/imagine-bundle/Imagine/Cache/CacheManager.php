@@ -1,16 +1,25 @@
 <?php
 
+/*
+ * This file is part of the `liip/LiipImagineBundle` project.
+ *
+ * (c) https://github.com/liip/LiipImagineBundle/graphs/contributors
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
+ */
+
 namespace Liip\ImagineBundle\Imagine\Cache;
 
 use Liip\ImagineBundle\Binary\BinaryInterface;
+use Liip\ImagineBundle\Events\CacheResolveEvent;
 use Liip\ImagineBundle\Imagine\Cache\Resolver\ResolverInterface;
 use Liip\ImagineBundle\Imagine\Filter\FilterConfiguration;
+use Liip\ImagineBundle\ImagineEvents;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Liip\ImagineBundle\ImagineEvents;
-use Liip\ImagineBundle\Events\CacheResolveEvent;
 
 class CacheManager
 {
@@ -90,9 +99,9 @@ class CacheManager
      * @param string $filter
      * @param string $resolver
      *
-     * @return ResolverInterface
+     * @throws \OutOfBoundsException If neither a specific nor a default resolver is available
      *
-     * @throws \OutOfBoundsException If neither a specific nor a default resolver is available.
+     * @return ResolverInterface
      */
     protected function getResolver($filter, $resolver)
     {
@@ -120,7 +129,7 @@ class CacheManager
      * Gets filtered path for rendering in the browser.
      * It could be the cached one or an url of filter action.
      *
-     * @param string $path          The path where the resolved file is expected.
+     * @param string $path          The path where the resolved file is expected
      * @param string $filter
      * @param array  $runtimeConfig
      * @param string $resolver
@@ -160,8 +169,8 @@ class CacheManager
     /**
      * Returns a web accessible URL.
      *
-     * @param string $path          The path where the resolved file is expected.
-     * @param string $filter        The name of the imagine filter in effect.
+     * @param string $path          The path where the resolved file is expected
+     * @param string $filter        The name of the imagine filter in effect
      * @param array  $runtimeConfig
      * @param string $resolver
      *
@@ -211,9 +220,9 @@ class CacheManager
      * @param string $filter
      * @param string $resolver
      *
-     * @return string The url of resolved image.
-     *
      * @throws NotFoundHttpException if the path can not be resolved
+     *
+     * @return string The url of resolved image
      */
     public function resolve($path, $filter, $resolver = null)
     {

@@ -242,7 +242,7 @@ export class FormService
     public setObject(object: any): FormService
     {
         // Set only if is a different object
-        if (object != this._originalObject) {
+        if (object && (object != this._originalObject)) {
             // Keep the original object from dataService
             this._originalObject = object;
             this._tasksLoaderManagerService.delTask('SAVE_'+this._uniqueId); // Waiting mode for save process ends here, after update the original object.

@@ -27,6 +27,15 @@ interface AppInterface {
       offset: number
     },
     actions: any,
+    'controls': {
+      expander: boolean,
+      legend: {
+        'label': string,
+        'class': string,
+        'field': string,
+        'expr': string
+      }[]
+    },
     objects?: any,
     object?: any,
     treeView?: any,

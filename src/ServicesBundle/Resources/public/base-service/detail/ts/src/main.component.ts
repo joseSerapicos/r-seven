@@ -168,7 +168,8 @@ export class MainComponent extends TabsComponent implements ITabs
                 break;
             case 3:
                 let localData = {
-                    imageCropPopupModule: this._provider['modules']['serviceImageCropPopup']['module']
+                    imageCropPopupModule: this._provider['modules']['serviceImageCropPopup']['module'],
+                    imageCropPopupComponent: 'ImageCropPopupComponent'
                 };
                 providers = [
                     {provide: 'Provider', useValue: this._helperService.getImageProvider(data, localData)},

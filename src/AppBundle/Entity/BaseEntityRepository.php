@@ -101,8 +101,10 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                                     // Ignored by form (only for read)
                                     $value['acl'] = 'read';
                                 } else { // Case of "merge"
+                                    // Field in entity
+                                    $entityField = (isset($fieldMetadata['field']) ? $fieldMetadata['field'] : $field);
                                     // Used by form (edit fields through foreign form)
-                                    $value['parent'] = $field; // Parent field (used in form)
+                                    $value['parent'] = $entityField; // Parent field (used in form)
                                 }
 
                                 if (!isset($value['table'])) { // Use isset not empty, table is used as empty for calculated fields

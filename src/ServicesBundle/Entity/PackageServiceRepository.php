@@ -61,13 +61,18 @@ class PackageServiceRepository extends BaseEntityRepository
                 'default' => false
             ),
             'fixedDurationDays' => array('label' => 'Duration', 'type' => 'number', 'acl' => 'edit'),
+            'hasGroupingServices' => array('label' => 'Has Grouping Services', 'type' => 'boolean', 'acl' => 'edit',
+                'default' => false
+            ),
             ////////////////////////////////// MARKETING //////////////////////////////////
             'priceFrom' => array('label' => 'Price From', 'type' => 'monetary', 'acl' => 'edit',
                 'isRequired' => false, 'form' => array('type' => 'number'),
             ),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 }

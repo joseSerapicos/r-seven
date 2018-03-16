@@ -28,11 +28,11 @@ export class TreeViewControlComponent extends TreeViewComponent
         @Inject('Provider') provider: TreeViewProvider,
         @Inject('DataService') dataService: any,
         tasksLoaderManagerService: TasksLoaderManagerService,
+        @Inject('HelperService') helperService: any,
         actionsService: ActionsService,
         modalService: ModalService,
         @Inject('Popups') popups: Popups | Popup,
-        injector: Injector,
-        @Inject('HelperService') protected _helperService: any
+        injector: Injector
     ) {
         // Call parent
         super(
@@ -41,6 +41,7 @@ export class TreeViewControlComponent extends TreeViewComponent
             provider,
             dataService,
             tasksLoaderManagerService,
+            helperService,
             actionsService,
             modalService,
             popups,

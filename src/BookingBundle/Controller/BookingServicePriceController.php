@@ -2,7 +2,9 @@
 
 namespace BookingBundle\Controller;
 
+use AccountingBundle\Controller\BaseDocumentInvoiceDetailController;
 use AppBundle\Controller\BaseEntityChildController;
+use EntitiesBundle\Controller\BaseEntityTypeController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -13,13 +15,18 @@ use Symfony\Component\HttpFoundation\Request;
 class BookingServicePriceController extends BaseEntityChildController
 {
     /**
+     * Get label/title to display child in parent
+     * @return mixed
+     */
+    static function getLabel() { return 'Price'; }
+
+    /**
      * Overrides parent method
      * @param Request $request
      * @param $parents
-     * @param $label (set label when you don't have the route in modules/menus tree)
      * @return $this
      */
-    protected function initChild(Request $request, $parents, $label = 'Price')
+    protected function initChild(Request $request, $parents)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
@@ -45,7 +52,7 @@ class BookingServicePriceController extends BaseEntityChildController
             )
         );
 
-        parent::initChild($request, $parents, $label);
+        parent::initChild($request, $parents);
 
         // Search
         $this->templateConf['search']['fields'] = array('postingType', 'description',
@@ -61,6 +68,12 @@ class BookingServicePriceController extends BaseEntityChildController
                 'search' => true
             )
         );
+
+        /* Legend for template/view */
+        $this->templateConf['controls']['legend'][] = array(
+            'label' => 'Grouped Price', 'class' => 'bg-warning-light', 'field' => 'grouperBookingServicePriceObj'
+        );
+        /* /Legend for template/view */
 
         // Extra data
         $this->templateConf['extraData']['template'] = array(
@@ -127,7 +140,9 @@ class BookingServicePriceController extends BaseEntityChildController
             $data = $this->getRequestData($request);
             $submittedData = $data['form'];
 
-            if($this->validateAndSetBookingServicePrice($this, $obj, $submittedData)) {
+            if ($this->preSaveObject($obj, $data) &&
+                $this->validateAndSetBookingServicePrice($this, $obj, $submittedData)
+            ) {
                 $this->saveForm($form, $obj);
             }
 
@@ -193,21 +208,23 @@ class BookingServicePriceController extends BaseEntityChildController
      * Validate and set booking service price
      * @param $controller
      * @param $bookingServicePriceObj
-     * @param $dataArr (all data from form)
+     * @param $dataArr (all data from form, of provided data will be validated)
      * @return bool
      */
-    static function validateAndSetBookingServicePrice($controller, &$bookingServicePriceObj, $dataArr)
+    static function validateAndSetBookingServicePrice($controller, &$bookingServicePriceObj, $dataArr = null)
     {
         $priceService = $controller->get('app.service.price');
 
+        $hasValidation = !empty($dataArr);
+
         // Values without VAT (used as base to calc all totals)
-        $costValue = $dataArr['costValue'];
-        $sellValue = $dataArr['sellValue'];
+        $costValue = ($dataArr ? $dataArr['costValue']: $bookingServicePriceObj->getCostValue());
+        $sellValue = ($dataArr ? $dataArr['sellValue']: $bookingServicePriceObj->getSellValue());
 
         // Validate cost/sell margin
         $errorMessage = null;
-        $frontResult = $backResult = 0;
-        if (!empty($dataArr['marginMethod']) && ($dataArr['marginMethod'] != 'none')) {
+        if ($hasValidation && !empty($dataArr['marginMethod']) && ($dataArr['marginMethod'] != 'none')) {
+            $frontResult = $backResult = 0;
             switch ($dataArr['userFieldTyped']) {
                 case 'COST':
                     $backResult = $priceService->calcSellValue(
@@ -226,9 +243,9 @@ class BookingServicePriceController extends BaseEntityChildController
                     $frontResult = $dataArr['costValue'];
                     break;
             }
-        }
-        if (!$priceService->isEqual($frontResult, $backResult)) {
-            $errorMessage = ($frontResult.' Does not match with '.$backResult);
+            if (!$priceService->isEqual($frontResult, $backResult)) {
+                $errorMessage = ($frontResult.' Does not match with '.$backResult);
+            }
         }
 
         // No error continue...
@@ -244,9 +261,10 @@ class BookingServicePriceController extends BaseEntityChildController
             // that does not occurs in view app that use the original value)
             $totalUnitCostDetail = $priceService->getTotalUnitDetail($costValue, $vatCodePercentage, false);
             $totalUnitSellDetail = $priceService->getTotalUnitDetail($sellValue, $vatCodePercentage, false);
-            $totalUnitCost = round($totalUnitCostDetail['value'] + $totalUnitCostDetail['vatValue'], 2);
 
+            $totalUnitCost = round($totalUnitCostDetail['value'] + $totalUnitCostDetail['vatValue'], 2);
             $totalUnitSell = round($totalUnitSellDetail['value'] + $totalUnitSellDetail['vatValue'], 2);
+
             $totalVatCost = $priceService->calcTotal($totalUnitCostDetail['vatValue'], $quantity);
             $totalVatSell = $priceService->calcTotal($totalUnitSellDetail['vatValue'], $quantity);
 
@@ -255,28 +273,32 @@ class BookingServicePriceController extends BaseEntityChildController
             // Before multiply round the sum to get a coherent total unit value
             $totalCost = $priceService->calcTotal($totalUnitCost, $quantity);
             $totalSell = $priceService->calcTotal($totalUnitSell, $quantity);
+
             // Sub total is determined in this way, because in some cases the sum of "subTotal" and "totalVat"
             // rounded does not match with the correct total, given that this values are rounded to 2 decimals
             // and lost precision, so in this way we keep the calculus with coherence giving preference to keep
             // "totalVat" untouched (legal values).
-            $subTotalCost = round($totalCost - $totalVatCost, 2);
-            $subTotalSell = round($totalSell - $totalVatSell, 2);
+            $subTotalCost = $priceService->calcSubTotal($totalCost, $totalVatCost);
+            $subTotalSell = $priceService->calcSubTotal($totalSell, $totalVatSell);
 
-            // Check totals (if totals are right,
-            // we assume that unit values that are used to calc the totals are also right, so does not be checked)
-            // For now this fields do not be used to simplify the form
-            /*if (!$priceService->isEqual($dataArr['subTotalCost'], $subTotalCost)) {
-                $errorMessage = ($dataArr['subTotalCost'] . ' Does not match with ' . $subTotalCost);
-            } else*/if (!$priceService->isEqual($dataArr['subTotalSell'], $subTotalSell)) {
-                $errorMessage = ($dataArr['subTotalSell'] . ' Does not match with ' . $subTotalSell);
-            } /*elseif (!$priceService->isEqual($dataArr['totalVatCost'], $totalVatCost)) {
+            if ($hasValidation) {
+                // Check totals (if totals are right,
+                // we assume that unit values that are used to calc the totals are also right, so does not be checked)
+                // For now this fields do not be used to simplify the form
+                /*if (!$priceService->isEqual($dataArr['subTotalCost'], $subTotalCost)) {
+                    $errorMessage = ($dataArr['subTotalCost'] . ' Does not match with ' . $subTotalCost);
+                } else*/
+                if (!$priceService->isEqual($dataArr['subTotalSell'], $subTotalSell)) {
+                    $errorMessage = ($dataArr['subTotalSell'] . ' Does not match with ' . $subTotalSell);
+                } /*elseif (!$priceService->isEqual($dataArr['totalVatCost'], $totalVatCost)) {
                     $errorMessage = ($dataArr['totalVatCost'] . ' Does not match with ' . $totalVatCost);
-                } */elseif (!$priceService->isEqual($dataArr['totalVatSell'], $totalVatSell)) {
-                $errorMessage = ($dataArr['totalVatSell'] . ' Does not match with ' . $totalVatSell);
-            } /*elseif (!$priceService->isEqual($dataArr['totalCost'], $totalCost)) {
+                } */ elseif (!$priceService->isEqual($dataArr['totalVatSell'], $totalVatSell)) {
+                    $errorMessage = ($dataArr['totalVatSell'] . ' Does not match with ' . $totalVatSell);
+                } /*elseif (!$priceService->isEqual($dataArr['totalCost'], $totalCost)) {
                     $errorMessage = ($dataArr['totalCost'] . ' Does not match with ' . $totalCost);
-                } */elseif (!$priceService->isEqual($dataArr['totalSell'], $totalSell)) {
-                $errorMessage = ($dataArr['totalSell'] . ' Does not match with ' . $totalSell);
+                } */ elseif (!$priceService->isEqual($dataArr['totalSell'], $totalSell)) {
+                    $errorMessage = ($dataArr['totalSell'] . ' Does not match with ' . $totalSell);
+                }
             }
         }
 
@@ -329,6 +351,39 @@ class BookingServicePriceController extends BaseEntityChildController
      * Overrides parent method
      * @param $object
      * @param $data (usually the form data)
+     * @return boolean (true to continue, false to abort)
+     */
+    protected function preSaveObject(&$object, $data)
+    {
+        // Grouper objects does not be changed directly, should be changed in the original object
+        // It's a clone grouping a single object
+        if ($object->getGroupedBookingServicePriceObj()) {
+            $this->responseConf['status'] = 0;
+            $this->addFlashMessage(
+                ('This is a grouper object. Grouper objects can not be changed.<br/>Please make changes in the original object.'),
+                'Data not persisted',
+                'error'
+            );
+            return false;
+        }
+        // It's a grouper service price object of grouper service
+        elseif ($object == $object->getBookingServiceObj()->getGrouperBookingServicePriceObj()) {
+            $this->responseConf['status'] = 0;
+            $this->addFlashMessage(
+                ('This is a grouper object of grouper service. Grouper objects can not be changed.<br/>Please make changes in the original objects.'),
+                'Data not persisted',
+                'error'
+            );
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Overrides parent method
+     * @param $object
+     * @param $data (usually the form data)
      * @return $this
      */
     protected function postSaveObject($object, $data = null)
@@ -352,6 +407,41 @@ class BookingServicePriceController extends BaseEntityChildController
     }
 
     /**
+     * Pre (before) delete object event. Use this function to handle event.
+     * @param $object
+     * @param $context (context to help to determine actions)
+     * @return boolean (true to continue, false to abort)
+     */
+    protected function preDeleteObject($object, $context = null)
+    {
+        if ($checked = $this->preSaveObject($object, null)) {
+            if (($grouperBookingServicePriceObj = $object->getGrouperBookingServicePriceObj())) {
+                // If grouper BookingServicePrice is defined, so them may be deleted yet, and set this
+                // field to "null", otherwise the "RESTRICT" mode does not allow delete this object
+
+                // Save to restore in case of error
+                $this->flags['grouperBookingServicePriceToDelete'] = $grouperBookingServicePriceObj;
+
+                $object->setGrouperBookingServicePriceObj(null);
+
+                // If the grouper BookingServicePriceObj is the main grouper used by grouper BookingService, so we
+                // can not change them.
+                if ($grouperBookingServicePriceObj !=
+                    $grouperBookingServicePriceObj->getBookingServiceObj()->getGrouperBookingServicePriceObj()
+                ) {
+                    $grouperBookingServicePriceObj->setGroupedBookingServicePriceObj(null);
+                    parent::saveObject_static($this, $grouperBookingServicePriceObj);
+
+                    // No flush, flush only when remove the main object
+                    parent::deleteObject_static($this, $grouperBookingServicePriceObj, false);
+                }
+            }
+        }
+
+        return $checked;
+    }
+
+    /**
      * Overrides parent method
      * @param $object
      * @param null $context
@@ -359,6 +449,47 @@ class BookingServicePriceController extends BaseEntityChildController
      */
     protected function postDeleteObject($object, $context = null)
     {
+        // Check if there are any grouper BookingServicePrice pre saved
+        if (isset($this->flags['grouperBookingServicePriceToDelete'])
+            && ($grouperBookingServicePriceObj = $this->flags['grouperBookingServicePriceToDelete'])
+        ) {
+            // Error, restore grouper BookingServicePriceObj
+            if ($this->responseConf['status'] == 0) {
+                $object->setGrouperBookingServicePriceObj($grouperBookingServicePriceObj);
+
+                // If the grouper BookingServicePriceObj is the main grouper used by grouper BookingService, so we
+                // can not change them.
+                if ($grouperBookingServicePriceObj !=
+                    $grouperBookingServicePriceObj->getBookingServiceObj()->getGrouperBookingServicePriceObj()
+                ) {
+                    $grouperBookingServicePriceObj->setGroupedBookingServicePriceObj($object);
+                }
+
+                // Save and flush all changes
+                parent::saveObject_static($this, $object);
+            }
+
+            unset($this->flags['grouperBookingServicePriceToDelete']);
+        }
+
+        return $this->postSaveObject($object);
+    }
+
+    /**
+     * Pre (before) cancel object event. Use this function to handle event.
+     * @param $object
+     * @return boolean (true to continue, false to abort)
+     */
+    protected function preCancelObject($object) {
+        return $this->preSaveObject($object, null);
+    }
+
+    /**
+     * Overrides parent method
+     * @param $object
+     * @return $this
+     */
+    protected function postCancelObject($object) {
         return $this->postSaveObject($object);
     }
 
@@ -379,11 +510,10 @@ class BookingServicePriceController extends BaseEntityChildController
      * @param $entityId (to filter booking by entity id by default)
      * @param $entityContext (lower case)
      * @param $booking (booking id, to filter by booking)
-     * @param $label (set label when you don't have the route in modules/menus tree)
      * @return $this
      * @throws \Exception
      */
-    private function initForInvoice(Request $request, $parents, $entityId, $entityContext, $booking = null, $label = 'Price')
+    private function initForInvoice(Request $request, $parents, $entityId, $entityContext, $booking = null)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
@@ -402,7 +532,7 @@ class BookingServicePriceController extends BaseEntityChildController
 
         $this->templateConf['route'] = array();
 
-        parent::initChild($request, $parents, $label);
+        parent::initChild($request, $parents);
 
         // Local conf
         array_pop($this->localConf['search']['criteria']); // Remove last criteria (the parent filter)
@@ -447,6 +577,11 @@ class BookingServicePriceController extends BaseEntityChildController
             array(
                 'fields' => array(),
                 'criteria' => array(
+                    array(
+                        'field' => 'isEnabled',
+                        'expr' => 'eq',
+                        'value' => true
+                    ),
                     array(
                         // Optional criteria, but defined by default. We need to use te client code
                         // instead of the client id, so the user is able to change this criteria in the view
@@ -618,7 +753,7 @@ class BookingServicePriceController extends BaseEntityChildController
 
         if (!$hasOptionsByParam) {
             $options = $controller->getSearch();
-            $options = EntityTypeController
+            $options = BaseEntityTypeController
                 ::empowerCriteriaByName($options, $entityContext.'_name', $entityContext.'_entity', $entityContext.'EntityObj');
 
             if (!empty($options['limit'])) { // Pagination enabled
@@ -644,7 +779,7 @@ class BookingServicePriceController extends BaseEntityChildController
 
         // Process objects (update values based on not invoiced value)
         foreach ($objects as &$obj) {
-            DocumentInvoiceDetailController::calcObjectValuesFromTotal($controller, $obj);
+            BaseDocumentInvoiceDetailController::setObjectValuesFromNotInvoicedValue($controller, $obj);
         }
 
         // Tree view mode

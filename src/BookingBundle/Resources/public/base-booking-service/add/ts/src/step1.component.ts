@@ -12,11 +12,11 @@ import {PostService} from '../../../../../../../AppBundle/Resources/public/ts/po
 
 // Interface provider
 export interface BaseBookingServiceAddProvider extends WizardPopupProvider {
+    servicesUrlProvider: string,
     modules: { // Put here modules dependencies
         step2: {module: any, component: string},
         step3: {module: any, component: string},
-        bookingServicePriceEdit: {module: any, component: string},
-        servicesUrlProvider: string
+        bookingServicePriceEdit: {module: any, component: string}
     }
 }
 

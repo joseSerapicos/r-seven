@@ -34,9 +34,7 @@ class PackageBookingServiceAddStep3Type extends BaseType
 
         // Redefine fields
         $this->entityMetadata = array(
-            'bookingServiceObj' => $this->entityMetadata['bookingServiceObj'],
-            'placeObj' => $this->entityMetadata['placeObj'],
-            'placeToObj' => $this->entityMetadata['placeToObj']
+            'bookingServiceObj' => $this->entityMetadata['bookingServiceObj']
         );
         $this->entityMetadata['bookingServiceObj']['typeDetail']['formClass'] = 'BookingBundle\Form\BookingServiceAddStep3Type';
 

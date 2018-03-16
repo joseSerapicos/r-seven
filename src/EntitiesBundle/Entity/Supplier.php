@@ -3,6 +3,7 @@ namespace EntitiesBundle\Entity;
 
 use AppBundle\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
@@ -12,8 +13,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Supplier extends BaseEntity {
     /**
-     * @ORM\ManyToOne(targetEntity="Entity")
+     * @ORM\ManyToOne(targetEntity="Entity", cascade={"persist"})
      * @ORM\JoinColumn(name="fk_entity", referencedColumnName="id", nullable=false, unique=true, onDelete="RESTRICT")
+     *
+     * @Assert\Valid()
      */
     protected $entityObj;
 
@@ -93,6 +96,28 @@ class Supplier extends BaseEntity {
      * @return \EntitiesBundle\Entity\Entity
      */
     public function getEntityObj()
+    {
+        return $this->entityObj;
+    }
+
+    /**
+     * Set selectEntityObj
+     * Fake field to handle with auto-complete at same time that object is embed
+     * @param \EntitiesBundle\Entity\Entity $selectEntityObj
+     * @return object
+     */
+    public function setSelectEntityObj(\EntitiesBundle\Entity\Entity $selectEntityObj = null)
+    {
+        $this->entityObj = $selectEntityObj;
+        return $this;
+    }
+
+    /**
+     * Get selectEntityObj
+     * Fake field to handle with auto-complete at same time that object is embed
+     * @return \EntitiesBundle\Entity\Entity
+     */
+    public function getSelectEntityObj()
     {
         return $this->entityObj;
     }

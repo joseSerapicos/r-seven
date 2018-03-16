@@ -19,7 +19,7 @@ class EntityImage extends BaseImage {
     /**
      * Set entityObj
      * @param \EntitiesBundle\Entity\Entity $entityObj
-     * @return EntityFile
+     * @return object
      */
     public function setEntityObj(\EntitiesBundle\Entity\Entity $entityObj)
     {

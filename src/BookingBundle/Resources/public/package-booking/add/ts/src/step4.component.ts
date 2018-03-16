@@ -30,11 +30,11 @@ export class Step4Component extends DataBoxExtensionComponent
         @Inject('Provider') dataBoxProvider: DataBoxProvider,
         @Inject('DataService') dataService: any,
         tasksLoaderManagerService: TasksLoaderManagerService,
+        @Inject('HelperService') helperService: any,
         actionsService: ActionsService,
         modalService: ModalService,
         @Inject('Popups') popups: Popups | Popup,
-        injector: Injector,
-        @Inject('HelperService') protected _helperService: any
+        injector: Injector
     ) {
         // Call parent
         super();
@@ -44,6 +44,7 @@ export class Step4Component extends DataBoxExtensionComponent
             dataBoxProvider,
             dataService,
             tasksLoaderManagerService,
+            helperService,
             actionsService,
             modalService,
             popups,

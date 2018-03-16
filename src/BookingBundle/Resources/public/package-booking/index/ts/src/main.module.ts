@@ -6,6 +6,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {SearchModule} from '../../../../../../../AppBundle/Resources/public/ts/search/search.module';
 import {ExpanderModule} from '../../../../../../../AppBundle/Resources/public/ts/expander/expander.module';
+import {LegendExtModule} from '../../../../../../../AppBundle/Resources/public/legend/ts/src/legend.ext-module';
 import {Helper} from '../../../../../../../AppBundle/Resources/public/ts/helper';
 import {PostService} from '../../../../../../../AppBundle/Resources/public/ts/post.service';
 import {ModalService} from '../../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
@@ -29,6 +30,9 @@ import {EditExtModule} from './edit.ext-module';
 // Auto-complete
 import {EditExtModule as EntitiesEntityEditExtModule} from '../../../../../../../EntitiesBundle/Resources/public/entity/index/ts/src/edit.ext-module';
 import {EditExtModule as EntitiesClientEditExtModule} from '../../../../../../../EntitiesBundle/Resources/public/client/index/ts/src/edit.ext-module';
+import {EditExtModule as EntitiesSupplierEditExtModule} from '../../../../../../../EntitiesBundle/Resources/public/supplier/index/ts/src/edit.ext-module';
+import {EditExtModule as CommonPlaceEditExtModule} from '../../../../../../../CommonBundle/Resources/public/place/index/ts/src/edit.ext-module';
+import {EditExtModule as CommonCountryEditExtModule} from '../../../../../../../CommonBundle/Resources/public/country/index/ts/src/edit.ext-module';
 let autoCompleteProviders = {
     entityObj: {
         urlConf: (Helper.getAppVar('route') + 'entities/entity/conf'),
@@ -57,6 +61,56 @@ let autoCompleteProviders = {
                 {provide: 'FormServiceProvider', useValue: {}}
             ]
         }
+    },
+    supplierObj: {
+        urlConf: (Helper.getAppVar('route') + 'entities/supplier/conf'),
+        control: 'edit',
+        popups: {
+            module: EntitiesSupplierEditExtModule,
+            component: 'EditComponent',
+            providers: [
+                {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Supplier'})},
+                FormService,
+                // Reset FormServiceProvider to use DataServiceProvider as default values
+                {provide: 'FormServiceProvider', useValue: {}}
+            ]
+        }
+    },
+    placeObj: {
+        urlConf: (Helper.getAppVar('route') + 'booking/place/conf'),
+        control: 'edit',
+        popups: {
+            module: CommonPlaceEditExtModule,
+            component: 'EditComponent',
+            providers: [
+                {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Place'})},
+                FormService
+            ]
+        }
+    },
+    placeToObj: {
+        urlConf: (Helper.getAppVar('route') + 'booking/place/conf'),
+        control: 'edit',
+        popups: {
+            module: CommonPlaceEditExtModule,
+            component: 'EditComponent',
+            providers: [
+                {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Place'})},
+                FormService
+            ]
+        }
+    },
+    countryObj: {
+        urlConf: (Helper.getAppVar('route') + 'booking/country/conf'),
+        control: 'edit',
+        popups: {
+            module: CommonCountryEditExtModule,
+            component: 'EditComponent',
+            providers: [
+                {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Country'})},
+                FormService
+            ]
+        }
     }
 };
 
@@ -70,7 +124,8 @@ let autoCompleteProviders = {
         AppBasicsExtModule,
         SearchModule,
         SearchPaginationModule,
-        ExpanderModule
+        ExpanderModule,
+        LegendExtModule
     ],
     declarations: [
         MainComponent
@@ -87,6 +142,7 @@ let autoCompleteProviders = {
         {provide: 'DataServiceProvider', useValue: Helper.getDataServiceProvider(_app.conf)},
         {provide: 'Provider', useValue: Helper.getDataBoxProvider(_app.conf)},
         {provide: 'ActionsServiceProvider', useValue: Helper.getActionsServiceProvider(_app.conf)},
+        {provide: 'LegendProvider', useValue: Helper.getLegendProvider(_app.conf)},
         {provide: 'AutoCompleteProviders', useValue: autoCompleteProviders}, // User by add and edit
         {provide: 'Popups', useValue: {
             'add': {

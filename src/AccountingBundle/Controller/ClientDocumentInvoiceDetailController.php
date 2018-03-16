@@ -9,6 +9,12 @@ use Symfony\Component\HttpFoundation\Request;
 class ClientDocumentInvoiceDetailController extends BaseDocumentInvoiceDetailController
 {
     /**
+     * Get label/title to display child in parent
+     * @return mixed
+     */
+    static function getLabel() { return 'Detail'; }
+
+    /**
      * Defines parent method
      * @return mixed (lowerCamelCase)
      */
@@ -20,10 +26,9 @@ class ClientDocumentInvoiceDetailController extends BaseDocumentInvoiceDetailCon
      * Overrides parent method
      * @param Request $request
      * @param $parents
-     * @param $label (set label when you don't have the route in modules/menus tree)
      * @return $this
      */
-    protected function initChild(Request $request, $parents, $label = 'Detail')
+    protected function initChild(Request $request, $parents)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
@@ -55,7 +60,7 @@ class ClientDocumentInvoiceDetailController extends BaseDocumentInvoiceDetailCon
             )
         );
 
-        parent::initChild($request, $parents, $label);
+        parent::initChild($request, $parents);
 
         // Search
         $this->templateConf['search']['fields'] = array(

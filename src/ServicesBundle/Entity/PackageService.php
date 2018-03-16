@@ -35,6 +35,12 @@ class PackageService extends BaseEntity
      */
     protected $fixedDurationDays;
 
+    /**
+     * @ORM\Column(name="hasGroupingServices", type="boolean", nullable=true, unique=false, options={"default":0, "comment":"Enable grouping of services on booking"})
+     *
+     * Determines if the services of the package should be grouped on booking
+     */
+    protected $hasGroupingServices;
 
     ////////////////////////////////// MARKETING //////////////////////////////////
 
@@ -107,6 +113,25 @@ class PackageService extends BaseEntity
         return $this->fixedDurationDays;
     }
 
+    /**
+     * Set hasGroupingServices
+     * @param $hasGroupingServices
+     * @return $this
+     */
+    public function setHasGroupingServices($hasGroupingServices)
+    {
+        $this->hasGroupingServices = $hasGroupingServices;
+        return $this;
+    }
+
+    /**
+     * Get hasGroupingServices
+     * @return \DateTime
+     */
+    public function getHasGroupingServices()
+    {
+        return $this->hasGroupingServices;
+    }
 
     ////////////////////////////////// MARKETING //////////////////////////////////
 

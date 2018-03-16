@@ -14,6 +14,11 @@ export {FormProvider}
 })
 export class EditComponent extends PriceFormPopupComponent
 {
+    // To get notify about changes over the objects
+    protected _onObjectsChangeSubscription: any;
+    // Control if there are changes to refresh parents
+    protected _hasObjectsChanges: boolean = false;
+
     constructor(
         elementRef: ElementRef,
         renderer: Renderer,
@@ -44,6 +49,9 @@ export class EditComponent extends PriceFormPopupComponent
             formObj['quantity'] = parentObj['quantity'];
             formObj['marginMethod'] = 'MARKUP';
         }
+
+        this._onObjectsChangeSubscription = this._dataService.getOnObjectsChangeEmitter()
+            .subscribe(object => {this._hasObjectsChanges = true;});
     }
 
     /**
@@ -160,5 +168,20 @@ export class EditComponent extends PriceFormPopupComponent
         ).toFixed(this.decimalConf.total.value);
 
         return this;
+    }
+
+    /**
+     * Lifecycle callback
+     */
+    ngOnDestroy()
+    {
+        this._onObjectsChangeSubscription.unsubscribe();
+
+        // If object has no changes, popup was open and closed without save the object,
+        // so doesn't make sense refresh the objects
+        if (this._hasObjectsChanges && this._parentDataService.getObject()['grouperBookingServicePriceObj']) {
+            // Refresh objects to keep grouper object updated
+            this._dataService.refresh();
+        }
     }
 }

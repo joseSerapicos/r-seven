@@ -35,21 +35,31 @@
         <parameter key="liip_imagine.filter.loader.resize.class">Liip\ImagineBundle\Imagine\Filter\Loader\ResizeFilterLoader</parameter>
         <parameter key="liip_imagine.filter.loader.thumbnail.class">Liip\ImagineBundle\Imagine\Filter\Loader\ThumbnailFilterLoader</parameter>
         <parameter key="liip_imagine.filter.loader.crop.class">Liip\ImagineBundle\Imagine\Filter\Loader\CropFilterLoader</parameter>
+        <parameter key="liip_imagine.filter.loader.grayscale.class">Liip\ImagineBundle\Imagine\Filter\Loader\GrayscaleFilterLoader</parameter>
         <parameter key="liip_imagine.filter.loader.paste.class">Liip\ImagineBundle\Imagine\Filter\Loader\PasteFilterLoader</parameter>
         <parameter key="liip_imagine.filter.loader.watermark.class">Liip\ImagineBundle\Imagine\Filter\Loader\WatermarkFilterLoader</parameter>
         <parameter key="liip_imagine.filter.loader.strip.class">Liip\ImagineBundle\Imagine\Filter\Loader\StripFilterLoader</parameter>
         <parameter key="liip_imagine.filter.loader.background.class">Liip\ImagineBundle\Imagine\Filter\Loader\BackgroundFilterLoader</parameter>
+        <parameter key="liip_imagine.filter.loader.scale.class">Liip\ImagineBundle\Imagine\Filter\Loader\ScaleFilterLoader</parameter>
         <parameter key="liip_imagine.filter.loader.upscale.class">Liip\ImagineBundle\Imagine\Filter\Loader\UpscaleFilterLoader</parameter>
         <parameter key="liip_imagine.filter.loader.downscale.class">Liip\ImagineBundle\Imagine\Filter\Loader\DownscaleFilterLoader</parameter>
         <parameter key="liip_imagine.filter.loader.auto_rotate.class">Liip\ImagineBundle\Imagine\Filter\Loader\AutoRotateFilterLoader</parameter>
         <parameter key="liip_imagine.filter.loader.rotate.class">Liip\ImagineBundle\Imagine\Filter\Loader\RotateFilterLoader</parameter>
+        <parameter key="liip_imagine.filter.loader.flip.class">Liip\ImagineBundle\Imagine\Filter\Loader\FlipFilterLoader</parameter>
         <parameter key="liip_imagine.filter.loader.interlace.class">Liip\ImagineBundle\Imagine\Filter\Loader\InterlaceFilterLoader</parameter>
+        <parameter key="liip_imagine.filter.loader.resample.class">Liip\ImagineBundle\Imagine\Filter\Loader\ResampleFilterLoader</parameter>
 
         <!-- Data loaders' classes -->
 
         <parameter key="liip_imagine.binary.loader.filesystem.class">Liip\ImagineBundle\Binary\Loader\FileSystemLoader</parameter>
         <parameter key="liip_imagine.binary.loader.stream.class">Liip\ImagineBundle\Binary\Loader\StreamLoader</parameter>
         <parameter key="liip_imagine.binary.loader.flysystem.class">Liip\ImagineBundle\Binary\Loader\FlysystemLoader</parameter>
+        <parameter key="liip_imagine.binary.loader.chain.class">Liip\ImagineBundle\Binary\Loader\ChainLoader</parameter>
+
+        <!-- Data loader loaders' classes -->
+
+        <parameter key="liip_imagine.binary.locator.filesystem.class">Liip\ImagineBundle\Binary\Locator\FileSystemLocator</parameter>
+        <parameter key="liip_imagine.binary.locator.filesystem_insecure.class">Liip\ImagineBundle\Binary\Locator\FileSystemInsecureLocator</parameter>
 
         <!-- Cache resolvers' classes -->
 
@@ -57,6 +67,7 @@
         <parameter key="liip_imagine.cache.resolver.no_cache_web_path.class">Liip\ImagineBundle\Imagine\Cache\Resolver\NoCacheWebPathResolver</parameter>
         <parameter key="liip_imagine.cache.resolver.aws_s3.class">Liip\ImagineBundle\Imagine\Cache\Resolver\AwsS3Resolver</parameter>
         <parameter key="liip_imagine.cache.resolver.cache.class">Liip\ImagineBundle\Imagine\Cache\Resolver\CacheResolver</parameter>
+        <parameter key="liip_imagine.cache.resolver.flysystem.class">Liip\ImagineBundle\Imagine\Cache\Resolver\FlysystemResolver</parameter>
         <parameter key="liip_imagine.cache.resolver.proxy.class">Liip\ImagineBundle\Imagine\Cache\Resolver\ProxyResolver</parameter>
 
         <!-- Form types -->
@@ -68,9 +79,16 @@
         <!-- Post processors' classes -->
         <parameter key="liip_imagine.filter.post_processor.jpegoptim.class">Liip\ImagineBundle\Imagine\Filter\PostProcessor\JpegOptimPostProcessor</parameter>
         <parameter key="liip_imagine.jpegoptim.binary">/usr/bin/jpegoptim</parameter>
+        <parameter key="liip_imagine.jpegoptim.stripAll">true</parameter>
+        <parameter key="liip_imagine.jpegoptim.max">null</parameter>
+        <parameter key="liip_imagine.jpegoptim.progressive">true</parameter>
+        <parameter key="liip_imagine.jpegoptim.tempDir">null</parameter>
 
         <parameter key="liip_imagine.filter.post_processor.optipng.class">Liip\ImagineBundle\Imagine\Filter\PostProcessor\OptiPngPostProcessor</parameter>
         <parameter key="liip_imagine.optipng.binary">/usr/bin/optipng</parameter>
+        <parameter key="liip_imagine.optipng.level">7</parameter>
+        <parameter key="liip_imagine.optipng.stripAll">true</parameter>
+        <parameter key="liip_imagine.optipng.tempDir">null</parameter>
 
         <parameter key="liip_imagine.filter.post_processor.pngquant.class">Liip\ImagineBundle\Imagine\Filter\PostProcessor\PngquantPostProcessor</parameter>
         <parameter key="liip_imagine.pngquant.binary">/usr/bin/pngquant</parameter>
@@ -117,6 +135,7 @@
             <argument type="service" id="liip_imagine.cache.manager" />
             <argument type="service" id="liip_imagine.cache.signer" />
             <argument type="service" id="logger" on-invalid="ignore" />
+            <argument>%liip_imagine.controller.redirect_response_code%</argument>
         </service>
 
         <service id="liip_imagine.meta_data.reader" class="%liip_imagine.meta_data.reader.class%" public="false" />
@@ -161,6 +180,10 @@
             <tag name="liip_imagine.filter.loader" loader="crop" />
         </service>
 
+        <service id="liip_imagine.filter.loader.grayscale" class="%liip_imagine.filter.loader.grayscale.class%">
+            <tag name="liip_imagine.filter.loader" loader="grayscale" />
+        </service>
+
         <service id="liip_imagine.filter.loader.paste" class="%liip_imagine.filter.loader.paste.class%">
             <tag name="liip_imagine.filter.loader" loader="paste" />
             <argument type="service" id="liip_imagine" />
@@ -182,6 +205,10 @@
             <tag name="liip_imagine.filter.loader" loader="strip" />
         </service>
 
+        <service id="liip_imagine.filter.loader.scale" class="%liip_imagine.filter.loader.scale.class%">
+            <tag name="liip_imagine.filter.loader" loader="scale" />
+        </service>
+
         <service id="liip_imagine.filter.loader.upscale" class="%liip_imagine.filter.loader.upscale.class%">
             <tag name="liip_imagine.filter.loader" loader="upscale" />
         </service>
@@ -198,8 +225,17 @@
             <tag name="liip_imagine.filter.loader" loader="rotate" />
         </service>
 
+        <service id="liip_imagine.filter.loader.flip" class="%liip_imagine.filter.loader.flip.class%">
+            <tag name="liip_imagine.filter.loader" loader="flip" />
+        </service>
+
         <service id="liip_imagine.filter.loader.interlace" class="%liip_imagine.filter.loader.interlace.class%">
             <tag name="liip_imagine.filter.loader" loader="interlace" />
+        </service>
+
+        <service id="liip_imagine.filter.loader.resample" class="%liip_imagine.filter.loader.resample.class%">
+            <argument type="service" id="liip_imagine" />
+            <tag name="liip_imagine.filter.loader" loader="resample" />
         </service>
 
         <!-- Data loaders -->
@@ -208,16 +244,33 @@
             <argument type="service" id="liip_imagine.mime_type_guesser" />
             <argument type="service" id="liip_imagine.extension_guesser" />
             <argument><!-- will be injected by FileSystemLoaderFactory --></argument>
+            <argument><!-- will be injected by FileSystemLoaderFactory --></argument>
         </service>
 
         <service id="liip_imagine.binary.loader.prototype.stream" class="%liip_imagine.binary.loader.stream.class%">
             <argument><!-- will be injected by StreamLoaderFactory --></argument>
             <argument><!-- will be injected by StreamLoaderFactory --></argument>
         </service>
-        
+
         <service id="liip_imagine.binary.loader.prototype.flysystem" class="%liip_imagine.binary.loader.flysystem.class%" abstract="true">
             <argument type="service" id="liip_imagine.extension_guesser" />
             <argument><!-- will be injected by FlysystemLoaderFactory --></argument>
+        </service>
+
+        <service id="liip_imagine.binary.loader.prototype.chain" class="%liip_imagine.binary.loader.chain.class%" abstract="true">
+            <argument><!-- will be injected by ChainLoaderFactory --></argument>
+        </service>
+
+        <!-- Data loader locators -->
+
+        <service id="liip_imagine.binary.locator.filesystem" class="%liip_imagine.binary.locator.filesystem.class%" public="false">
+            <argument><!-- will be injected by FileSystemLoaderFactory --></argument>
+            <tag name="liip_imagine.binary.locator" shared="false" />
+        </service>
+
+        <service id="liip_imagine.binary.locator.filesystem_insecure" class="%liip_imagine.binary.locator.filesystem_insecure.class%" public="false">
+            <argument><!-- will be injected by FileSystemLoaderFactory --></argument>
+            <tag name="liip_imagine.binary.locator" shared="false" />
         </service>
 
         <!-- Cache resolver -->
@@ -238,6 +291,14 @@
         </service>
 
         <service id="liip_imagine.cache.resolver.prototype.cache" class="%liip_imagine.cache.resolver.cache.class%" public="true" abstract="true">
+            <argument><!-- will be injected by a ResolverFactory --></argument>
+            <argument><!-- will be injected by a ResolverFactory --></argument>
+        </service>
+
+        <service id="liip_imagine.cache.resolver.prototype.flysystem" class="%liip_imagine.cache.resolver.flysystem.class%" public="true" abstract="true">
+            <argument><!-- will be injected by a ResolverFactory --></argument>
+            <argument type="service" id="router.request_context" />
+            <argument><!-- will be injected by a ResolverFactory --></argument>
             <argument><!-- will be injected by a ResolverFactory --></argument>
             <argument><!-- will be injected by a ResolverFactory --></argument>
         </service>
@@ -281,10 +342,17 @@
         <!-- Post processors -->
         <service id="liip_imagine.filter.post_processor.jpegoptim" class="%liip_imagine.filter.post_processor.jpegoptim.class%">
             <argument>%liip_imagine.jpegoptim.binary%</argument>
+            <argument>%liip_imagine.jpegoptim.stripAll%</argument>
+            <argument>%liip_imagine.jpegoptim.max%</argument>
+            <argument>%liip_imagine.jpegoptim.progressive%</argument>
+            <argument>%liip_imagine.jpegoptim.tempDir%</argument>
             <tag name="liip_imagine.filter.post_processor" post_processor="jpegoptim" />
         </service>
         <service id="liip_imagine.filter.post_processor.optipng" class="%liip_imagine.filter.post_processor.optipng.class%">
             <argument>%liip_imagine.optipng.binary%</argument>
+            <argument>%liip_imagine.optipng.level%</argument>
+            <argument>%liip_imagine.optipng.stripAll%</argument>
+            <argument>%liip_imagine.optipng.tempDir%</argument>
             <tag name="liip_imagine.filter.post_processor" post_processor="optipng" />
         </service>
         <service id="liip_imagine.filter.post_processor.pngquant" class="%liip_imagine.filter.post_processor.pngquant.class%">

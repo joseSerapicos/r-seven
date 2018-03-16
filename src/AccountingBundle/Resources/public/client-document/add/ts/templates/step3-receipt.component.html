@@ -6,6 +6,11 @@
     
     <div class="row">
         <div class="col-sm-6">
+            <img *ngIf="_dataService.getLocalDataAttr('storeLogo')"
+                 height="96"
+                 alt="logo"
+                 class="m-b-md"
+                 [src]="_helperService.getUploadWebPath(_dataService.getLocalDataAttr('storeLogo'), 'resize_96')">
             <address>
                 <strong>{{_formService.getObject().storeLegalName}}</strong><br>
                 <ng-template
@@ -17,8 +22,7 @@
                     ><span>{{_formService.getObject().storePostCode}} {{_formService.getObject().storeCity}}</span><br></ng-template><ng-template
                     [ngIf]="_formService.getObject().storeRegion"
                     ><span>{{_formService.getObject().storeRegion}}</span><br></ng-template>            </address>
-            <ng-template
-                ngFor let-field [ngForOf]="_dataService.getProviderAttr('localData')['storeInfo']"><span
+            <ng-template ngFor let-field [ngForOf]="_dataService.getLocalDataAttr('storeInfo')"><span
                     [innerHtml]="field"></span><br></ng-template>
             <p class="m-t-sm">Tax Number: {{_formService.getObject().storeTaxNumber}}</p>
         </div>
@@ -106,11 +110,11 @@
         </tr>        </tbody>
     </table>
 </div></div>
-    <div class="well m-t">
-        It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less
-    </div>
+    <div *ngIf="_dataService.getLocalDataAttr('documentInfo') && _dataService.getLocalDataAttr('documentInfo')['footer']"
+         class="well m-t"
+         [innerHTML]="_dataService.getLocalDataAttr('documentInfo')['footer']"></div>
 
 
     
 
-    <input type="hidden" id="form__token" name="form[_token]" value="M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso" /></form>
+    <input type="hidden" id="form__token" name="form[_token]" value="y_X653isBIPUjhTqIFoEMS38F6y1pjJHhEkNvonaMMU" /></form>

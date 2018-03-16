@@ -77,7 +77,9 @@ class EntityRepository extends BaseEntityRepository
             'taxNumber' => array('label' => 'Tax Number', 'type' => 'text', 'acl' => 'edit'),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true),
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            ),
             // To join with user to avoid that users are retrieved with the remaining entities
             'userObj' => array('type' => 'object', 'acl' => 'read',
                 'typeDetail' => array(

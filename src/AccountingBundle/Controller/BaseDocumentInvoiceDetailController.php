@@ -4,7 +4,7 @@ namespace AccountingBundle\Controller;
 
 use AppBundle\Controller\BaseEntityChildController;
 use AppBundle\Controller\BaseEntityController;
-use BookingBundle\Controller\BaseBookingServicePriceController;
+use BookingBundle\Controller\BookingServicePriceController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -314,11 +314,8 @@ abstract class BaseDocumentInvoiceDetailController extends BaseEntityChildContro
         $vatCodeObj = $object->getVatCodeObj();
         $vatCodePercentage = $vatCodeObj->getPercentage();
         $quantity = $object->getQuantity();
-        $user_value = $formData['user_value'];
-        echo("Fix this values and test with: 10 12,3 25");
-        var_dump($formData);exit;
-        $isVatIncluded = (!empty($formData['isVatIncluded']));
-        $totalUnitDetail = $priceService->getTotalUnitDetail($user_value, $vatCodePercentage, $isVatIncluded);
+        $value = $formData['value'];
+        $totalUnitDetail = $priceService->getTotalUnitDetail($value, $vatCodePercentage, false);
         $totalUnit = round($totalUnitDetail['value'] + $totalUnitDetail['vatValue'], 2);
         $totalVat = $priceService->calcTotal($totalUnitDetail['vatValue'], $quantity);
         // Do not use "subTotal" nor "totalVat" to get the "total", because this values are already rounded,
@@ -329,20 +326,18 @@ abstract class BaseDocumentInvoiceDetailController extends BaseEntityChildContro
         // rounded does not match with the correct total, given that this values are rounded to 2 decimals
         // and lost precision, so in this way we keep the calculus with coherence giving preference to keep
         // "totalVat" untouched (legal values).
-        $subTotal = round($total - $totalVat, 2);
+        $subTotal = $priceService->calcSubTotal($total, $totalVat);
 
         // Check totals (if totals are right,
         // we assume that unit values that are used to calc the totals are also right, so does not be checked)
         $errorMessage = null;
-        if (($documentObj->getTotal() - $formData['oldValues']['total'] + $total) <= 0) {
-            $errorMessage = 'Document value should be greater than zero.';
-        } elseif (
-            ($documentObj->getTotal() - $documentObj->getRemainSettlement()) >
-            ($documentObj->getTotal() - $formData['oldValues']['total'] + $total)
-        ) {
+        $newDocumentTotal = ($documentObj->getTotal() - $formData['oldValues']['total'] + $total);
+        if ($newDocumentTotal <= 0) {
+            $errorMessage = 'Document value ('.$newDocumentTotal.') should be greater than zero.';
+        } elseif (($documentObj->getTotal() - $documentObj->getRemainSettlement()) > $newDocumentTotal) {
             $errorMessage = (
                 'Document value should be greater than the settlement ('
-                . ($documentObj->getTotal() - $documentObj->getRemainSettlement())
+                . ($newDocumentTotal - $documentObj->getRemainSettlement())
                 . ').<br/> Otherwise you need to cancel the settlement before.'
             );
         } elseif (!$priceService->isEqual($formData['subTotal'], $subTotal)) {
@@ -527,13 +522,11 @@ abstract class BaseDocumentInvoiceDetailController extends BaseEntityChildContro
     }
 
     /**
-     * Calc object values from total
+     * Set object values from not invoice value
      * @param $controller
      * @param $object (this object is an array with the object properties as entries)
      */
-    static function calcObjectValuesFromTotal($controller, &$object) {
-        $priceService = $controller->get('app.service.price');
-
+    static function setObjectValuesFromNotInvoicedValue($controller, &$object) {
         // Get VAT code. VAT code can be changed between the service creation time and now, so we calculate the VAT again.
         $serviceObj = $controller->getRepositoryService('Service', 'ServicesBundle')
             ->execute(
@@ -544,14 +537,28 @@ abstract class BaseDocumentInvoiceDetailController extends BaseEntityChildContro
         $object['vatCode_name'] = $vatCodeObj->getName();
         $object['vatCode_percentage'] = $vatCodeObj->getPercentage();
 
-        $totalUnitValue = $priceService->calcUnitFromTotal($object['total'], $object['quantity']);
-        $values = $priceService->getTotalUnitDetail($totalUnitValue, $object['vatCode_percentage'], true);
-        $object['value'] = $values['value'];
-        $object['vatValue'] = $values['vatValue'];
-        echo("Fix this values and test with: 10 12,3 25");
-        var_dump($object);exit;
+        // Set values
+        $priceService = $controller->get('app.service.price');
+        // Check if this entry has previous rectifications
+        if (!$priceService->isEqual($object['notInvoicedTotal'], $object['total'])) {
+            // This entry has already invoices associated, so we need to determine the individual values
+            // from the total not invoiced value
+
+            // Normalize quantity (can be returned a negative value)
+            $object['quantity'] = (($object['notInvoicedQuantity'] > 0) ? $object['notInvoicedQuantity'] : 1);
+
+            $totalUnitValue = $priceService->calcUnitFromTotal($object['notInvoicedTotal'], $object['quantity']);
+            $totalUnitValueDetail = $priceService->getTotalUnitDetail($totalUnitValue, $object['vatCode_percentage'], true);
+            $object['value'] = $totalUnitValueDetail['value'];
+            $object['vatValue'] = $totalUnitValueDetail['vatValue'];
+        } else {
+            // Recalculate VAT code
+            $totalUnitValueDetail = $priceService->getTotalUnitDetail($object['value'], $object['vatCode_percentage'], false);
+            $object['vatValue'] = $totalUnitValueDetail['vatValue'];
+        }
+
         $object['totalUnit'] = round($object['value'] + $object['vatValue'], 2);
-        $object['totalVat'] = $priceService->calcTotal($values['vatValue'], $object['quantity']);
+        $object['totalVat'] = $priceService->calcTotal($object['vatValue'], $object['quantity']);
         // Do not use "subTotal" nor "totalVat" to get the "total", because this values are already rounded,
         // and in some cases the sum of 2 rounded values cause inquiries.
         // Before multiply round the sum to get a coherent total unit value
@@ -578,7 +585,7 @@ abstract class BaseDocumentInvoiceDetailController extends BaseEntityChildContro
         $entityContextUC = $controller->getEntityContext(true);
 
         // Get objects
-        $bookingServicePriceArr = BaseBookingServicePriceController
+        $bookingServicePriceArr = BookingServicePriceController
             ::getObjectsBySearchForInvoice($controller, $entityContext, $options);
 
         $objectArr = array();

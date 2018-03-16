@@ -93,6 +93,7 @@ export class BookingServiceEditComponent extends FormPopupExtensionComponent
                         ActionsService,
                         {provide: 'DataServiceProvider', useValue: that._helperService.getDataServiceProvider(data)},
                         {provide: 'ActionsServiceProvider', useValue: that._helperService.getActionsServiceProvider(data)},
+                        {provide: 'LegendProvider', useValue: that._helperService.getLegendProvider(data)},
                         {provide: 'Provider', useValue: that._helperService.getDataBoxProvider(data)},
                         {provide: 'Popups', useValue: {
                             module: that._provider['modules']['bookingServicePriceEdit']['module'],
@@ -143,7 +144,11 @@ export class BookingServiceEditComponent extends FormPopupExtensionComponent
         // so doesn't make sense refresh the objects
         if ((this._object != this._dataService.getObject()) || this._hasObjectsChanges) {
             // Update object and parent object
-            this._dataService.refreshObject();
+            if (this._formService.getObject()['grouperBookingServiceObj']) {
+                this._dataService.refresh(); // Refresh all object to refresh te own and the grouper object
+            } else {
+                this._dataService.refreshObject(); // Refresh only de own object
+            }
             this._parentDataService.refreshObject();
         }
     }

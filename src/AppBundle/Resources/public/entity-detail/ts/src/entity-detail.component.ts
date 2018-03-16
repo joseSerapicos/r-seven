@@ -19,7 +19,6 @@ export class EntityDetailComponent extends BaseExtensionComponent
 {
     protected _object: any;
     protected _fields: any;
-    protected _fieldsMetadata: any;
     protected _onObjectChangeSubscription: any; // To get notify about changes on object over the service
 
     constructor(
@@ -43,8 +42,7 @@ export class EntityDetailComponent extends BaseExtensionComponent
         this._modalService.init(this._viewContainerRef);
 
         // Get fields from DataService
-        this._fields = (this._dataService.getFields('view') || []);
-        this._fieldsMetadata = (this._dataService.getFields('metadata') || []);
+        this._fields = (this._dataService.getProviderAttr('fields') || {});
 
         this._dataService.setObject(this._dataService.getProviderAttr('object'));
 

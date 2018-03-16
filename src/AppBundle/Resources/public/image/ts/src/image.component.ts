@@ -24,11 +24,11 @@ export class ImageComponent extends DataBoxComponent
         @Inject('Provider') provider: ImageProvider,
         @Inject('DataService') dataService: any,
         tasksLoaderManagerService: TasksLoaderManagerService,
+        @Inject('HelperService') helperService: any,
         actionsService: ActionsService,
         modalService: ModalService,
         @Inject('Popups') popups: Popups | Popup,
-        injector: Injector,
-        @Inject('HelperService') protected _helperService: any
+        injector: Injector
     ) {
         // Call parent
         super(
@@ -37,6 +37,7 @@ export class ImageComponent extends DataBoxComponent
             provider,
             dataService,
             tasksLoaderManagerService,
+            helperService,
             actionsService,
             modalService,
             popups,
@@ -55,7 +56,7 @@ export class ImageComponent extends DataBoxComponent
             firstPartialPath = partialPath.substring(0, partialPath.lastIndexOf(".")),
             lastPartialPath = partialPath.substring(partialPath.lastIndexOf("."), partialPath.length);
 
-        return (firstPartialPath+'.thumbnail-128'+lastPartialPath);
+        return (firstPartialPath+'.thumbnail_128'+lastPartialPath);
     }
 
     /**
@@ -104,7 +105,7 @@ export class ImageComponent extends DataBoxComponent
             popup: Popup = {
                 // Needs to be provided by provider to set the correct "templateUrl"
                 module: this.getProviderAttr('imageCropPopupModule'),
-                component: 'ImageCropPopupComponent',
+                component: this.getProviderAttr('imageCropPopupComponent'),
                 providers: providers
             };
 

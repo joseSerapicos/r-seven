@@ -1,14 +1,23 @@
 <?php
 
+/*
+ * This file is part of the `liip/LiipImagineBundle` project.
+ *
+ * (c) https://github.com/liip/LiipImagineBundle/graphs/contributors
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
+ */
+
 namespace Liip\ImagineBundle\Controller;
 
 use Imagine\Exception\RuntimeException;
+use Liip\ImagineBundle\Exception\Binary\Loader\NotLoadableException;
 use Liip\ImagineBundle\Exception\Imagine\Filter\NonExistingFilterException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
+use Liip\ImagineBundle\Imagine\Cache\SignerInterface;
 use Liip\ImagineBundle\Imagine\Data\DataManager;
 use Liip\ImagineBundle\Imagine\Filter\FilterManager;
-use Liip\ImagineBundle\Exception\Binary\Loader\NotLoadableException;
-use Liip\ImagineBundle\Imagine\Cache\SignerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,23 +52,32 @@ class ImagineController
     protected $logger;
 
     /**
-     * @param DataManager     $dataManager
-     * @param FilterManager   $filterManager
-     * @param CacheManager    $cacheManager
-     * @param SignerInterface $signer
+     * @var int
+     */
+    protected $redirectResponseCode;
+
+    /**
+     * @param DataManager          $dataManager
+     * @param FilterManager        $filterManager
+     * @param CacheManager         $cacheManager
+     * @param SignerInterface      $signer
+     * @param LoggerInterface|null $logger
+     * @param int                  $redirectResponseCode
      */
     public function __construct(
         DataManager $dataManager,
         FilterManager $filterManager,
         CacheManager $cacheManager,
         SignerInterface $signer,
-        LoggerInterface $logger = null
+        LoggerInterface $logger = null,
+        $redirectResponseCode = 301
     ) {
         $this->dataManager = $dataManager;
         $this->filterManager = $filterManager;
         $this->cacheManager = $cacheManager;
         $this->signer = $signer;
         $this->logger = $logger;
+        $this->redirectResponseCode = $redirectResponseCode;
     }
 
     /**
@@ -100,7 +118,7 @@ class ImagineController
                 );
             }
 
-            return new RedirectResponse($this->cacheManager->resolve($path, $filter, $resolver), 301);
+            return new RedirectResponse($this->cacheManager->resolve($path, $filter, $resolver), $this->redirectResponseCode);
         } catch (NonExistingFilterException $e) {
             $message = sprintf('Could not locate filter "%s" for path "%s". Message was "%s"', $filter, $path, $e->getMessage());
 
@@ -168,7 +186,7 @@ class ImagineController
                 $resolver
             );
 
-            return new RedirectResponse($this->cacheManager->resolve($rcPath, $filter, $resolver), 301);
+            return new RedirectResponse($this->cacheManager->resolve($rcPath, $filter, $resolver), $this->redirectResponseCode);
         } catch (NonExistingFilterException $e) {
             $message = sprintf('Could not locate filter "%s" for path "%s". Message was "%s"', $filter, $hash.'/'.$path, $e->getMessage());
 

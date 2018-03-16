@@ -15,7 +15,8 @@ export class EditComponent extends FormPopupExtensionComponent
         renderer: Renderer,
         @Inject('Provider') provider: FormProvider,
         formService: FormService,
-        @Inject('DataService') dataService: any
+        @Inject('DataService') dataService: any,
+        @Inject('HelperService') protected _helperService: any
     ) {
         super();
         super.initFormPopupExtensionComponent(
@@ -24,6 +25,30 @@ export class EditComponent extends FormPopupExtensionComponent
             provider,
             formService,
             dataService
+        );
+    }
+
+    /**
+     * onServiceChange
+     * @param value
+     */
+    protected onServiceChange(value: string): void
+    {
+        let that = this;
+
+        this._dataService.runAction(
+            (this._helperService.getAppVar('route')
+                + 'services/regular-service/get-description/'
+                + value
+            )
+        ).then(
+            data => {
+                if (data['localData'] && data['localData']['data']) {
+                    that._formService.getObject()['description']
+                        = (data['localData']['data']['description'] || null);
+                }
+            },
+            errors => { console.log(errors); return; }
         );
     }
 }

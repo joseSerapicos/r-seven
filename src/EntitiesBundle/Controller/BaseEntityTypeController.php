@@ -3,6 +3,7 @@
 namespace EntitiesBundle\Controller;
 
 use AppBundle\Controller\BaseEntityController;
+use EntitiesBundle\Entity\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,6 +17,88 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 abstract class BaseEntityTypeController extends BaseEntityController
 {
+    /**
+     * DEFINE ROUTE HERE
+     *
+     * Action to edit/add objects using the form
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function editAction(Request $request, $id)
+    {
+        // Set configuration
+        $this->flags['hasForm'] = true;
+        $this->init($request);
+
+        // Get object
+        $obj = $this->getObject($id);
+
+        // Set associated Entity object manually, because form handles with Entity object only as embed
+        $data = $this->getRequestData($request);
+        if (isset($data['form']) && isset($data['form']['selectEntityObj'])) {
+            $selectEntityId = $data['form']['selectEntityObj'];
+            $selectEntityObj = null;
+
+            if (!empty($selectEntityId)) {
+                $selectEntityObj = $this->getRepositoryService('Entity', 'EntitiesBundle')
+                    ->execute('findOneById', array($data['form']['selectEntityObj']));
+            }
+
+            $obj->setSelectEntityObj($selectEntityObj);
+        }
+
+        // Build form
+        $form = $this->createForm($this->localConf['formTypeClass'], $obj);
+
+        // Handle request
+        $form->handleRequest($request);
+
+        // Check if is submitted
+        if($form->isSubmitted()) {
+            if ($this->preSaveObject($obj, $data['form'])) {
+                $this->saveForm($form, $obj);
+            }
+            // This method is executed independent of the success in save
+            // (check the $response['status'] if you need this information)
+            $this->postSaveObject($obj, $data['form']);
+            return $this->getResponse(true);
+        }
+
+        // Render form
+        return $this->render($this->localConf['templates']['edit'], array(
+            '_conf' => $this->templateConf,
+            '_form' => $form->createView()
+        ));
+    }
+
+    /**
+     * DEFINE ROUTE HERE
+     *
+     * Action to change associated Entity for preview
+     * @param Request $request
+     * @param $entity
+     * @param $id
+     * @return mixed
+     */
+    public function changeEntityAction(Request $request, $entity, $id)
+    {
+        $this->init($request);
+
+        // Get object
+        $obj = $this->getObject($id);
+
+        $selectEntityObj = $this->getRepositoryService('Entity', 'EntitiesBundle')
+            ->execute('findOneById', array($entity));
+
+        $obj->setSelectEntityObj($selectEntityObj);
+
+        $this->responseConf['object'] = $this->normalizeObject($obj);
+        // Add session storage flag, because this is a object simulation, and it has the same behavior
+        $this->responseConf['object']['_isSessionStorage'] = true;
+        return $this->getResponse(true);
+    }
+
     /**
      * Overrides parent method
      * @return mixed
@@ -66,5 +149,37 @@ abstract class BaseEntityTypeController extends BaseEntityController
         }
 
         return $search;
+    }
+
+    /**
+     * Save object to database
+     * @param $object
+     * @param $hasFlush (it determines if should be executed the flush method to persist data in database)
+     * @param $addToResponse (determines if object should be added to response)
+     * @return $this
+     */
+    protected function saveObjectToDb(&$object, $hasFlush = true, $addToResponse = false)
+    {
+        // Generates code for Entity Object
+        if ($object) {
+            $entityObj = $object->getEntityObj();
+
+            // Generates default data and code for Entity Object
+            if ($entityObj && !$entityObj->getId()) {
+                parent::setObjectDefaultValues_static($this, $entityObj);
+                $this->get('app.service.code_generator')
+                    ->generateCode(
+                        $this->getRepositoryService('Entity', 'EntitiesBundle'),
+                        'EntitiesBundle:EntitySetting',
+                        'EntitiesBundle:Entity',
+                        $entityObj,
+                        array()
+                    );
+            }
+
+            parent::saveObjectToDb($object, $hasFlush, $addToResponse);
+        }
+
+        return $this;
     }
 }

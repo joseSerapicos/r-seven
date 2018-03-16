@@ -20,12 +20,12 @@ export class Step2ServiceComponent extends DataBoxExtensionComponent
         @Inject('Provider') dataBoxProvider: DataBoxProvider,
         @Inject('DataService') dataService: any,
         tasksLoaderManagerService: TasksLoaderManagerService,
+        @Inject('HelperService') helperService: any,
         actionsService: ActionsService,
         modalService: ModalService,
         @Inject('Popups') popups: Popups | Popup,
         injector: Injector,
         protected _formService: FormService,  // Parent FormService used in view
-        @Inject('HelperService') protected _helperService: any // Used in view
     ) {
         // Call parent
         super();
@@ -35,6 +35,7 @@ export class Step2ServiceComponent extends DataBoxExtensionComponent
             dataBoxProvider,
             dataService,
             tasksLoaderManagerService,
+            helperService,
             actionsService,
             modalService,
             popups,

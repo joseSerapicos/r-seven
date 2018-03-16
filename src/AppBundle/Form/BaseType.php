@@ -138,11 +138,13 @@ abstract class BaseType extends AbstractType
             return $this;
         }
 
+        $acl = $entityRepositoryClass::getFieldMetadata($field, 'acl', $entityMetadata);
+        $isReadOnly = ($acl == 'read');
         $type = $entityRepositoryClass::getFieldMetadata($field, 'type', $entityMetadata);
         $isMapped = $entityRepositoryClass::getFieldMetadata($field, 'isMapped', $entityMetadata);
         $isFakeField = $entityRepositoryClass::getFieldMetadata($field, 'isFakeField', $entityMetadata);
         if ($isMapped === null) { // If not defined, guess it from acl
-            $isMapped = ($entityRepositoryClass::getFieldMetadata($field, 'acl', $entityMetadata) == 'edit');
+            $isMapped = (!$isReadOnly);
         }
         $placeholder = $entityRepositoryClass::getFieldMetadata($field, 'placeholder', $entityMetadata);
         $attr = $entityRepositoryClass::getFieldMetadata($field, 'attr', $entityMetadata);

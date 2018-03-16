@@ -16,7 +16,7 @@ export abstract class BaseExtensionComponent {
     // Constructor vars
     public _elementRef: any; // Public because the children that implement "IForm"
     protected _renderer: any;
-    protected _provider: BaseProvider;
+    protected _provider: BaseProvider | any;
     //protected _dataService: any;
 
 
@@ -33,7 +33,7 @@ export abstract class BaseExtensionComponent {
         // This provider can becomes any provider defined by your child
         // (don't need the "inject" because it's a static class, so will be provider by children components)
         provider: BaseProvider
-        // @TODO: Disabled for, but is here to analise later how dataservice can handle with lazy loader
+        // @TODO: Disabled for now, but is here to analise later how dataservice can handle with lazy loader
         //@Optional() @Inject('DataService') dataService: any = null
     ) {
         // Constructor vars
@@ -85,9 +85,9 @@ export abstract class BaseExtensionComponent {
      * @param attribute
      * @returns any
      */
-    public getLocalDataAttr(attribute: string = null): any
+    public getLocalDataAttr(attribute: string): any
     {
-        return (this._provider['localData']['template'][attribute] || null);
+        return (this._provider['localData'][attribute] || null);
     }
 
     /**

@@ -110,23 +110,12 @@
     
             <div class="col-sm-10">
                                         
-        <select id="form_vatCodeObj" name="form[vatCodeObj]" [(ngModel)]="_formService.getObject().vatCodeObj" formControlName="vatCodeObj" [class.error]="_formService.getErrors().vatCodeObj &amp;&amp; _formService.getErrors().vatCodeObj.length &gt; 0" class="form-control">            <option value="1" >IVA23 (1)</option>            <option value="2" >IVA13 (2)</option></select>
+        <select id="form_vatCodeObj" name="form[vatCodeObj]" (change)="onVatCodeChange($event.target.value)" [(ngModel)]="_formService.getObject().vatCodeObj" formControlName="vatCodeObj" [class.error]="_formService.getErrors().vatCodeObj &amp;&amp; _formService.getErrors().vatCodeObj.length &gt; 0" class="form-control">            <option value="1" >IVA23 (1)</option>            <option value="2" >IVA13 (2)</option></select>
     <input [(ngModel)]="_formService.getObject().vatCodeObj"
            formControlName = vatCodeObj
            required="required"           type="hidden">
 
                 <label class="error" *ngFor="let error of _formService.getErrors().vatCodeObj">{{error}}</label>
-            </div>
-        </div>
-                
-
-                <div class="form-group" >
-
-                        <label class="col-sm-2 control-label" for="form_vatValueCost">VAT Value</label>
-    
-            <div class="col-sm-10">
-                                            <input type="text" id="form_vatValueCost" name="form[vatValueCost]" readonly="readonly" [(ngModel)]="_formService.getObject().vatValueCost" formControlName="vatValueCost" [class.error]="_formService.getErrors().vatValueCost &amp;&amp; _formService.getErrors().vatValueCost.length &gt; 0" class="form-control" />
-                <label class="error" *ngFor="let error of _formService.getErrors().vatValueCost">{{error}}</label>
             </div>
         </div>
                 
@@ -139,6 +128,17 @@
                                             <div class="checkbox">                                        <label><input type="checkbox" id="form_isVatIncluded" name="form[isVatIncluded]" (change)="onIsVatIncludedChange($event.target.checked)" [(ngModel)]="_formService.getObject().isVatIncluded" formControlName="isVatIncluded" [class.error]="_formService.getErrors().isVatIncluded &amp;&amp; _formService.getErrors().isVatIncluded.length &gt; 0" value="1" /> Is vat included</label>
     </div>
                 <label class="error" *ngFor="let error of _formService.getErrors().isVatIncluded">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_vatValueCost">VAT Value</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_vatValueCost" name="form[vatValueCost]" readonly="readonly" [(ngModel)]="_formService.getObject().vatValueCost" formControlName="vatValueCost" [class.error]="_formService.getErrors().vatValueCost &amp;&amp; _formService.getErrors().vatValueCost.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().vatValueCost">{{error}}</label>
             </div>
         </div>
                 
@@ -206,7 +206,7 @@
                                 </div>
         </div>
     </div>                        
-    <input type="hidden" id="form__token" name="form[_token]" value="TcyNUc0ivaNc2Bzv96jY_ov6RXK7ED_ZXIRcdRl89Ag" /></form>
+    <input type="hidden" id="form__token" name="form[_token]" value="3C4y9vpbwIb4-Q_Ejlec5n3gkCxYCLzkD3zDlOl5_Hg" /></form>
                 </div>
             </div>
         </div>

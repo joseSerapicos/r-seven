@@ -21,6 +21,14 @@ export class ActionsService {
         icon: 'fa-copy',
         isEnabled: false
     };
+    protected email = {
+        icon: 'fa-envelope-o',
+        isEnabled: false
+    };
+    protected pdf = {
+        icon: 'fa-file-pdf-o',
+        isEnabled: false
+    };
     protected thumbnail = {
         icon: 'fa-picture-o',
         isEnabled: false
@@ -72,9 +80,12 @@ export class ActionsService {
         icon: 'fa-angle-double-down',
         isEnabled: false
     };
-    
-    protected _headActions: string[] = ['refresh', 'deleteAll', 'add', 'checkAll']; // Default actions for massive objects
-    protected _detailActions: string[] = ['orderUp', 'orderDown', 'detail', 'thumbnail', 'avatar', 'cancel', 'delete', 'copy', 'edit']; // Default actions for single object
+
+    // Default actions for massive objects
+    protected _headActions: string[] = ['refresh', 'deleteAll', 'add', 'checkAll'];
+    // Default actions for single object
+    protected _detailActions: string[] = ['orderUp', 'orderDown', 'detail', 'email', 'pdf', 'thumbnail', 'avatar',
+        'cancel', 'delete', 'copy', 'edit'];
 
     constructor(
         @Inject('ActionsServiceProvider') private _provider: ActionsServiceProvider

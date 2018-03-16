@@ -1,0 +1,56 @@
+<div class="accordion">
+    <div class="panel-group" id="accordion-current-accounts">
+                                                        <div (click)="_navManagerService.navToAction(0)"
+     class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion-current-accounts" href="#panel0-current-accounts">Client Current Account</a>
+        </h4>
+        <div *ngIf="_navManagerService.getComponentRef(0) && _navManagerService.getComponentRef(0).instance._actionsService"
+             class="actions no-user-select txt-align-r valign-table-component valign-table-component-middle">
+            <ng-template [ngIf]="_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr('search', 'isEnabled')">
+                <js_search [injector]="_navManagerService.getComponentRef(0).instance._injector || null" class="search"></js_search>
+            </ng-template>
+            <div (click)="_navManagerService.getComponentRef(0).instance.triggerAction($event)">
+                <ng-template ngFor let-action [ngForOf]="_navManagerService.getComponentRef(0).instance._actionsService.getHeadActions()">
+                    <a *ngIf="_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr(action, 'isEnabled')"
+                       [ngClass]="[_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr(action, 'icon')]"
+                       class="-round fa"
+                       [attr.data-action]="action"></a>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+    <div id="panel0-current-accounts" class="panel-collapse collapse">
+        <div class="panel-body js_lazyLoadContainer_0">
+            <ng-template #js_lazyLoadContainer></ng-template>
+        </div>
+    </div>
+</div>                                    <div (click)="_navManagerService.navToAction(1)"
+     class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion-current-accounts" href="#panel1-current-accounts">Supplier Current Account</a>
+        </h4>
+        <div *ngIf="_navManagerService.getComponentRef(1) && _navManagerService.getComponentRef(1).instance._actionsService"
+             class="actions no-user-select txt-align-r valign-table-component valign-table-component-middle">
+            <ng-template [ngIf]="_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr('search', 'isEnabled')">
+                <js_search [injector]="_navManagerService.getComponentRef(1).instance._injector || null" class="search"></js_search>
+            </ng-template>
+            <div (click)="_navManagerService.getComponentRef(1).instance.triggerAction($event)">
+                <ng-template ngFor let-action [ngForOf]="_navManagerService.getComponentRef(1).instance._actionsService.getHeadActions()">
+                    <a *ngIf="_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr(action, 'isEnabled')"
+                       [ngClass]="[_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr(action, 'icon')]"
+                       class="-round fa"
+                       [attr.data-action]="action"></a>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+    <div id="panel1-current-accounts" class="panel-collapse collapse">
+        <div class="panel-body js_lazyLoadContainer_1">
+            <ng-template #js_lazyLoadContainer></ng-template>
+        </div>
+    </div>
+</div>                                        </div>
+</div>

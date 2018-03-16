@@ -23,6 +23,8 @@ class BookingServiceType extends BaseType
             'reference' => $this->entityMetadata['reference'],
             'startDate' => $this->entityMetadata['startDate'],
             'endDate' => $this->entityMetadata['endDate'],
+            'placeObj' => $this->entityMetadata['placeObj'],
+            'placeToObj' => $this->entityMetadata['placeToObj'],
             'quantity' => $this->entityMetadata['quantity'],
             'confirmationStatus' => $this->entityMetadata['confirmationStatus'],
             'isEnabled' => $this->entityMetadata['isEnabled']

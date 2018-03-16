@@ -212,4 +212,21 @@ class SupplierController extends BaseEntityTypeController
 
         return $this;
     }
+
+    /**
+     * @Route("/entities/supplier/change-entity/{entity}/{id}",
+     *     name="_entities__supplier__change_entity",
+     *     defaults={"id" = null},
+     * )
+     *
+     * Action to change associated Entity for preview
+     * @param Request $request
+     * @param $entity
+     * @param $id
+     * @return mixed
+     */
+    public function changeEntityAction(Request $request, $entity, $id)
+    {
+        return parent::changeEntityAction($request, $entity, $id);
+    }
 }

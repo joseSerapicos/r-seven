@@ -1,8 +1,9 @@
+{% set isRequired = (isRequired is defined ? isRequired : true) %}
 {% if (field is defined) and (formField is defined) %}
     <input [(ngModel)]="_formService.getObject().{{field}}"
            formControlName = {{field}}
            name="{{formField.vars.full_name}}"
-           {% if formField.vars.required %}required="required"{% endif %}
+           {% if (formField.vars.required and isRequired) %}required="required"{% endif %}
            type="hidden">
     <js_autoComplete [field]="'{{field}}'"
                      [selfReference]="_dataService.getFieldChoicesAttr('{{ field }}', 'selfReference')"

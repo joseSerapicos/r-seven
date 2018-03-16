@@ -100,6 +100,18 @@ class BookingServicePriceRepository extends BasePriceWithVatRepository
                         )
                     )),
                 'form' => array('type' => 'select')
+            ),
+            'grouperBookingServicePriceObj' => array('label' => '', 'type' => 'object', 'acl' => 'read',
+                'typeDetail' => array(
+                    'table' => 'bookingServicePrice', 'tableAlias' => 'grouperBookingServicePrice',
+                    'bundle' => 'booking', 'type' => 'none'
+                )
+            ),
+            'groupedTotalSell' => array('label' => 'Grouped Total Sell', 'type' => 'monetary', 'acl' => 'read',
+                'dependency' => 'grouperBookingServicePriceObj',
+                'field' => '(grouperBookingServicePrice.subTotalSell + grouperBookingServicePrice.totalVatSell)',
+                'table' => '', 'form' => array('type' => 'none'),
+                'normalizer' => array('method' => 'getGroupedTotalSell')
             )
         ));
 
@@ -118,7 +130,8 @@ class BookingServicePriceRepository extends BasePriceWithVatRepository
 
         $localTable = $this->getLocalTable();
 
-        $entityFieldsTermination = ($entityContext == 'supplier' ? 'Cost' : 'Sell');
+        $entityFieldsTermination = ($entityContext == 'supplier' ? 'cost' : 'sell');
+        $entityFieldsTerminationUC = ucfirst($entityFieldsTermination);
 
         $options = array_merge(
             (empty($options) ? array() : $options),
@@ -133,23 +146,29 @@ class BookingServicePriceRepository extends BasePriceWithVatRepository
                     'service.name AS service_name',
                     'CONCAT(booking.codePrefix, booking.codeNumber) AS booking_code',
                     'description',
+                    'quantity',
+                    $localTable.".".$entityFieldsTermination."Value AS value",
+                    "(".$localTable.".subTotal".$entityFieldsTerminationUC." + ".$localTable.".totalVat".$entityFieldsTerminationUC.") AS total",
                     // Try to calc remain quantity
                     "(" . $localTable . ".quantity "
                     . " - "
-                    . "SUM(CASE WHEN (documentType.operation IS NOT NULL) THEN (documentInvoiceDetail.quantity) ELSE (0) END)) AS quantity",
+                    . "SUM(CASE WHEN (documentType.operation IS NOT NULL) THEN (documentInvoiceDetail.quantity) ELSE (0) END)) AS notInvoicedQuantity",
                     $localTable . ".postingType AS postingType",
                     // Get the total price value minus the value already billed (remain val).
                     // Its used total (value without VAT + VAT, because is more exactly to get original values)
                     "((CASE WHEN (" . $localTable . ".postingType = 'DEBIT') "
-                    . "THEN (" . $localTable . ".subTotal".$entityFieldsTermination." + " . $localTable . ".totalVat".$entityFieldsTermination.") "
-                    . "ELSE ((" . $localTable . ".subTotal".$entityFieldsTermination." + " . $localTable . ".totalVat".$entityFieldsTermination.") * -1) END) "
+                    . "THEN (" . $localTable . ".subTotal".$entityFieldsTerminationUC." + " . $localTable . ".totalVat".$entityFieldsTerminationUC.") "
+                    . "ELSE ((" . $localTable . ".subTotal".$entityFieldsTerminationUC." + " . $localTable . ".totalVat".$entityFieldsTerminationUC.") * -1) END) "
                     . " - "
                     . "SUM(CASE WHEN (documentType.operation IS NOT NULL) THEN (CASE WHEN (documentType.operation = 'DEBIT') "
                     . "THEN (documentInvoiceDetail.subTotal + documentInvoiceDetail.totalVat) "
-                    . "ELSE ((documentInvoiceDetail.subTotal + documentInvoiceDetail.totalVat) * -1) END) ELSE (0) END)) AS total"
+                    . "ELSE ((documentInvoiceDetail.subTotal + documentInvoiceDetail.totalVat) * -1) END) ELSE (0) END)) AS notInvoicedTotal"
                 )
             )
         );
+        if (!isset($options['criteria'])) { $options['criteria'] = array(); }
+        // Exclude grouped objects, they are handled by grouper object
+        $options['criteria'][] = array('field' => $localTable.".grouperBookingServicePriceObj", 'expr' => 'isNull', 'value' => null);
         $options['conf'] = array_merge(
             (isset($options['conf']) ? $options['conf'] : array()),
             array(
@@ -165,7 +184,7 @@ class BookingServicePriceRepository extends BasePriceWithVatRepository
         $qb->innerJoin($localTable . '.bookingServiceObj',
             'bookingService',
             'WITH',
-            'bookingService.isEnabled = 1'
+            '(bookingService.isEnabled = 1) AND (bookingService.grouperBookingServiceObj IS NULL)' // Exclude grouped services
         );
 
         // Get booking
@@ -236,19 +255,19 @@ class BookingServicePriceRepository extends BasePriceWithVatRepository
         $qb->groupBy($localTable . '.id');
 
         // Remove registries already invoiced
-        $qb->andHaving("total <> 0");
+        $qb->andHaving("notInvoicedTotal <> 0");
 
         $objectsArr = $this->executeQueryBuilder($qb);
 
-        /* Check here manually the quantity, because in doctrine we cannot use:
-        "@remainQuantity := (" . $localTable . ".quantity "
+        /* Check here manually the notInvoicedQuantity, because in doctrine we cannot use:
+        "@notInvoicedQuantity := (" . $localTable . ".quantity "
         . " - "
         . "(CASE WHEN (documentInvoiceDetail.id IS NOT NULL) THEN (SUM(documentInvoiceDetail.quantity)) ELSE (0) END))",
-        '@remainQuantity AS quantity',
+        '@notInvoicedQuantity AS notInvoicedQuantity',
         */
         foreach ($objectsArr as &$obj) {
-            if ($obj['quantity'] < 1) {
-                $obj['quantity'] = 1;
+            if ($obj['notInvoicedQuantity'] < 1) {
+                $obj['notInvoicedQuantity'] = 1;
             }
         }
 

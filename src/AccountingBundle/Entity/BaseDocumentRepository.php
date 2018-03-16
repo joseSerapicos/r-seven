@@ -112,7 +112,9 @@ abstract class BaseDocumentRepository extends BaseEntityRepository
             ),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read', 'form' => array('type' => 'none')),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'read', 'form' => array('type' => 'none'))
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'read',
+                'form' => array('type' => 'none'), 'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 

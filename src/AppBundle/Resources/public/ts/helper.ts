@@ -8,6 +8,7 @@ import {FormProvider} from './form/form-provider';
 import {WizardPopupProvider} from '../wizard/ts/src/wizard-popup-provider';
 import {EntityDetailProvider} from '../entity-detail/ts/src/entity-detail-provider';
 import {ActionsServiceProvider} from './actions/actions-service-provider';
+import {EntityDetailPreviewProvider} from "../entity-detail/ts/src/entity-detail-preview-provider";
 
 
 /**
@@ -279,7 +280,8 @@ export class Helper {
         return Helper.mergeObjects(
             Helper.getDataBoxProvider(data),
             {
-                imageCropPopupModule: localData['imageCropPopupModule']
+                imageCropPopupModule: localData['imageCropPopupModule'],
+                imageCropPopupComponent: localData['imageCropPopupComponent']
             }
         );
     }
@@ -307,7 +309,7 @@ export class Helper {
                 label: data.label || '',
                 controls: {
                     expander: (data.controls && data.controls.expander),
-                    resizable: (data.controls && data.controls.resizable),
+                    legend: ((data['controls'] && data['controls']['legend']) ? data['controls']['legend'] : [])
                 }
             }
         );
@@ -329,6 +331,24 @@ export class Helper {
     }
 
     /**
+     * Get Entity Detail Preview Provider
+     * @param data
+     * @returns any
+     */
+    public static getEntityDetailPreviewProvider(data: any): EntityDetailPreviewProvider
+    {
+        return Helper.mergeObjects(
+            Helper.getBaseProvider(data),
+            {
+                object: data['object'] || null,
+                fields: data['fields'] || null,
+                fieldsChoices: data['fieldsChoices'] || null,
+                dependencies: data['dependencies'] || null
+            }
+        );
+    }
+
+    /**
      * Get base provider
      * @param data
      * @returns any
@@ -336,6 +356,7 @@ export class Helper {
     public static getBaseProvider(data: any): BaseProvider
     {
         return {
+            localData: ((data.localData && data.localData.template) ? data.localData.template : {}),
             extraData: ((data.extraData && data.extraData.template) ? data.extraData.template : null)
         };
     }
@@ -376,6 +397,16 @@ export class Helper {
     }
 
     /**
+     * Get legend provider
+     * @param data
+     * @returns {any}
+     */
+    public static getLegendProvider(data: any): any
+    {
+        return ((data['controls'] && data['controls']['legend']) ? data['controls']['legend'] : []);
+    }
+
+    /**
      * Set global var
      * @param index
      * @param value
@@ -409,15 +440,47 @@ export class Helper {
     }
 
     /**
-     * Get upload web path
-     * @param path
+     * Get column alignment.
+     * @param type
      * @returns string
      */
-    public static getUploadWebPath(path: string): string
+    public static getColAlign(type: string): string
+    {
+        switch (type) {
+            case 'number':
+            case 'percentage':
+            case 'monetary':
+            case 'date':
+            case 'datetime':
+                return 'txt-align-r';
+            case 'boolean':
+            case 'icon':
+            case 'img':
+            case 'status':
+                return 'txt-align-c';
+            default:
+                return 'txt-align-l';
+        }
+    }
+
+    /**
+     * Get upload web path
+     * @param path
+     * @param imageFormat (format of image to return)
+     * @returns string
+     */
+    public static getUploadWebPath(path: string, imageFormat: string = null): string
     {
         if (path && path.indexOf("/upload/")) {
-            return (path.substring(path.indexOf("/upload/"), path.length));
+            path = (path.substring(path.indexOf("/upload/"), path.length));
         }
+
+        if (imageFormat) {
+            let firstPartialPath = path.substring(0, path.lastIndexOf(".")),
+                lastPartialPath = path.substring(path.lastIndexOf("."), path.length);
+            return (firstPartialPath+'.'+imageFormat+lastPartialPath);
+        }
+
         return path;
     }
 

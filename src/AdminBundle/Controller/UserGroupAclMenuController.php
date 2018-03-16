@@ -12,13 +12,18 @@ use AdminBundle\Entity\ModuleMenu;
 class UserGroupAclMenuController extends BaseEntityChildController
 {
     /**
+     * Get label/title to display child in parent
+     * @return mixed
+     */
+    static function getLabel() { return 'ACL'; }
+
+    /**
      * Overrides parent method
      * @param Request $request
      * @param $parents
-     * @param $label (set label when you don't have the route in modules/menus tree)
      * @return $this
      */
-    protected function initChild(Request $request, $parents, $label = 'ACL')
+    protected function initChild(Request $request, $parents)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
@@ -38,7 +43,7 @@ class UserGroupAclMenuController extends BaseEntityChildController
             )
         );
 
-        parent::initChild($request, $parents, $label);
+        parent::initChild($request, $parents);
 
         // Variables
         $this->localConf['templates']['edit'] = 'AppBundle:tree-view:form.html.twig';

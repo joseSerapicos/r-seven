@@ -15,7 +15,7 @@ import {MainComponent as BaseServiceComponent, BaseServiceProvider} from '../../
 var parentId = Helper.getAppVar('conf')['object']['id'];
 
 // PackageServiceService
-import {DataBoxExtensionModule} from '../../../../../../../AppBundle/Resources/public/data-box/ts/src/data-box.extension-module';
+import {MainExtModule as PackageServiceServiceExtModule} from '../../../../package-service-service/index/ts/src/main.ext-module';
 import {EditExtModule as PackageServiceServiceEditExtModule} from '../../../../package-service-service/index/ts/src/edit.ext-module';
 
 /* /Import dependencies */
@@ -59,8 +59,8 @@ export class MainComponent extends BaseServiceComponent
         switch (index) {
             case 0:
                 return {
-                    module: DataBoxExtensionModule,
-                    component: 'DataBoxComponent',
+                    module: PackageServiceServiceExtModule,
+                    component: 'MainComponent',
                     dataProvider: this._dependenciesData['packageServiceService']
                 };
         }
@@ -84,6 +84,7 @@ export class MainComponent extends BaseServiceComponent
                     ActionsService,
                     {provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data)},
                     {provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data)},
+                    {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)},
                     {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
                     {provide: 'Popups', useValue: {
                         module: PackageServiceServiceEditExtModule,

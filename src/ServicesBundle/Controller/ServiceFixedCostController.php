@@ -9,13 +9,18 @@ use Symfony\Component\HttpFoundation\Request;
 class ServiceFixedCostController extends BaseEntityChildController
 {
     /**
+     * Get label/title to display child in parent
+     * @return mixed
+     */
+    static function getLabel() { return 'Prices'; }
+
+    /**
      * Overrides parent method
      * @param Request $request
      * @param $parents
-     * @param $label (set label when you don't have the route in modules/menus tree)
      * @return $this
      */
-    protected function initChild(Request $request, $parents, $label = 'Prices')
+    protected function initChild(Request $request, $parents)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
@@ -38,7 +43,7 @@ class ServiceFixedCostController extends BaseEntityChildController
             )
         );
 
-        parent::initChild($request, $parents, $label);
+        parent::initChild($request, $parents);
 
         // Search
         $this->templateConf['search']['fields'] = $this->templateConf['fields']['view'];
@@ -126,29 +131,28 @@ class ServiceFixedCostController extends BaseEntityChildController
             if ($data['endDate'] < $data['startDate']) {
                 $errorMessage = "End Date can not be < that Start Date.";
             }
-            // Validate VAT code, if service VAT was changed, then values can't be changed. VAT code is defined
-            // only when the object is created!
+            // Validate VAT code, if VAT code changes, then all reports will change automatically to the new VAT code,
+            // including reports with dates previous to VAT changes
+            /* Disabled for now
             elseif (!$errorMessage && ($obj->getServiceObj()->getVatCodeObj() != $vatCodeObj)) {
                 $errorMessage = "Service VAT code was changed after this entry has been created, so you could not edit values. Consider to add a new entry.";
-            }
+            }*/
             // Validate prices
             else {
                 $priceService = $this->get('app.service.price');
                 $vatCodePercentage = $vatCodeObj->getPercentage();
-                $user_costValue = $data['user_costValue'];
-                $isVatIncluded = (!empty($data['isVatIncluded']));
-                echo("Fix this values and test with: 10 12,3 25");
-                var_dump($user_costValue);exit;
-                $totalUnitCostDetail = $priceService->getTotalUnitDetail($user_costValue, $vatCodePercentage, $isVatIncluded);
+                $costValue = $data['costValue'];
 
-                if (!$priceService->isEqual($data['costValue'], $totalUnitCostDetail['value'])) {
-                    $errorMessage = ($data['costValue'] . ' Does not match with ' . $totalUnitCostDetail['value']);
-                } elseif (!$priceService->isEqual($data['vatValueCost'], $totalUnitCostDetail['vatValue'])) {
+                $totalUnitCostDetail = $priceService->getTotalUnitDetail($costValue, $vatCodePercentage, false);
+
+                if (!$priceService->isEqual($data['vatValueCost'], $totalUnitCostDetail['vatValue'])) {
                     $errorMessage = ($data['vatValueCost'] . ' Does not match with ' . $totalUnitCostDetail['vatValue']);
+                } elseif (!$priceService->isEqual($data['totalCost'], $totalUnitCostDetail['totalUnit'])) {
+                    $errorMessage = ($data['totalCost'] . ' Does not match with ' . $totalUnitCostDetail['totalUnit']);
                 }
 
                 if ($errorMessage) {
-                    $errorMessage = ('Invalid total was detected.<br/>' . $errorMessage);
+                    $errorMessage = ('Invalid value was detected.<br/>' . $errorMessage);
                 }
             }
 

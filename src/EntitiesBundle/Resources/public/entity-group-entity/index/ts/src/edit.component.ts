@@ -19,11 +19,11 @@ export class EditComponent extends DataBoxComponent implements IForm {
         @Inject('Provider') provider: DataBoxProvider,
         @Inject('DataService') dataService: any,
         tasksLoaderManagerService: TasksLoaderManagerService,
+        @Inject('HelperService') helperService: any,
         actionsService: ActionsService,
         modalService: ModalService,
         @Inject('Popups') popups: Popups | Popup,
         injector: Injector,
-        @Inject('HelperService') protected _helperService: any,
         public _elementRef: ElementRef,
         protected _formService: FormService
     ) {
@@ -33,6 +33,7 @@ export class EditComponent extends DataBoxComponent implements IForm {
             provider,
             dataService,
             tasksLoaderManagerService,
+            helperService,
             actionsService,
             modalService,
             popups,

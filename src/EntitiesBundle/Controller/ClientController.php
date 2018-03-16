@@ -61,6 +61,8 @@ class ClientController extends BaseEntityTypeController
             'field' => 'name'
         );
 
+        //var_dump($this->templateConf);exit;
+
         return $this;
     }
 
@@ -211,5 +213,22 @@ class ClientController extends BaseEntityTypeController
         }
 
         return $this;
+    }
+
+    /**
+     * @Route("/entities/client/change-entity/{entity}/{id}",
+     *     name="_entities__client__change_entity",
+     *     defaults={"id" = null},
+     * )
+     *
+     * Action to change associated Entity for preview
+     * @param Request $request
+     * @param $entity
+     * @param $id
+     * @return mixed
+     */
+    public function changeEntityAction(Request $request, $entity, $id)
+    {
+        return parent::changeEntityAction($request, $entity, $id);
     }
 }

@@ -28,22 +28,6 @@ class PackageBooking extends BaseEntity
      */
     protected $packageServiceObj;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="\CommonBundle\Entity\Place")
-     * @ORM\JoinColumn(name="fk_place", referencedColumnName="id", nullable=true, unique=false, onDelete="SET NULL")
-     *
-     * Determined automatically based on the place of the first service in "BookingService"
-     */
-    protected $placeObj;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="\CommonBundle\Entity\Place")
-     * @ORM\JoinColumn(name="fk_placeTo", referencedColumnName="id", nullable=true, unique=false, onDelete="SET NULL")
-     *
-     * Determined automatically based on the place of the last service in "BookingService"
-     */
-    protected $placeToObj;
-
 
     /**
      * Set bookingObj
@@ -86,53 +70,5 @@ class PackageBooking extends BaseEntity
     public function getPackageServiceObj()
     {
         return $this->packageServiceObj;
-    }
-
-    /**
-     * Set placeObj
-     *
-     * @param \CommonBundle\Entity\Place $placeObj
-     *
-     * @return $this
-     */
-    public function setPlaceObj(\CommonBundle\Entity\Place $placeObj = null)
-    {
-        $this->placeObj = $placeObj;
-
-        return $this;
-    }
-
-    /**
-     * Get placeObj
-     *
-     * @return \CommonBundle\Entity\Place
-     */
-    public function getPlaceObj()
-    {
-        return $this->placeObj;
-    }
-
-    /**
-     * Set placeToObj
-     *
-     * @param \CommonBundle\Entity\Place $placeToObj
-     *
-     * @return $this
-     */
-    public function setPlaceToObj(\CommonBundle\Entity\Place $placeToObj = null)
-    {
-        $this->placeToObj = $placeToObj;
-
-        return $this;
-    }
-
-    /**
-     * Get placeToObj
-     *
-     * @return \CommonBundle\Entity\Place
-     */
-    public function getPlaceToObj()
-    {
-        return $this->placeToObj;
     }
 }

@@ -55,12 +55,19 @@ class BookingRepository extends BasePriceResumeRepository
         $parentMetadata = parent::getMetadata();
 
         $localMetadata = self::$metadata = self::processMetadata(array(
+            // NOTE: This field is not used in view nor in form, but it's necessary to get the object from session
+            // storage otherwise the fields is not reset and Entity Manager does not recognize them.
+            'moduleMenuObj' => array('label' => '', 'type' => 'object', 'acl' => 'read', 'typeDetail' => array(
+                'table' => 'moduleMenu', 'bundle' => 'admin', 'type' => 'none')),
             'code' => array('label' => 'Code', 'field' => 'CONCAT('.$localTable.'.codePrefix, '.$localTable.'.codeNumber)',
-                'table' => '', 'type' => 'code', 'acl' => 'read',
+                'table' => '', 'type' => 'code', 'acl' => 'read', 'isDefault' => true,
                 'normalizer' => array('method' => 'getCode')
             ),
             'storeObj' => array('label' => 'Store', 'type' => 'object', 'acl' => 'read', 'typeDetail' => array(
                 'table' => 'store', 'bundle' => 'admin', 'type' => 'none')),
+            // Disabled 02/03/2018
+            /*'store_name' => array('table' => 'store', 'field' => 'name', 'label' => 'Store', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'storeObj', 'form' => array('type' => 'none')),*/
             'userObj' => array('label' => 'User/Operator', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(
                 'table' => 'user', 'bundle' => 'admin', 'type' => 'none',
                 'choices' => array('query' => 'getChoicesWithLoggedUser')), 'isRequired' => false,
@@ -72,9 +79,9 @@ class BookingRepository extends BasePriceResumeRepository
                     'table' => 'entity', 'tableAlias' => 'entity_operator', 'bundle' => 'entities', 'type' => 'none')
             ),
             'operator_name' => array('table' => 'user', 'field' => 'username', 'label' => 'Operator Name',
-                'type' => 'text', 'acl' => 'read', 'dependency' => 'userObj', 'form' => array('type' => 'none')),
+                'type' => 'text', 'acl' => 'read', 'isDefault' => true, 'dependency' => 'userObj', 'form' => array('type' => 'none')),
             'operator_avatar' => array('table' => 'entity_operator', 'field' => 'avatar', 'label' => 'Operator',
-                'type' => 'avatar', 'acl' => 'read', 'dependency' => 'operator_entityObj',
+                'type' => 'avatar', 'acl' => 'read', 'isDefault' => true, 'dependency' => 'operator_entityObj',
                 'form' => array('type' => 'none')),
             'clientObj' => array('label' => 'Client', 'type' => 'object', 'acl' => 'edit',
                 'typeDetail' => array(
@@ -86,9 +93,9 @@ class BookingRepository extends BasePriceResumeRepository
                     'table' => 'entity', 'tableAlias' => 'entity_client', 'bundle' => 'entities', 'type' => 'none')
             ),
             'client_name' => array('table' => 'entity_client', 'field' => 'name', 'label' => 'Client Name',
-                'type' => 'text', 'acl' => 'read', 'dependency' => 'client_entityObj', 'form' => array('type' => 'none')),
+                'type' => 'text', 'acl' => 'read', 'isDefault' => true, 'dependency' => 'client_entityObj', 'form' => array('type' => 'none')),
             'client_avatar' => array('table' => 'entity_client', 'field' => 'avatar', 'label' => 'Client',
-                'type' => 'avatar', 'acl' => 'read', 'dependency' => 'client_entityObj', 'form' => array('type' => 'none')),
+                'type' => 'avatar', 'acl' => 'read', 'isDefault' => true, 'dependency' => 'client_entityObj', 'form' => array('type' => 'none')),
             'bookingPaxObj' => array('label' => 'Booking Pax', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array(
                     'table' => 'bookingPax', 'bundle' => 'booking', 'type' => 'none'),
@@ -98,9 +105,9 @@ class BookingRepository extends BasePriceResumeRepository
                 'isRequired' => false, 'default' => true,
                 'form' => array('type' => 'boolean', 'isMapped' => false)
             ),
-            'startDate' => array('label' => 'Start Date', 'type' => 'date', 'acl' => 'read'),
-            'endDate' => array('label' => 'End Date', 'type' => 'date', 'acl' => 'read'),
-            'invoiceStatus' => array('label' => 'Invoice', 'type' => 'enum', 'acl' => 'read',
+            'startDate' => array('label' => 'Start Date', 'type' => 'date', 'acl' => 'read', 'isDefault' => true),
+            'endDate' => array('label' => 'End Date', 'type' => 'date', 'acl' => 'read', 'isDefault' => true),
+            'invoiceStatus' => array('label' => 'Invoice', 'type' => 'enum', 'acl' => 'read', 'isDefault' => true,
                 'typeDetail' => array(
                     'type' => 'status', 'choices' => array(
                         'value' => array(
@@ -110,7 +117,23 @@ class BookingRepository extends BasePriceResumeRepository
                 ),
                 'form' => array('type' => 'select')
             ),
-            'confirmationStatus' => array('label' => 'Confirmation', 'type' => 'enum', 'acl' => 'read',
+            'placeObj' => array('label' => 'From', 'type' => 'object', 'acl' => 'read',
+                'typeDetail' => array(
+                    'table' => 'place', 'bundle' => 'common', 'type' => 'none')
+            ),
+            'place_name' => array('table' => 'place', 'field' => 'name', 'label' => 'From (Name)', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'placeObj', 'form' => array('type' => 'none')),
+            'place_iata' => array('table' => 'place', 'field' => 'iataCode', 'label' => 'From', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'placeObj', 'form' => array('type' => 'none')),
+            'placeToObj' => array('label' => 'To', 'type' => 'object', 'acl' => 'read',
+                'typeDetail' => array(
+                    'table' => 'place', 'tableAlias' => 'place_to', 'bundle' => 'common', 'type' => 'none')
+            ),
+            'placeTo_name' => array('table' => 'place_to', 'field' => 'name', 'label' => 'To (Name)', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'placeToObj', 'form' => array('type' => 'none')),
+            'placeTo_iata' => array('table' => 'place_to', 'field' => 'iataCode', 'label' => 'To', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'placeToObj', 'form' => array('type' => 'none')),
+            'confirmationStatus' => array('label' => 'Confirmation', 'type' => 'enum', 'acl' => 'read', 'isDefault' => true,
                 'typeDetail' => array(
                     'type' => 'status', 'choices' => array(
                         'value' => array(
@@ -215,12 +238,13 @@ class BookingRepository extends BasePriceResumeRepository
     {
         $localTable = $this->getLocalTable();
 
+        // In case of grouped service, the sell values are not sum, because this values are sum in the grouper service
         $options = array(
             'fields' => array(
                 "SUM(bookingService.subTotalCost) AS subTotalCost",
-                "SUM(bookingService.subTotalSell) AS subTotalSell",
+                "SUM(CASE WHEN (bookingService.grouperBookingServiceObj IS NULL) THEN (bookingService.subTotalSell) ELSE (0) END) AS subTotalSell",
                 "SUM(bookingService.totalVatCost) AS totalVatCost",
-                "SUM(bookingService.totalVatSell) AS totalVatSell"
+                "SUM(CASE WHEN (bookingService.grouperBookingServiceObj IS NULL) THEN (bookingService.totalVatSell) ELSE (0) END) AS totalVatSell"
             ),
             'criteria' => array(
                 array(

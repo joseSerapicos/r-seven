@@ -130,6 +130,23 @@ class SessionStorageService
     }
 
     /**
+     * Get Session Storage Parent Object
+     * @param $id
+     * @return array|mixed
+     */
+    public function getParentObj($id)
+    {
+        $storage = $this->session->get('_storage');
+
+        // Check if object is set, the object may have expired and been removed
+        if (isset($storage[$id])) {
+            return $storage[$id]['parentObj'];
+        }
+
+        return null;
+    }
+
+    /**
      * Get Session Storage Child Objects
      * @param $id
      * @param null $childKey
@@ -175,23 +192,25 @@ class SessionStorageService
             $object->setId($this->generateId());
         }
 
-        // Store in parent object
-        if ($parent && isset($storage[$parent])) {
-            // Create index in parent
-            $childIndex = HelperService::getClassName($object);
-            if (!isset($storage[$parent]['childrenObj'][$childIndex])) {
-                $storage[$parent]['childrenObj'][$childIndex] = array();
-            }
-
-            // Add object to parent
-            $storage[$parent]['childrenObj'][$childIndex][$object->getId()] = $object;
-        }
-
         // Store object (at root of storage)
         if (!isset($storage[$object->getId()])) {
+            // Store in parent object
+            $parentObj = (($parent && isset($storage[$parent])) ? $storage[$parent]['obj'] : null);
+            if ($parentObj) {
+                // Create index in parent
+                $childIndex = HelperService::getClassName($object);
+                if (!isset($storage[$parent]['childrenObj'][$childIndex])) {
+                    $storage[$parent]['childrenObj'][$childIndex] = array();
+                }
+
+                // Add object to parent
+                $storage[$parent]['childrenObj'][$childIndex][$object->getId()] = $object;
+            }
+
             $storage[$object->getId()] = array(
                 'obj' => null,
-                'childrenObj' => array()
+                'childrenObj' => array(),
+                'parentObj' => $parentObj
             );
         }
         $storage[$object->getId()]['obj'] = $object;
@@ -305,8 +324,12 @@ class SessionStorageService
                     && (count($storage[$id]['childrenObj'][$childKey]) > 0)
                 ) {
                     foreach ($storage[$id]['childrenObj'][$childKey] as $childId => $childObj) {
-                        // Remove object completely
-                        $this->delete($childId, null, $storage);
+                        // This "if" is a protection for circular reference,
+                        // can occurs if by mistake is defined the objects as child itself
+                        if ($childId != $id) {
+                            // Remove object completely
+                            $this->delete($childId, null, $storage);
+                        }
                     }
                     unset($storage[$id]['childrenObj'][$childKey]);
                 }
@@ -323,15 +346,28 @@ class SessionStorageService
 
     /**
      * Generate Session Storage id
+     * @param int $loopControl
      * @return int
+     * @throws \Exception
      */
-    public function generateId() {
+    public function generateId($loopControl = 0) {
         $t = microtime(true);
         $micro = sprintf("%06d", ($t - floor($t)) * 1000000);
         $dateTime = new \DateTime(date('Y-m-d H:i:s.' . $micro, $t));
 
-        // Due to the expiration time (1 hours) this identifier will never be repeated
-        return intval($dateTime->format("Hisu"));
+        // Due to the expiration time (1 hour) this identifier will never be repeated
+        $id = intval($dateTime->format("Hisu"));
+
+        // Check if id is already defined, very difficult to occur, but it has already occurred
+        $storage = $this->session->get('_storage');
+        if (isset($storage[$id])) {
+            if ($loopControl > 9) { // Theoretically impossible
+                throw new \Exception('Session storage id cannot be set!');
+            }
+            return $this->generateId(++$loopControl);
+        }
+
+        return $id;
     }
 
     /**

@@ -7,7 +7,8 @@
         <form>        <table class="data-table table table-striped table-hover dataTables-example">
                         <tbody>
             <ng-template ngFor let-obj [ngForOf]="_dataService.getProviderAttr('objects')" let-objIndex="index">
-            <tr>                    <td class="row"><div class="col-sm-12">
+            <tr                 [ngClass]="getLegendClasses(obj)">
+                    <td class="row"><div class="col-sm-12">
         <div class="form-group">
             <div class="col-sm-12">
                 <div class="badge badge-primary -badge-md pull-right">
@@ -15,7 +16,7 @@
                         <label><input type="checkbox"
                                [name]="'form[isOptional][' + obj['packageServiceServiceObj'] + ']'"
                                value="1"
-                               [(ngModel)]="obj['hasOptional']"/><span class="txt-normal">&nbsp;Include</span></label>
+                               [(ngModel)]="obj['hasService']"/><span class="txt-normal">&nbsp;Include</span></label>
                     </ng-template>
                     <ng-template [ngIf]="!obj['isOptional']">
                         <i class="fa fa-check"></i><span class="txt-normal">&nbsp;Included</span>
@@ -60,7 +61,14 @@
             <div class="col-sm-3 txt-align-r">
                 <strong>Quantity</strong>
                 <div>
-                    <div class="dsp-inline-block" [innerHTML]="obj['quantity']"></div>
+                    <div class="dsp-inline-block">
+                        <span *ngIf="obj['quantityType'] != 'FREE'">{{obj['quantity']}}</span>
+                        <input type="number"
+                               class="form-control"
+                               *ngIf="obj['quantityType']== 'FREE'"
+                               [name]="'form[quantity][' + obj['packageServiceServiceObj'] + ']'"
+                               [(ngModel)]="obj['quantity']">
+                    </div>
                     <ng-template [ngIf]="obj['isAutoAllot']
                                          && getControlDebug(objIndex, 'allotDebug')['status']
                                          && (getControlDebug(objIndex, 'allotDebug')['status'] != 'YES')">
@@ -83,7 +91,7 @@
                 </div>
             </div>
             <div class="col-sm-3 txt-align-r">
-                <strong>Price</strong><div [innerHTML]="obj['totalSell']"></div>
+                <strong>Total</strong><div [innerHTML]="obj['totalSell']"></div>
             </div>
         </div>
         <div class="form-group" *ngIf="obj['isEnabledAvailability'] || obj['isEnabledAllot'] || obj['isEnabledPrice']">

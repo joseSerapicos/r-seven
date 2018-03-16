@@ -62,6 +62,16 @@ abstract class BaseController extends Controller
         if($this->isInitialized) { return $this; }
         $this->isInitialized = true;
 
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Disable debug toolbar to improve the page loading in development mode
+        //////////////////////////////////////////////////////////////////////////////////////////
+        if ($this->get('kernel')->isDebug() && $this->container->has('profiler')) {
+            $this->container->get('profiler')->disable();
+        }
+        //////////////////////////////////////////////////////////////////////////////////////////
+
+        
         // Set global vars in HelperService (to be accessed from entity, repository, formType, etc.)
         HelperService::setGlobalVar('filesRepository', $this->get('session')->get('_app.system')['filesRepository']);
         HelperService::setGlobalVar('isAdmin', $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN'));
@@ -162,6 +172,14 @@ abstract class BaseController extends Controller
             'delete' => $this->templateConf['acl']['delete']
         );
         /* /Actions for template/view */
+
+        /* Controls for template/view */
+        $this->templateConf['controls'] = array(
+            'legend' => array(
+                array('label' => 'Canceled', 'class' => 'bg-default-light', 'field' => 'isEnabled', 'expr' => 'null')
+            )
+        );
+        /* /Controls for template/view */
 
         /* Extra data (specific custom data of local controller) */
         $this->templateConf['extraData'] = array(

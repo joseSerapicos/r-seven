@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the `liip/LiipImagineBundle` project.
+ *
+ * (c) https://github.com/liip/LiipImagineBundle/graphs/contributors
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
+ */
+
 namespace Liip\ImagineBundle\Imagine\Filter\PostProcessor;
 
 use Liip\ImagineBundle\Binary\BinaryInterface;
@@ -8,7 +17,7 @@ use Liip\ImagineBundle\Model\Binary;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\ProcessBuilder;
 
-class JpegOptimPostProcessor implements PostProcessorInterface
+class JpegOptimPostProcessor implements PostProcessorInterface, ConfigurablePostProcessorInterface
 {
     /** @var string Path to jpegoptim binary */
     protected $jpegoptimBin;
@@ -18,7 +27,7 @@ class JpegOptimPostProcessor implements PostProcessorInterface
      *
      * @var bool
      */
-    protected $stripAll = true;
+    protected $stripAll;
 
     /**
      * If set, --max=$value will be passed to jpegoptim.
@@ -32,16 +41,36 @@ class JpegOptimPostProcessor implements PostProcessorInterface
      *
      * @var bool
      */
-    protected $progressive = true;
+    protected $progressive;
+
+    /**
+     * Directory where temporary file will be written.
+     *
+     * @var string
+     */
+    protected $tempDir;
 
     /**
      * Constructor.
      *
      * @param string $jpegoptimBin Path to the jpegoptim binary
+     * @param bool   $stripAll     Strip all markers from output
+     * @param int    $max          Set maximum image quality factor
+     * @param bool   $progressive  Force output to be progressive
+     * @param string $tempDir      Directory where temporary file will be written
      */
-    public function __construct($jpegoptimBin = '/usr/bin/jpegoptim')
-    {
+    public function __construct(
+        $jpegoptimBin = '/usr/bin/jpegoptim',
+        $stripAll = true,
+        $max = null,
+        $progressive = true,
+        $tempDir = ''
+    ) {
         $this->jpegoptimBin = $jpegoptimBin;
+        $this->stripAll = $stripAll;
+        $this->max = $max;
+        $this->progressive = $progressive;
+        $this->tempDir = $tempDir ?: sys_get_temp_dir();
     }
 
     /**
@@ -86,33 +115,52 @@ class JpegOptimPostProcessor implements PostProcessorInterface
      * @throws ProcessFailedException
      *
      * @return BinaryInterface
-     *
-     * @see      Implementation taken from Assetic\Filter\JpegoptimFilter
      */
     public function process(BinaryInterface $binary)
+    {
+        return $this->processWithConfiguration($binary, array());
+    }
+
+    /**
+     * @param BinaryInterface $binary
+     * @param array           $options
+     *
+     * @throws ProcessFailedException
+     *
+     * @return BinaryInterface
+     */
+    public function processWithConfiguration(BinaryInterface $binary, array $options)
     {
         $type = strtolower($binary->getMimeType());
         if (!in_array($type, array('image/jpeg', 'image/jpg'))) {
             return $binary;
         }
 
+        $tempDir = array_key_exists('temp_dir', $options) ? $options['temp_dir'] : $this->tempDir;
+        if (false === $input = tempnam($tempDir, 'imagine_jpegoptim')) {
+            throw new \RuntimeException(sprintf('Temp file can not be created in "%s".', $tempDir));
+        }
+
         $pb = new ProcessBuilder(array($this->jpegoptimBin));
 
-        if ($this->stripAll) {
+        $stripAll = array_key_exists('strip_all', $options) ? $options['strip_all'] : $this->stripAll;
+        if ($stripAll) {
             $pb->add('--strip-all');
         }
 
-        if ($this->max) {
-            $pb->add('--max='.$this->max);
+        $max = array_key_exists('max', $options) ? $options['max'] : $this->max;
+        if ($max) {
+            $pb->add('--max='.$max);
         }
 
-        if ($this->progressive) {
+        $progressive = array_key_exists('progressive', $options) ? $options['progressive'] : $this->progressive;
+        if ($progressive) {
             $pb->add('--all-progressive');
         } else {
             $pb->add('--all-normal');
         }
 
-        $pb->add($input = tempnam(sys_get_temp_dir(), 'imagine_jpegoptim'));
+        $pb->add($input);
         if ($binary instanceof FileBinaryInterface) {
             copy($binary->getPath(), $input);
         } else {

@@ -145,6 +145,7 @@ export class CurrentAccountsComponent extends AccordionComponent implements IAcc
             {provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data)},
             {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
             {provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data)},
+            {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)},
             {provide: 'AutoCompleteProviders', useValue: autoCompleteProviders},
             // FormService needs to be here for AutoCompleteProviders, however it will be redefined in Popups
             // (so we can reuse the same AutoCompleteProviders for all injectors)

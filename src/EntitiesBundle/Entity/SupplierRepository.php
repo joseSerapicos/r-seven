@@ -58,20 +58,29 @@ class SupplierRepository extends BaseEntityRepository
                 'table' => '', 'type' => 'code', 'acl' => 'read',
                 'normalizer' => array('method' => 'getCode')
             ),
-            'entityObj' => array('label' => 'Entity', 'type' => 'object', 'acl' => 'edit',
+            // Used in auto-complete (used the fake field "selectEntityObj")
+            'selectEntityObj' => array('field' => 'selectEntityObj', 'label' => 'Entity', 'type' => 'object', 'acl' => 'edit',
                 'typeDetail' => array(
-                    'table' => 'entity', 'bundle' => 'entities', 'type' => 'none', 'fieldInView' => 'name',
-                    'metadata' => array('method' => 'join', 'pushAfterField' => 'code')
+                    'table' => 'entity', 'bundle' => 'entities', 'type' => 'none', 'fieldInView' => 'name'
                 ),
                 'attr' => array(
                     '(onChange)' => 'onEntityChange($event)',
                     '[placeholder]' => "'Entity'"
                 ),
-                'form' => array('type' => 'auto-complete')
+                'form' => array('type' => 'auto-complete'), 'isRequired' => false
+            ),
+            'entityObj' => array('field' => 'entityObj', 'label' => 'Entity', 'type' => 'object', 'acl' => 'edit',
+                'typeDetail' => array(
+                    'table' => 'entity', 'bundle' => 'entities', 'type' => 'none',
+                    'metadata' => array('method' => 'merge', 'persist' => false, 'pushAfterField' => 'selectEntityObj')
+                ),
+                'form' => array('type' => 'embed', 'typeClass' => 'EntityNoCode')
             ),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 }

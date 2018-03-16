@@ -24,7 +24,8 @@ import {FileFormPopupExtModule} from '../../../file/ts/src/file-form-popup.ext-m
 
 import {ImageCropPopupExtModule} from './image-crop-popup.ext-module';
 let localData = {
-    imageCropPopupModule: ImageCropPopupExtModule
+    imageCropPopupModule: ImageCropPopupExtModule,
+    imageCropPopupComponent: 'ImageCropPopupComponent'
 };
 
 

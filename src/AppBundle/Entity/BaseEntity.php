@@ -126,6 +126,14 @@ abstract class BaseEntity {
     }
 
     /**
+     * Clone object
+     */
+    public function __clone()
+    {
+        $this->id = null;
+    }
+
+    /**
      * Check password changes
      * @param $newPassword
      * @param $oldPassword

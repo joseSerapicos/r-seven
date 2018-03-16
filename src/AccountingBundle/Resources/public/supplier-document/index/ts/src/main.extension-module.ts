@@ -5,6 +5,7 @@ import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SearchModule} from '../../../../../../../AppBundle/Resources/public/ts/search/search.module';
 import {ExpanderModule} from '../../../../../../../AppBundle/Resources/public/ts/expander/expander.module';
+import {LegendExtModule} from '../../../../../../../AppBundle/Resources/public/legend/ts/src/legend.ext-module';
 import {SearchPaginationModule} from '../../../../../../../AppBundle/Resources/public/ts/search/search-pagination.module';
 import {MainComponent} from './main.component';
 
@@ -16,7 +17,8 @@ import {MainComponent} from './main.component';
         ReactiveFormsModule,
         SearchModule,
         SearchPaginationModule,
-        ExpanderModule
+        ExpanderModule,
+        LegendExtModule
     ],
     declarations: [
         MainComponent

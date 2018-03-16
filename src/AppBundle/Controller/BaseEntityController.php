@@ -135,104 +135,9 @@ abstract class BaseEntityController extends BaseController
     protected function setTemplateConf()
     {
         /* Fields */
-        // Normalize fields to template (send only the necessary information)
-        $this->templateConf['fields'] = array(
-            'view' => array(), // Fields to render in 'view context'
-            'form' => array(), // Fields to render in 'form context'
-            'metadata' => array() // Metadata about fields
-        );
-        $this->templateConf['fieldsChoices'] = array();
-
-        if (is_array($this->localConf['entityFields'])) {
-            $context = (empty($this->flags['hasForm']) ? 'view' : 'form');
-            $defaultChoices = array(
-                'autoRefresh' => false,
-                'selfReference' => false,
-                'query' => null,
-                'value' => null,
-            );
-
-            foreach ($this->localConf['entityFields'] as $field => $fieldMetadata) {
-                $contextType = $this->getFieldMetadata($field, 'type', $context);
-                $formType = $this->getFieldMetadata($field, 'type', 'form');
-
-                // Object choices
-                if (!empty($fieldMetadata['typeDetail']) && !empty($fieldMetadata['typeDetail']['choices'])) {
-                    // Normalize choices array
-                    $choices = array_merge($defaultChoices, $fieldMetadata['typeDetail']['choices']);
-
-                    if ($choices['autoRefresh']) {
-                        $choices['value'] = $this->getFieldChoices($field);
-                    }
-
-                    unset($choices['query']); // This information shouldn't be in template
-                    $this->templateConf['fieldsChoices'][$field] = $choices;
-                }
-
-                // Add field
-                $notAllowedTypes = array(
-                    // "hidden" and "fake" types is only used in form, but is used also in metadata as auxiliary field
-                    // like the "type" in "BookingService".
-                    'view' => array('none', 'hidden', 'fake'),
-                    'form' => array('none', 'embed')
-                );
-                $hasField = false; // Controls if is needed to add the field metadata
-                switch ($context) {
-                    case 'form':
-                        if (!in_array($contextType, $notAllowedTypes['form'])) {
-                            $this->templateConf['fields'][$context][] = $field;
-                            $hasField = true;
-                        }
-                        break;
-                    default:
-                        if (!in_array($contextType, $notAllowedTypes['view'])) {
-                            $this->templateConf['fields'][$context][] = $field;
-                            $hasField = true;
-                        }
-
-                        // View context needs also to send form fields to be used by Angular when build the form controls.
-                        // In turn, form context doesn't need to send the view fields because it's rendered
-                        // in twig as template of Angular form component.
-                        if (!in_array($formType, $notAllowedTypes['form'])) {
-                            $this->templateConf['fields']['form'][] = $field;
-                            $hasField = true;
-                        }
-                }
-
-                // Add field metadata
-                if ($hasField) {
-                    $this->templateConf['fields']['metadata'][$field] = array(
-                        'label' => $fieldMetadata['label'],
-                        // Determined according the context, but if is "none", the "form" context is used (field
-                        // can be "none" in view but used only in form, like "startManualDate" in "BookingService")
-                        'type' => (in_array($contextType, array('none')) ? $formType : $contextType),
-                        'acl' => $fieldMetadata['acl'],
-                        'isObject' => ($fieldMetadata['type'] == 'object'), // To be ignored by search
-                        'parent' => (empty($fieldMetadata['parent']) ? null : $fieldMetadata['parent'])
-                    );
-                    // Add this attributes only if they are defined (reduce object length)
-                    // Skip normalize
-                    if ((!empty($fieldMetadata['view']) && !empty($fieldMetadata['view']['skipNormalizer']))) {
-                        $this->templateConf['fields']['metadata'][$field]['skipNormalizer'] = true;
-                    }
-                    // Field in view
-                    $fieldInView = $this->getFieldMetadata($field, 'fieldInView');
-                    if (!empty($fieldInView)) {
-                        $this->templateConf['fields']['metadata'][$field]['fieldInView'] = $fieldInView;
-                    }
-                    // Detail for view
-                    $detailForView = $this->getFieldMetadata($field, 'typeDetail', 'view');
-                    if (!empty($detailForView)) {
-                        $this->templateConf['fields']['metadata'][$field]['typeDetail'] = $detailForView;
-                    }
-                    // Default value
-                    $defaultValue = $this->getFieldMetadata($field, 'default');
-                    if ($defaultValue != null) {
-                        $this->templateConf['fields']['metadata'][$field]['default'] = $defaultValue;
-                    }
-                }
-            }
-        }
+        $templateFieldsConf = $this->getTemplateFieldsConf();
+        $this->templateConf['fields'] = $templateFieldsConf['fields'];
+        $this->templateConf['fieldsChoices'] = $templateFieldsConf['fieldsChoices'];
         /* /Fields */
 
         /* Route */
@@ -252,11 +157,11 @@ abstract class BaseEntityController extends BaseController
         } elseif (isset($this->localConf['entityFields']['name'])) {
             $orderByField = array('field' => 'name', 'value' => 'DESC');
         } else {
-            $orderByField = array('field' => 'id', 'value' => 'ASC');
+            $orderByField = array('field' => 'id', 'value' => 'DESC');
         }
 
         $this->templateConf['search'] = array (
-            'fields' => array('id', 'name', 'isEnabled'), // For all field use: $this->templateConf['fields']['view']
+            'fields' => $templateFieldsConf['defaultSelection'], // Selected fields by default to show in view
             'criteria' => array(
                 array('field' => 'isEnabled', 'expr' => 'eq', 'value' => 1)
             ),
@@ -270,12 +175,149 @@ abstract class BaseEntityController extends BaseController
         /* /Search */
 
         /* Controls */
-        $this->templateConf['controls'] = array(
-            'expander' => false
-        );
+        $this->templateConf['controls']['expander'] = false;
         /* /Controls */
 
         return $this;
+    }
+
+    /**
+     * Set Template Fields Conf
+     * @param null $fieldsContext (context to set fields and fields metadata [view, form, defaultSelection])
+     * @return array
+     */
+    protected function getTemplateFieldsConf($fieldsContext = null)
+    {
+        // Normalize fields context
+        $fieldsContext = ($fieldsContext ? $fieldsContext :
+            (empty($this->flags['hasForm']) ? 'view' : 'form')
+        );
+        // Set context to get metadata from EntityRepository
+        $context = (($fieldsContext == 'defaultSelection') ? 'view' : $fieldsContext);
+
+        // Normalize fields to template (send only the necessary information)
+        $templateFieldsConf = array(
+            'fields' => array(
+                'view' => array(), // Fields to render in 'view context'
+                'form' => array(), // Fields to render in 'form context'
+                'metadata' => array() // Metadata about fields
+            ),
+            'fieldsChoices' => array(),
+            'defaultSelection' => array() // Fields selected by default to be shown in view (selected in search conf)
+        );
+
+        // No entity fields
+        if (!is_array($this->localConf['entityFields'])) {
+            return $templateFieldsConf;
+        }
+
+        $defaultChoices = array(
+            'autoRefresh' => false,
+            'selfReference' => false,
+            'query' => null,
+            'value' => null,
+        );
+
+        foreach ($this->localConf['entityFields'] as $field => $fieldMetadata) {
+            $contextType = $this->getFieldMetadata($field, 'type', $context);
+            $formType = $this->getFieldMetadata($field, 'type', 'form');
+
+            // Object choices
+            if (!empty($fieldMetadata['typeDetail']) && !empty($fieldMetadata['typeDetail']['choices'])) {
+                // Normalize choices array
+                $choices = array_merge($defaultChoices, $fieldMetadata['typeDetail']['choices']);
+
+                if ($choices['autoRefresh']) {
+                    $choices['value'] = $this->getFieldChoices($field);
+                }
+
+                unset($choices['query']); // This information shouldn't be in template
+                $templateFieldsConf['fieldsChoices'][$field] = $choices;
+            }
+
+            // Add field
+            $notAllowedTypes = array(
+                // "hidden" and "fake" types is only used in form, but is used also in metadata as auxiliary field
+                // like the "type" in "BookingService".
+                'view' => array('none', 'hidden', 'fake'),
+                'form' => array('none', 'embed')
+            );
+            $hasField = false; // Controls if is needed to add the field metadata
+            switch ($fieldsContext) {
+                // Only fields for form
+                case 'form':
+                    if (!in_array($contextType, $notAllowedTypes['form'])) {
+                        $templateFieldsConf['fields'][$context][] = $field;
+                        $hasField = true;
+                    }
+                    break;
+                // Only default fields for view
+                case 'defaultSelection':
+                    if (!in_array($contextType, $notAllowedTypes['view'])
+                        && isset($fieldMetadata['isDefault'])
+                        && $fieldMetadata['isDefault'])
+                    {
+                        $templateFieldsConf['fields']['view'][] = $field;
+                        $templateFieldsConf['fields']['defaultSelection'][] = $field;
+                        $hasField = true;
+                    }
+                    break;
+                // Full fields info (view, default selection and form)
+                default: // view
+                    if (!in_array($contextType, $notAllowedTypes['view'])) {
+                        $templateFieldsConf['fields'][$context][] = $field;
+                        $hasField = true;
+
+                        // Check if default selection in view (search conf) is enabled
+                        if (isset($fieldMetadata['isDefault']) && $fieldMetadata['isDefault']) {
+                            $templateFieldsConf['defaultSelection'][] = $field;
+                        }
+                    }
+
+                    // View context needs also to send form fields to be used by Angular when build the form controls.
+                    // In turn, form context doesn't need to send the view fields because it's rendered
+                    // in twig as template of Angular form component.
+                    if (!in_array($formType, $notAllowedTypes['form'])) {
+                        $templateFieldsConf['fields']['form'][] = $field;
+                        $hasField = true;
+                    }
+            }
+
+            // Add field metadata
+            if ($hasField) {
+                $templateFieldsConf['fields']['metadata'][$field] = array(
+                    'label' => $fieldMetadata['label'],
+                    // Determined according the context, but if is "none", the "form" context is used (field
+                    // can be "none" in view but used only in form, like "startManualDate" in "BookingService")
+                    'type' => (in_array($contextType, array('none')) ? $formType : $contextType),
+                    'acl' => $fieldMetadata['acl'],
+                    'isObject' => ($fieldMetadata['type'] == 'object'), // To be ignored by search
+                    'parent' => (empty($fieldMetadata['parent']) ? null : $fieldMetadata['parent'])
+                );
+
+                // Merge with specific data for view
+                if (isset($fieldMetadata['view'])) {
+                    $templateFieldsConf['fields']['metadata'][$field] = array_merge(
+                        $templateFieldsConf['fields']['metadata'][$field],
+                        $fieldMetadata['view']
+                    );
+                }
+
+                // Field in view (usually used by auto-complete)
+                $fieldInView = $this->getFieldMetadata($field, 'fieldInView');
+                if (!empty($fieldInView)) {
+                    $templateFieldsConf['fields']['metadata'][$field]['fieldInView'] = $fieldInView;
+                }
+
+                // Default value (to use in new objects)
+                $defaultValue = $this->getFieldMetadata($field, 'default');
+                if ($defaultValue != null) {
+                    $templateFieldsConf['fields']['metadata'][$field]['default'] = $defaultValue;
+                }
+            }
+        }
+
+        return $templateFieldsConf;
     }
 
     /**
@@ -909,13 +951,18 @@ abstract class BaseEntityController extends BaseController
     /**
      * Delete object from session storage
      * @param $objectId
+     * @param $objectId
      * @return $this
      */
-    protected function deleteObjectFromSS($objectId)
+    protected function deleteObjectFromSS($objectId, $parentId = null)
     {
+        $parentId = ($parentId ? $parentId :
+            (isset($this->flags['parent']) ? $this->flags['parent'] : null)
+        );
+
         // Delete object from session
         if (!empty($objectId)) {
-            $this->container->get('app.service.session_storage')->delete($objectId, $this->flags['parent']);
+            $this->container->get('app.service.session_storage')->delete($objectId, $parentId);
         }
 
         return $this;
@@ -1371,6 +1418,63 @@ abstract class BaseEntityController extends BaseController
     }
 
     /**
+     * Normalize Foreign Object
+     * @param $object
+     * @param $entity (Uppercase)
+     * @param $bundle (Uppercase)
+     * @return mixed
+     */
+    protected function normalizeForeignObject($object, $entity, $bundle)
+    {
+        // Save local entity conf to be replaced after get all objects
+        $localEntityClass = $this->localConf['entityClass'];
+        $localEntityFields = $this->localConf['entityFields'];
+
+        // Set foreign object configuration
+        $this->localConf['entityClass'] = ($bundle.'Bundle\Entity\\'.$entity);
+        $this->localConf['entityFields'] =
+            $this->getRepositoryService($entity, $bundle.'Bundle')->execute('getMetadata');
+
+        $normalizedObj = $this->normalizeObject($object);
+
+        $this->localConf['entityClass'] = $localEntityClass;
+        $this->localConf['entityFields'] = $localEntityFields;
+
+        return $normalizedObj;
+    }
+
+    /**
+     * Get Session Storage Child Objects
+     * @param $parentId
+     * @param null $childKey
+     * @param $hasNormalization
+     * @return array|mixed
+     */
+    public function getChildObjectsFromSS($parentId = null, $childKey = null, $hasNormalization = false)
+    {
+        $parentId = ($parentId ? $parentId :
+            (isset($this->flags['parent']) ? $this->flags['parent'] : null)
+        );
+
+        $childObjects = $this->container->get('app.service.session_storage')->getChildObjects(
+            $parentId,
+            $childKey
+        );
+
+        if ($hasNormalization) {
+            $childObjectsNormalized = array();
+            foreach ($childObjects as $childObj) {
+                $childObj = $this->getObjectFromSS($childObj->getId()); // Update object getting all foreign objects yet
+                // @TODO: you need to call normalizeForeignObject and pass all objects to avoid reset the conf for each object
+                $childObjectsNormalized[] = $this->normalizeObject($childObj);
+            }
+            return $childObjectsNormalized;
+        }
+
+        return $childObjects;
+    }
+
+    /**
      * Get Dependency Object Container
      * Used to determines the object container of foreign fields merged is the entity/object,
      * whose data is in your parent entity/object (ie: client, supplier, etc.)
@@ -1654,11 +1758,12 @@ abstract class BaseEntityController extends BaseController
                     && isset($fieldMetadata['typeDetail']['metadata']['persist'])
                     && $fieldMetadata['typeDetail']['metadata']['persist'] // true
                 ) {
+                    $entityFieldName = $this->getFieldMetadata($fieldName , 'field');
                     $class = ($fieldMetadata['typeDetail']['entityClass']);
                     $childObj = new $class();
                     // Use static method to avoid to call specific redefined method in child
                     self::setObjectDefaultValues_static($this, $childObj);
-                    $setMethod = 'set' . ucfirst($fieldName);
+                    $setMethod = 'set' . ucfirst($entityFieldName);
                     $obj->$setMethod($childObj);
                 }
             }
@@ -1713,9 +1818,10 @@ abstract class BaseEntityController extends BaseController
         // Template is a default search
         $search = $this->templateConf['search'];
         $mandatorySearch = $this->localConf['search']; // Contents mandatory parameter to search independent of user preferences
+        $legendFields = array_column($this->templateConf['controls']['legend'], 'field'); // Mandatory to display legends
 
         // Merge search, with mandatory (array_unique remove duplication to avoid errors in database)
-        $search['fields'] = array_unique(array_merge($search['fields'], $mandatorySearch['fields']));
+        $search['fields'] = array_unique(array_merge($search['fields'], $mandatorySearch['fields'], $legendFields));
         $search['criteria'] = array_merge($search['criteria'], $mandatorySearch['criteria']);
         // Merge conf local data
         $mandatoryConfLocalData = ((isset($mandatorySearch['conf']) && isset($mandatorySearch['conf']['localData'])) ?

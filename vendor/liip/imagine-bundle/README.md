@@ -1,100 +1,240 @@
-LiipImagineBundle
-=================
+# LiipImagineBundle
 
-This bundle is a fork of AvalancheImagineBundle which provides easy image
-manipulation support for Symfony2. The goal of the fork is to make the
-code more extensible and as a result applicable for more use cases.
+|       Travis-CI        |        Style-CI         |         Coverage        |        Downloads        |         Release         |
+|:----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|
+| [![Travis](https://src.run/shield/liip/LiipImagineBundle/1.0/travis.svg)](https://src.run/service/liip/LiipImagineBundle/1.0/travis) | [![Style CI](https://src.run/shield/liip/LiipImagineBundle/1.0/styleci.svg)](https://src.run/service/liip/LiipImagineBundle/1.0/styleci) | [![Coverage](https://src.run/shield/liip/LiipImagineBundle/1.0/coveralls.svg)](https://src.run/service/liip/LiipImagineBundle/1.0/coveralls) | [![Downloads](https://src.run/shield/liip/LiipImagineBundle/packagist_dt.svg)](https://src.run/service/liip/LiipImagineBundle/packagist) | [![Latest Stable Version](https://src.run/shield/liip/LiipImagineBundle/packagist_v.svg)](https://src.run/service/liip/LiipImagineBundle/packagist) | 
 
-For more details on the reason for the fork see:
-https://github.com/avalanche123/AvalancheImagineBundle/pull/25
+*This bundle provides an image manipulation abstraction toolkit for [Symfony](http://symfony.com/)-based projects.*
 
-For example with this bundle the following is possible:
+## Overview
 
-``` jinja
-<img src="{{ '/relative/path/to/image.jpg' | imagine_filter('thumbnail') }}" />
+- [Filter Sets](http://symfony.com/doc/master/bundles/LiipImagineBundle/basic-usage.html):
+  Using any Symfony-supported configuration language (such as YML and XML), you can create *filter set* definitions that
+  specify transformation routines. These definitions include a set of
+  *[filters](http://symfony.com/doc/current/bundles/LiipImagineBundle/filters.html)* and
+  *[post-processors](http://symfony.com/doc/current/bundles/LiipImagineBundle/post-processors.html)*,
+  as well as other optional parameters.
+
+- [Filters](http://symfony.com/doc/master/bundles/LiipImagineBundle/filters.html):
+  Image transformations are applied using *filters*. A set of
+  [build-in filters](http://symfony.com/doc/current/bundles/LiipImagineBundle/filters.html) are provided by the bundle,
+  implementing the most common transformations; examples include
+  [thumbnail](http://symfony.com/doc/current/bundles/LiipImagineBundle/filters/sizing.html#thumbnails),
+  [scale](http://symfony.com/doc/current/bundles/LiipImagineBundle/filters/sizing.html#scale),
+  [crop](http://symfony.com/doc/current/bundles/LiipImagineBundle/filters/sizing.html#cropping-images),
+  [flip](http://symfony.com/doc/current/bundles/LiipImagineBundle/filters/orientation.html#flip),
+  [strip](http://symfony.com/doc/current/bundles/LiipImagineBundle/filters/general.html#strip), and
+  [watermark](http://symfony.com/doc/current/bundles/LiipImagineBundle/filters/general.html#watermark).
+  For more advances transformations, you can easily create your own
+  [custom filters](http://symfony.com/doc/master/bundles/LiipImagineBundle/filters.html#filter-custom).
+
+- [Post-Processors](http://symfony.com/doc/master/bundles/LiipImagineBundle/post-processors.html):
+  Modification of the resulting binary image file (created from your *filters*) are handled by *post-processors*.
+  Examples include
+  [JPEG Optim](http://symfony.com/doc/current/bundles/LiipImagineBundle/post-processors/jpeg-optim.html),
+  [Moz JPEG](http://symfony.com/doc/current/bundles/LiipImagineBundle/post-processors/jpeg-moz.html),
+  [Opti PNG](http://symfony.com/doc/current/bundles/LiipImagineBundle/post-processors/png-opti.html), and
+  [PNG Quant](http://symfony.com/doc/current/bundles/LiipImagineBundle/post-processors/png-quant.html). Just like filters
+  you can easily create your own
+  [custom post-processors](http://symfony.com/doc/master/bundles/LiipImagineBundle/post-processors.html#post-processors-custom).
+
+
+### Example
+
+Suppose you defined a `my_thumb` filter set, which can be configured to 
+perform any number of different transformations. The simplest invocation would 
+be to pipe the path of your image to the provided `imagine_filter` Twig 
+filter.
+
+```twig
+<img src="{{ asset('/relative/path/to/image.jpg') | imagine_filter('my_thumb') }}" />
 ```
 
-This will perform the transformation called `thumbnail`, which you can define
-to do a number of different things, such as resizing, cropping, drawing,
-masking, etc.
 
-This bundle integrates the standalone PHP "[Imagine library](https://github.com/avalanche123/Imagine)".
+### Attribution
 
-[![Build Status](https://secure.travis-ci.org/liip/LiipImagineBundle.png)](http://travis-ci.org/liip/LiipImagineBundle)
-[![Total Downloads](https://poser.pugx.org/liip/imagine-bundle/downloads.png)](https://packagist.org/packages/liip/imagine-bundle)
-[![Latest Stable Version](https://poser.pugx.org/liip/imagine-bundle/v/stable.png)](https://packagist.org/packages/liip/imagine-bundle)
+- Thanks to the many [contributors](https://github.com/liip/LiipImagineBundle/graphs/contributors) 
+  who have dedicated their time and code to this project.
+
+- The standalone PHP
+  [Imagine Library](https://github.com/avalanche123/Imagine)
+  is used by this bundle for image transformations.
+
+- This package was forked from
+  [AvalancheImagineBundle](https://github.com/avalanche123/AvalancheImagineBundle)
+  with the goal of making the code more extensible. Reference
+  [AvalancheImagineBundle#25](https://github.com/avalanche123/AvalancheImagineBundle/pull/25)
+  for additional information on the reasoning for this fork.
 
 
-## Installation
+## Setup
 
-In case you are not sure how to install this bundle, see the [installation instructions](http://symfony.com/doc/master/bundles/LiipImagineBundle/installation.html).
+
+### Installation
+
+Using this package is similar to all Symfony bundles. The following steps must 
+be performed
+
+1. [Download the Bundle](http://symfony.com/doc/master/bundles/LiipImagineBundle/installation.html#step-1-download-the-bundle)
+2. [Enable the Bundle](http://symfony.com/doc/master/bundles/LiipImagineBundle/installation.html#step-2-enable-the-bundle)
+3. [Register the Routes](http://symfony.com/doc/master/bundles/LiipImagineBundle/installation.html#step-3-register-the-bundle-s-routes)
+
+Detailed setup instructions can be found in the 
+[installation](http://symfony.com/doc/master/bundles/LiipImagineBundle/installation.html)
+chapter of the documentation.
+
 
 ### Configuration
 
-After installing the bundle, make sure you add this route to your routing:
+Detailed information on all available configuration options can be found in the
+[configuration](http://symfony.com/doc/master/bundles/LiipImagineBundle/configuration.html)
+chapter of the documentation.
 
-``` yaml
-# app/config/routing.yml
 
-_liip_imagine:
-    resource: "@LiipImagineBundle/Resources/config/routing.xml"
-```
+## Usage Primer
 
-For a complete configuration drill-down see [the respective chapter in the documentation](http://symfony.com/doc/master/bundles/LiipImagineBundle/configuration.html).
+Generally, this bundle works by applying *filter sets* to images from inside
+a template. Your *filter sets* are defined within the application's configuration
+file (often `app/config/config.yml`) and are comprised of a collection of
+*filters*, *post-processors*, and other optional parameters.
 
-## Basic Usage
+We'll learn more about *post-processors* and other available parameters later,
+but for now lets focus on how to define a simple *filter set* comprised of a
+few *filters*.
 
-This bundle works by configuring a set of filters and then applying those
-filters to images inside a template So, start by creating some sort of filter
-that you need to apply somewhere in your application. For example, suppose
-you want to thumbnail an image to a size of 120x90 pixels:
 
-``` yaml
+### Create Thumbnails
+
+Before we get started, there is a small amount of configuration needed to ensure
+our [data loaders](http://symfony.com/doc/master/bundles/LiipImagineBundle/data-loaders.html)
+and [cache resolvers](http://symfony.com/doc/master/bundles/LiipImagineBundle/cache-resolvers.html)
+operate correctly. Use the following boilerplate in your configuration file.
+
+```yml
 # app/config/config.yml
 
-liip_imagine:
-    resolvers:
-       default:
-          web_path: ~
+liip_imagine :
 
-    filter_sets:
-        cache: ~
-        my_thumb:
-            quality: 75
-            filters:
-                thumbnail: { size: [120, 90], mode: outbound }
+    # configure resolvers
+    resolvers :
+
+        # setup the default resolver
+        default :
+
+            # use the default web path
+            web_path : ~
+
+    # your filter sets are defined here
+    filter_sets :
+
+        # use the default cache configuration
+        cache : ~
 ```
 
-You've now defined a filter set called `my_thumb` that performs a thumbnail transformation.
-We'll learn more about available transformations later, but for now, this
-new filter can be used immediately in a template:
+With the basic configuration in place, we'll start with an example that fulfills a
+common use-case: creating thumbnails. Lets assume we want the resulting thumbnails
+to have the following transformations applied to them:
 
-``` jinja
-<img src="{{ '/relative/path/to/image.jpg' | imagine_filter('my_thumb') }}" />
+- Scale and crop the image to 120x90px.
+- Add a 2px black border to the scaled image.
+- Adjust the image quality to 75.
+
+Adding onto our boilerplate from above, we need to define a *filter set* (which we'll
+name `my_thumb`) with two *filters* configured: the `thumbnail` and `background`
+*filters*.
+
+```yml
+# app/config/config.yml
+
+liip_imagine :
+    resolvers :
+        default :
+            web_path : ~
+
+    filter_sets :
+        cache : ~
+
+        # the name of the "filter set"
+        my_thumb :
+
+            # adjust the image quality to 75%
+            quality : 75
+
+            # list of transformations to apply (the "filters")
+            filters :
+
+                # create a thumbnail: set size to 120x90 and use the "outbound" mode
+                # to crop the image when the size ratio of the input differs
+                thumbnail  : { size : [120, 90], mode : outbound }
+
+                # create a 2px black border: center the thumbnail on a black background
+                # 4px larger to create a 2px border around the final image
+                background : { size : [124, 94], position : center, color : '#000000' }
 ```
 
-Or if you're using PHP templates:
+You've now created a *filter set* called `my_thumb` that performs a thumbnail
+transformation. The `thumbnail` filter sizes the image to the desired width
+and height (in this example, 120x90px), and its `mode: outbound` option causes
+the resulting image to be cropped if the input ratio differs. The `background`
+filter results in a 2px black border by creating a black canvas 124x94px in size,
+and positioning the thumbnail at its center.
 
-``` php
+**Note:**
+*A *filter set* can have any number of *filters* defined for it. Simple
+transformations may only require a single *filter* while complex
+transformations can have an unlimited number of *filters* defined for them.*
+
+There are a number of additional [filters](http://symfony.com/doc/master/bundles/LiipImagineBundle/filters.html),
+but for now you can use your newly defined ``my_thumb`` *filter set* immediately
+within a template.
+
+*For Twig-based template, use:*
+
+```twig
+<img src="{{ asset('/relative/path/to/image.jpg') | imagine_filter('my_thumb') }}" />
+```
+
+*Or, for PHP-based template, use:*
+
+```php
 <img src="<?php $this['imagine']->filter('/relative/path/to/image.jpg', 'my_thumb') ?>" />
 ```
 
-Behind the scenes, the bundles applies the filter(s) to the image on the first
-request and then caches the image to a similar path. On the next request,
-the cached image would be served directly from the file system.
+Behind the scenes, the bundle applies the filter(s) to the image on-the-fly
+when the first page request is served. The transformed image is then cached
+for subsequent requests. The final cached image path would be similar to
+`/media/cache/my_thumb/relative/path/to/image.jpg`.
 
-In this example, the final rendered path would be something like
-`/media/cache/my_thumb/relative/path/to/image.jpg`. This is where Imagine
-would save the filtered image file.
+**Note:**
+*Using the ``dev`` environment you might find that images are not properly
+rendered via the template helper. This is often caused by having
+`intercept_redirect` enabled in your application configuration. To ensure
+images are rendered, it is strongly suggested to disable this option:
 
-You can also pass some options at runtime:
+```yml
+# app/config/config_dev.yml
 
-``` jinja
-{% set runtimeConfig = {"thumbnail": {"size": [50, 50] }} %}
-<img src="{{ '/relative/path/to/image.jpg' | imagine_filter('my_thumb', runtimeConfig) }}" />
+web_profiler :
+    intercept_redirects : false
 ```
 
-Or if you're using PHP templates:
+
+### Runtime Options
+
+Sometime, you may have a filter defined that fulfills 99% of your usage
+scenarios. Instead of defining a new filter for the erroneous 1% of cases,
+you may instead choose to alter the behavior of a filter at runtime by
+passing the template helper an options array.
+
+*For Twig-based template, use:*
+
+```twig
+{% set runtimeConfig = {"thumbnail": {"size": [50, 50] }} %}
+
+<img src="{{ asset('/relative/path/to/image.jpg') | imagine_filter('my_thumb', runtimeConfig) }}" />
+```
+
+*Or, for PHP-based template, use:*
 
 ```php
 <?php
@@ -107,80 +247,147 @@ $runtimeConfig = array(
 
 <img src="<?php $this['imagine']->filter('/relative/path/to/image.jpg', 'my_thumb', $runtimeConfig) ?>" />
 ```
-Also you can resolve image url from console:
-```jinja
-app/console liip:imagine:cache:resolve relative/path/to/image.jpg relative/path/to/image2.jpg --filters=my_thumb --filters=thumbnail_default
+
+
+### Path Resolution
+
+Sometime you need to resolve the image path returned by this bundle for a
+filtered image. This can easily be achieved using Symfony's console binary
+or programmatically from within a controller or other piece of code.
+
+
+#### Resolve with the Console
+
+You can resolve an image URL using the console command
+`liip:imagine:cache:resolve`. The only required argument is one or more
+relative image paths (which must be separated by a space).
+
+```bash
+$ php app/console liip:imagine:cache:resolve relative/path/to/image1.jpg relative/path/to/image2.jpg
 ```
-Where only paths required parameter. They are separated by space. If you omit filters option will be applied all available filters.
 
-If you need to access filtered image URL in your controller:
+Additionally, you can use the ``--filters`` option to specify which filter
+you want to resolve for (if the ``--filters`` option is omitted, all
+available filters will be resolved).
 
-``` php
-$this->get('liip_imagine.cache.manager')->getBrowserPath('/relative/path/to/image.jpg', 'my_thumb'),
+```bash
+$ php app/console liip:imagine:cache:resolve relative/path/to/image1.jpg --filters=my_thumb
 ```
 
-In this case, the final rendered path would contain some random data in the path
-`/media/cache/my_thumb/S8rrlhhQ/relative/path/to/image.jpg`. This is where Imagine
-would save the filtered image file.
 
-Note: Using the ``dev`` environment you might find that the images are not properly rendered when
-using the template helper. This is likely caused by having ``intercept_redirect`` enabled in your
-application configuration. To ensure that the images are rendered disable this option:
+#### Resolve Programmatically
 
-``` jinja
-web_profiler:
-    intercept_redirects: false
+You can resolve the image URL in your code using the `getBrowserPath`
+method of the `liip_imagine.cache.manager` service. Assuming you already
+have the service assigned to a variable called `$imagineCacheManager`,
+you would run:
+
+```php
+$imagineCacheManager->getBrowserPath('/relative/path/to/image.jpg', 'my_thumb');
 ```
+
+Often, you need to perform this operation in a controller. Assuming your
+controller inherits from the base Symfony controller, you can take advantage
+of the inherited ``get`` method to request the ``liip_imagine.cache.manager``
+service, from which you can call ``getBrowserPath`` on a relative image
+path to get its resolved location.
+
+```php
+/** @var CacheManager */
+$imagineCacheManager = $this->get('liip_imagine.cache.manager');
+
+/** @var string */
+$resolvedPath = $imagineCacheManager->getBrowserPath('/relative/path/to/image.jpg', 'my_thumb');
+```
+
 
 ## Filters
 
-The LiipImagineBundle provides a set of built-in filters.
-You may easily roll your own filter, see [the filters chapter in the documentation](http://symfony.com/doc/master/bundles/LiipImagineBundle/filters.html).
+This bundle provides a set of built-in filters andy ou may easily
+define your own filters as well. Reference the
+[filters chapter](http://symfony.com/doc/master/bundles/LiipImagineBundle/filters.html)
+from our documentation.
 
-## Using the controller as a service
 
-If you need to use the filters in a controller, you can just load `ImagineController.php` controller as a service and handle the response:
+## Use as a Service
 
-``` php
+If you need to use your defined "filter sets" from within your controller, you 
+can fetch this bundle's controller from the service container and handle 
+the response yourself.
+
+```php
+<?php
+
 class MyController extends Controller
 {
     public function indexAction()
     {
-        // RedirectResponse object
-        $imagemanagerResponse = $this->container
-            ->get('liip_imagine.controller')
+        /** @var ImagineController */
+        $imagine = $this
+            ->container
+            ->get('liip_imagine.controller');
+
+        /** @var RedirectResponse */
+        $imagemanagerResponse = $imagine
             ->filterAction(
                 $this->request,         // http request
                 'uploads/foo.jpg',      // original image you want to apply a filter to
                 'my_thumb'              // filter defined in config.yml
             );
 
-        // string to put directly in the "src" of the tag <img>
-        $cacheManager = $this->container->get('liip_imagine.cache.manager');
-        $srcPath = $cacheManager->getBrowserPath('uploads/foo.jpg', 'my_thumb');
+        /** @var CacheManager */
+        $cacheManager = $this
+            ->container
+            ->get('liip_imagine.cache.manager');
+
+        /** @var string */
+        $sourcePath = $cacheManager
+            ->getBrowserPath(
+                'uploads/foo.jpg',
+                'my_thumb'
+            );
 
         // ..
     }
 }
+
+?>
 ```
 
-In case you need to add more logic the recommended solution is to either extend `ImagineController.php` controller or take the code from that controller as a basis for your own controller.
+If you need to add more logic, the recommended solution is to either
+extend `ImagineController.php` or use it as the basis for your own 
+implementation.
 
-If you want to use the service in another service, you have to simulate a new request:
+To use the controller in another service, you have to simulate a new request.
 
-``` php
-$imagemanagerResponse = $this->container
-    ->get('liip_imagine.controller')
-        ->filterAction(new Symfony\Component\HttpFoundation\Request(), 'uploads/foo.jpg', 'my_thumb');
+```php
+<?php
+
+/** @var ImagineController */
+$imagine = $this
+    ->container
+    ->get('liip_imagine.controller');
+
+/** @var Response */
+$response = $imagine
+    ->filterAction(
+        new Symfony\Component\HttpFoundation\Request(),
+        'uploads/foo.jpg',
+        'my_thumb'
+    );
+
+?>
 ```
 
-## Outside the web root
 
-When your setup requires your source images to live outside the web root, or if that's just the way you roll,
-you have to set your loader's parameter `data_root` in the `config.yml` with the absolute path where your source images are
-located:
+## Data Roots
 
-``` yaml
+By default, Symfony's `web/` directory is registered as a data root to load
+assets from. For many installations this will be sufficient, but sometime you
+may need to load images from other locations. To do this, you must set the
+`data_root` parameter in your configuration (often located at `app/config/config.yml`).
+
+```yml
 liip_imagine:
     loaders:
         default:
@@ -188,10 +395,90 @@ liip_imagine:
                 data_root: /path/to/source/images/dir
 ```
 
-Afterwards, you need to grant read access on Apache to access the images source directory. For achieving it you have
-to add the following directive to your project's vhost file:
+As of version `1.7.2` you can register multiple data root paths, and the 
+file locator will search each for the requested file.
 
-``` xml
+```yml
+liip_imagine:
+    loaders:
+        default:
+            filesystem:
+                data_root:
+                    - /path/foo
+                    - /path/bar
+```
+
+As of version `1.7.3` you ask for the public resource paths from all registered bundles
+to be auto-registered as data roots. This allows you to load assets from the
+`Resources/public` folders that reside within the loaded bundles. To enable this
+feature, set the `bundle_resources.enabled` configuration option to `true`.
+
+```yml
+liip_imagine:
+    loaders:
+        default:
+            filesystem:
+                bundle_resources:
+                    enabled: true
+```
+
+If you want to register some of the `Resource/public` folders, but not all, you can do
+so by blacklisting the bundles you don't want registered or whitelisting the bundles you
+do want registered. For example, to blacklist (not register) the bundles "FooBundle" and
+"BarBundle", you would use the following configuration.
+
+```yml
+liip_imagine:
+    loaders:
+        default:
+            filesystem:
+                bundle_resources:
+                    enabled: true
+                    access_control_type: blacklist
+                    access_control_list:
+                        - FooBundle
+                        - BarBundle
+```
+
+Alternatively, if you want to whitelist (only register) the bundles "FooBundle" and "BarBundle",
+you would use the following configuration.
+
+```yml
+liip_imagine:
+    loaders:
+        default:
+            filesystem:
+                bundle_resources:
+                    enabled: true
+                    access_control_type: whitelist
+                    access_control_list:
+                        - FooBundle
+                        - BarBundle
+```
+
+### Permissions
+
+Image locations must be readable by your web server. On a system that supports 
+`setfacl` (such as Linux/BSD), use
+
+```sh
+HTTPDUSER=`ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
+
+sudo setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX /path/to/source/images/dir
+
+sudo setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX /path/to/source/images/dir
+```
+
+See the [Symfony Permissions documentation](http://symfony.com/doc/current/setup/file_permissions.html)
+for commands compatible with macOS and other environments.
+
+
+### Using Apache
+
+You need to grant read access for Apache by adding the following to your 
+Apache VHost configuration
+
+```xml
 <VirtualHost *:80>
     <!-- Rest of directives like DocumentRoot or ServerName -->
 
@@ -203,10 +490,12 @@ to add the following directive to your project's vhost file:
 </VirtualHost>
 ```
 
-Another way would be placing the directive in a separate file living inside your project. For instance,
-you can create a file `app/config/apache/photos.xml` and add to the project's vhost the following directive:
+Alternatively, you can place the directive in a separate file within your 
+project, and include it within your Apache VHost configuration. For example, 
+you can create the file `app/config/apache/photos.xml` and add the following 
+to your VHost file
 
-``` xml
+```xml
 <VirtualHost *:80>
     <!-- Rest of directives like DocumentRoot or ServerName -->
 
@@ -214,12 +503,15 @@ you can create a file `app/config/apache/photos.xml` and add to the project's vh
 </VirtualHost>
 ```
 
-This way you keep the file along with your code and you are able to change your files directory access easily or create
-different environment-dependant configuration files.
+This method keeps the file with the rest of your code, allowing you to change
+it easily or create different environment-dependent configuration files.
 
-Either way, once you have granted access on Apache to read the `data_root` files, the relative path of an image with this
-absolute path `/path/to/source/images/dir/logo.png` must be `/FavouriteAlias/logo.png` to be readable.
+Once you have configured Apache properly, the relative path to an image with 
+the following absolute path `/path/to/source/images/dir/logo.png` must be
+`/FavouriteAlias/logo.png`.
+
 
 ## Documentation
 
-For more detailed information about the features of this bundle, please refer to [the documentation](http://symfony.com/doc/master/bundles/LiipImagineBundle/index.html).
+For more detailed information about the features of this bundle, refer to
+the [documentation](http://symfony.com/doc/master/bundles/LiipImagineBundle).

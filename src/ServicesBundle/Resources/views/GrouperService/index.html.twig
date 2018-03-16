@@ -1,0 +1,22 @@
+{% extends 'ServicesBundle:BaseService:index.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {% stylesheets filter="scssphp" output="assets/services/grouper-service/index/css/local.css"
+        '@AppBundle/Resources/public/scss/select-box.scss'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block local_javascripts %}
+    {% javascripts output="assets/services/grouper-service/index/js/local.js"
+        '@ServicesBundle/Resources/public/grouper-service/index/ts/dist/inline.bundle.js'
+        '@ServicesBundle/Resources/public/grouper-service/index/ts/dist/polyfills.bundle.js'
+        '@ServicesBundle/Resources/public/grouper-service/index/ts/dist/vendor.bundle.js'
+        '@ServicesBundle/Resources/public/grouper-service/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

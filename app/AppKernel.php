@@ -21,6 +21,7 @@ class AppKernel extends Kernel
             new AdminBundle\AdminBundle(),
             new SysadminBundle\SysadminBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+            new Knp\Bundle\SnappyBundle\KnpSnappyBundle(),
             new EntitiesBundle\EntitiesBundle(),
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),

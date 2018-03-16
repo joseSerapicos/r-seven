@@ -38,7 +38,9 @@ class BookingServiceAddStep3Type extends BaseType
             'name' => $this->entityMetadata['name'],
             'description' => $this->entityMetadata['description'],
             'supplierObj' => $this->entityMetadata['supplierObj'],
-            'reference' => $this->entityMetadata['reference']
+            'reference' => $this->entityMetadata['reference'],
+            'placeObj' => $this->entityMetadata['placeObj'],
+            'placeToObj' => $this->entityMetadata['placeToObj']
         );
 
         return $this;

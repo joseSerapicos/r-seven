@@ -71,7 +71,7 @@ class UserGroupAclUserRepository extends BaseEntityRepository
                 'form' => array('type' => 'none')
             ),
             'isEnabled' => array('label' => 'Enabled', 'acl' => 'read', 'type' => 'boolean', 'default' => true,
-                'form' => array('type' => 'none')
+                'form' => array('type' => 'none'), 'view' => array('keepOriginalNormalizer' => true)
             ),
 
             // Foreign fields, used to get the name of the user to list registers

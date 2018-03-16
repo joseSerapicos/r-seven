@@ -87,10 +87,16 @@ export class DataService {
 
     /**
      * Get object
+     * @param index
      * @returns any
      */
-    public getObject(): any
+    public getObject(index: any = null): any
     {
+        if (index !== null) {
+            let objectsProvider = (this._objectsProvider || this._provider.objects || []);
+            return (objectsProvider[index] || null);
+        }
+
         return this._object;
     }
 
@@ -626,16 +632,20 @@ export class DataService {
      * Detect fields that needs to be rendered to view/template
      * @param objects
      * @param fields
+     * @param fieldsMetadata
+     * @param fieldsChoices
      * @returns any
      */
-    protected normalizeObjectsToTemplate(objects: any = null, fields: any[] = null): any
+    protected normalizeObjectsToTemplate(objects: any = null, fields: any[] = null, fieldsMetadata = null, fieldsChoices = null): any
     {
         objects = (objects || this._provider.objects);
         fields = (fields || this._provider.fields['view']);
+        fieldsMetadata = (fieldsMetadata || this._provider.fields['metadata'] || {});
+        fieldsChoices = (fieldsChoices || this._provider.fieldsChoices || null);
 
         if(objects && fields) {
             for (let field of fields) {
-                let fieldMetadata = this._provider.fields['metadata'][field];
+                let fieldMetadata = fieldsMetadata[field];
                 if (fieldMetadata['skipNormalizer']) { continue; }
 
                 switch (fieldMetadata['type']) {
@@ -650,18 +660,21 @@ export class DataService {
                     case 'status':
                         for (let obj of objects) {
                             if (typeof obj[field] != 'undefined') { // Can be undefined, if the search doest have the field selected
-                                obj[field] = this.renderField(field, obj);
+                                // Keep a copy of original value (usually boolean and monetary field to use in controls)
+                                if (fieldMetadata['keepOriginalNormalizer']) {
+                                    obj['__'+field] = obj[field];
+                                }
+
+                                obj[field] = this.renderField(field, obj, fieldsMetadata);
                             }
                         }
                         break;
                 }
 
                 // For "enum" type (key is the label, pattern of Symfony ChoiceType)
-                if (this._provider.fieldsChoices
-                    && this._provider.fieldsChoices[field]
-                    && this._provider.fieldsChoices[field]['value']
+                if (fieldsChoices && fieldsChoices[field] && fieldsChoices[field]['value']
                 ) {
-                    let enumObj = this._provider.fieldsChoices[field]['value'];
+                    let enumObj = fieldsChoices[field]['value'];
                     for (let obj of objects) {
                         for (let enumKey in enumObj) {
                             if (enumObj[enumKey] == obj[field]) {
@@ -707,12 +720,14 @@ export class DataService {
      * Render field
      * @param field
      * @param object
+     * @param fieldsMetadata
      * @returns {string}
      */
-    public renderField(field: string, object: any): any
+    protected renderField(field: string, object: any, fieldsMetadata = null): any
     {
         // Get field metadata
-        let fieldMetadata = (this._provider.fields['metadata'][field] || null),
+        fieldsMetadata = (fieldsMetadata || this._provider.fields['metadata'] || {});
+        let fieldMetadata = (fieldsMetadata[field] || null),
             value = object[field];
 
         // Render field to the view/template
@@ -791,7 +806,7 @@ export class DataService {
 
         return new Promise(function(resolve, reject) {
             if (object) {
-                // Objects has pre existent data (for example can be from backend session storage)
+                // Object has pre existent data (for example can be from backend session storage)
                 that.setNewObject(object);
                 return resolve(true);
             }
@@ -903,19 +918,11 @@ export class DataService {
                     return resolve(data['object'] || null);
                 },
                 errors => {
-                    // Local data (do not override, merge data). Exception in errors list used in some cases.
-                    if (errors['localData']) {
-                        that.setLocalData(errors['localData']);
-                        delete errors['localData']; // It's no more necessary
+                    if (errors['data']) {
+                        that.handleResponse(errors['data']);
                     }
 
-                    // Refresh object
-                    if (errors['object']) {
-                        that.setObject(errors['object'], that._objectIndex);
-                        delete errors['object']; // It's no more necessary
-                    }
-
-                    return reject(errors);
+                    return reject(errors['errors'] || {});
                 }
             );
         });
@@ -1179,9 +1186,10 @@ export class DataService {
     public redirect(route: string, index: any = null): void
     {
         index = ((index == null) ? this._objectIndex : index);
-        let objectsProvider = (this._objectsProvider || this._provider.objects);
+        let objectsProvider = (this._objectsProvider || this._provider.objects),
+            idField = (this._provider.route[route]['idField'] || 'id');
 
-        location.href = (this._provider.route[route]['url'] + '/' + objectsProvider[index]['id']);
+        location.href = (this._provider.route[route]['url'] + '/' + objectsProvider[index][idField]);
         return;
     }
 
@@ -1204,7 +1212,12 @@ export class DataService {
 
                     return resolve(data);
                 },
-                errors => { return reject(errors); }
+                errors => {
+                    if (updateData && errors['data']) {
+                        that.handleResponse(errors['data']);
+                    }
+                    return reject(errors['errors'] || {});
+                }
             );
         });
     }

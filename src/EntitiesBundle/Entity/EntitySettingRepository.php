@@ -55,13 +55,16 @@ class EntitySettingRepository extends BaseEntityRepository
                 'table' => 'store', 'bundle' => 'admin', 'type' => 'none'), 'isRequired' => false,
                 'form' => array('type' => 'select')
             ),
-            'store_name' => array('table' => 'store', 'field' => 'name', 'label' => 'Store', 'type' => 'text',
-                'acl' => 'read', 'dependency' => 'storeObj', 'form' => array('type' => 'none')),
+            // Disabled 02/03/2018
+            /*'store_name' => array('table' => 'store', 'field' => 'name', 'label' => 'Store', 'type' => 'text',
+                'acl' => 'read', 'dependency' => 'storeObj', 'form' => array('type' => 'none')),*/
             'seriesPrefix' => array('label' => 'Series Prefix', 'type' => 'text', 'acl' => 'edit'),
             'seriesNumber' => array('label' => 'Series Number', 'type' => 'number', 'acl' => 'edit'),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
-            'isEnabled' => array('label' => 'Enabled', 'type' => 'none', 'acl' => 'edit', 'default' => true)
+            'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
+                'view' => array('keepOriginalNormalizer' => true)
+            )
         ));
     }
 }

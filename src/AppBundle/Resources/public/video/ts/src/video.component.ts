@@ -20,11 +20,11 @@ export class VideoComponent extends DataBoxComponent
         @Inject('Provider') provider: DataBoxProvider,
         @Inject('DataService') dataService: any,
         tasksLoaderManagerService: TasksLoaderManagerService,
+        @Inject('HelperService') helperService: any,
         actionsService: ActionsService,
         modalService: ModalService,
         @Inject('Popups') popups: Popups | Popup,
-        injector: Injector,
-        @Inject('HelperService') protected _helperService: any
+        injector: Injector
     ) {
         // Call parent
         super(
@@ -33,6 +33,7 @@ export class VideoComponent extends DataBoxComponent
             provider,
             dataService,
             tasksLoaderManagerService,
+            helperService,
             actionsService,
             modalService,
             popups,
