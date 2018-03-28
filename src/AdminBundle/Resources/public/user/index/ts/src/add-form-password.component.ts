@@ -1,9 +1,9 @@
 import {Component, ElementRef, Inject, Injector, Renderer} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
-import {FormProvider} from '../../../../../../../AppBundle/Resources/public/ts/form/form-provider';
-import {FormExtensionComponent} from '../../../../../../../AppBundle/Resources/public/ts/form/form.extension-component';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
+import {FormProvider} from '../../../../../../../AppBundle/Resources/public/form/ts/form-provider';
+import {FormExtensionComponent} from '../../../../../../../AppBundle/Resources/public/form/ts/form.extension-component';
 
 
 // Component

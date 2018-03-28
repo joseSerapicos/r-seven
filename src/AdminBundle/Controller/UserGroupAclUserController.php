@@ -71,6 +71,9 @@ class UserGroupAclUserController extends BaseEntityChildController
             'delete' => $this->templateConf['acl']['delete']
         );
 
+        // Legend (disable cancel legend)
+        $this->templateConf['controls']['legend'] = array();
+
         // Extra data
         $this->templateConf['extraData']['template'] = array(
             'class' => '-merge-view'

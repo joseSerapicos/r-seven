@@ -2,7 +2,7 @@ import {Component, ElementRef, Injector, Inject, Renderer, ViewContainerRef} fro
 import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
 import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts/actions/actions.service';
 import {ModalService} from '../../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
-import {FormService, IForm} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService, IForm} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {DataBoxComponent, DataBoxProvider, Popups, Popup} from '../../../../../../../AppBundle/Resources/public/data-box/ts/src/data-box.component';
 import {TasksLoaderManagerService} from '../../../../../../../AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service';
 

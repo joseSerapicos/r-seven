@@ -1,21 +1,19 @@
-<div class="modal-body">
-    <div class="form-wrapper gray-bg">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>
-                        <div class="txt-align-r actions">
-                            <a class="-round fa fa-times"
-                               (click)="closeAction($event)"></a>
-                        </div>
-                    </div>
-                        
+    
     <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
-                    <div class="ibox-content">        
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12">        
                                         
 
-                <div class="form-group" *ngIf="_formService.getObject().booking_code">
+                <div class="row form-group" *ngIf="_formService.getObject().booking_code">
 
                         <label class="col-sm-2 control-label" for="form_booking_code">Booking</label>
     
@@ -28,7 +26,7 @@
         </div>
                                                     
 
-                <div class="form-group" *ngIf="_formService.getObject().supplier_code">
+                <div class="row form-group" *ngIf="_formService.getObject().supplier_code">
 
                         <label class="col-sm-2 control-label" for="form_supplier_code">Supplier</label>
     
@@ -41,7 +39,7 @@
         </div>
                                                     
 
-                <div class="form-group" *ngIf="_formService.getObject().client_code">
+                <div class="row form-group" *ngIf="_formService.getObject().client_code">
 
                         <label class="col-sm-2 control-label" for="form_client_code">Client</label>
     
@@ -54,7 +52,7 @@
         </div>
                                                     
 
-                <div class="form-group" *ngIf="_formService.getObject().serviceObj">
+                <div class="row form-group" *ngIf="_formService.getObject().serviceObj">
 
                         <label class="col-sm-2 control-label required" for="form_serviceObj">Service</label>
     
@@ -67,7 +65,7 @@
         </div>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_description">Description</label>
     
@@ -78,23 +76,23 @@
         </div>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_postingType">Operation</label>
     
             <div class="col-sm-10">
-                                        
+                                                                    
         <select id="form_postingType" name="form[postingType]" [(ngModel)]="_formService.getObject().postingType" formControlName="postingType" [class.error]="_formService.getErrors().postingType &amp;&amp; _formService.getErrors().postingType.length &gt; 0" class="form-control">            <option value="DEBIT" >Debit</option>            <option value="CREDIT" >Credit</option></select>
     <input [(ngModel)]="_formService.getObject().postingType"
            formControlName = postingType
            required="required"           type="hidden">
 
-                <label class="error" *ngFor="let error of _formService.getErrors().postingType">{{error}}</label>
+                            <label class="error" *ngFor="let error of _formService.getErrors().postingType">{{error}}</label>
             </div>
         </div>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label">VAT included</label>
     
@@ -110,7 +108,7 @@
                 <label class="error" *ngFor="let error of _formService.getErrors().costValue">{{error}}</label>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_quantity">Quantity</label>
     
@@ -121,7 +119,7 @@
         </div>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_user_costValue">Cost</label>
     
@@ -130,17 +128,17 @@
                 <label class="error" *ngFor="let error of _formService.getErrors().user_costValue">{{error}}</label>
             </div>
         </div>
-                                                                    <div class="form-group">
+                                                                    <div class="row form-group">
                                 <label class="col-sm-2 control-label" for="form_marginValue">Margin</label>
                         <div class="col-sm-10"><div class="row">
                         <div class="col-sm-6">
-                                                    
+                                                                                
         <select id="form_marginMethod" name="form[marginMethod]" (change)="onMarginMethodChange($event.target.value)" [(ngModel)]="_formService.getObject().marginMethod" formControlName="marginMethod" [class.error]="_formService.getErrors().marginMethod &amp;&amp; _formService.getErrors().marginMethod.length &gt; 0" class="form-control"><option value=""></option>            <option value="MARGIN" >Margin</option>            <option value="MARKUP" >Markup</option>            <option value="FIXED" >Fixed</option></select>
     <input [(ngModel)]="_formService.getObject().marginMethod"
            formControlName = marginMethod
                       type="hidden">
 
-                <label class="error" *ngFor="let error of _formService.getErrors().marginMethod">{{error}}</label>
+                            <label class="error" *ngFor="let error of _formService.getErrors().marginMethod">{{error}}</label>
                         </div>
                         <div class="col-sm-6">
                                                         <input type="text" id="form_marginValue" name="form[marginValue]" (input)="onMarginValueEnterKey($event.target.value)" (focusout)="onMarginValueEnterKey($event.target.value)" [(ngModel)]="_formService.getObject().marginValue" formControlName="marginValue" [class.error]="_formService.getErrors().marginValue &amp;&amp; _formService.getErrors().marginValue.length &gt; 0" class="form-control" />
@@ -154,7 +152,7 @@
                 <label class="error" *ngFor="let error of _formService.getErrors().sellValue">{{error}}</label>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_user_sellValue">Sell</label>
     
@@ -165,7 +163,7 @@
         </div>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_subTotalSell">Sub Total</label>
     
@@ -176,7 +174,7 @@
         </div>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_totalVatSell">Total VAT</label>
     
@@ -187,7 +185,7 @@
         </div>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_totalSell">Total</label>
     
@@ -202,7 +200,7 @@
                 <label class="error" *ngFor="let error of _formService.getErrors().userFieldTyped">{{error}}</label>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label">Enabled</label>
     
@@ -213,15 +211,18 @@
             </div>
         </div>
                             </div>
-                    <div class="ibox-footer hide-on-empty">    
-                    <div class="form-group">
-            <div class="col-sm-10 col-sm-offset-2">
-                                            <button                                     class="btn"
+    </div>
+</div>
+<div class="modal-footer hide-on-empty">
+        
+                    <div class="row">
+            <div class="col-auto ml-auto">
+                                            <button                                     class="btn btn-light"
                                     (click)="cancelAction($event)"
                                         id="form_cancel"
             name="form[cancel]"
             type="button"><i class="fa fa-times"></i>&nbsp;Cancel</button>
-                                                <button                                     class="btn"
+                                                <button                                     class="btn btn-light"
                                     (click)="resetAction($event)"
                                         id="form_reset"
             name="form[reset]"
@@ -238,10 +239,5 @@
             type="button"><i class="fa fa-times"></i>&nbsp;Save and Close</button>
                                 </div>
         </div>
-    </div>                        
-    <input type="hidden" id="form__token" name="form[_token]" value="y_X653isBIPUjhTqIFoEMS38F6y1pjJHhEkNvonaMMU" /></form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    </div>    
+    <input type="hidden" id="form__token" name="form[_token]" value="sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo" /></form>

@@ -1,26 +1,22 @@
-<div class="modal-body">
-    <div class="form-wrapper gray-bg">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>{% block header_container %}{% endblock %}</h5>
-                        <div class="txt-align-r actions">
-                            <a class="-round fa fa-times"
-                               (click)="closeAction($event)"></a>
-                        </div>
-                    </div>
-                    {% block before_container %}{% endblock %}
-                    <div class="ibox-content">{% block body %}{% endblock %}</div>
-                    {% block footer %}<div class="ibox-footer hide-on-empty">{% block footer_container %}
-                        <div class="form-horizontal"><div class="form-group"><div class="col-sm-10 col-sm-offset-2">
-                            {#<button *ngIf="isDialog" class="btn btn-default" (click)="closeAction($event, false)">Cancel</button>#}
-                            <button class="btn btn-primary" (click)="closeAction($event, true)">Ok</button>
-                        </div></div></div>
-                    {% endblock %}</div>{% endblock %}
-                    {% block after_container %}{% endblock %}
-                </div>
-            </div>
-        </div>
+{% block before_container %}{% endblock %}
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">{% block header_container %}{% endblock %}</h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
     </div>
 </div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12">{% block body %}{% endblock %}</div>
+    </div>
+</div>
+{% block footer %}<div class="modal-footer hide-on-empty">
+    {% block footer_container %}
+        <div class="row"><div class="col-auto ml-auto">
+            <button type="button" class="btn btn-primary" (click)="closeAction($event, true)">Ok</button>
+        </div></div>
+    {% endblock %}
+</div>{% endblock %}
+{% block after_container %}{% endblock %}

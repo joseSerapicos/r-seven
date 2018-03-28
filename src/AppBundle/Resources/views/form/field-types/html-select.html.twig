@@ -1,21 +1,16 @@
 {% if (field is defined) and (formField is defined) %}
-    <div [htmlSelect]="'{{field}}'"
-         class="html-select"
+    <div class="html-select"
+         [htmlSelect]="'{{field}}'"
          {% if (formField.vars.attr is defined) %}
              {% for attr, value in formField.vars.attr %}{{attr}}="{{value}}"{% endfor %}
          {% endif %}>
-        <div class="form-control"
+        <div class="input-group-control"
              [class.error]="_formService.getErrors()['{{field}}'] && (_formService.getErrors()['{{field}}'].length > 0)">
-            <span class="control">
-                <span class="js_label"></span><a class="pull-right"><i class="fa fa-angle-down"></i></a>
-            </span>
+            <span class="js_label form-control"></span>
+            <a class="pull-right"><i class="fa fa-angle-down"></i></a>
         </div>
         <div class="choices js_choices">
-            <ul class="form-control-box">
-                {% for choice in formField.vars.choices %}
-                    <li data-value="{{choice.value}}">{{choice.label|raw}}</li>
-                {% endfor %}
-            </ul>
+            <ul class="form-control-box">{% block choices %}{% endblock %}</ul>
         </div>
     </div>
     <input [(ngModel)]="_formService.getObject().{{field}}"

@@ -52,10 +52,11 @@
                 </tbody>
             </table>
 
-            <div class="dsp-table">
-                <span class="pd-r-xs">To:</span>
-                <div class="document-entity m-t-xs">
-                    <span *ngIf="_formService.getObject().entity_avatar" [innerHTML]="_formService.getViewObject().entity_avatar" class="pd-r-xs"></span>
+            <div class="">
+                <span class="">To:</span>
+                <div class="document-entity mt-1">
+                    <span *ngIf="_formService.getObject().entity_avatar"
+                          [innerHTML]="_formService.getViewObject().entity_avatar" class="pr-1"></span>
                     <address>
                         <strong>{{'{{_formService.getObject().entityLegalName}}'}}</strong><br>
                         <div class="m-t-xs m-b-xs">
@@ -71,13 +72,13 @@
                     </address>
                 </div>
             </div>
-            <p class="m-t-sm">Tax Number: {{'{{_formService.getObject().entityTaxNumber}}'}}</p>
+            <p class="mt-2">Tax Number: {{'{{_formService.getObject().entityTaxNumber}}'}}</p>
         </div>
     </div>
 
-    <div class="m-t-sm">
+    <div class="mt-2">
         <span>Comments</span>
-        <div class="well document-comments">{% include 'AppBundle:form:input.html.twig' with {
+        <div class="border rounded document-comments">{% include 'AppBundle:form:input.html.twig' with {
             'field': 'comments',
             'formField': documentForm['comments'],
             'metadata': fields['metadata']['comments']
@@ -92,7 +93,7 @@
         <div class="col-sm-8">
             <ng-template [ngIf]="_dataService.getLocalDataAttr('totalVatSplitByCode')">
             <span>TAX Resume</span>
-            <div class="well document-tax-resume">
+            <div class="border rounded document-tax-resume">
                 <table class="table">
                     <tbody>
                     <tr>
@@ -149,6 +150,6 @@
     </div>{% endblock %}
 
     <div *ngIf="_dataService.getLocalDataAttr('documentInfo') && _dataService.getLocalDataAttr('documentInfo')['footer']"
-         class="well m-t"
+         class="rounded mt-2 bg-light p-3"
          [innerHTML]="_dataService.getLocalDataAttr('documentInfo')['footer']"></div>
 {% endif %}

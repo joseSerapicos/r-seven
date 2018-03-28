@@ -36,16 +36,17 @@
 }
 .document-total > tbody > tr > td > label,
 .document-dates > tbody > tr > td > label,
-.document-comments > label {
-  position: absolute; // To align the error
-  left: 0;
-}
 .document-comments {
   position: relative; // To align the error
   padding: 1px;
 
   > textarea {
     border: none 0;
+  }
+
+  > label {
+    position: absolute; // To align the error
+    left: 0;
   }
 }
 .document-tax-resume {

@@ -10,14 +10,14 @@ import {PostService} from '../../../../../../../AppBundle/Resources/public/ts/po
 import {ModalService} from '../../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
 import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
 import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts/actions/actions.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {FlashMessageService} from '../../../../../../../AppBundle/Resources/public/ts/flash-message.service';
 import {DynamicComponentLoaderService} from '../../../../../../../AppBundle/Resources/public/ts/dynamic-component-loader.service';
 import {NavManagerService} from '../../../../../../../AppBundle/Resources/public/ts/nav-manager/nav-manager.service';
-import {MainExtModule as AppBasicsExtModule} from '../../../../../../../AppBundle/Resources/public/app-basics/ts/src/main.ext-module';
-import {MainComponent as AppBasicsComponent} from '../../../../../../../AppBundle/Resources/public/app-basics/ts/src/main.component';
+import {MainExtModule as AppBasicsExtModule} from '../../../../../../../AppBundle/Resources/public/app-basics/default/ts/src/main.ext-module';
+import {MainComponent as AppBasicsComponent} from '../../../../../../../AppBundle/Resources/public/app-basics/default/ts/src/main.component';
 import {MainComponent} from './main.component';
-import {AutoCompleteProviders} from '../../../../../../../AppBundle/Resources/public/ts/form/field-types/field-type-auto-complete.component';
+import {AutoCompleteProviders} from '../../../../../../../AppBundle/Resources/public/form/ts/field-types/field-type-auto-complete.component';
 
 
 // Dynamic entity detail
@@ -70,54 +70,44 @@ let autoCompleteProviders = {
             ]
         }
     },
-    entityObj: {
+    selectEntityObj: {
         urlConf: (Helper.getAppVar('route') + 'entities/entity/conf'),
+        control: 'none'
+    },
+    placeObj: {
+        urlConf: (Helper.getAppVar('route') + 'booking/place/conf'),
         control: 'edit',
         popups: {
-            module: EntitiesEntityEditExtModule,
+            module: CommonPlaceEditExtModule,
             component: 'EditComponent',
             providers: [
-                {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Entity'})},
-                FormService,
-                // Reset FormServiceProvider to use DataServiceProvider as default values
-                {provide: 'FormServiceProvider', useValue: {}}
+                {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Place'})},
+                FormService
             ]
-        },
-        placeObj: {
-            urlConf: (Helper.getAppVar('route') + 'booking/place/conf'),
-            control: 'edit',
-            popups: {
-                module: CommonPlaceEditExtModule,
-                component: 'EditComponent',
-                providers: [
-                    {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Place'})},
-                    FormService
-                ]
-            }
-        },
-        placeToObj: {
-            urlConf: (Helper.getAppVar('route') + 'booking/place/conf'),
-            control: 'edit',
-            popups: {
-                module: CommonPlaceEditExtModule,
-                component: 'EditComponent',
-                providers: [
-                    {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Place'})},
-                    FormService
-                ]
-            }
-        },
-        countryObj: {
-            urlConf: (Helper.getAppVar('route') + 'booking/country/conf'),
-            control: 'edit',
-            popups: {
-                module: CommonCountryEditExtModule,
-                component: 'EditComponent',
-                providers: [
-                    {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Country'})},
-                    FormService
-                ]
-            }
+        }
+    },
+    placeToObj: {
+        urlConf: (Helper.getAppVar('route') + 'booking/place/conf'),
+        control: 'edit',
+        popups: {
+            module: CommonPlaceEditExtModule,
+            component: 'EditComponent',
+            providers: [
+                {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Place'})},
+                FormService
+            ]
+        }
+    },
+    countryObj: {
+        urlConf: (Helper.getAppVar('route') + 'booking/country/conf'),
+        control: 'edit',
+        popups: {
+            module: CommonCountryEditExtModule,
+            component: 'EditComponent',
+            providers: [
+                {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Country'})},
+                FormService
+            ]
         }
     }
 };

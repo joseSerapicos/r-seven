@@ -99,6 +99,7 @@ export class MainComponent extends TabsComponent implements ITabs
                     {provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data)},
                     {provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data)},
                     {provide: 'Provider', useValue: this._helperService.getImageProvider(data, localData)},
+                    {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)},
                     {provide: 'Popups', useValue: {
                         module: StoreLogoImageEditExtModule,
                         component: 'EditComponent',

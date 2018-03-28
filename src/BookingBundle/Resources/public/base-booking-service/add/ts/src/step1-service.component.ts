@@ -4,7 +4,7 @@ import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts
 import {DataBoxExtensionComponent, DataBoxProvider, Popups, Popup} from '../../../../../../../AppBundle/Resources/public/data-box/ts/src/data-box.extension-component';
 import {ModalService} from '../../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
 import {TasksLoaderManagerService} from '../../../../../../../AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service';
-import {FormService} from "../../../../../../../AppBundle/Resources/public/ts/form/form.service";
+import {FormService} from "../../../../../../../AppBundle/Resources/public/form/ts/form.service";
 
 
 // Component

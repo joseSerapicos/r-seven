@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Service\HelperService;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
@@ -41,7 +42,6 @@ abstract class BaseController extends Controller
         'errors' => array(),
         'flashMessages' => array(), // (error, warning, info and success messages)
         'hasConf' => false,
-        'addObjectSessionStorageFlag' => true, // Mark session storage object with a flag to be identified by template
         // Local specific custom data of controller to sent to template/view (twig)
         'localData' => array('template' => array(), 'data' => array()),
     );
@@ -71,7 +71,7 @@ abstract class BaseController extends Controller
         }
         //////////////////////////////////////////////////////////////////////////////////////////
 
-        
+
         // Set global vars in HelperService (to be accessed from entity, repository, formType, etc.)
         HelperService::setGlobalVar('filesRepository', $this->get('session')->get('_app.system')['filesRepository']);
         HelperService::setGlobalVar('isAdmin', $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN'));
@@ -176,7 +176,7 @@ abstract class BaseController extends Controller
         /* Controls for template/view */
         $this->templateConf['controls'] = array(
             'legend' => array(
-                array('label' => 'Canceled', 'class' => 'bg-default-light', 'field' => 'isEnabled', 'expr' => 'null')
+                array('label' => 'Canceled', 'class' => 'legend-canceled', 'field' => 'isEnabled', 'expr' => 'null')
             )
         );
         /* /Controls for template/view */
@@ -347,9 +347,10 @@ abstract class BaseController extends Controller
      * Normalize and get the response for user
      * @param bool $isJson (is a json response)
      * @param array $extraData (extra data to merge into response)
+     * @param $hasSymfonyResponse (wrap the response in a Symfony response)
      * @return array
      */
-    protected function getResponse($isJson = false, $extraData = array())
+    protected function getResponse($isJson = false, $extraData = array(), $hasSymfonyResponse = true)
     {
         $data = (is_array($extraData) ? $extraData : array());
 
@@ -381,6 +382,10 @@ abstract class BaseController extends Controller
                 }
             }
 
+            if (!$hasSymfonyResponse) {
+                return $data;
+            }
+
             // Create a json response
             $response = new JsonResponse();
             return $response->setData($data);
@@ -391,6 +396,24 @@ abstract class BaseController extends Controller
             '_conf' => $data,
             '_localData' => $this->responseConf['localData']
         );
+    }
+
+    /**
+     * Handle Exit
+     * @param string $message
+     * @param bool $hasJson (send a json response)
+     * @throws \Exception
+     */
+    protected function handleExit($message = 'An error has occurred', $hasJson = false) {
+        if ($hasJson) {
+            $jsonResponse = $this->getResponse(true, array(), false);
+            $response = new Response(json_encode($jsonResponse));
+            $response->headers->set('Content-Type', 'application/json');
+            $response->send();
+            exit;
+        }
+
+        throw new \Exception($message);
     }
 
     /**

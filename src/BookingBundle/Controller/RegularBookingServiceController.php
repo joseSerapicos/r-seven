@@ -103,7 +103,7 @@ class RegularBookingServiceController extends BaseBookingServiceController
 
         /* Legend for template/view */
         $this->templateConf['controls']['legend'][] = array(
-            'label' => 'Grouped Service', 'class' => 'bg-warning-light', 'field' => 'grouperBookingServiceObj'
+            'label' => 'Grouped Service', 'class' => 'legend-grouped', 'field' => 'grouperBookingServiceObj'
         );
         /* /Legend for template/view */
 

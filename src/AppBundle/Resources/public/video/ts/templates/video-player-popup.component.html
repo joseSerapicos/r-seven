@@ -1,0 +1,20 @@
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">Video Player</h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12">    <div class="video-player">
+        <video *ngIf="getProviderAttr('source') == 'file'"
+               class="js_flvPlayer video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
+               controls><source [src]="_url" type="video/{{getExtension()}}"></video>
+        <iframe *ngIf="getProviderAttr('source') == 'youtube'" [src]="_url" frameborder="0" allowfullscreen></iframe>
+        <iframe *ngIf="getProviderAttr('source') == 'vimeo'" [src]="_url" frameborder="0" allowfullscreen></iframe>
+    </div>
+</div>
+    </div>
+</div>

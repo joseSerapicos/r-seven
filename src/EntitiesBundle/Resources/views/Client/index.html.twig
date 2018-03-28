@@ -3,10 +3,10 @@
 {% block header %}{% endblock %}
 
 {% block stylesheets %}
-    {% stylesheets filter="scssphp" output="assets/entities/client/index/css/main.css"
-        '@AppBundle/Resources/public/scss/select-box.scss'
+    {% stylesheets output="assets/entities/client/index/css/local.css"
+    '@EntitiesBundle/Resources/public/client/index/scss/dist/styles.css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 {% endblock %}
 
@@ -15,7 +15,7 @@
     <div class="js_dataBox"></div>
 {% endblock %}
 
-{%  block local_javascripts %}
+{%  block javascripts %}
     {% javascripts output="assets/entities/client/index/js/local.js"
         '@EntitiesBundle/Resources/public/client/index/ts/dist/inline.bundle.js'
         '@EntitiesBundle/Resources/public/client/index/ts/dist/polyfills.bundle.js'

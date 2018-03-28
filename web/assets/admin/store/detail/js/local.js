@@ -5280,6 +5280,3397 @@ module.exports = __webpack_require__("../../../../../polyfills.ts");
 //# sourceMappingURL=polyfills.bundle.js.map
 webpackJsonp(["vendor"],{
 
+/***/ "../../../../blueimp-gallery/js/blueimp-gallery.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
+ * blueimp Gallery JS
+ * https://github.com/blueimp/Gallery
+ *
+ * Copyright 2013, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Swipe implementation based on
+ * https://github.com/bradbirdsall/Swipe
+ *
+ * Licensed under the MIT license:
+ * https://opensource.org/licenses/MIT
+ */
+
+/* global define, window, document, DocumentTouch */
+
+;(function (factory) {
+  'use strict'
+  if (true) {
+    // Register as an anonymous AMD module:
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__("../../../../blueimp-gallery/js/blueimp-helper.js")], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+  } else {
+    // Browser globals:
+    window.blueimp = window.blueimp || {}
+    window.blueimp.Gallery = factory(window.blueimp.helper || window.jQuery)
+  }
+})(function ($) {
+  'use strict'
+
+  function Gallery (list, options) {
+    if (document.body.style.maxHeight === undefined) {
+      // document.body.style.maxHeight is undefined on IE6 and lower
+      return null
+    }
+    if (!this || this.options !== Gallery.prototype.options) {
+      // Called as function instead of as constructor,
+      // so we simply return a new instance:
+      return new Gallery(list, options)
+    }
+    if (!list || !list.length) {
+      this.console.log(
+        'blueimp Gallery: No or empty list provided as first argument.',
+        list
+      )
+      return
+    }
+    this.list = list
+    this.num = list.length
+    this.initOptions(options)
+    this.initialize()
+  }
+
+  $.extend(Gallery.prototype, {
+    options: {
+      // The Id, element or querySelector of the gallery widget:
+      container: '#blueimp-gallery',
+      // The tag name, Id, element or querySelector of the slides container:
+      slidesContainer: 'div',
+      // The tag name, Id, element or querySelector of the title element:
+      titleElement: 'h3',
+      // The class to add when the gallery is visible:
+      displayClass: 'blueimp-gallery-display',
+      // The class to add when the gallery controls are visible:
+      controlsClass: 'blueimp-gallery-controls',
+      // The class to add when the gallery only displays one element:
+      singleClass: 'blueimp-gallery-single',
+      // The class to add when the left edge has been reached:
+      leftEdgeClass: 'blueimp-gallery-left',
+      // The class to add when the right edge has been reached:
+      rightEdgeClass: 'blueimp-gallery-right',
+      // The class to add when the automatic slideshow is active:
+      playingClass: 'blueimp-gallery-playing',
+      // The class for all slides:
+      slideClass: 'slide',
+      // The slide class for loading elements:
+      slideLoadingClass: 'slide-loading',
+      // The slide class for elements that failed to load:
+      slideErrorClass: 'slide-error',
+      // The class for the content element loaded into each slide:
+      slideContentClass: 'slide-content',
+      // The class for the "toggle" control:
+      toggleClass: 'toggle',
+      // The class for the "prev" control:
+      prevClass: 'prev',
+      // The class for the "next" control:
+      nextClass: 'next',
+      // The class for the "close" control:
+      closeClass: 'close',
+      // The class for the "play-pause" toggle control:
+      playPauseClass: 'play-pause',
+      // The list object property (or data attribute) with the object type:
+      typeProperty: 'type',
+      // The list object property (or data attribute) with the object title:
+      titleProperty: 'title',
+      // The list object property (or data attribute) with the object URL:
+      urlProperty: 'href',
+      // The list object property (or data attribute) with the object srcset URL(s):
+      srcsetProperty: 'urlset',
+      // The gallery listens for transitionend events before triggering the
+      // opened and closed events, unless the following option is set to false:
+      displayTransition: true,
+      // Defines if the gallery slides are cleared from the gallery modal,
+      // or reused for the next gallery initialization:
+      clearSlides: true,
+      // Defines if images should be stretched to fill the available space,
+      // while maintaining their aspect ratio (will only be enabled for browsers
+      // supporting background-size="contain", which excludes IE < 9).
+      // Set to "cover", to make images cover all available space (requires
+      // support for background-size="cover", which excludes IE < 9):
+      stretchImages: false,
+      // Toggle the controls on pressing the Return key:
+      toggleControlsOnReturn: true,
+      // Toggle the controls on slide click:
+      toggleControlsOnSlideClick: true,
+      // Toggle the automatic slideshow interval on pressing the Space key:
+      toggleSlideshowOnSpace: true,
+      // Navigate the gallery by pressing left and right on the keyboard:
+      enableKeyboardNavigation: true,
+      // Close the gallery on pressing the Esc key:
+      closeOnEscape: true,
+      // Close the gallery when clicking on an empty slide area:
+      closeOnSlideClick: true,
+      // Close the gallery by swiping up or down:
+      closeOnSwipeUpOrDown: true,
+      // Emulate touch events on mouse-pointer devices such as desktop browsers:
+      emulateTouchEvents: true,
+      // Stop touch events from bubbling up to ancestor elements of the Gallery:
+      stopTouchEventsPropagation: false,
+      // Hide the page scrollbars:
+      hidePageScrollbars: true,
+      // Stops any touches on the container from scrolling the page:
+      disableScroll: true,
+      // Carousel mode (shortcut for carousel specific options):
+      carousel: false,
+      // Allow continuous navigation, moving from last to first
+      // and from first to last slide:
+      continuous: true,
+      // Remove elements outside of the preload range from the DOM:
+      unloadElements: true,
+      // Start with the automatic slideshow:
+      startSlideshow: false,
+      // Delay in milliseconds between slides for the automatic slideshow:
+      slideshowInterval: 5000,
+      // The starting index as integer.
+      // Can also be an object of the given list,
+      // or an equal object with the same url property:
+      index: 0,
+      // The number of elements to load around the current index:
+      preloadRange: 2,
+      // The transition speed between slide changes in milliseconds:
+      transitionSpeed: 400,
+      // The transition speed for automatic slide changes, set to an integer
+      // greater 0 to override the default transition speed:
+      slideshowTransitionSpeed: undefined,
+      // The event object for which the default action will be canceled
+      // on Gallery initialization (e.g. the click event to open the Gallery):
+      event: undefined,
+      // Callback function executed when the Gallery is initialized.
+      // Is called with the gallery instance as "this" object:
+      onopen: undefined,
+      // Callback function executed when the Gallery has been initialized
+      // and the initialization transition has been completed.
+      // Is called with the gallery instance as "this" object:
+      onopened: undefined,
+      // Callback function executed on slide change.
+      // Is called with the gallery instance as "this" object and the
+      // current index and slide as arguments:
+      onslide: undefined,
+      // Callback function executed after the slide change transition.
+      // Is called with the gallery instance as "this" object and the
+      // current index and slide as arguments:
+      onslideend: undefined,
+      // Callback function executed on slide content load.
+      // Is called with the gallery instance as "this" object and the
+      // slide index and slide element as arguments:
+      onslidecomplete: undefined,
+      // Callback function executed when the Gallery is about to be closed.
+      // Is called with the gallery instance as "this" object:
+      onclose: undefined,
+      // Callback function executed when the Gallery has been closed
+      // and the closing transition has been completed.
+      // Is called with the gallery instance as "this" object:
+      onclosed: undefined
+    },
+
+    carouselOptions: {
+      hidePageScrollbars: false,
+      toggleControlsOnReturn: false,
+      toggleSlideshowOnSpace: false,
+      enableKeyboardNavigation: false,
+      closeOnEscape: false,
+      closeOnSlideClick: false,
+      closeOnSwipeUpOrDown: false,
+      disableScroll: false,
+      startSlideshow: true
+    },
+
+    console:
+      window.console && typeof window.console.log === 'function'
+        ? window.console
+        : { log: function () {} },
+
+    // Detect touch, transition, transform and background-size support:
+    support: (function (element) {
+      var support = {
+        touch:
+          window.ontouchstart !== undefined ||
+          (window.DocumentTouch && document instanceof DocumentTouch)
+      }
+      var transitions = {
+        webkitTransition: {
+          end: 'webkitTransitionEnd',
+          prefix: '-webkit-'
+        },
+        MozTransition: {
+          end: 'transitionend',
+          prefix: '-moz-'
+        },
+        OTransition: {
+          end: 'otransitionend',
+          prefix: '-o-'
+        },
+        transition: {
+          end: 'transitionend',
+          prefix: ''
+        }
+      }
+      var prop
+      for (prop in transitions) {
+        if (
+          transitions.hasOwnProperty(prop) &&
+          element.style[prop] !== undefined
+        ) {
+          support.transition = transitions[prop]
+          support.transition.name = prop
+          break
+        }
+      }
+      function elementTests () {
+        var transition = support.transition
+        var prop
+        var translateZ
+        document.body.appendChild(element)
+        if (transition) {
+          prop = transition.name.slice(0, -9) + 'ransform'
+          if (element.style[prop] !== undefined) {
+            element.style[prop] = 'translateZ(0)'
+            translateZ = window
+              .getComputedStyle(element)
+              .getPropertyValue(transition.prefix + 'transform')
+            support.transform = {
+              prefix: transition.prefix,
+              name: prop,
+              translate: true,
+              translateZ: !!translateZ && translateZ !== 'none'
+            }
+          }
+        }
+        if (element.style.backgroundSize !== undefined) {
+          support.backgroundSize = {}
+          element.style.backgroundSize = 'contain'
+          support.backgroundSize.contain =
+            window
+              .getComputedStyle(element)
+              .getPropertyValue('background-size') === 'contain'
+          element.style.backgroundSize = 'cover'
+          support.backgroundSize.cover =
+            window
+              .getComputedStyle(element)
+              .getPropertyValue('background-size') === 'cover'
+        }
+        document.body.removeChild(element)
+      }
+      if (document.body) {
+        elementTests()
+      } else {
+        $(document).on('DOMContentLoaded', elementTests)
+      }
+      return support
+      // Test element, has to be standard HTML and must not be hidden
+      // for the CSS3 tests using window.getComputedStyle to be applicable:
+    })(document.createElement('div')),
+
+    requestAnimationFrame:
+      window.requestAnimationFrame ||
+      window.webkitRequestAnimationFrame ||
+      window.mozRequestAnimationFrame,
+
+    cancelAnimationFrame:
+      window.cancelAnimationFrame ||
+      window.webkitCancelRequestAnimationFrame ||
+      window.webkitCancelAnimationFrame ||
+      window.mozCancelAnimationFrame,
+
+    initialize: function () {
+      this.initStartIndex()
+      if (this.initWidget() === false) {
+        return false
+      }
+      this.initEventListeners()
+      // Load the slide at the given index:
+      this.onslide(this.index)
+      // Manually trigger the slideend event for the initial slide:
+      this.ontransitionend()
+      // Start the automatic slideshow if applicable:
+      if (this.options.startSlideshow) {
+        this.play()
+      }
+    },
+
+    slide: function (to, speed) {
+      window.clearTimeout(this.timeout)
+      var index = this.index
+      var direction
+      var naturalDirection
+      var diff
+      if (index === to || this.num === 1) {
+        return
+      }
+      if (!speed) {
+        speed = this.options.transitionSpeed
+      }
+      if (this.support.transform) {
+        if (!this.options.continuous) {
+          to = this.circle(to)
+        }
+        // 1: backward, -1: forward:
+        direction = Math.abs(index - to) / (index - to)
+        // Get the actual position of the slide:
+        if (this.options.continuous) {
+          naturalDirection = direction
+          direction = -this.positions[this.circle(to)] / this.slideWidth
+          // If going forward but to < index, use to = slides.length + to
+          // If going backward but to > index, use to = -slides.length + to
+          if (direction !== naturalDirection) {
+            to = -direction * this.num + to
+          }
+        }
+        diff = Math.abs(index - to) - 1
+        // Move all the slides between index and to in the right direction:
+        while (diff) {
+          diff -= 1
+          this.move(
+            this.circle((to > index ? to : index) - diff - 1),
+            this.slideWidth * direction,
+            0
+          )
+        }
+        to = this.circle(to)
+        this.move(index, this.slideWidth * direction, speed)
+        this.move(to, 0, speed)
+        if (this.options.continuous) {
+          this.move(
+            this.circle(to - direction),
+            -(this.slideWidth * direction),
+            0
+          )
+        }
+      } else {
+        to = this.circle(to)
+        this.animate(index * -this.slideWidth, to * -this.slideWidth, speed)
+      }
+      this.onslide(to)
+    },
+
+    getIndex: function () {
+      return this.index
+    },
+
+    getNumber: function () {
+      return this.num
+    },
+
+    prev: function () {
+      if (this.options.continuous || this.index) {
+        this.slide(this.index - 1)
+      }
+    },
+
+    next: function () {
+      if (this.options.continuous || this.index < this.num - 1) {
+        this.slide(this.index + 1)
+      }
+    },
+
+    play: function (time) {
+      var that = this
+      window.clearTimeout(this.timeout)
+      this.interval = time || this.options.slideshowInterval
+      if (this.elements[this.index] > 1) {
+        this.timeout = this.setTimeout(
+          (!this.requestAnimationFrame && this.slide) ||
+            function (to, speed) {
+              that.animationFrameId = that.requestAnimationFrame.call(
+                window,
+                function () {
+                  that.slide(to, speed)
+                }
+              )
+            },
+          [this.index + 1, this.options.slideshowTransitionSpeed],
+          this.interval
+        )
+      }
+      this.container.addClass(this.options.playingClass)
+    },
+
+    pause: function () {
+      window.clearTimeout(this.timeout)
+      this.interval = null
+      if (this.cancelAnimationFrame) {
+        this.cancelAnimationFrame.call(window, this.animationFrameId)
+        this.animationFrameId = null
+      }
+      this.container.removeClass(this.options.playingClass)
+    },
+
+    add: function (list) {
+      var i
+      if (!list.concat) {
+        // Make a real array out of the list to add:
+        list = Array.prototype.slice.call(list)
+      }
+      if (!this.list.concat) {
+        // Make a real array out of the Gallery list:
+        this.list = Array.prototype.slice.call(this.list)
+      }
+      this.list = this.list.concat(list)
+      this.num = this.list.length
+      if (this.num > 2 && this.options.continuous === null) {
+        this.options.continuous = true
+        this.container.removeClass(this.options.leftEdgeClass)
+      }
+      this.container
+        .removeClass(this.options.rightEdgeClass)
+        .removeClass(this.options.singleClass)
+      for (i = this.num - list.length; i < this.num; i += 1) {
+        this.addSlide(i)
+        this.positionSlide(i)
+      }
+      this.positions.length = this.num
+      this.initSlides(true)
+    },
+
+    resetSlides: function () {
+      this.slidesContainer.empty()
+      this.unloadAllSlides()
+      this.slides = []
+    },
+
+    handleClose: function () {
+      var options = this.options
+      this.destroyEventListeners()
+      // Cancel the slideshow:
+      this.pause()
+      this.container[0].style.display = 'none'
+      this.container
+        .removeClass(options.displayClass)
+        .removeClass(options.singleClass)
+        .removeClass(options.leftEdgeClass)
+        .removeClass(options.rightEdgeClass)
+      if (options.hidePageScrollbars) {
+        document.body.style.overflow = this.bodyOverflowStyle
+      }
+      if (this.options.clearSlides) {
+        this.resetSlides()
+      }
+      if (this.options.onclosed) {
+        this.options.onclosed.call(this)
+      }
+    },
+
+    close: function () {
+      var that = this
+      function closeHandler (event) {
+        if (event.target === that.container[0]) {
+          that.container.off(that.support.transition.end, closeHandler)
+          that.handleClose()
+        }
+      }
+      if (this.options.onclose) {
+        this.options.onclose.call(this)
+      }
+      if (this.support.transition && this.options.displayTransition) {
+        this.container.on(this.support.transition.end, closeHandler)
+        this.container.removeClass(this.options.displayClass)
+      } else {
+        this.handleClose()
+      }
+    },
+
+    circle: function (index) {
+      // Always return a number inside of the slides index range:
+      return (this.num + index % this.num) % this.num
+    },
+
+    move: function (index, dist, speed) {
+      this.translateX(index, dist, speed)
+      this.positions[index] = dist
+    },
+
+    translate: function (index, x, y, speed) {
+      var style = this.slides[index].style
+      var transition = this.support.transition
+      var transform = this.support.transform
+      style[transition.name + 'Duration'] = speed + 'ms'
+      style[transform.name] =
+        'translate(' +
+        x +
+        'px, ' +
+        y +
+        'px)' +
+        (transform.translateZ ? ' translateZ(0)' : '')
+    },
+
+    translateX: function (index, x, speed) {
+      this.translate(index, x, 0, speed)
+    },
+
+    translateY: function (index, y, speed) {
+      this.translate(index, 0, y, speed)
+    },
+
+    animate: function (from, to, speed) {
+      if (!speed) {
+        this.slidesContainer[0].style.left = to + 'px'
+        return
+      }
+      var that = this
+      var start = new Date().getTime()
+      var timer = window.setInterval(function () {
+        var timeElap = new Date().getTime() - start
+        if (timeElap > speed) {
+          that.slidesContainer[0].style.left = to + 'px'
+          that.ontransitionend()
+          window.clearInterval(timer)
+          return
+        }
+        that.slidesContainer[0].style.left =
+          (to - from) * (Math.floor(timeElap / speed * 100) / 100) + from + 'px'
+      }, 4)
+    },
+
+    preventDefault: function (event) {
+      if (event.preventDefault) {
+        event.preventDefault()
+      } else {
+        event.returnValue = false
+      }
+    },
+
+    stopPropagation: function (event) {
+      if (event.stopPropagation) {
+        event.stopPropagation()
+      } else {
+        event.cancelBubble = true
+      }
+    },
+
+    onresize: function () {
+      this.initSlides(true)
+    },
+
+    onmousedown: function (event) {
+      // Trigger on clicks of the left mouse button only
+      // and exclude video elements:
+      if (
+        event.which &&
+        event.which === 1 &&
+        event.target.nodeName !== 'VIDEO'
+      ) {
+        // Preventing the default mousedown action is required
+        // to make touch emulation work with Firefox:
+        event.preventDefault()
+        ;(event.originalEvent || event).touches = [
+          {
+            pageX: event.pageX,
+            pageY: event.pageY
+          }
+        ]
+        this.ontouchstart(event)
+      }
+    },
+
+    onmousemove: function (event) {
+      if (this.touchStart) {
+        ;(event.originalEvent || event).touches = [
+          {
+            pageX: event.pageX,
+            pageY: event.pageY
+          }
+        ]
+        this.ontouchmove(event)
+      }
+    },
+
+    onmouseup: function (event) {
+      if (this.touchStart) {
+        this.ontouchend(event)
+        delete this.touchStart
+      }
+    },
+
+    onmouseout: function (event) {
+      if (this.touchStart) {
+        var target = event.target
+        var related = event.relatedTarget
+        if (!related || (related !== target && !$.contains(target, related))) {
+          this.onmouseup(event)
+        }
+      }
+    },
+
+    ontouchstart: function (event) {
+      if (this.options.stopTouchEventsPropagation) {
+        this.stopPropagation(event)
+      }
+      // jQuery doesn't copy touch event properties by default,
+      // so we have to access the originalEvent object:
+      var touches = (event.originalEvent || event).touches[0]
+      this.touchStart = {
+        // Remember the initial touch coordinates:
+        x: touches.pageX,
+        y: touches.pageY,
+        // Store the time to determine touch duration:
+        time: Date.now()
+      }
+      // Helper variable to detect scroll movement:
+      this.isScrolling = undefined
+      // Reset delta values:
+      this.touchDelta = {}
+    },
+
+    ontouchmove: function (event) {
+      if (this.options.stopTouchEventsPropagation) {
+        this.stopPropagation(event)
+      }
+      // jQuery doesn't copy touch event properties by default,
+      // so we have to access the originalEvent object:
+      var touches = (event.originalEvent || event).touches[0]
+      var scale = (event.originalEvent || event).scale
+      var index = this.index
+      var touchDeltaX
+      var indices
+      // Ensure this is a one touch swipe and not, e.g. a pinch:
+      if (touches.length > 1 || (scale && scale !== 1)) {
+        return
+      }
+      if (this.options.disableScroll) {
+        event.preventDefault()
+      }
+      // Measure change in x and y coordinates:
+      this.touchDelta = {
+        x: touches.pageX - this.touchStart.x,
+        y: touches.pageY - this.touchStart.y
+      }
+      touchDeltaX = this.touchDelta.x
+      // Detect if this is a vertical scroll movement (run only once per touch):
+      if (this.isScrolling === undefined) {
+        this.isScrolling =
+          this.isScrolling ||
+          Math.abs(touchDeltaX) < Math.abs(this.touchDelta.y)
+      }
+      if (!this.isScrolling) {
+        // Always prevent horizontal scroll:
+        event.preventDefault()
+        // Stop the slideshow:
+        window.clearTimeout(this.timeout)
+        if (this.options.continuous) {
+          indices = [this.circle(index + 1), index, this.circle(index - 1)]
+        } else {
+          // Increase resistance if first slide and sliding left
+          // or last slide and sliding right:
+          this.touchDelta.x = touchDeltaX =
+            touchDeltaX /
+            ((!index && touchDeltaX > 0) ||
+            (index === this.num - 1 && touchDeltaX < 0)
+              ? Math.abs(touchDeltaX) / this.slideWidth + 1
+              : 1)
+          indices = [index]
+          if (index) {
+            indices.push(index - 1)
+          }
+          if (index < this.num - 1) {
+            indices.unshift(index + 1)
+          }
+        }
+        while (indices.length) {
+          index = indices.pop()
+          this.translateX(index, touchDeltaX + this.positions[index], 0)
+        }
+      } else {
+        this.translateY(index, this.touchDelta.y + this.positions[index], 0)
+      }
+    },
+
+    ontouchend: function (event) {
+      if (this.options.stopTouchEventsPropagation) {
+        this.stopPropagation(event)
+      }
+      var index = this.index
+      var speed = this.options.transitionSpeed
+      var slideWidth = this.slideWidth
+      var isShortDuration = Number(Date.now() - this.touchStart.time) < 250
+      // Determine if slide attempt triggers next/prev slide:
+      var isValidSlide =
+        (isShortDuration && Math.abs(this.touchDelta.x) > 20) ||
+        Math.abs(this.touchDelta.x) > slideWidth / 2
+      // Determine if slide attempt is past start or end:
+      var isPastBounds =
+        (!index && this.touchDelta.x > 0) ||
+        (index === this.num - 1 && this.touchDelta.x < 0)
+      var isValidClose =
+        !isValidSlide &&
+        this.options.closeOnSwipeUpOrDown &&
+        ((isShortDuration && Math.abs(this.touchDelta.y) > 20) ||
+          Math.abs(this.touchDelta.y) > this.slideHeight / 2)
+      var direction
+      var indexForward
+      var indexBackward
+      var distanceForward
+      var distanceBackward
+      if (this.options.continuous) {
+        isPastBounds = false
+      }
+      // Determine direction of swipe (true: right, false: left):
+      direction = this.touchDelta.x < 0 ? -1 : 1
+      if (!this.isScrolling) {
+        if (isValidSlide && !isPastBounds) {
+          indexForward = index + direction
+          indexBackward = index - direction
+          distanceForward = slideWidth * direction
+          distanceBackward = -slideWidth * direction
+          if (this.options.continuous) {
+            this.move(this.circle(indexForward), distanceForward, 0)
+            this.move(this.circle(index - 2 * direction), distanceBackward, 0)
+          } else if (indexForward >= 0 && indexForward < this.num) {
+            this.move(indexForward, distanceForward, 0)
+          }
+          this.move(index, this.positions[index] + distanceForward, speed)
+          this.move(
+            this.circle(indexBackward),
+            this.positions[this.circle(indexBackward)] + distanceForward,
+            speed
+          )
+          index = this.circle(indexBackward)
+          this.onslide(index)
+        } else {
+          // Move back into position
+          if (this.options.continuous) {
+            this.move(this.circle(index - 1), -slideWidth, speed)
+            this.move(index, 0, speed)
+            this.move(this.circle(index + 1), slideWidth, speed)
+          } else {
+            if (index) {
+              this.move(index - 1, -slideWidth, speed)
+            }
+            this.move(index, 0, speed)
+            if (index < this.num - 1) {
+              this.move(index + 1, slideWidth, speed)
+            }
+          }
+        }
+      } else {
+        if (isValidClose) {
+          this.close()
+        } else {
+          // Move back into position
+          this.translateY(index, 0, speed)
+        }
+      }
+    },
+
+    ontouchcancel: function (event) {
+      if (this.touchStart) {
+        this.ontouchend(event)
+        delete this.touchStart
+      }
+    },
+
+    ontransitionend: function (event) {
+      var slide = this.slides[this.index]
+      if (!event || slide === event.target) {
+        if (this.interval) {
+          this.play()
+        }
+        this.setTimeout(this.options.onslideend, [this.index, slide])
+      }
+    },
+
+    oncomplete: function (event) {
+      var target = event.target || event.srcElement
+      var parent = target && target.parentNode
+      var index
+      if (!target || !parent) {
+        return
+      }
+      index = this.getNodeIndex(parent)
+      $(parent).removeClass(this.options.slideLoadingClass)
+      if (event.type === 'error') {
+        $(parent).addClass(this.options.slideErrorClass)
+        this.elements[index] = 3 // Fail
+      } else {
+        this.elements[index] = 2 // Done
+      }
+      // Fix for IE7's lack of support for percentage max-height:
+      if (target.clientHeight > this.container[0].clientHeight) {
+        target.style.maxHeight = this.container[0].clientHeight
+      }
+      if (this.interval && this.slides[this.index] === parent) {
+        this.play()
+      }
+      this.setTimeout(this.options.onslidecomplete, [index, parent])
+    },
+
+    onload: function (event) {
+      this.oncomplete(event)
+    },
+
+    onerror: function (event) {
+      this.oncomplete(event)
+    },
+
+    onkeydown: function (event) {
+      switch (event.which || event.keyCode) {
+        case 13: // Return
+          if (this.options.toggleControlsOnReturn) {
+            this.preventDefault(event)
+            this.toggleControls()
+          }
+          break
+        case 27: // Esc
+          if (this.options.closeOnEscape) {
+            this.close()
+            // prevent Esc from closing other things
+            event.stopImmediatePropagation()
+          }
+          break
+        case 32: // Space
+          if (this.options.toggleSlideshowOnSpace) {
+            this.preventDefault(event)
+            this.toggleSlideshow()
+          }
+          break
+        case 37: // Left
+          if (this.options.enableKeyboardNavigation) {
+            this.preventDefault(event)
+            this.prev()
+          }
+          break
+        case 39: // Right
+          if (this.options.enableKeyboardNavigation) {
+            this.preventDefault(event)
+            this.next()
+          }
+          break
+      }
+    },
+
+    handleClick: function (event) {
+      var options = this.options
+      var target = event.target || event.srcElement
+      var parent = target.parentNode
+      function isTarget (className) {
+        return $(target).hasClass(className) || $(parent).hasClass(className)
+      }
+      if (isTarget(options.toggleClass)) {
+        // Click on "toggle" control
+        this.preventDefault(event)
+        this.toggleControls()
+      } else if (isTarget(options.prevClass)) {
+        // Click on "prev" control
+        this.preventDefault(event)
+        this.prev()
+      } else if (isTarget(options.nextClass)) {
+        // Click on "next" control
+        this.preventDefault(event)
+        this.next()
+      } else if (isTarget(options.closeClass)) {
+        // Click on "close" control
+        this.preventDefault(event)
+        this.close()
+      } else if (isTarget(options.playPauseClass)) {
+        // Click on "play-pause" control
+        this.preventDefault(event)
+        this.toggleSlideshow()
+      } else if (parent === this.slidesContainer[0]) {
+        // Click on slide background
+        if (options.closeOnSlideClick) {
+          this.preventDefault(event)
+          this.close()
+        } else if (options.toggleControlsOnSlideClick) {
+          this.preventDefault(event)
+          this.toggleControls()
+        }
+      } else if (
+        parent.parentNode &&
+        parent.parentNode === this.slidesContainer[0]
+      ) {
+        // Click on displayed element
+        if (options.toggleControlsOnSlideClick) {
+          this.preventDefault(event)
+          this.toggleControls()
+        }
+      }
+    },
+
+    onclick: function (event) {
+      if (
+        this.options.emulateTouchEvents &&
+        this.touchDelta &&
+        (Math.abs(this.touchDelta.x) > 20 || Math.abs(this.touchDelta.y) > 20)
+      ) {
+        delete this.touchDelta
+        return
+      }
+      return this.handleClick(event)
+    },
+
+    updateEdgeClasses: function (index) {
+      if (!index) {
+        this.container.addClass(this.options.leftEdgeClass)
+      } else {
+        this.container.removeClass(this.options.leftEdgeClass)
+      }
+      if (index === this.num - 1) {
+        this.container.addClass(this.options.rightEdgeClass)
+      } else {
+        this.container.removeClass(this.options.rightEdgeClass)
+      }
+    },
+
+    handleSlide: function (index) {
+      if (!this.options.continuous) {
+        this.updateEdgeClasses(index)
+      }
+      this.loadElements(index)
+      if (this.options.unloadElements) {
+        this.unloadElements(index)
+      }
+      this.setTitle(index)
+    },
+
+    onslide: function (index) {
+      this.index = index
+      this.handleSlide(index)
+      this.setTimeout(this.options.onslide, [index, this.slides[index]])
+    },
+
+    setTitle: function (index) {
+      var firstChild = this.slides[index].firstChild
+      var text = firstChild.title || firstChild.alt
+      var titleElement = this.titleElement
+      if (titleElement.length) {
+        this.titleElement.empty()
+        if (text) {
+          titleElement[0].appendChild(document.createTextNode(text))
+        }
+      }
+    },
+
+    setTimeout: function (func, args, wait) {
+      var that = this
+      return (
+        func &&
+        window.setTimeout(function () {
+          func.apply(that, args || [])
+        }, wait || 0)
+      )
+    },
+
+    imageFactory: function (obj, callback) {
+      var that = this
+      var img = this.imagePrototype.cloneNode(false)
+      var url = obj
+      var backgroundSize = this.options.stretchImages
+      var called
+      var element
+      var title
+      function callbackWrapper (event) {
+        if (!called) {
+          event = {
+            type: event.type,
+            target: element
+          }
+          if (!element.parentNode) {
+            // Fix for IE7 firing the load event for
+            // cached images before the element could
+            // be added to the DOM:
+            return that.setTimeout(callbackWrapper, [event])
+          }
+          called = true
+          $(img).off('load error', callbackWrapper)
+          if (backgroundSize) {
+            if (event.type === 'load') {
+              element.style.background = 'url("' + url + '") center no-repeat'
+              element.style.backgroundSize = backgroundSize
+            }
+          }
+          callback(event)
+        }
+      }
+      if (typeof url !== 'string') {
+        url = this.getItemProperty(obj, this.options.urlProperty)
+        title = this.getItemProperty(obj, this.options.titleProperty)
+      }
+      if (backgroundSize === true) {
+        backgroundSize = 'contain'
+      }
+      backgroundSize =
+        this.support.backgroundSize &&
+        this.support.backgroundSize[backgroundSize] &&
+        backgroundSize
+      if (backgroundSize) {
+        element = this.elementPrototype.cloneNode(false)
+      } else {
+        element = img
+        img.draggable = false
+      }
+      if (title) {
+        element.title = title
+      }
+      $(img).on('load error', callbackWrapper)
+      img.src = url
+      return element
+    },
+
+    createElement: function (obj, callback) {
+      var type = obj && this.getItemProperty(obj, this.options.typeProperty)
+      var factory =
+        (type && this[type.split('/')[0] + 'Factory']) || this.imageFactory
+      var element = obj && factory.call(this, obj, callback)
+      var srcset = this.getItemProperty(obj, this.options.srcsetProperty)
+      if (!element) {
+        element = this.elementPrototype.cloneNode(false)
+        this.setTimeout(callback, [
+          {
+            type: 'error',
+            target: element
+          }
+        ])
+      }
+      if (srcset) {
+        element.setAttribute('srcset', srcset)
+      }
+      $(element).addClass(this.options.slideContentClass)
+      return element
+    },
+
+    loadElement: function (index) {
+      if (!this.elements[index]) {
+        if (this.slides[index].firstChild) {
+          this.elements[index] = $(this.slides[index]).hasClass(
+            this.options.slideErrorClass
+          )
+            ? 3
+            : 2
+        } else {
+          this.elements[index] = 1 // Loading
+          $(this.slides[index]).addClass(this.options.slideLoadingClass)
+          this.slides[index].appendChild(
+            this.createElement(this.list[index], this.proxyListener)
+          )
+        }
+      }
+    },
+
+    loadElements: function (index) {
+      var limit = Math.min(this.num, this.options.preloadRange * 2 + 1)
+      var j = index
+      var i
+      for (i = 0; i < limit; i += 1) {
+        // First load the current slide element (0),
+        // then the next one (+1),
+        // then the previous one (-2),
+        // then the next after next (+2), etc.:
+        j += i * (i % 2 === 0 ? -1 : 1)
+        // Connect the ends of the list to load slide elements for
+        // continuous navigation:
+        j = this.circle(j)
+        this.loadElement(j)
+      }
+    },
+
+    unloadElements: function (index) {
+      var i, diff
+      for (i in this.elements) {
+        if (this.elements.hasOwnProperty(i)) {
+          diff = Math.abs(index - i)
+          if (
+            diff > this.options.preloadRange &&
+            diff + this.options.preloadRange < this.num
+          ) {
+            this.unloadSlide(i)
+            delete this.elements[i]
+          }
+        }
+      }
+    },
+
+    addSlide: function (index) {
+      var slide = this.slidePrototype.cloneNode(false)
+      slide.setAttribute('data-index', index)
+      this.slidesContainer[0].appendChild(slide)
+      this.slides.push(slide)
+    },
+
+    positionSlide: function (index) {
+      var slide = this.slides[index]
+      slide.style.width = this.slideWidth + 'px'
+      if (this.support.transform) {
+        slide.style.left = index * -this.slideWidth + 'px'
+        this.move(
+          index,
+          this.index > index
+            ? -this.slideWidth
+            : this.index < index ? this.slideWidth : 0,
+          0
+        )
+      }
+    },
+
+    initSlides: function (reload) {
+      var clearSlides, i
+      if (!reload) {
+        this.positions = []
+        this.positions.length = this.num
+        this.elements = {}
+        this.imagePrototype = document.createElement('img')
+        this.elementPrototype = document.createElement('div')
+        this.slidePrototype = document.createElement('div')
+        $(this.slidePrototype).addClass(this.options.slideClass)
+        this.slides = this.slidesContainer[0].children
+        clearSlides =
+          this.options.clearSlides || this.slides.length !== this.num
+      }
+      this.slideWidth = this.container[0].offsetWidth
+      this.slideHeight = this.container[0].offsetHeight
+      this.slidesContainer[0].style.width = this.num * this.slideWidth + 'px'
+      if (clearSlides) {
+        this.resetSlides()
+      }
+      for (i = 0; i < this.num; i += 1) {
+        if (clearSlides) {
+          this.addSlide(i)
+        }
+        this.positionSlide(i)
+      }
+      // Reposition the slides before and after the given index:
+      if (this.options.continuous && this.support.transform) {
+        this.move(this.circle(this.index - 1), -this.slideWidth, 0)
+        this.move(this.circle(this.index + 1), this.slideWidth, 0)
+      }
+      if (!this.support.transform) {
+        this.slidesContainer[0].style.left =
+          this.index * -this.slideWidth + 'px'
+      }
+    },
+
+    unloadSlide: function (index) {
+      var slide, firstChild
+      slide = this.slides[index]
+      firstChild = slide.firstChild
+      if (firstChild !== null) {
+        slide.removeChild(firstChild)
+      }
+    },
+
+    unloadAllSlides: function () {
+      var i, len
+      for (i = 0, len = this.slides.length; i < len; i++) {
+        this.unloadSlide(i)
+      }
+    },
+
+    toggleControls: function () {
+      var controlsClass = this.options.controlsClass
+      if (this.container.hasClass(controlsClass)) {
+        this.container.removeClass(controlsClass)
+      } else {
+        this.container.addClass(controlsClass)
+      }
+    },
+
+    toggleSlideshow: function () {
+      if (!this.interval) {
+        this.play()
+      } else {
+        this.pause()
+      }
+    },
+
+    getNodeIndex: function (element) {
+      return parseInt(element.getAttribute('data-index'), 10)
+    },
+
+    getNestedProperty: function (obj, property) {
+      property.replace(
+        // Matches native JavaScript notation in a String,
+        // e.g. '["doubleQuoteProp"].dotProp[2]'
+        // eslint-disable-next-line no-useless-escape
+        /\[(?:'([^']+)'|"([^"]+)"|(\d+))\]|(?:(?:^|\.)([^\.\[]+))/g,
+        function (str, singleQuoteProp, doubleQuoteProp, arrayIndex, dotProp) {
+          var prop =
+            dotProp ||
+            singleQuoteProp ||
+            doubleQuoteProp ||
+            (arrayIndex && parseInt(arrayIndex, 10))
+          if (str && obj) {
+            obj = obj[prop]
+          }
+        }
+      )
+      return obj
+    },
+
+    getDataProperty: function (obj, property) {
+      var key
+      var prop
+      if (obj.dataset) {
+        key = property.replace(/-([a-z])/g, function (_, b) {
+          return b.toUpperCase()
+        })
+        prop = obj.dataset[key]
+      } else if (obj.getAttribute) {
+        prop = obj.getAttribute(
+          'data-' + property.replace(/([A-Z])/g, '-$1').toLowerCase()
+        )
+      }
+      if (typeof prop === 'string') {
+        // eslint-disable-next-line no-useless-escape
+        if (
+          /^(true|false|null|-?\d+(\.\d+)?|\{[\s\S]*\}|\[[\s\S]*\])$/.test(prop)
+        ) {
+          try {
+            return $.parseJSON(prop)
+          } catch (ignore) {}
+        }
+        return prop
+      }
+    },
+
+    getItemProperty: function (obj, property) {
+      var prop = this.getDataProperty(obj, property)
+      if (prop === undefined) {
+        prop = obj[property]
+      }
+      if (prop === undefined) {
+        prop = this.getNestedProperty(obj, property)
+      }
+      return prop
+    },
+
+    initStartIndex: function () {
+      var index = this.options.index
+      var urlProperty = this.options.urlProperty
+      var i
+      // Check if the index is given as a list object:
+      if (index && typeof index !== 'number') {
+        for (i = 0; i < this.num; i += 1) {
+          if (
+            this.list[i] === index ||
+            this.getItemProperty(this.list[i], urlProperty) ===
+              this.getItemProperty(index, urlProperty)
+          ) {
+            index = i
+            break
+          }
+        }
+      }
+      // Make sure the index is in the list range:
+      this.index = this.circle(parseInt(index, 10) || 0)
+    },
+
+    initEventListeners: function () {
+      var that = this
+      var slidesContainer = this.slidesContainer
+      function proxyListener (event) {
+        var type =
+          that.support.transition && that.support.transition.end === event.type
+            ? 'transitionend'
+            : event.type
+        that['on' + type](event)
+      }
+      $(window).on('resize', proxyListener)
+      $(document.body).on('keydown', proxyListener)
+      this.container.on('click', proxyListener)
+      if (this.support.touch) {
+        slidesContainer.on(
+          'touchstart touchmove touchend touchcancel',
+          proxyListener
+        )
+      } else if (this.options.emulateTouchEvents && this.support.transition) {
+        slidesContainer.on(
+          'mousedown mousemove mouseup mouseout',
+          proxyListener
+        )
+      }
+      if (this.support.transition) {
+        slidesContainer.on(this.support.transition.end, proxyListener)
+      }
+      this.proxyListener = proxyListener
+    },
+
+    destroyEventListeners: function () {
+      var slidesContainer = this.slidesContainer
+      var proxyListener = this.proxyListener
+      $(window).off('resize', proxyListener)
+      $(document.body).off('keydown', proxyListener)
+      this.container.off('click', proxyListener)
+      if (this.support.touch) {
+        slidesContainer.off(
+          'touchstart touchmove touchend touchcancel',
+          proxyListener
+        )
+      } else if (this.options.emulateTouchEvents && this.support.transition) {
+        slidesContainer.off(
+          'mousedown mousemove mouseup mouseout',
+          proxyListener
+        )
+      }
+      if (this.support.transition) {
+        slidesContainer.off(this.support.transition.end, proxyListener)
+      }
+    },
+
+    handleOpen: function () {
+      if (this.options.onopened) {
+        this.options.onopened.call(this)
+      }
+    },
+
+    initWidget: function () {
+      var that = this
+      function openHandler (event) {
+        if (event.target === that.container[0]) {
+          that.container.off(that.support.transition.end, openHandler)
+          that.handleOpen()
+        }
+      }
+      this.container = $(this.options.container)
+      if (!this.container.length) {
+        this.console.log(
+          'blueimp Gallery: Widget container not found.',
+          this.options.container
+        )
+        return false
+      }
+      this.slidesContainer = this.container
+        .find(this.options.slidesContainer)
+        .first()
+      if (!this.slidesContainer.length) {
+        this.console.log(
+          'blueimp Gallery: Slides container not found.',
+          this.options.slidesContainer
+        )
+        return false
+      }
+      this.titleElement = this.container.find(this.options.titleElement).first()
+      if (this.num === 1) {
+        this.container.addClass(this.options.singleClass)
+      }
+      if (this.options.onopen) {
+        this.options.onopen.call(this)
+      }
+      if (this.support.transition && this.options.displayTransition) {
+        this.container.on(this.support.transition.end, openHandler)
+      } else {
+        this.handleOpen()
+      }
+      if (this.options.hidePageScrollbars) {
+        // Hide the page scrollbars:
+        this.bodyOverflowStyle = document.body.style.overflow
+        document.body.style.overflow = 'hidden'
+      }
+      this.container[0].style.display = 'block'
+      this.initSlides()
+      this.container.addClass(this.options.displayClass)
+    },
+
+    initOptions: function (options) {
+      // Create a copy of the prototype options:
+      this.options = $.extend({}, this.options)
+      // Check if carousel mode is enabled:
+      if (
+        (options && options.carousel) ||
+        (this.options.carousel && (!options || options.carousel !== false))
+      ) {
+        $.extend(this.options, this.carouselOptions)
+      }
+      // Override any given options:
+      $.extend(this.options, options)
+      if (this.num < 3) {
+        // 1 or 2 slides cannot be displayed continuous,
+        // remember the original option by setting to null instead of false:
+        this.options.continuous = this.options.continuous ? null : false
+      }
+      if (!this.support.transition) {
+        this.options.emulateTouchEvents = false
+      }
+      if (this.options.event) {
+        this.preventDefault(this.options.event)
+      }
+    }
+  })
+
+  return Gallery
+})
+
+
+/***/ }),
+
+/***/ "../../../../blueimp-gallery/js/blueimp-helper.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_RESULT__;/*
+ * blueimp helper JS
+ * https://github.com/blueimp/Gallery
+ *
+ * Copyright 2013, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * https://opensource.org/licenses/MIT
+ */
+
+/* global define, window, document */
+
+;(function () {
+  'use strict'
+
+  function extend (obj1, obj2) {
+    var prop
+    for (prop in obj2) {
+      if (obj2.hasOwnProperty(prop)) {
+        obj1[prop] = obj2[prop]
+      }
+    }
+    return obj1
+  }
+
+  function Helper (query) {
+    if (!this || this.find !== Helper.prototype.find) {
+      // Called as function instead of as constructor,
+      // so we simply return a new instance:
+      return new Helper(query)
+    }
+    this.length = 0
+    if (query) {
+      if (typeof query === 'string') {
+        query = this.find(query)
+      }
+      if (query.nodeType || query === query.window) {
+        // Single HTML element
+        this.length = 1
+        this[0] = query
+      } else {
+        // HTML element collection
+        var i = query.length
+        this.length = i
+        while (i) {
+          i -= 1
+          this[i] = query[i]
+        }
+      }
+    }
+  }
+
+  Helper.extend = extend
+
+  Helper.contains = function (container, element) {
+    do {
+      element = element.parentNode
+      if (element === container) {
+        return true
+      }
+    } while (element)
+    return false
+  }
+
+  Helper.parseJSON = function (string) {
+    return window.JSON && JSON.parse(string)
+  }
+
+  extend(Helper.prototype, {
+    find: function (query) {
+      var container = this[0] || document
+      if (typeof query === 'string') {
+        if (container.querySelectorAll) {
+          query = container.querySelectorAll(query)
+        } else if (query.charAt(0) === '#') {
+          query = container.getElementById(query.slice(1))
+        } else {
+          query = container.getElementsByTagName(query)
+        }
+      }
+      return new Helper(query)
+    },
+
+    hasClass: function (className) {
+      if (!this[0]) {
+        return false
+      }
+      return new RegExp('(^|\\s+)' + className + '(\\s+|$)').test(
+        this[0].className
+      )
+    },
+
+    addClass: function (className) {
+      var i = this.length
+      var element
+      while (i) {
+        i -= 1
+        element = this[i]
+        if (!element.className) {
+          element.className = className
+          return this
+        }
+        if (this.hasClass(className)) {
+          return this
+        }
+        element.className += ' ' + className
+      }
+      return this
+    },
+
+    removeClass: function (className) {
+      var regexp = new RegExp('(^|\\s+)' + className + '(\\s+|$)')
+      var i = this.length
+      var element
+      while (i) {
+        i -= 1
+        element = this[i]
+        element.className = element.className.replace(regexp, ' ')
+      }
+      return this
+    },
+
+    on: function (eventName, handler) {
+      var eventNames = eventName.split(/\s+/)
+      var i
+      var element
+      while (eventNames.length) {
+        eventName = eventNames.shift()
+        i = this.length
+        while (i) {
+          i -= 1
+          element = this[i]
+          if (element.addEventListener) {
+            element.addEventListener(eventName, handler, false)
+          } else if (element.attachEvent) {
+            element.attachEvent('on' + eventName, handler)
+          }
+        }
+      }
+      return this
+    },
+
+    off: function (eventName, handler) {
+      var eventNames = eventName.split(/\s+/)
+      var i
+      var element
+      while (eventNames.length) {
+        eventName = eventNames.shift()
+        i = this.length
+        while (i) {
+          i -= 1
+          element = this[i]
+          if (element.removeEventListener) {
+            element.removeEventListener(eventName, handler, false)
+          } else if (element.detachEvent) {
+            element.detachEvent('on' + eventName, handler)
+          }
+        }
+      }
+      return this
+    },
+
+    empty: function () {
+      var i = this.length
+      var element
+      while (i) {
+        i -= 1
+        element = this[i]
+        while (element.hasChildNodes()) {
+          element.removeChild(element.lastChild)
+        }
+      }
+      return this
+    },
+
+    first: function () {
+      return new Helper(this[0])
+    }
+  })
+
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
+      return Helper
+    }.call(exports, __webpack_require__, exports, module),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+  } else {
+    window.blueimp = window.blueimp || {}
+    window.blueimp.helper = Helper
+  }
+})()
+
+
+/***/ }),
+
+/***/ "../../../../dropzone/dist/dropzone.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {
+/*
+ *
+ * More info at [www.dropzonejs.com](http://www.dropzonejs.com)
+ *
+ * Copyright (c) 2012, Matias Meno
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
+
+(function() {
+  var Dropzone, Emitter, camelize, contentLoaded, detectVerticalSquash, drawImageIOSFix, noop, without,
+    __slice = [].slice,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  noop = function() {};
+
+  Emitter = (function() {
+    function Emitter() {}
+
+    Emitter.prototype.addEventListener = Emitter.prototype.on;
+
+    Emitter.prototype.on = function(event, fn) {
+      this._callbacks = this._callbacks || {};
+      if (!this._callbacks[event]) {
+        this._callbacks[event] = [];
+      }
+      this._callbacks[event].push(fn);
+      return this;
+    };
+
+    Emitter.prototype.emit = function() {
+      var args, callback, callbacks, event, _i, _len;
+      event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      this._callbacks = this._callbacks || {};
+      callbacks = this._callbacks[event];
+      if (callbacks) {
+        for (_i = 0, _len = callbacks.length; _i < _len; _i++) {
+          callback = callbacks[_i];
+          callback.apply(this, args);
+        }
+      }
+      return this;
+    };
+
+    Emitter.prototype.removeListener = Emitter.prototype.off;
+
+    Emitter.prototype.removeAllListeners = Emitter.prototype.off;
+
+    Emitter.prototype.removeEventListener = Emitter.prototype.off;
+
+    Emitter.prototype.off = function(event, fn) {
+      var callback, callbacks, i, _i, _len;
+      if (!this._callbacks || arguments.length === 0) {
+        this._callbacks = {};
+        return this;
+      }
+      callbacks = this._callbacks[event];
+      if (!callbacks) {
+        return this;
+      }
+      if (arguments.length === 1) {
+        delete this._callbacks[event];
+        return this;
+      }
+      for (i = _i = 0, _len = callbacks.length; _i < _len; i = ++_i) {
+        callback = callbacks[i];
+        if (callback === fn) {
+          callbacks.splice(i, 1);
+          break;
+        }
+      }
+      return this;
+    };
+
+    return Emitter;
+
+  })();
+
+  Dropzone = (function(_super) {
+    var extend, resolveOption;
+
+    __extends(Dropzone, _super);
+
+    Dropzone.prototype.Emitter = Emitter;
+
+
+    /*
+    This is a list of all available events you can register on a dropzone object.
+    
+    You can register an event handler like this:
+    
+        dropzone.on("dragEnter", function() { });
+     */
+
+    Dropzone.prototype.events = ["drop", "dragstart", "dragend", "dragenter", "dragover", "dragleave", "addedfile", "addedfiles", "removedfile", "thumbnail", "error", "errormultiple", "processing", "processingmultiple", "uploadprogress", "totaluploadprogress", "sending", "sendingmultiple", "success", "successmultiple", "canceled", "canceledmultiple", "complete", "completemultiple", "reset", "maxfilesexceeded", "maxfilesreached", "queuecomplete"];
+
+    Dropzone.prototype.defaultOptions = {
+      url: null,
+      method: "post",
+      withCredentials: false,
+      parallelUploads: 2,
+      uploadMultiple: false,
+      maxFilesize: 256,
+      paramName: "file",
+      createImageThumbnails: true,
+      maxThumbnailFilesize: 10,
+      thumbnailWidth: 120,
+      thumbnailHeight: 120,
+      filesizeBase: 1000,
+      maxFiles: null,
+      params: {},
+      clickable: true,
+      ignoreHiddenFiles: true,
+      acceptedFiles: null,
+      acceptedMimeTypes: null,
+      autoProcessQueue: true,
+      autoQueue: true,
+      addRemoveLinks: false,
+      previewsContainer: null,
+      hiddenInputContainer: "body",
+      capture: null,
+      renameFilename: null,
+      dictDefaultMessage: "Drop files here to upload",
+      dictFallbackMessage: "Your browser does not support drag'n'drop file uploads.",
+      dictFallbackText: "Please use the fallback form below to upload your files like in the olden days.",
+      dictFileTooBig: "File is too big ({{filesize}}MiB). Max filesize: {{maxFilesize}}MiB.",
+      dictInvalidFileType: "You can't upload files of this type.",
+      dictResponseError: "Server responded with {{statusCode}} code.",
+      dictCancelUpload: "Cancel upload",
+      dictCancelUploadConfirmation: "Are you sure you want to cancel this upload?",
+      dictRemoveFile: "Remove file",
+      dictRemoveFileConfirmation: null,
+      dictMaxFilesExceeded: "You can not upload any more files.",
+      accept: function(file, done) {
+        return done();
+      },
+      init: function() {
+        return noop;
+      },
+      forceFallback: false,
+      fallback: function() {
+        var child, messageElement, span, _i, _len, _ref;
+        this.element.className = "" + this.element.className + " dz-browser-not-supported";
+        _ref = this.element.getElementsByTagName("div");
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          child = _ref[_i];
+          if (/(^| )dz-message($| )/.test(child.className)) {
+            messageElement = child;
+            child.className = "dz-message";
+            continue;
+          }
+        }
+        if (!messageElement) {
+          messageElement = Dropzone.createElement("<div class=\"dz-message\"><span></span></div>");
+          this.element.appendChild(messageElement);
+        }
+        span = messageElement.getElementsByTagName("span")[0];
+        if (span) {
+          if (span.textContent != null) {
+            span.textContent = this.options.dictFallbackMessage;
+          } else if (span.innerText != null) {
+            span.innerText = this.options.dictFallbackMessage;
+          }
+        }
+        return this.element.appendChild(this.getFallbackForm());
+      },
+      resize: function(file) {
+        var info, srcRatio, trgRatio;
+        info = {
+          srcX: 0,
+          srcY: 0,
+          srcWidth: file.width,
+          srcHeight: file.height
+        };
+        srcRatio = file.width / file.height;
+        info.optWidth = this.options.thumbnailWidth;
+        info.optHeight = this.options.thumbnailHeight;
+        if ((info.optWidth == null) && (info.optHeight == null)) {
+          info.optWidth = info.srcWidth;
+          info.optHeight = info.srcHeight;
+        } else if (info.optWidth == null) {
+          info.optWidth = srcRatio * info.optHeight;
+        } else if (info.optHeight == null) {
+          info.optHeight = (1 / srcRatio) * info.optWidth;
+        }
+        trgRatio = info.optWidth / info.optHeight;
+        if (file.height < info.optHeight || file.width < info.optWidth) {
+          info.trgHeight = info.srcHeight;
+          info.trgWidth = info.srcWidth;
+        } else {
+          if (srcRatio > trgRatio) {
+            info.srcHeight = file.height;
+            info.srcWidth = info.srcHeight * trgRatio;
+          } else {
+            info.srcWidth = file.width;
+            info.srcHeight = info.srcWidth / trgRatio;
+          }
+        }
+        info.srcX = (file.width - info.srcWidth) / 2;
+        info.srcY = (file.height - info.srcHeight) / 2;
+        return info;
+      },
+
+      /*
+      Those functions register themselves to the events on init and handle all
+      the user interface specific stuff. Overwriting them won't break the upload
+      but can break the way it's displayed.
+      You can overwrite them if you don't like the default behavior. If you just
+      want to add an additional event handler, register it on the dropzone object
+      and don't overwrite those options.
+       */
+      drop: function(e) {
+        return this.element.classList.remove("dz-drag-hover");
+      },
+      dragstart: noop,
+      dragend: function(e) {
+        return this.element.classList.remove("dz-drag-hover");
+      },
+      dragenter: function(e) {
+        return this.element.classList.add("dz-drag-hover");
+      },
+      dragover: function(e) {
+        return this.element.classList.add("dz-drag-hover");
+      },
+      dragleave: function(e) {
+        return this.element.classList.remove("dz-drag-hover");
+      },
+      paste: noop,
+      reset: function() {
+        return this.element.classList.remove("dz-started");
+      },
+      addedfile: function(file) {
+        var node, removeFileEvent, removeLink, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
+        if (this.element === this.previewsContainer) {
+          this.element.classList.add("dz-started");
+        }
+        if (this.previewsContainer) {
+          file.previewElement = Dropzone.createElement(this.options.previewTemplate.trim());
+          file.previewTemplate = file.previewElement;
+          this.previewsContainer.appendChild(file.previewElement);
+          _ref = file.previewElement.querySelectorAll("[data-dz-name]");
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            node = _ref[_i];
+            node.textContent = this._renameFilename(file.name);
+          }
+          _ref1 = file.previewElement.querySelectorAll("[data-dz-size]");
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            node = _ref1[_j];
+            node.innerHTML = this.filesize(file.size);
+          }
+          if (this.options.addRemoveLinks) {
+            file._removeLink = Dropzone.createElement("<a class=\"dz-remove\" href=\"javascript:undefined;\" data-dz-remove>" + this.options.dictRemoveFile + "</a>");
+            file.previewElement.appendChild(file._removeLink);
+          }
+          removeFileEvent = (function(_this) {
+            return function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              if (file.status === Dropzone.UPLOADING) {
+                return Dropzone.confirm(_this.options.dictCancelUploadConfirmation, function() {
+                  return _this.removeFile(file);
+                });
+              } else {
+                if (_this.options.dictRemoveFileConfirmation) {
+                  return Dropzone.confirm(_this.options.dictRemoveFileConfirmation, function() {
+                    return _this.removeFile(file);
+                  });
+                } else {
+                  return _this.removeFile(file);
+                }
+              }
+            };
+          })(this);
+          _ref2 = file.previewElement.querySelectorAll("[data-dz-remove]");
+          _results = [];
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            removeLink = _ref2[_k];
+            _results.push(removeLink.addEventListener("click", removeFileEvent));
+          }
+          return _results;
+        }
+      },
+      removedfile: function(file) {
+        var _ref;
+        if (file.previewElement) {
+          if ((_ref = file.previewElement) != null) {
+            _ref.parentNode.removeChild(file.previewElement);
+          }
+        }
+        return this._updateMaxFilesReachedClass();
+      },
+      thumbnail: function(file, dataUrl) {
+        var thumbnailElement, _i, _len, _ref;
+        if (file.previewElement) {
+          file.previewElement.classList.remove("dz-file-preview");
+          _ref = file.previewElement.querySelectorAll("[data-dz-thumbnail]");
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            thumbnailElement = _ref[_i];
+            thumbnailElement.alt = file.name;
+            thumbnailElement.src = dataUrl;
+          }
+          return setTimeout(((function(_this) {
+            return function() {
+              return file.previewElement.classList.add("dz-image-preview");
+            };
+          })(this)), 1);
+        }
+      },
+      error: function(file, message) {
+        var node, _i, _len, _ref, _results;
+        if (file.previewElement) {
+          file.previewElement.classList.add("dz-error");
+          if (typeof message !== "String" && message.error) {
+            message = message.error;
+          }
+          _ref = file.previewElement.querySelectorAll("[data-dz-errormessage]");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            node = _ref[_i];
+            _results.push(node.textContent = message);
+          }
+          return _results;
+        }
+      },
+      errormultiple: noop,
+      processing: function(file) {
+        if (file.previewElement) {
+          file.previewElement.classList.add("dz-processing");
+          if (file._removeLink) {
+            return file._removeLink.textContent = this.options.dictCancelUpload;
+          }
+        }
+      },
+      processingmultiple: noop,
+      uploadprogress: function(file, progress, bytesSent) {
+        var node, _i, _len, _ref, _results;
+        if (file.previewElement) {
+          _ref = file.previewElement.querySelectorAll("[data-dz-uploadprogress]");
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            node = _ref[_i];
+            if (node.nodeName === 'PROGRESS') {
+              _results.push(node.value = progress);
+            } else {
+              _results.push(node.style.width = "" + progress + "%");
+            }
+          }
+          return _results;
+        }
+      },
+      totaluploadprogress: noop,
+      sending: noop,
+      sendingmultiple: noop,
+      success: function(file) {
+        if (file.previewElement) {
+          return file.previewElement.classList.add("dz-success");
+        }
+      },
+      successmultiple: noop,
+      canceled: function(file) {
+        return this.emit("error", file, "Upload canceled.");
+      },
+      canceledmultiple: noop,
+      complete: function(file) {
+        if (file._removeLink) {
+          file._removeLink.textContent = this.options.dictRemoveFile;
+        }
+        if (file.previewElement) {
+          return file.previewElement.classList.add("dz-complete");
+        }
+      },
+      completemultiple: noop,
+      maxfilesexceeded: noop,
+      maxfilesreached: noop,
+      queuecomplete: noop,
+      addedfiles: noop,
+      previewTemplate: "<div class=\"dz-preview dz-file-preview\">\n  <div class=\"dz-image\"><img data-dz-thumbnail /></div>\n  <div class=\"dz-details\">\n    <div class=\"dz-size\"><span data-dz-size></span></div>\n    <div class=\"dz-filename\"><span data-dz-name></span></div>\n  </div>\n  <div class=\"dz-progress\"><span class=\"dz-upload\" data-dz-uploadprogress></span></div>\n  <div class=\"dz-error-message\"><span data-dz-errormessage></span></div>\n  <div class=\"dz-success-mark\">\n    <svg width=\"54px\" height=\"54px\" viewBox=\"0 0 54 54\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:sketch=\"http://www.bohemiancoding.com/sketch/ns\">\n      <title>Check</title>\n      <defs></defs>\n      <g id=\"Page-1\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\" sketch:type=\"MSPage\">\n        <path d=\"M23.5,31.8431458 L17.5852419,25.9283877 C16.0248253,24.3679711 13.4910294,24.366835 11.9289322,25.9289322 C10.3700136,27.4878508 10.3665912,30.0234455 11.9283877,31.5852419 L20.4147581,40.0716123 C20.5133999,40.1702541 20.6159315,40.2626649 20.7218615,40.3488435 C22.2835669,41.8725651 24.794234,41.8626202 26.3461564,40.3106978 L43.3106978,23.3461564 C44.8771021,21.7797521 44.8758057,19.2483887 43.3137085,17.6862915 C41.7547899,16.1273729 39.2176035,16.1255422 37.6538436,17.6893022 L23.5,31.8431458 Z M27,53 C41.3594035,53 53,41.3594035 53,27 C53,12.6405965 41.3594035,1 27,1 C12.6405965,1 1,12.6405965 1,27 C1,41.3594035 12.6405965,53 27,53 Z\" id=\"Oval-2\" stroke-opacity=\"0.198794158\" stroke=\"#747474\" fill-opacity=\"0.816519475\" fill=\"#FFFFFF\" sketch:type=\"MSShapeGroup\"></path>\n      </g>\n    </svg>\n  </div>\n  <div class=\"dz-error-mark\">\n    <svg width=\"54px\" height=\"54px\" viewBox=\"0 0 54 54\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:sketch=\"http://www.bohemiancoding.com/sketch/ns\">\n      <title>Error</title>\n      <defs></defs>\n      <g id=\"Page-1\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\" sketch:type=\"MSPage\">\n        <g id=\"Check-+-Oval-2\" sketch:type=\"MSLayerGroup\" stroke=\"#747474\" stroke-opacity=\"0.198794158\" fill=\"#FFFFFF\" fill-opacity=\"0.816519475\">\n          <path d=\"M32.6568542,29 L38.3106978,23.3461564 C39.8771021,21.7797521 39.8758057,19.2483887 38.3137085,17.6862915 C36.7547899,16.1273729 34.2176035,16.1255422 32.6538436,17.6893022 L27,23.3431458 L21.3461564,17.6893022 C19.7823965,16.1255422 17.2452101,16.1273729 15.6862915,17.6862915 C14.1241943,19.2483887 14.1228979,21.7797521 15.6893022,23.3461564 L21.3431458,29 L15.6893022,34.6538436 C14.1228979,36.2202479 14.1241943,38.7516113 15.6862915,40.3137085 C17.2452101,41.8726271 19.7823965,41.8744578 21.3461564,40.3106978 L27,34.6568542 L32.6538436,40.3106978 C34.2176035,41.8744578 36.7547899,41.8726271 38.3137085,40.3137085 C39.8758057,38.7516113 39.8771021,36.2202479 38.3106978,34.6538436 L32.6568542,29 Z M27,53 C41.3594035,53 53,41.3594035 53,27 C53,12.6405965 41.3594035,1 27,1 C12.6405965,1 1,12.6405965 1,27 C1,41.3594035 12.6405965,53 27,53 Z\" id=\"Oval-2\" sketch:type=\"MSShapeGroup\"></path>\n        </g>\n      </g>\n    </svg>\n  </div>\n</div>"
+    };
+
+    extend = function() {
+      var key, object, objects, target, val, _i, _len;
+      target = arguments[0], objects = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      for (_i = 0, _len = objects.length; _i < _len; _i++) {
+        object = objects[_i];
+        for (key in object) {
+          val = object[key];
+          target[key] = val;
+        }
+      }
+      return target;
+    };
+
+    function Dropzone(element, options) {
+      var elementOptions, fallback, _ref;
+      this.element = element;
+      this.version = Dropzone.version;
+      this.defaultOptions.previewTemplate = this.defaultOptions.previewTemplate.replace(/\n*/g, "");
+      this.clickableElements = [];
+      this.listeners = [];
+      this.files = [];
+      if (typeof this.element === "string") {
+        this.element = document.querySelector(this.element);
+      }
+      if (!(this.element && (this.element.nodeType != null))) {
+        throw new Error("Invalid dropzone element.");
+      }
+      if (this.element.dropzone) {
+        throw new Error("Dropzone already attached.");
+      }
+      Dropzone.instances.push(this);
+      this.element.dropzone = this;
+      elementOptions = (_ref = Dropzone.optionsForElement(this.element)) != null ? _ref : {};
+      this.options = extend({}, this.defaultOptions, elementOptions, options != null ? options : {});
+      if (this.options.forceFallback || !Dropzone.isBrowserSupported()) {
+        return this.options.fallback.call(this);
+      }
+      if (this.options.url == null) {
+        this.options.url = this.element.getAttribute("action");
+      }
+      if (!this.options.url) {
+        throw new Error("No URL provided.");
+      }
+      if (this.options.acceptedFiles && this.options.acceptedMimeTypes) {
+        throw new Error("You can't provide both 'acceptedFiles' and 'acceptedMimeTypes'. 'acceptedMimeTypes' is deprecated.");
+      }
+      if (this.options.acceptedMimeTypes) {
+        this.options.acceptedFiles = this.options.acceptedMimeTypes;
+        delete this.options.acceptedMimeTypes;
+      }
+      this.options.method = this.options.method.toUpperCase();
+      if ((fallback = this.getExistingFallback()) && fallback.parentNode) {
+        fallback.parentNode.removeChild(fallback);
+      }
+      if (this.options.previewsContainer !== false) {
+        if (this.options.previewsContainer) {
+          this.previewsContainer = Dropzone.getElement(this.options.previewsContainer, "previewsContainer");
+        } else {
+          this.previewsContainer = this.element;
+        }
+      }
+      if (this.options.clickable) {
+        if (this.options.clickable === true) {
+          this.clickableElements = [this.element];
+        } else {
+          this.clickableElements = Dropzone.getElements(this.options.clickable, "clickable");
+        }
+      }
+      this.init();
+    }
+
+    Dropzone.prototype.getAcceptedFiles = function() {
+      var file, _i, _len, _ref, _results;
+      _ref = this.files;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        file = _ref[_i];
+        if (file.accepted) {
+          _results.push(file);
+        }
+      }
+      return _results;
+    };
+
+    Dropzone.prototype.getRejectedFiles = function() {
+      var file, _i, _len, _ref, _results;
+      _ref = this.files;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        file = _ref[_i];
+        if (!file.accepted) {
+          _results.push(file);
+        }
+      }
+      return _results;
+    };
+
+    Dropzone.prototype.getFilesWithStatus = function(status) {
+      var file, _i, _len, _ref, _results;
+      _ref = this.files;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        file = _ref[_i];
+        if (file.status === status) {
+          _results.push(file);
+        }
+      }
+      return _results;
+    };
+
+    Dropzone.prototype.getQueuedFiles = function() {
+      return this.getFilesWithStatus(Dropzone.QUEUED);
+    };
+
+    Dropzone.prototype.getUploadingFiles = function() {
+      return this.getFilesWithStatus(Dropzone.UPLOADING);
+    };
+
+    Dropzone.prototype.getAddedFiles = function() {
+      return this.getFilesWithStatus(Dropzone.ADDED);
+    };
+
+    Dropzone.prototype.getActiveFiles = function() {
+      var file, _i, _len, _ref, _results;
+      _ref = this.files;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        file = _ref[_i];
+        if (file.status === Dropzone.UPLOADING || file.status === Dropzone.QUEUED) {
+          _results.push(file);
+        }
+      }
+      return _results;
+    };
+
+    Dropzone.prototype.init = function() {
+      var eventName, noPropagation, setupHiddenFileInput, _i, _len, _ref, _ref1;
+      if (this.element.tagName === "form") {
+        this.element.setAttribute("enctype", "multipart/form-data");
+      }
+      if (this.element.classList.contains("dropzone") && !this.element.querySelector(".dz-message")) {
+        this.element.appendChild(Dropzone.createElement("<div class=\"dz-default dz-message\"><span>" + this.options.dictDefaultMessage + "</span></div>"));
+      }
+      if (this.clickableElements.length) {
+        setupHiddenFileInput = (function(_this) {
+          return function() {
+            if (_this.hiddenFileInput) {
+              _this.hiddenFileInput.parentNode.removeChild(_this.hiddenFileInput);
+            }
+            _this.hiddenFileInput = document.createElement("input");
+            _this.hiddenFileInput.setAttribute("type", "file");
+            if ((_this.options.maxFiles == null) || _this.options.maxFiles > 1) {
+              _this.hiddenFileInput.setAttribute("multiple", "multiple");
+            }
+            _this.hiddenFileInput.className = "dz-hidden-input";
+            if (_this.options.acceptedFiles != null) {
+              _this.hiddenFileInput.setAttribute("accept", _this.options.acceptedFiles);
+            }
+            if (_this.options.capture != null) {
+              _this.hiddenFileInput.setAttribute("capture", _this.options.capture);
+            }
+            _this.hiddenFileInput.style.visibility = "hidden";
+            _this.hiddenFileInput.style.position = "absolute";
+            _this.hiddenFileInput.style.top = "0";
+            _this.hiddenFileInput.style.left = "0";
+            _this.hiddenFileInput.style.height = "0";
+            _this.hiddenFileInput.style.width = "0";
+            document.querySelector(_this.options.hiddenInputContainer).appendChild(_this.hiddenFileInput);
+            return _this.hiddenFileInput.addEventListener("change", function() {
+              var file, files, _i, _len;
+              files = _this.hiddenFileInput.files;
+              if (files.length) {
+                for (_i = 0, _len = files.length; _i < _len; _i++) {
+                  file = files[_i];
+                  _this.addFile(file);
+                }
+              }
+              _this.emit("addedfiles", files);
+              return setupHiddenFileInput();
+            });
+          };
+        })(this);
+        setupHiddenFileInput();
+      }
+      this.URL = (_ref = window.URL) != null ? _ref : window.webkitURL;
+      _ref1 = this.events;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        eventName = _ref1[_i];
+        this.on(eventName, this.options[eventName]);
+      }
+      this.on("uploadprogress", (function(_this) {
+        return function() {
+          return _this.updateTotalUploadProgress();
+        };
+      })(this));
+      this.on("removedfile", (function(_this) {
+        return function() {
+          return _this.updateTotalUploadProgress();
+        };
+      })(this));
+      this.on("canceled", (function(_this) {
+        return function(file) {
+          return _this.emit("complete", file);
+        };
+      })(this));
+      this.on("complete", (function(_this) {
+        return function(file) {
+          if (_this.getAddedFiles().length === 0 && _this.getUploadingFiles().length === 0 && _this.getQueuedFiles().length === 0) {
+            return setTimeout((function() {
+              return _this.emit("queuecomplete");
+            }), 0);
+          }
+        };
+      })(this));
+      noPropagation = function(e) {
+        e.stopPropagation();
+        if (e.preventDefault) {
+          return e.preventDefault();
+        } else {
+          return e.returnValue = false;
+        }
+      };
+      this.listeners = [
+        {
+          element: this.element,
+          events: {
+            "dragstart": (function(_this) {
+              return function(e) {
+                return _this.emit("dragstart", e);
+              };
+            })(this),
+            "dragenter": (function(_this) {
+              return function(e) {
+                noPropagation(e);
+                return _this.emit("dragenter", e);
+              };
+            })(this),
+            "dragover": (function(_this) {
+              return function(e) {
+                var efct;
+                try {
+                  efct = e.dataTransfer.effectAllowed;
+                } catch (_error) {}
+                e.dataTransfer.dropEffect = 'move' === efct || 'linkMove' === efct ? 'move' : 'copy';
+                noPropagation(e);
+                return _this.emit("dragover", e);
+              };
+            })(this),
+            "dragleave": (function(_this) {
+              return function(e) {
+                return _this.emit("dragleave", e);
+              };
+            })(this),
+            "drop": (function(_this) {
+              return function(e) {
+                noPropagation(e);
+                return _this.drop(e);
+              };
+            })(this),
+            "dragend": (function(_this) {
+              return function(e) {
+                return _this.emit("dragend", e);
+              };
+            })(this)
+          }
+        }
+      ];
+      this.clickableElements.forEach((function(_this) {
+        return function(clickableElement) {
+          return _this.listeners.push({
+            element: clickableElement,
+            events: {
+              "click": function(evt) {
+                if ((clickableElement !== _this.element) || (evt.target === _this.element || Dropzone.elementInside(evt.target, _this.element.querySelector(".dz-message")))) {
+                  _this.hiddenFileInput.click();
+                }
+                return true;
+              }
+            }
+          });
+        };
+      })(this));
+      this.enable();
+      return this.options.init.call(this);
+    };
+
+    Dropzone.prototype.destroy = function() {
+      var _ref;
+      this.disable();
+      this.removeAllFiles(true);
+      if ((_ref = this.hiddenFileInput) != null ? _ref.parentNode : void 0) {
+        this.hiddenFileInput.parentNode.removeChild(this.hiddenFileInput);
+        this.hiddenFileInput = null;
+      }
+      delete this.element.dropzone;
+      return Dropzone.instances.splice(Dropzone.instances.indexOf(this), 1);
+    };
+
+    Dropzone.prototype.updateTotalUploadProgress = function() {
+      var activeFiles, file, totalBytes, totalBytesSent, totalUploadProgress, _i, _len, _ref;
+      totalBytesSent = 0;
+      totalBytes = 0;
+      activeFiles = this.getActiveFiles();
+      if (activeFiles.length) {
+        _ref = this.getActiveFiles();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          file = _ref[_i];
+          totalBytesSent += file.upload.bytesSent;
+          totalBytes += file.upload.total;
+        }
+        totalUploadProgress = 100 * totalBytesSent / totalBytes;
+      } else {
+        totalUploadProgress = 100;
+      }
+      return this.emit("totaluploadprogress", totalUploadProgress, totalBytes, totalBytesSent);
+    };
+
+    Dropzone.prototype._getParamName = function(n) {
+      if (typeof this.options.paramName === "function") {
+        return this.options.paramName(n);
+      } else {
+        return "" + this.options.paramName + (this.options.uploadMultiple ? "[" + n + "]" : "");
+      }
+    };
+
+    Dropzone.prototype._renameFilename = function(name) {
+      if (typeof this.options.renameFilename !== "function") {
+        return name;
+      }
+      return this.options.renameFilename(name);
+    };
+
+    Dropzone.prototype.getFallbackForm = function() {
+      var existingFallback, fields, fieldsString, form;
+      if (existingFallback = this.getExistingFallback()) {
+        return existingFallback;
+      }
+      fieldsString = "<div class=\"dz-fallback\">";
+      if (this.options.dictFallbackText) {
+        fieldsString += "<p>" + this.options.dictFallbackText + "</p>";
+      }
+      fieldsString += "<input type=\"file\" name=\"" + (this._getParamName(0)) + "\" " + (this.options.uploadMultiple ? 'multiple="multiple"' : void 0) + " /><input type=\"submit\" value=\"Upload!\"></div>";
+      fields = Dropzone.createElement(fieldsString);
+      if (this.element.tagName !== "FORM") {
+        form = Dropzone.createElement("<form action=\"" + this.options.url + "\" enctype=\"multipart/form-data\" method=\"" + this.options.method + "\"></form>");
+        form.appendChild(fields);
+      } else {
+        this.element.setAttribute("enctype", "multipart/form-data");
+        this.element.setAttribute("method", this.options.method);
+      }
+      return form != null ? form : fields;
+    };
+
+    Dropzone.prototype.getExistingFallback = function() {
+      var fallback, getFallback, tagName, _i, _len, _ref;
+      getFallback = function(elements) {
+        var el, _i, _len;
+        for (_i = 0, _len = elements.length; _i < _len; _i++) {
+          el = elements[_i];
+          if (/(^| )fallback($| )/.test(el.className)) {
+            return el;
+          }
+        }
+      };
+      _ref = ["div", "form"];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        tagName = _ref[_i];
+        if (fallback = getFallback(this.element.getElementsByTagName(tagName))) {
+          return fallback;
+        }
+      }
+    };
+
+    Dropzone.prototype.setupEventListeners = function() {
+      var elementListeners, event, listener, _i, _len, _ref, _results;
+      _ref = this.listeners;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        elementListeners = _ref[_i];
+        _results.push((function() {
+          var _ref1, _results1;
+          _ref1 = elementListeners.events;
+          _results1 = [];
+          for (event in _ref1) {
+            listener = _ref1[event];
+            _results1.push(elementListeners.element.addEventListener(event, listener, false));
+          }
+          return _results1;
+        })());
+      }
+      return _results;
+    };
+
+    Dropzone.prototype.removeEventListeners = function() {
+      var elementListeners, event, listener, _i, _len, _ref, _results;
+      _ref = this.listeners;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        elementListeners = _ref[_i];
+        _results.push((function() {
+          var _ref1, _results1;
+          _ref1 = elementListeners.events;
+          _results1 = [];
+          for (event in _ref1) {
+            listener = _ref1[event];
+            _results1.push(elementListeners.element.removeEventListener(event, listener, false));
+          }
+          return _results1;
+        })());
+      }
+      return _results;
+    };
+
+    Dropzone.prototype.disable = function() {
+      var file, _i, _len, _ref, _results;
+      this.clickableElements.forEach(function(element) {
+        return element.classList.remove("dz-clickable");
+      });
+      this.removeEventListeners();
+      _ref = this.files;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        file = _ref[_i];
+        _results.push(this.cancelUpload(file));
+      }
+      return _results;
+    };
+
+    Dropzone.prototype.enable = function() {
+      this.clickableElements.forEach(function(element) {
+        return element.classList.add("dz-clickable");
+      });
+      return this.setupEventListeners();
+    };
+
+    Dropzone.prototype.filesize = function(size) {
+      var cutoff, i, selectedSize, selectedUnit, unit, units, _i, _len;
+      selectedSize = 0;
+      selectedUnit = "b";
+      if (size > 0) {
+        units = ['TB', 'GB', 'MB', 'KB', 'b'];
+        for (i = _i = 0, _len = units.length; _i < _len; i = ++_i) {
+          unit = units[i];
+          cutoff = Math.pow(this.options.filesizeBase, 4 - i) / 10;
+          if (size >= cutoff) {
+            selectedSize = size / Math.pow(this.options.filesizeBase, 4 - i);
+            selectedUnit = unit;
+            break;
+          }
+        }
+        selectedSize = Math.round(10 * selectedSize) / 10;
+      }
+      return "<strong>" + selectedSize + "</strong> " + selectedUnit;
+    };
+
+    Dropzone.prototype._updateMaxFilesReachedClass = function() {
+      if ((this.options.maxFiles != null) && this.getAcceptedFiles().length >= this.options.maxFiles) {
+        if (this.getAcceptedFiles().length === this.options.maxFiles) {
+          this.emit('maxfilesreached', this.files);
+        }
+        return this.element.classList.add("dz-max-files-reached");
+      } else {
+        return this.element.classList.remove("dz-max-files-reached");
+      }
+    };
+
+    Dropzone.prototype.drop = function(e) {
+      var files, items;
+      if (!e.dataTransfer) {
+        return;
+      }
+      this.emit("drop", e);
+      files = e.dataTransfer.files;
+      this.emit("addedfiles", files);
+      if (files.length) {
+        items = e.dataTransfer.items;
+        if (items && items.length && (items[0].webkitGetAsEntry != null)) {
+          this._addFilesFromItems(items);
+        } else {
+          this.handleFiles(files);
+        }
+      }
+    };
+
+    Dropzone.prototype.paste = function(e) {
+      var items, _ref;
+      if ((e != null ? (_ref = e.clipboardData) != null ? _ref.items : void 0 : void 0) == null) {
+        return;
+      }
+      this.emit("paste", e);
+      items = e.clipboardData.items;
+      if (items.length) {
+        return this._addFilesFromItems(items);
+      }
+    };
+
+    Dropzone.prototype.handleFiles = function(files) {
+      var file, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = files.length; _i < _len; _i++) {
+        file = files[_i];
+        _results.push(this.addFile(file));
+      }
+      return _results;
+    };
+
+    Dropzone.prototype._addFilesFromItems = function(items) {
+      var entry, item, _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = items.length; _i < _len; _i++) {
+        item = items[_i];
+        if ((item.webkitGetAsEntry != null) && (entry = item.webkitGetAsEntry())) {
+          if (entry.isFile) {
+            _results.push(this.addFile(item.getAsFile()));
+          } else if (entry.isDirectory) {
+            _results.push(this._addFilesFromDirectory(entry, entry.name));
+          } else {
+            _results.push(void 0);
+          }
+        } else if (item.getAsFile != null) {
+          if ((item.kind == null) || item.kind === "file") {
+            _results.push(this.addFile(item.getAsFile()));
+          } else {
+            _results.push(void 0);
+          }
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    };
+
+    Dropzone.prototype._addFilesFromDirectory = function(directory, path) {
+      var dirReader, errorHandler, readEntries;
+      dirReader = directory.createReader();
+      errorHandler = function(error) {
+        return typeof console !== "undefined" && console !== null ? typeof console.log === "function" ? console.log(error) : void 0 : void 0;
+      };
+      readEntries = (function(_this) {
+        return function() {
+          return dirReader.readEntries(function(entries) {
+            var entry, _i, _len;
+            if (entries.length > 0) {
+              for (_i = 0, _len = entries.length; _i < _len; _i++) {
+                entry = entries[_i];
+                if (entry.isFile) {
+                  entry.file(function(file) {
+                    if (_this.options.ignoreHiddenFiles && file.name.substring(0, 1) === '.') {
+                      return;
+                    }
+                    file.fullPath = "" + path + "/" + file.name;
+                    return _this.addFile(file);
+                  });
+                } else if (entry.isDirectory) {
+                  _this._addFilesFromDirectory(entry, "" + path + "/" + entry.name);
+                }
+              }
+              readEntries();
+            }
+            return null;
+          }, errorHandler);
+        };
+      })(this);
+      return readEntries();
+    };
+
+    Dropzone.prototype.accept = function(file, done) {
+      if (file.size > this.options.maxFilesize * 1024 * 1024) {
+        return done(this.options.dictFileTooBig.replace("{{filesize}}", Math.round(file.size / 1024 / 10.24) / 100).replace("{{maxFilesize}}", this.options.maxFilesize));
+      } else if (!Dropzone.isValidFile(file, this.options.acceptedFiles)) {
+        return done(this.options.dictInvalidFileType);
+      } else if ((this.options.maxFiles != null) && this.getAcceptedFiles().length >= this.options.maxFiles) {
+        done(this.options.dictMaxFilesExceeded.replace("{{maxFiles}}", this.options.maxFiles));
+        return this.emit("maxfilesexceeded", file);
+      } else {
+        return this.options.accept.call(this, file, done);
+      }
+    };
+
+    Dropzone.prototype.addFile = function(file) {
+      file.upload = {
+        progress: 0,
+        total: file.size,
+        bytesSent: 0
+      };
+      this.files.push(file);
+      file.status = Dropzone.ADDED;
+      this.emit("addedfile", file);
+      this._enqueueThumbnail(file);
+      return this.accept(file, (function(_this) {
+        return function(error) {
+          if (error) {
+            file.accepted = false;
+            _this._errorProcessing([file], error);
+          } else {
+            file.accepted = true;
+            if (_this.options.autoQueue) {
+              _this.enqueueFile(file);
+            }
+          }
+          return _this._updateMaxFilesReachedClass();
+        };
+      })(this));
+    };
+
+    Dropzone.prototype.enqueueFiles = function(files) {
+      var file, _i, _len;
+      for (_i = 0, _len = files.length; _i < _len; _i++) {
+        file = files[_i];
+        this.enqueueFile(file);
+      }
+      return null;
+    };
+
+    Dropzone.prototype.enqueueFile = function(file) {
+      if (file.status === Dropzone.ADDED && file.accepted === true) {
+        file.status = Dropzone.QUEUED;
+        if (this.options.autoProcessQueue) {
+          return setTimeout(((function(_this) {
+            return function() {
+              return _this.processQueue();
+            };
+          })(this)), 0);
+        }
+      } else {
+        throw new Error("This file can't be queued because it has already been processed or was rejected.");
+      }
+    };
+
+    Dropzone.prototype._thumbnailQueue = [];
+
+    Dropzone.prototype._processingThumbnail = false;
+
+    Dropzone.prototype._enqueueThumbnail = function(file) {
+      if (this.options.createImageThumbnails && file.type.match(/image.*/) && file.size <= this.options.maxThumbnailFilesize * 1024 * 1024) {
+        this._thumbnailQueue.push(file);
+        return setTimeout(((function(_this) {
+          return function() {
+            return _this._processThumbnailQueue();
+          };
+        })(this)), 0);
+      }
+    };
+
+    Dropzone.prototype._processThumbnailQueue = function() {
+      if (this._processingThumbnail || this._thumbnailQueue.length === 0) {
+        return;
+      }
+      this._processingThumbnail = true;
+      return this.createThumbnail(this._thumbnailQueue.shift(), (function(_this) {
+        return function() {
+          _this._processingThumbnail = false;
+          return _this._processThumbnailQueue();
+        };
+      })(this));
+    };
+
+    Dropzone.prototype.removeFile = function(file) {
+      if (file.status === Dropzone.UPLOADING) {
+        this.cancelUpload(file);
+      }
+      this.files = without(this.files, file);
+      this.emit("removedfile", file);
+      if (this.files.length === 0) {
+        return this.emit("reset");
+      }
+    };
+
+    Dropzone.prototype.removeAllFiles = function(cancelIfNecessary) {
+      var file, _i, _len, _ref;
+      if (cancelIfNecessary == null) {
+        cancelIfNecessary = false;
+      }
+      _ref = this.files.slice();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        file = _ref[_i];
+        if (file.status !== Dropzone.UPLOADING || cancelIfNecessary) {
+          this.removeFile(file);
+        }
+      }
+      return null;
+    };
+
+    Dropzone.prototype.createThumbnail = function(file, callback) {
+      var fileReader;
+      fileReader = new FileReader;
+      fileReader.onload = (function(_this) {
+        return function() {
+          if (file.type === "image/svg+xml") {
+            _this.emit("thumbnail", file, fileReader.result);
+            if (callback != null) {
+              callback();
+            }
+            return;
+          }
+          return _this.createThumbnailFromUrl(file, fileReader.result, callback);
+        };
+      })(this);
+      return fileReader.readAsDataURL(file);
+    };
+
+    Dropzone.prototype.createThumbnailFromUrl = function(file, imageUrl, callback, crossOrigin) {
+      var img;
+      img = document.createElement("img");
+      if (crossOrigin) {
+        img.crossOrigin = crossOrigin;
+      }
+      img.onload = (function(_this) {
+        return function() {
+          var canvas, ctx, resizeInfo, thumbnail, _ref, _ref1, _ref2, _ref3;
+          file.width = img.width;
+          file.height = img.height;
+          resizeInfo = _this.options.resize.call(_this, file);
+          if (resizeInfo.trgWidth == null) {
+            resizeInfo.trgWidth = resizeInfo.optWidth;
+          }
+          if (resizeInfo.trgHeight == null) {
+            resizeInfo.trgHeight = resizeInfo.optHeight;
+          }
+          canvas = document.createElement("canvas");
+          ctx = canvas.getContext("2d");
+          canvas.width = resizeInfo.trgWidth;
+          canvas.height = resizeInfo.trgHeight;
+          drawImageIOSFix(ctx, img, (_ref = resizeInfo.srcX) != null ? _ref : 0, (_ref1 = resizeInfo.srcY) != null ? _ref1 : 0, resizeInfo.srcWidth, resizeInfo.srcHeight, (_ref2 = resizeInfo.trgX) != null ? _ref2 : 0, (_ref3 = resizeInfo.trgY) != null ? _ref3 : 0, resizeInfo.trgWidth, resizeInfo.trgHeight);
+          thumbnail = canvas.toDataURL("image/png");
+          _this.emit("thumbnail", file, thumbnail);
+          if (callback != null) {
+            return callback();
+          }
+        };
+      })(this);
+      if (callback != null) {
+        img.onerror = callback;
+      }
+      return img.src = imageUrl;
+    };
+
+    Dropzone.prototype.processQueue = function() {
+      var i, parallelUploads, processingLength, queuedFiles;
+      parallelUploads = this.options.parallelUploads;
+      processingLength = this.getUploadingFiles().length;
+      i = processingLength;
+      if (processingLength >= parallelUploads) {
+        return;
+      }
+      queuedFiles = this.getQueuedFiles();
+      if (!(queuedFiles.length > 0)) {
+        return;
+      }
+      if (this.options.uploadMultiple) {
+        return this.processFiles(queuedFiles.slice(0, parallelUploads - processingLength));
+      } else {
+        while (i < parallelUploads) {
+          if (!queuedFiles.length) {
+            return;
+          }
+          this.processFile(queuedFiles.shift());
+          i++;
+        }
+      }
+    };
+
+    Dropzone.prototype.processFile = function(file) {
+      return this.processFiles([file]);
+    };
+
+    Dropzone.prototype.processFiles = function(files) {
+      var file, _i, _len;
+      for (_i = 0, _len = files.length; _i < _len; _i++) {
+        file = files[_i];
+        file.processing = true;
+        file.status = Dropzone.UPLOADING;
+        this.emit("processing", file);
+      }
+      if (this.options.uploadMultiple) {
+        this.emit("processingmultiple", files);
+      }
+      return this.uploadFiles(files);
+    };
+
+    Dropzone.prototype._getFilesWithXhr = function(xhr) {
+      var file, files;
+      return files = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.files;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          file = _ref[_i];
+          if (file.xhr === xhr) {
+            _results.push(file);
+          }
+        }
+        return _results;
+      }).call(this);
+    };
+
+    Dropzone.prototype.cancelUpload = function(file) {
+      var groupedFile, groupedFiles, _i, _j, _len, _len1, _ref;
+      if (file.status === Dropzone.UPLOADING) {
+        groupedFiles = this._getFilesWithXhr(file.xhr);
+        for (_i = 0, _len = groupedFiles.length; _i < _len; _i++) {
+          groupedFile = groupedFiles[_i];
+          groupedFile.status = Dropzone.CANCELED;
+        }
+        file.xhr.abort();
+        for (_j = 0, _len1 = groupedFiles.length; _j < _len1; _j++) {
+          groupedFile = groupedFiles[_j];
+          this.emit("canceled", groupedFile);
+        }
+        if (this.options.uploadMultiple) {
+          this.emit("canceledmultiple", groupedFiles);
+        }
+      } else if ((_ref = file.status) === Dropzone.ADDED || _ref === Dropzone.QUEUED) {
+        file.status = Dropzone.CANCELED;
+        this.emit("canceled", file);
+        if (this.options.uploadMultiple) {
+          this.emit("canceledmultiple", [file]);
+        }
+      }
+      if (this.options.autoProcessQueue) {
+        return this.processQueue();
+      }
+    };
+
+    resolveOption = function() {
+      var args, option;
+      option = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      if (typeof option === 'function') {
+        return option.apply(this, args);
+      }
+      return option;
+    };
+
+    Dropzone.prototype.uploadFile = function(file) {
+      return this.uploadFiles([file]);
+    };
+
+    Dropzone.prototype.uploadFiles = function(files) {
+      var file, formData, handleError, headerName, headerValue, headers, i, input, inputName, inputType, key, method, option, progressObj, response, updateProgress, url, value, xhr, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      xhr = new XMLHttpRequest();
+      for (_i = 0, _len = files.length; _i < _len; _i++) {
+        file = files[_i];
+        file.xhr = xhr;
+      }
+      method = resolveOption(this.options.method, files);
+      url = resolveOption(this.options.url, files);
+      xhr.open(method, url, true);
+      xhr.withCredentials = !!this.options.withCredentials;
+      response = null;
+      handleError = (function(_this) {
+        return function() {
+          var _j, _len1, _results;
+          _results = [];
+          for (_j = 0, _len1 = files.length; _j < _len1; _j++) {
+            file = files[_j];
+            _results.push(_this._errorProcessing(files, response || _this.options.dictResponseError.replace("{{statusCode}}", xhr.status), xhr));
+          }
+          return _results;
+        };
+      })(this);
+      updateProgress = (function(_this) {
+        return function(e) {
+          var allFilesFinished, progress, _j, _k, _l, _len1, _len2, _len3, _results;
+          if (e != null) {
+            progress = 100 * e.loaded / e.total;
+            for (_j = 0, _len1 = files.length; _j < _len1; _j++) {
+              file = files[_j];
+              file.upload = {
+                progress: progress,
+                total: e.total,
+                bytesSent: e.loaded
+              };
+            }
+          } else {
+            allFilesFinished = true;
+            progress = 100;
+            for (_k = 0, _len2 = files.length; _k < _len2; _k++) {
+              file = files[_k];
+              if (!(file.upload.progress === 100 && file.upload.bytesSent === file.upload.total)) {
+                allFilesFinished = false;
+              }
+              file.upload.progress = progress;
+              file.upload.bytesSent = file.upload.total;
+            }
+            if (allFilesFinished) {
+              return;
+            }
+          }
+          _results = [];
+          for (_l = 0, _len3 = files.length; _l < _len3; _l++) {
+            file = files[_l];
+            _results.push(_this.emit("uploadprogress", file, progress, file.upload.bytesSent));
+          }
+          return _results;
+        };
+      })(this);
+      xhr.onload = (function(_this) {
+        return function(e) {
+          var _ref;
+          if (files[0].status === Dropzone.CANCELED) {
+            return;
+          }
+          if (xhr.readyState !== 4) {
+            return;
+          }
+          response = xhr.responseText;
+          if (xhr.getResponseHeader("content-type") && ~xhr.getResponseHeader("content-type").indexOf("application/json")) {
+            try {
+              response = JSON.parse(response);
+            } catch (_error) {
+              e = _error;
+              response = "Invalid JSON response from server.";
+            }
+          }
+          updateProgress();
+          if (!((200 <= (_ref = xhr.status) && _ref < 300))) {
+            return handleError();
+          } else {
+            return _this._finished(files, response, e);
+          }
+        };
+      })(this);
+      xhr.onerror = (function(_this) {
+        return function() {
+          if (files[0].status === Dropzone.CANCELED) {
+            return;
+          }
+          return handleError();
+        };
+      })(this);
+      progressObj = (_ref = xhr.upload) != null ? _ref : xhr;
+      progressObj.onprogress = updateProgress;
+      headers = {
+        "Accept": "application/json",
+        "Cache-Control": "no-cache",
+        "X-Requested-With": "XMLHttpRequest"
+      };
+      if (this.options.headers) {
+        extend(headers, this.options.headers);
+      }
+      for (headerName in headers) {
+        headerValue = headers[headerName];
+        if (headerValue) {
+          xhr.setRequestHeader(headerName, headerValue);
+        }
+      }
+      formData = new FormData();
+      if (this.options.params) {
+        _ref1 = this.options.params;
+        for (key in _ref1) {
+          value = _ref1[key];
+          formData.append(key, value);
+        }
+      }
+      for (_j = 0, _len1 = files.length; _j < _len1; _j++) {
+        file = files[_j];
+        this.emit("sending", file, xhr, formData);
+      }
+      if (this.options.uploadMultiple) {
+        this.emit("sendingmultiple", files, xhr, formData);
+      }
+      if (this.element.tagName === "FORM") {
+        _ref2 = this.element.querySelectorAll("input, textarea, select, button");
+        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+          input = _ref2[_k];
+          inputName = input.getAttribute("name");
+          inputType = input.getAttribute("type");
+          if (input.tagName === "SELECT" && input.hasAttribute("multiple")) {
+            _ref3 = input.options;
+            for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+              option = _ref3[_l];
+              if (option.selected) {
+                formData.append(inputName, option.value);
+              }
+            }
+          } else if (!inputType || ((_ref4 = inputType.toLowerCase()) !== "checkbox" && _ref4 !== "radio") || input.checked) {
+            formData.append(inputName, input.value);
+          }
+        }
+      }
+      for (i = _m = 0, _ref5 = files.length - 1; 0 <= _ref5 ? _m <= _ref5 : _m >= _ref5; i = 0 <= _ref5 ? ++_m : --_m) {
+        formData.append(this._getParamName(i), files[i], this._renameFilename(files[i].name));
+      }
+      return this.submitRequest(xhr, formData, files);
+    };
+
+    Dropzone.prototype.submitRequest = function(xhr, formData, files) {
+      return xhr.send(formData);
+    };
+
+    Dropzone.prototype._finished = function(files, responseText, e) {
+      var file, _i, _len;
+      for (_i = 0, _len = files.length; _i < _len; _i++) {
+        file = files[_i];
+        file.status = Dropzone.SUCCESS;
+        this.emit("success", file, responseText, e);
+        this.emit("complete", file);
+      }
+      if (this.options.uploadMultiple) {
+        this.emit("successmultiple", files, responseText, e);
+        this.emit("completemultiple", files);
+      }
+      if (this.options.autoProcessQueue) {
+        return this.processQueue();
+      }
+    };
+
+    Dropzone.prototype._errorProcessing = function(files, message, xhr) {
+      var file, _i, _len;
+      for (_i = 0, _len = files.length; _i < _len; _i++) {
+        file = files[_i];
+        file.status = Dropzone.ERROR;
+        this.emit("error", file, message, xhr);
+        this.emit("complete", file);
+      }
+      if (this.options.uploadMultiple) {
+        this.emit("errormultiple", files, message, xhr);
+        this.emit("completemultiple", files);
+      }
+      if (this.options.autoProcessQueue) {
+        return this.processQueue();
+      }
+    };
+
+    return Dropzone;
+
+  })(Emitter);
+
+  Dropzone.version = "4.3.0";
+
+  Dropzone.options = {};
+
+  Dropzone.optionsForElement = function(element) {
+    if (element.getAttribute("id")) {
+      return Dropzone.options[camelize(element.getAttribute("id"))];
+    } else {
+      return void 0;
+    }
+  };
+
+  Dropzone.instances = [];
+
+  Dropzone.forElement = function(element) {
+    if (typeof element === "string") {
+      element = document.querySelector(element);
+    }
+    if ((element != null ? element.dropzone : void 0) == null) {
+      throw new Error("No Dropzone found for given element. This is probably because you're trying to access it before Dropzone had the time to initialize. Use the `init` option to setup any additional observers on your Dropzone.");
+    }
+    return element.dropzone;
+  };
+
+  Dropzone.autoDiscover = true;
+
+  Dropzone.discover = function() {
+    var checkElements, dropzone, dropzones, _i, _len, _results;
+    if (document.querySelectorAll) {
+      dropzones = document.querySelectorAll(".dropzone");
+    } else {
+      dropzones = [];
+      checkElements = function(elements) {
+        var el, _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = elements.length; _i < _len; _i++) {
+          el = elements[_i];
+          if (/(^| )dropzone($| )/.test(el.className)) {
+            _results.push(dropzones.push(el));
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      };
+      checkElements(document.getElementsByTagName("div"));
+      checkElements(document.getElementsByTagName("form"));
+    }
+    _results = [];
+    for (_i = 0, _len = dropzones.length; _i < _len; _i++) {
+      dropzone = dropzones[_i];
+      if (Dropzone.optionsForElement(dropzone) !== false) {
+        _results.push(new Dropzone(dropzone));
+      } else {
+        _results.push(void 0);
+      }
+    }
+    return _results;
+  };
+
+  Dropzone.blacklistedBrowsers = [/opera.*Macintosh.*version\/12/i];
+
+  Dropzone.isBrowserSupported = function() {
+    var capableBrowser, regex, _i, _len, _ref;
+    capableBrowser = true;
+    if (window.File && window.FileReader && window.FileList && window.Blob && window.FormData && document.querySelector) {
+      if (!("classList" in document.createElement("a"))) {
+        capableBrowser = false;
+      } else {
+        _ref = Dropzone.blacklistedBrowsers;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          regex = _ref[_i];
+          if (regex.test(navigator.userAgent)) {
+            capableBrowser = false;
+            continue;
+          }
+        }
+      }
+    } else {
+      capableBrowser = false;
+    }
+    return capableBrowser;
+  };
+
+  without = function(list, rejectedItem) {
+    var item, _i, _len, _results;
+    _results = [];
+    for (_i = 0, _len = list.length; _i < _len; _i++) {
+      item = list[_i];
+      if (item !== rejectedItem) {
+        _results.push(item);
+      }
+    }
+    return _results;
+  };
+
+  camelize = function(str) {
+    return str.replace(/[\-_](\w)/g, function(match) {
+      return match.charAt(1).toUpperCase();
+    });
+  };
+
+  Dropzone.createElement = function(string) {
+    var div;
+    div = document.createElement("div");
+    div.innerHTML = string;
+    return div.childNodes[0];
+  };
+
+  Dropzone.elementInside = function(element, container) {
+    if (element === container) {
+      return true;
+    }
+    while (element = element.parentNode) {
+      if (element === container) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  Dropzone.getElement = function(el, name) {
+    var element;
+    if (typeof el === "string") {
+      element = document.querySelector(el);
+    } else if (el.nodeType != null) {
+      element = el;
+    }
+    if (element == null) {
+      throw new Error("Invalid `" + name + "` option provided. Please provide a CSS selector or a plain HTML element.");
+    }
+    return element;
+  };
+
+  Dropzone.getElements = function(els, name) {
+    var e, el, elements, _i, _j, _len, _len1, _ref;
+    if (els instanceof Array) {
+      elements = [];
+      try {
+        for (_i = 0, _len = els.length; _i < _len; _i++) {
+          el = els[_i];
+          elements.push(this.getElement(el, name));
+        }
+      } catch (_error) {
+        e = _error;
+        elements = null;
+      }
+    } else if (typeof els === "string") {
+      elements = [];
+      _ref = document.querySelectorAll(els);
+      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+        el = _ref[_j];
+        elements.push(el);
+      }
+    } else if (els.nodeType != null) {
+      elements = [els];
+    }
+    if (!((elements != null) && elements.length)) {
+      throw new Error("Invalid `" + name + "` option provided. Please provide a CSS selector, a plain HTML element or a list of those.");
+    }
+    return elements;
+  };
+
+  Dropzone.confirm = function(question, accepted, rejected) {
+    if (window.confirm(question)) {
+      return accepted();
+    } else if (rejected != null) {
+      return rejected();
+    }
+  };
+
+  Dropzone.isValidFile = function(file, acceptedFiles) {
+    var baseMimeType, mimeType, validType, _i, _len;
+    if (!acceptedFiles) {
+      return true;
+    }
+    acceptedFiles = acceptedFiles.split(",");
+    mimeType = file.type;
+    baseMimeType = mimeType.replace(/\/.*$/, "");
+    for (_i = 0, _len = acceptedFiles.length; _i < _len; _i++) {
+      validType = acceptedFiles[_i];
+      validType = validType.trim();
+      if (validType.charAt(0) === ".") {
+        if (file.name.toLowerCase().indexOf(validType.toLowerCase(), file.name.length - validType.length) !== -1) {
+          return true;
+        }
+      } else if (/\/\*$/.test(validType)) {
+        if (baseMimeType === validType.replace(/\/.*$/, "")) {
+          return true;
+        }
+      } else {
+        if (mimeType === validType) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  if (typeof jQuery !== "undefined" && jQuery !== null) {
+    jQuery.fn.dropzone = function(options) {
+      return this.each(function() {
+        return new Dropzone(this, options);
+      });
+    };
+  }
+
+  if (typeof module !== "undefined" && module !== null) {
+    module.exports = Dropzone;
+  } else {
+    window.Dropzone = Dropzone;
+  }
+
+  Dropzone.ADDED = "added";
+
+  Dropzone.QUEUED = "queued";
+
+  Dropzone.ACCEPTED = Dropzone.QUEUED;
+
+  Dropzone.UPLOADING = "uploading";
+
+  Dropzone.PROCESSING = Dropzone.UPLOADING;
+
+  Dropzone.CANCELED = "canceled";
+
+  Dropzone.ERROR = "error";
+
+  Dropzone.SUCCESS = "success";
+
+
+  /*
+  
+  Bugfix for iOS 6 and 7
+  Source: http://stackoverflow.com/questions/11929099/html5-canvas-drawimage-ratio-bug-ios
+  based on the work of https://github.com/stomita/ios-imagefile-megapixel
+   */
+
+  detectVerticalSquash = function(img) {
+    var alpha, canvas, ctx, data, ey, ih, iw, py, ratio, sy;
+    iw = img.naturalWidth;
+    ih = img.naturalHeight;
+    canvas = document.createElement("canvas");
+    canvas.width = 1;
+    canvas.height = ih;
+    ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    data = ctx.getImageData(0, 0, 1, ih).data;
+    sy = 0;
+    ey = ih;
+    py = ih;
+    while (py > sy) {
+      alpha = data[(py - 1) * 4 + 3];
+      if (alpha === 0) {
+        ey = py;
+      } else {
+        sy = py;
+      }
+      py = (ey + sy) >> 1;
+    }
+    ratio = py / ih;
+    if (ratio === 0) {
+      return 1;
+    } else {
+      return ratio;
+    }
+  };
+
+  drawImageIOSFix = function(ctx, img, sx, sy, sw, sh, dx, dy, dw, dh) {
+    var vertSquashRatio;
+    vertSquashRatio = detectVerticalSquash(img);
+    return ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh / vertSquashRatio);
+  };
+
+
+  /*
+   * contentloaded.js
+   *
+   * Author: Diego Perini (diego.perini at gmail.com)
+   * Summary: cross-browser wrapper for DOMContentLoaded
+   * Updated: 20101020
+   * License: MIT
+   * Version: 1.2
+   *
+   * URL:
+   * http://javascript.nwbox.com/ContentLoaded/
+   * http://javascript.nwbox.com/ContentLoaded/MIT-LICENSE
+   */
+
+  contentLoaded = function(win, fn) {
+    var add, doc, done, init, poll, pre, rem, root, top;
+    done = false;
+    top = true;
+    doc = win.document;
+    root = doc.documentElement;
+    add = (doc.addEventListener ? "addEventListener" : "attachEvent");
+    rem = (doc.addEventListener ? "removeEventListener" : "detachEvent");
+    pre = (doc.addEventListener ? "" : "on");
+    init = function(e) {
+      if (e.type === "readystatechange" && doc.readyState !== "complete") {
+        return;
+      }
+      (e.type === "load" ? win : doc)[rem](pre + e.type, init, false);
+      if (!done && (done = true)) {
+        return fn.call(win, e.type || e);
+      }
+    };
+    poll = function() {
+      var e;
+      try {
+        root.doScroll("left");
+      } catch (_error) {
+        e = _error;
+        setTimeout(poll, 50);
+        return;
+      }
+      return init("poll");
+    };
+    if (doc.readyState !== "complete") {
+      if (doc.createEventObject && root.doScroll) {
+        try {
+          top = !win.frameElement;
+        } catch (_error) {}
+        if (top) {
+          poll();
+        }
+      }
+      doc[add](pre + "DOMContentLoaded", init, false);
+      doc[add](pre + "readystatechange", init, false);
+      return win[add](pre + "load", init, false);
+    }
+  };
+
+  Dropzone._autoDiscoverFunction = function() {
+    if (Dropzone.autoDiscover) {
+      return Dropzone.discover();
+    }
+  };
+
+  contentLoaded(window, Dropzone._autoDiscoverFunction);
+
+}).call(this);
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("../../../../webpack/buildin/module.js")(module)))
+
+/***/ }),
+
 /***/ "../../../../jquery/dist/jquery.js":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -19554,6 +22945,35 @@ try {
 // easier to handle this case. if(!global) { ...}
 
 module.exports = g;
+
+
+/***/ }),
+
+/***/ "../../../../webpack/buildin/module.js":
+/***/ (function(module, exports) {
+
+module.exports = function(module) {
+	if(!module.webpackPolyfill) {
+		module.deprecate = function() {};
+		module.paths = [];
+		// module.parent = undefined by default
+		if(!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function() {
+				return module.i;
+			}
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
 
 
 /***/ }),
@@ -91725,6 +95145,204 @@ var environment = {
 
 /***/ }),
 
+/***/ "../../../../../src/AdminBundle/Resources/public/store-logo-image/index/ts/src/crop-popup.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CropPopupComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_post_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/post.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_image_ts_src_image_crop_popup_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/image/ts/src/image-crop-popup.component.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+
+var CropPopupComponent = (function (_super) {
+    __extends(CropPopupComponent, _super);
+    function CropPopupComponent(elementRef, renderer, provider, postService, helperService) {
+        return _super.call(this, elementRef, renderer, provider, postService, helperService) || this;
+    }
+    CropPopupComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: '.js_cropPopup',
+            template: __webpack_require__("../../../../../src/AdminBundle/Resources/public/store-logo-image/index/ts/templates/crop-popup.component.html")
+        }),
+        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('ImageCropProvider')),
+        __param(4, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["r" /* ElementRef */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Renderer */], Object, __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_post_service__["a" /* PostService */], Object])
+    ], CropPopupComponent);
+    return CropPopupComponent;
+}(__WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_image_ts_src_image_crop_popup_component__["a" /* ImageCropPopupComponent */]));
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AdminBundle/Resources/public/store-logo-image/index/ts/src/crop-popup.ext-module.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CropPopupExtModule; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__crop_popup_component__ = __webpack_require__("../../../../../src/AdminBundle/Resources/public/store-logo-image/index/ts/src/crop-popup.component.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+var CropPopupExtModule = (function () {
+    function CropPopupExtModule() {
+    }
+    CropPopupExtModule = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["F" /* NgModule */])({
+            imports: [
+                __WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */]
+            ],
+            declarations: [__WEBPACK_IMPORTED_MODULE_2__crop_popup_component__["a" /* CropPopupComponent */]],
+            exports: [__WEBPACK_IMPORTED_MODULE_2__crop_popup_component__["a" /* CropPopupComponent */]]
+        })
+    ], CropPopupExtModule);
+    return CropPopupExtModule;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AdminBundle/Resources/public/store-logo-image/index/ts/src/edit.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EditComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_file_ts_src_file_form_popup_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/file/ts/src/file-form-popup.component.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+var EditComponent = (function (_super) {
+    __extends(EditComponent, _super);
+    function EditComponent(elementRef, renderer, provider, dataService, helperService) {
+        // Call parent
+        return _super.call(this, elementRef, renderer, provider, dataService, helperService) || this;
+    }
+    EditComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: '#js_edit',
+            template: __webpack_require__("../../../../../src/AdminBundle/Resources/public/store-logo-image/index/ts/templates/edit.component.html")
+        }),
+        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('FileFormProvider')),
+        __param(3, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('DataService')),
+        __param(4, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["r" /* ElementRef */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Renderer */], Object, Object, Object])
+    ], EditComponent);
+    return EditComponent;
+}(__WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_file_ts_src_file_form_popup_component__["a" /* FileFormPopupComponent */]));
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AdminBundle/Resources/public/store-logo-image/index/ts/src/edit.ext-module.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EditExtModule; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__edit_component__ = __webpack_require__("../../../../../src/AdminBundle/Resources/public/store-logo-image/index/ts/src/edit.component.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+
+var EditExtModule = (function () {
+    function EditExtModule() {
+    }
+    EditExtModule = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["F" /* NgModule */])({
+            imports: [__WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* ReactiveFormsModule */]],
+            declarations: [
+                __WEBPACK_IMPORTED_MODULE_3__edit_component__["a" /* EditComponent */]
+            ],
+            exports: [__WEBPACK_IMPORTED_MODULE_3__edit_component__["a" /* EditComponent */]]
+        })
+    ], EditExtModule);
+    return EditExtModule;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AdminBundle/Resources/public/store-logo-image/index/ts/templates/crop-popup.component.html":
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>{{getProviderAttr('label')}}</h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                                        <div class=\"ibox-content\">    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" ngNoForm=\"\" class=\"image-crop form-horizontal\">\n        <div class=\"row\">\n            <div class=\"col-sm-8 image-container\"><img class=\"image\" src=\"{{getWebPath()}}\"></div>\n            <div class=\"col-sm-4 image-container\"><div class=\"image-preview\"></div></div>\n        </div>\n        <input type=\"hidden\" value=\"\" name=\"path\" class=\"path\">\n        <input type=\"hidden\" value=\"\" name=\"width\" class=\"width\">\n        <input type=\"hidden\" value=\"\" name=\"height\" class=\"height\">\n        <input type=\"hidden\" value=\"\" name=\"x\" class=\"x\">\n        <input type=\"hidden\" value=\"\" name=\"y\" class=\"y\">\n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"y_X653isBIPUjhTqIFoEMS38F6y1pjJHhEkNvonaMMU\" /></form>\n\n    <div class=\"hr-line-solid\"></div>\n\n    <div class=\"form-horizontal\"><div class=\"form-group\">\n        <div class=\"col-sm-12\">\n            <button class=\"btn-default btn\" type=\"button\" (click)=\"closeAction($event)\">Cancel</button>\n            <button class=\"btn-primary btn\" type=\"button\" (click)=\"saveAction($event)\">Save and Close</button>\n        </div>\n    </div></div>\n</div>\n                    <div class=\"ibox-footer hide-on-empty\">                        <div class=\"form-horizontal\"><div class=\"form-group\"><div class=\"col-sm-10 col-sm-offset-2\">\n                                                        <button class=\"btn btn-primary\" (click)=\"closeAction($event, true)\">Ok</button>\n                        </div></div></div>\n                    </div>                                    </div>\n            </div>\n        </div>\n    </div>\n</div>"
+
+/***/ }),
+
+/***/ "../../../../../src/AdminBundle/Resources/public/store-logo-image/index/ts/templates/edit.component.html":
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>{{getProviderAttr('label')}}</h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                                        <div class=\"ibox-content\">    \n\n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" class=\"dropzone form-horizontal\" ngNoForm=\"\">\n\n    \n\n\n    \n\n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"y_X653isBIPUjhTqIFoEMS38F6y1pjJHhEkNvonaMMU\" /></form>\n</div>\n                    <div class=\"ibox-footer hide-on-empty\">    <div class=\"form-horizontal\"><div class=\"form-group\">\n            <div class=\"col-sm-12\">\n                <button class=\"btn-primary btn\" type=\"button\" (click)=\"closeAction($event)\">Finish</button>\n            </div>\n        </div></div>\n</div>                                    </div>\n            </div>\n        </div>\n    </div>\n</div>"
+
+/***/ }),
+
 /***/ "../../../../../src/AdminBundle/Resources/public/store/detail/ts/$$_lazy_route_resource lazy recursive":
 /***/ (function(module, exports) {
 
@@ -91930,10 +95548,16 @@ var ContactsExtModule = (function () {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MainComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_ts_nav_manager_nav_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/nav-manager/nav-manager.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_tabs_ts_src_tabs_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tabs/ts/src/tabs.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__contacts_ext_module__ = __webpack_require__("../../../../../src/AdminBundle/Resources/public/store/detail/ts/src/contacts.ext-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_data_service_data_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/data-service/data.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_ts_actions_actions_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/actions/actions.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_ts_helper__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/helper.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__AppBundle_Resources_public_ts_nav_manager_nav_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/nav-manager/nav-manager.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_tabs_ts_src_tabs_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tabs/ts/src/tabs.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__contacts_ext_module__ = __webpack_require__("../../../../../src/AdminBundle/Resources/public/store/detail/ts/src/contacts.ext-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__store_logo_image_index_ts_src_crop_popup_ext_module__ = __webpack_require__("../../../../../src/AdminBundle/Resources/public/store-logo-image/index/ts/src/crop-popup.ext-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__store_logo_image_index_ts_src_edit_ext_module__ = __webpack_require__("../../../../../src/AdminBundle/Resources/public/store-logo-image/index/ts/src/edit.ext-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__AppBundle_Resources_public_image_ts_src_image_slide_ext_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/image/ts/src/image-slide.ext-module.ts");
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -91960,8 +95584,19 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 
 
 
+
+
+
+/* Import dependencies */
+// Parent id for dependencies
+var parentId = __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_ts_helper__["a" /* Helper */].getAppVar('conf')['object']['id'];
 // Contacts
 
+// Logo Image
+
+
+
+/* /Import dependencies */
 var MainComponent = (function (_super) {
     __extends(MainComponent, _super);
     function MainComponent(elementRef, renderer, provider, helperService, navManagerService, _modalService, viewContainerRef) {
@@ -91981,8 +95616,14 @@ var MainComponent = (function (_super) {
         switch (index) {
             case 0:
                 return {
-                    module: __WEBPACK_IMPORTED_MODULE_4__contacts_ext_module__["a" /* ContactsExtModule */],
+                    module: __WEBPACK_IMPORTED_MODULE_7__contacts_ext_module__["a" /* ContactsExtModule */],
                     component: 'ContactsComponent'
+                };
+            case 1:
+                return {
+                    module: __WEBPACK_IMPORTED_MODULE_10__AppBundle_Resources_public_image_ts_src_image_slide_ext_module__["a" /* ImageSlideExtModule */],
+                    component: 'ImageSlideComponent',
+                    urlProvider: (this._helperService.getAppVar('route') + 'admin/store-logo-image/data/' + parentId)
                 };
         }
         return null;
@@ -91998,7 +95639,29 @@ var MainComponent = (function (_super) {
         switch (index) {
             case 0:
                 return [
-                    __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_ts_nav_manager_nav_manager_service__["a" /* NavManagerService */]
+                    __WEBPACK_IMPORTED_MODULE_5__AppBundle_Resources_public_ts_nav_manager_nav_manager_service__["a" /* NavManagerService */]
+                ];
+            case 1:
+                var localData = {
+                    imageCropPopupModule: __WEBPACK_IMPORTED_MODULE_8__store_logo_image_index_ts_src_crop_popup_ext_module__["a" /* CropPopupExtModule */],
+                    imageCropPopupComponent: 'CropPopupComponent'
+                };
+                return [
+                    { provide: 'DataService', useClass: __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_data_service_data_service__["a" /* DataService */] },
+                    __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_ts_actions_actions_service__["a" /* ActionsService */],
+                    { provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data) },
+                    { provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data) },
+                    { provide: 'Provider', useValue: this._helperService.getImageProvider(data, localData) },
+                    { provide: 'Popups', useValue: {
+                            module: __WEBPACK_IMPORTED_MODULE_9__store_logo_image_index_ts_src_edit_ext_module__["a" /* EditExtModule */],
+                            component: 'EditComponent',
+                            providers: [
+                                { provide: 'FileFormProvider', useValue: {
+                                        label: data['label'],
+                                        url: data['route']['edit']['url']
+                                    } }
+                            ]
+                        } }
                 ];
         }
         return null;
@@ -92019,12 +95682,12 @@ var MainComponent = (function (_super) {
         __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('Provider')),
         __param(3, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["r" /* ElementRef */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_ts_nav_manager_nav_manager_service__["a" /* NavManagerService */],
-            __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_modal_ts_modal_service__["a" /* ModalService */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_5__AppBundle_Resources_public_ts_nav_manager_nav_manager_service__["a" /* NavManagerService */],
+            __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_modal_ts_modal_service__["b" /* ModalService */],
             __WEBPACK_IMPORTED_MODULE_0__angular_core__["_7" /* ViewContainerRef */]])
     ], MainComponent);
     return MainComponent;
-}(__WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_tabs_ts_src_tabs_component__["a" /* TabsComponent */]));
+}(__WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_tabs_ts_src_tabs_component__["a" /* TabsComponent */]));
 
 
 
@@ -92039,14 +95702,15 @@ var MainComponent = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__ = __webpack_require__("../../../platform-browser/esm5/platform-browser.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_ts_helper__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/helper.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_post_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/post.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__AppBundle_Resources_public_modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_flash_message_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/flash-message.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__AppBundle_Resources_public_ts_dynamic_component_loader_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/dynamic-component-loader.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__AppBundle_Resources_public_ts_nav_manager_nav_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/nav-manager/nav-manager.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__AppBundle_Resources_public_app_basics_ts_src_main_ext_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/app-basics/ts/src/main.ext-module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__AppBundle_Resources_public_app_basics_ts_src_main_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/app-basics/ts/src/main.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__main_component__ = __webpack_require__("../../../../../src/AdminBundle/Resources/public/store/detail/ts/src/main.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__AppBundle_Resources_public_ts_post_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/post.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__AppBundle_Resources_public_ts_flash_message_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/flash-message.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__AppBundle_Resources_public_ts_dynamic_component_loader_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/dynamic-component-loader.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__AppBundle_Resources_public_ts_nav_manager_nav_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/nav-manager/nav-manager.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__AppBundle_Resources_public_app_basics_ts_src_main_ext_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/app-basics/ts/src/main.ext-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__AppBundle_Resources_public_app_basics_ts_src_main_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/app-basics/ts/src/main.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__main_component__ = __webpack_require__("../../../../../src/AdminBundle/Resources/public/store/detail/ts/src/main.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -92067,6 +95731,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
+
 var MainModule = (function () {
     function MainModule() {
     }
@@ -92076,21 +95741,22 @@ var MainModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["a" /* BrowserModule */],
                 __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */],
                 __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* ReactiveFormsModule */],
-                __WEBPACK_IMPORTED_MODULE_9__AppBundle_Resources_public_app_basics_ts_src_main_ext_module__["a" /* MainExtModule */]
+                __WEBPACK_IMPORTED_MODULE_10__AppBundle_Resources_public_app_basics_ts_src_main_ext_module__["a" /* MainExtModule */]
             ],
             declarations: [
-                __WEBPACK_IMPORTED_MODULE_11__main_component__["a" /* MainComponent */]
+                __WEBPACK_IMPORTED_MODULE_12__main_component__["a" /* MainComponent */]
             ],
             providers: [
-                __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_post_service__["a" /* PostService */],
-                __WEBPACK_IMPORTED_MODULE_5__AppBundle_Resources_public_modal_ts_modal_service__["a" /* ModalService */],
-                __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_flash_message_service__["a" /* FlashMessageService */],
-                __WEBPACK_IMPORTED_MODULE_7__AppBundle_Resources_public_ts_dynamic_component_loader_service__["a" /* DynamicComponentLoaderService */],
-                __WEBPACK_IMPORTED_MODULE_8__AppBundle_Resources_public_ts_nav_manager_nav_manager_service__["a" /* NavManagerService */],
+                __WEBPACK_IMPORTED_MODULE_5__AppBundle_Resources_public_ts_post_service__["a" /* PostService */],
+                __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_modal_ts_modal_service__["b" /* ModalService */],
+                __WEBPACK_IMPORTED_MODULE_7__AppBundle_Resources_public_ts_flash_message_service__["a" /* FlashMessageService */],
+                __WEBPACK_IMPORTED_MODULE_8__AppBundle_Resources_public_ts_dynamic_component_loader_service__["a" /* DynamicComponentLoaderService */],
+                __WEBPACK_IMPORTED_MODULE_9__AppBundle_Resources_public_ts_nav_manager_nav_manager_service__["a" /* NavManagerService */],
                 { provide: 'Provider', useValue: __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_ts_helper__["a" /* Helper */].getBaseProvider(_app.conf) },
                 { provide: 'HelperService', useValue: __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_ts_helper__["a" /* Helper */] },
+                __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */]
             ],
-            bootstrap: [__WEBPACK_IMPORTED_MODULE_10__AppBundle_Resources_public_app_basics_ts_src_main_component__["a" /* MainComponent */], __WEBPACK_IMPORTED_MODULE_11__main_component__["a" /* MainComponent */]]
+            bootstrap: [__WEBPACK_IMPORTED_MODULE_11__AppBundle_Resources_public_app_basics_ts_src_main_component__["a" /* MainComponent */], __WEBPACK_IMPORTED_MODULE_12__main_component__["a" /* MainComponent */]]
         })
     ], MainModule);
     return MainModule;
@@ -92408,35 +96074,35 @@ var StorePhoneEditExtModule = (function () {
 /***/ "../../../../../src/AdminBundle/Resources/public/store/detail/ts/templates/contacts.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "        <div class=\"accordion\">\n        <div class=\"panel-group\" id=\"accordion\">\n                                                <div (click)=\"_navManagerService.navToAction(0)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#panel0\">Phones</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(0) && _navManagerService.getComponentRef(0).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(0).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(0).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(0).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel0\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_0\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                    <div (click)=\"_navManagerService.navToAction(1)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#panel1\">Emails</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(1) && _navManagerService.getComponentRef(1).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(1).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(1).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(1).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel1\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_1\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                    <div (click)=\"_navManagerService.navToAction(2)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#panel2\">Links</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(2) && _navManagerService.getComponentRef(2).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(2).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(2).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(2).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(2).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(2).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(2).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel2\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_2\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                    </div>\n    </div>\n"
+module.exports = "<div class=\"accordion\">\n    <div class=\"panel-group\" id=\"accordion\">\n                                                        <div (click)=\"_navManagerService.navToAction(0)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#panel0\">Phones</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(0) && _navManagerService.getComponentRef(0).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(0).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(0).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(0).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel0\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_0\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                    <div (click)=\"_navManagerService.navToAction(1)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#panel1\">Emails</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(1) && _navManagerService.getComponentRef(1).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(1).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(1).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(1).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel1\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_1\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                    <div (click)=\"_navManagerService.navToAction(2)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion\" href=\"#panel2\">Links</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(2) && _navManagerService.getComponentRef(2).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(2).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(2).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(2).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(2).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(2).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(2).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel2\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_2\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                        </div>\n</div>"
 
 /***/ }),
 
 /***/ "../../../../../src/AdminBundle/Resources/public/store/detail/ts/templates/main.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "    <div class=\"row m-b-md animated fadeInRight\"><div class=\"col-lg-12 m-b-xs\"><div class=\"tabs-container\">\n        <ul class=\"nav nav-tabs\">\n                            <li (click)=\"_navManagerService.navToAction(0)\"\n                    [class.active]=\"0 == _navManagerService.getIndex()\"><a\n                            [attr.data-index]=\"0\" data-toggle=\"tab\" href=\"#tab0\">Contacts</a></li>\n                    </ul>\n        <div class=\"tab-content\">\n                            <div id=\"tab0\"\n                     class=\"tab-pane\"\n                     [class.active]=\"0 == _navManagerService.getIndex()\">\n                    <div class=\"panel-body js_lazyLoadContainer_0\">\n                        <ng-template #js_lazyLoadContainer></ng-template>\n                    </div>\n                </div>\n                    </div>\n    </div></div></div>\n"
+module.exports = "    <div class=\"row m-b-md animated fadeInRight\"><div class=\"col-lg-12 m-b-xs\"><div class=\"tabs-container\">\n        <ul class=\"nav nav-tabs\">\n                            <li (click)=\"_navManagerService.navToAction(0)\"\n                    [class.active]=\"0 == _navManagerService.getIndex()\"><a\n                            [attr.data-index]=\"0\" data-toggle=\"tab\" href=\"#tab0\">Contacts</a></li>\n                            <li (click)=\"_navManagerService.navToAction(1)\"\n                    [class.active]=\"1 == _navManagerService.getIndex()\"><a\n                            [attr.data-index]=\"1\" data-toggle=\"tab\" href=\"#tab1\">Logo Image</a></li>\n                    </ul>\n        <div class=\"tab-content\">\n                            <div id=\"tab0\"\n                     class=\"tab-pane\"\n                     [class.active]=\"0 == _navManagerService.getIndex()\">\n                    <div class=\"panel-body js_lazyLoadContainer_0\">\n                        <ng-template #js_lazyLoadContainer></ng-template>\n                    </div>\n                </div>\n                            <div id=\"tab1\"\n                     class=\"tab-pane\"\n                     [class.active]=\"1 == _navManagerService.getIndex()\">\n                    <div class=\"panel-body js_lazyLoadContainer_1\">\n                        <ng-template #js_lazyLoadContainer></ng-template>\n                    </div>\n                </div>\n                    </div>\n    </div></div></div>\n"
 
 /***/ }),
 
 /***/ "../../../../../src/AdminBundle/Resources/public/store/detail/ts/templates/store-email-edit.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">    \n            \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_name\">Name / Description</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_name\" name=\"form[name]\" maxlength=\"128\" [(ngModel)]=\"_formService.getObject().name\" formControlName=\"name\" [class.error]=\"_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_email\">Email</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_email\" name=\"form[email]\" required=\"required\" maxlength=\"64\" [(ngModel)]=\"_formService.getObject().email\" formControlName=\"email\" [class.error]=\"_formService.getErrors().email &amp;&amp; _formService.getErrors().email.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().email\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Default Email</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_isDefault\" name=\"form[isDefault]\" [(ngModel)]=\"_formService.getObject().isDefault\" formControlName=\"isDefault\" [class.error]=\"_formService.getErrors().isDefault &amp;&amp; _formService.getErrors().isDefault.length &gt; 0\" value=\"1\" /> Is default</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isDefault\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">For Documents</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_forDocuments\" name=\"form[forDocuments]\" [(ngModel)]=\"_formService.getObject().forDocuments\" formControlName=\"forDocuments\" [class.error]=\"_formService.getErrors().forDocuments &amp;&amp; _formService.getErrors().forDocuments.length &gt; 0\" value=\"1\" /> For documents</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().forDocuments\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Enabled</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
+module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">    \n            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_name\">Name / Description</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_name\" name=\"form[name]\" maxlength=\"128\" [(ngModel)]=\"_formService.getObject().name\" formControlName=\"name\" [class.error]=\"_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_email\">Email</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_email\" name=\"form[email]\" required=\"required\" maxlength=\"64\" [(ngModel)]=\"_formService.getObject().email\" formControlName=\"email\" [class.error]=\"_formService.getErrors().email &amp;&amp; _formService.getErrors().email.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().email\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Default Email</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_isDefault\" name=\"form[isDefault]\" [(ngModel)]=\"_formService.getObject().isDefault\" formControlName=\"isDefault\" [class.error]=\"_formService.getErrors().isDefault &amp;&amp; _formService.getErrors().isDefault.length &gt; 0\" value=\"1\" /> Is default</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isDefault\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">For Documents</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_forDocuments\" name=\"form[forDocuments]\" [(ngModel)]=\"_formService.getObject().forDocuments\" formControlName=\"forDocuments\" [class.error]=\"_formService.getErrors().forDocuments &amp;&amp; _formService.getErrors().forDocuments.length &gt; 0\" value=\"1\" /> For documents</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().forDocuments\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Enabled</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"y_X653isBIPUjhTqIFoEMS38F6y1pjJHhEkNvonaMMU\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
 
 /***/ }),
 
 /***/ "../../../../../src/AdminBundle/Resources/public/store/detail/ts/templates/store-link-edit.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">    \n            \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_appIconObj\">Icon</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div [htmlSelect]=\"'appIconObj'\"\n         class=\"html-select\"\n                               >\n        <div class=\"form-control\"\n             [class.error]=\"_formService.getErrors()['appIconObj'] && (_formService.getErrors()['appIconObj'].length > 0)\">\n            <span class=\"control\">\n                <span class=\"js_label\"></span><a class=\"pull-right\"><i class=\"fa fa-angle-down\"></i></a>\n            </span>\n        </div>\n        <div class=\"choices js_choices\">\n            <ul class=\"form-control-box\">\n                                    <li data-value=\"13\"><i class=\"fa fa-facebook-square\"></i> (Facebook)</li>\n                                    <li data-value=\"14\"><i class=\"fa fa-linkedin-square\"></i> (Linkedin)</li>\n                                    <li data-value=\"15\"><i class=\"fa fa-twitter-square\"></i> (Twitter)</li>\n                                    <li data-value=\"16\"><i class=\"fa fa-instagram\"></i> (Instagram)</li>\n                                    <li data-value=\"39\"><i class=\"fa fa-link\"></i> (Link)</li>\n                            </ul>\n        </div>\n    </div>\n    <input [(ngModel)]=\"_formService.getObject().appIconObj\"\n           formControlName = appIconObj\n           name=\"form[appIconObj]\"\n                      type=\"hidden\">\n                    <label class=\"error\" *ngFor=\"let error of _formService.getErrors().appIconObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_name\">Name / Description</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_name\" name=\"form[name]\" maxlength=\"128\" [(ngModel)]=\"_formService.getObject().name\" formControlName=\"name\" [class.error]=\"_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_link\">Link</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_link\" name=\"form[link]\" required=\"required\" maxlength=\"64\" [(ngModel)]=\"_formService.getObject().link\" formControlName=\"link\" [class.error]=\"_formService.getErrors().link &amp;&amp; _formService.getErrors().link.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().link\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">For Documents</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_forDocuments\" name=\"form[forDocuments]\" [(ngModel)]=\"_formService.getObject().forDocuments\" formControlName=\"forDocuments\" [class.error]=\"_formService.getErrors().forDocuments &amp;&amp; _formService.getErrors().forDocuments.length &gt; 0\" value=\"1\" /> For documents</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().forDocuments\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Enabled</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
+module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">    \n            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_appIconObj\">Icon</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div [htmlSelect]=\"'appIconObj'\"\n         class=\"html-select\"\n                               >\n        <div class=\"form-control\"\n             [class.error]=\"_formService.getErrors()['appIconObj'] && (_formService.getErrors()['appIconObj'].length > 0)\">\n            <span class=\"control\">\n                <span class=\"js_label\"></span><a class=\"pull-right\"><i class=\"fa fa-angle-down\"></i></a>\n            </span>\n        </div>\n        <div class=\"choices js_choices\">\n            <ul class=\"form-control-box\">\n                                    <li data-value=\"13\"><i class=\"fa fa-facebook-square\"></i> (Facebook)</li>\n                                    <li data-value=\"14\"><i class=\"fa fa-linkedin-square\"></i> (Linkedin)</li>\n                                    <li data-value=\"15\"><i class=\"fa fa-twitter-square\"></i> (Twitter)</li>\n                                    <li data-value=\"16\"><i class=\"fa fa-instagram\"></i> (Instagram)</li>\n                                    <li data-value=\"39\"><i class=\"fa fa-link\"></i> (Link)</li>\n                            </ul>\n        </div>\n    </div>\n    <input [(ngModel)]=\"_formService.getObject().appIconObj\"\n           formControlName = appIconObj\n           name=\"form[appIconObj]\"\n                      type=\"hidden\">\n                    <label class=\"error\" *ngFor=\"let error of _formService.getErrors().appIconObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_name\">Name / Description</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_name\" name=\"form[name]\" maxlength=\"128\" [(ngModel)]=\"_formService.getObject().name\" formControlName=\"name\" [class.error]=\"_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_link\">Link</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_link\" name=\"form[link]\" required=\"required\" maxlength=\"64\" [(ngModel)]=\"_formService.getObject().link\" formControlName=\"link\" [class.error]=\"_formService.getErrors().link &amp;&amp; _formService.getErrors().link.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().link\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">For Documents</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_forDocuments\" name=\"form[forDocuments]\" [(ngModel)]=\"_formService.getObject().forDocuments\" formControlName=\"forDocuments\" [class.error]=\"_formService.getErrors().forDocuments &amp;&amp; _formService.getErrors().forDocuments.length &gt; 0\" value=\"1\" /> For documents</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().forDocuments\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Enabled</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"y_X653isBIPUjhTqIFoEMS38F6y1pjJHhEkNvonaMMU\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
 
 /***/ }),
 
 /***/ "../../../../../src/AdminBundle/Resources/public/store/detail/ts/templates/store-phone-edit.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">    \n            \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_name\">Name / Description</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_name\" name=\"form[name]\" maxlength=\"128\" [(ngModel)]=\"_formService.getObject().name\" formControlName=\"name\" [class.error]=\"_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_phone\">Phone</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_phone\" name=\"form[phone]\" required=\"required\" maxlength=\"16\" [(ngModel)]=\"_formService.getObject().phone\" formControlName=\"phone\" [class.error]=\"_formService.getErrors().phone &amp;&amp; _formService.getErrors().phone.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().phone\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">For Documents</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_forDocuments\" name=\"form[forDocuments]\" [(ngModel)]=\"_formService.getObject().forDocuments\" formControlName=\"forDocuments\" [class.error]=\"_formService.getErrors().forDocuments &amp;&amp; _formService.getErrors().forDocuments.length &gt; 0\" value=\"1\" /> For documents</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().forDocuments\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Enabled</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
+module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">    \n            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_name\">Name / Description</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_name\" name=\"form[name]\" maxlength=\"128\" [(ngModel)]=\"_formService.getObject().name\" formControlName=\"name\" [class.error]=\"_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_phone\">Phone</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_phone\" name=\"form[phone]\" required=\"required\" maxlength=\"16\" [(ngModel)]=\"_formService.getObject().phone\" formControlName=\"phone\" [class.error]=\"_formService.getErrors().phone &amp;&amp; _formService.getErrors().phone.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().phone\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">For Documents</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_forDocuments\" name=\"form[forDocuments]\" [(ngModel)]=\"_formService.getObject().forDocuments\" formControlName=\"forDocuments\" [class.error]=\"_formService.getErrors().forDocuments &amp;&amp; _formService.getErrors().forDocuments.length &gt; 0\" value=\"1\" /> For documents</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().forDocuments\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Enabled</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"y_X653isBIPUjhTqIFoEMS38F6y1pjJHhEkNvonaMMU\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
 
 /***/ }),
 
@@ -92446,7 +96112,7 @@ module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AccordionComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_base_base_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/base/base.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_base_base_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/base/base.extension-component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ts_nav_manager_nav_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/nav-manager/nav-manager.service.ts");
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -92476,9 +96142,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var AccordionComponent = (function (_super) {
     __extends(AccordionComponent, _super);
     function AccordionComponent(elementRef, renderer, provider, _helperService, _navManagerService) {
-        var _this = _super.call(this, elementRef, renderer, provider || {}) || this;
+        var _this = _super.call(this) || this;
         _this._helperService = _helperService;
         _this._navManagerService = _navManagerService;
+        _super.prototype.initBaseExtensionComponent.call(_this, elementRef, renderer, provider || {});
         return _this;
     }
     /**
@@ -92503,7 +96170,7 @@ var AccordionComponent = (function (_super) {
             __WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_2__ts_nav_manager_nav_manager_service__["a" /* NavManagerService */]])
     ], AccordionComponent);
     return AccordionComponent;
-}(__WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_base_base_component__["a" /* BaseComponent */]));
+}(__WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_base_base_extension_component__["a" /* BaseExtensionComponent */]));
 
 
 
@@ -92608,6 +96275,7 @@ var MainExtModule = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__data_box_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.extension-component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ts_actions_actions_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/actions/actions.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__data_box_extension_component__["b"]; });
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -92635,16 +96303,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 
 
 
+
 // Reexports
 
 // Component
 var DataBoxComponent = (function (_super) {
     __extends(DataBoxComponent, _super);
-    function DataBoxComponent(viewContainerRef, renderer, provider, dataService, actionsService, modalService, popups, injector) {
+    function DataBoxComponent(viewContainerRef, renderer, provider, dataService, tasksLoaderManagerService, helperService, actionsService, modalService, popups, injector) {
         var _this = 
         // Call parent
         _super.call(this) || this;
-        _super.prototype.initDataBoxExtensionComponent.call(_this, viewContainerRef, renderer, provider, dataService, actionsService, modalService, popups, injector);
+        _super.prototype.initDataBoxExtensionComponent.call(_this, viewContainerRef, renderer, provider, dataService, tasksLoaderManagerService, helperService, actionsService, modalService, popups, injector);
         return _this;
     }
     DataBoxComponent = __decorate([
@@ -92654,10 +96323,11 @@ var DataBoxComponent = (function (_super) {
         }),
         __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('Provider')),
         __param(3, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('DataService')),
-        __param(6, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('Popups')),
+        __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
+        __param(8, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('Popups')),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["_7" /* ViewContainerRef */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_3__ts_actions_actions_service__["a" /* ActionsService */],
-            __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["a" /* ModalService */], Object, __WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injector */]])
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object, __WEBPACK_IMPORTED_MODULE_3__ts_actions_actions_service__["a" /* ActionsService */],
+            __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["b" /* ModalService */], Object, __WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injector */]])
     ], DataBoxComponent);
     return DataBoxComponent;
 }(__WEBPACK_IMPORTED_MODULE_1__data_box_extension_component__["a" /* DataBoxExtensionComponent */]));
@@ -92716,13 +96386,14 @@ var DataBoxExtensionComponent = (function (_super) {
      * @param renderer
      * @param provider
      * @param dataService
+     * @param tasksLoaderManagerService
      * @param actionsService
      * @param modalService
      * @param popups
      * @param injector
      */
     DataBoxExtensionComponent.prototype.initDataBoxExtensionComponent = function (viewContainerRef, renderer, provider, dataService, // Any is used, otherwise you get an error "[Class] is not defined"
-        actionsService, modalService, 
+        tasksLoaderManagerService, helperService, actionsService, modalService, 
         // You can provide a popup by action:
         // provide('Popups', {useValue: {
         //     add: Popup,
@@ -92738,6 +96409,8 @@ var DataBoxExtensionComponent = (function (_super) {
         // Constructor vars
         this._viewContainerRef = viewContainerRef;
         this._dataService = dataService;
+        this._tasksLoaderManagerService = tasksLoaderManagerService;
+        this._helperService = helperService;
         this._actionsService = actionsService;
         this._modalService = modalService;
         this._popups = popups;
@@ -92750,6 +96423,8 @@ var DataBoxExtensionComponent = (function (_super) {
      * @returns {any}
      */
     DataBoxExtensionComponent.prototype.getColAlign = function (field) {
+        // @TODO call helperservice
+        // return this.helperService.getColAlign(this._dataService.getFields('metadata')[field]['type']);
         switch (this._dataService.getFields('metadata')[field].type) {
             case 'number':
             case 'percentage':
@@ -92765,6 +96440,38 @@ var DataBoxExtensionComponent = (function (_super) {
             default:
                 return 'txt-align-l';
         }
+    };
+    /**
+     * Get legend classes
+     * @param object
+     * @returns {string}
+     */
+    DataBoxExtensionComponent.prototype.getLegendClasses = function (object) {
+        var legend = this._provider['controls']['legend'], hasClass;
+        if (!object || !legend) {
+            return '';
+        }
+        for (var _i = 0, legend_1 = legend; _i < legend_1.length; _i++) {
+            var legendControl = legend_1[_i];
+            hasClass = false;
+            var field = legendControl['field'], expr = (legendControl['expr'] || 'notNull'), isExprNotNull = (expr == 'notNull'), 
+            // Check in original field first if defined
+            fieldValue = ((object['__' + field] !== undefined) ? object['__' + field] : object[field]);
+            // Normalize value
+            if (this._dataService.getFields('metadata')[field]) {
+                switch (this._dataService.getFields('metadata')[field].type) {
+                    case 'boolean':
+                        fieldValue = this._helperService.castToBoolean(fieldValue);
+                        break;
+                }
+            }
+            if ((fieldValue && isExprNotNull) || (!fieldValue && !isExprNotNull)) {
+                // Apply only the class of the first legend to avoid override of classes,
+                // "Cancel" legend class should be priority and never override
+                return legendControl['class'];
+            }
+        }
+        return '';
     };
     /**
      * Trigger action
@@ -92811,9 +96518,7 @@ var DataBoxExtensionComponent = (function (_super) {
             return;
         }
         var that = this;
-        this._dataService.selectObject(data).then(function (data) {
-            that.openPopup(PopupTypes.edit);
-        });
+        this._dataService.selectObject(data).then(function (data) { that.openPopup(PopupTypes.edit); }, function (errors) { console.log(errors); });
     };
     /**
      * Add action
@@ -92824,8 +96529,8 @@ var DataBoxExtensionComponent = (function (_super) {
         if ($event) {
             $event.preventDefault();
         }
-        this._dataService.newObject();
-        this.openPopup(PopupTypes.add);
+        var that = this;
+        this._dataService.newObject().then(function (data) { that.openPopup(PopupTypes.add); }, function (errors) { console.log(errors); });
     };
     /**
      * Copy action. Create a new object from another object
@@ -92838,9 +96543,7 @@ var DataBoxExtensionComponent = (function (_super) {
             $event.preventDefault();
         }
         var that = this;
-        this._dataService.newObject(data).then(function (data) {
-            that.openPopup(PopupTypes.edit);
-        }, function (errors) { console.log(errors); });
+        this._dataService.newObject(data).then(function (data) { that.openPopup(PopupTypes.edit); }, function (errors) { console.log(errors); });
     };
     /**
      * Cancel action.
@@ -92851,12 +96554,12 @@ var DataBoxExtensionComponent = (function (_super) {
         if ($event) {
             $event.preventDefault();
         }
-        var that = this;
+        var that = this, object = this._dataService.getObject(data);
         // Dialog message
         this._modalService.dialog('Are you sure to cancel/enable?').then(function (hasConfirm) {
             if (hasConfirm) {
                 that._dataService.cancel(data).then(function (data) {
-                    that.postCancelObject();
+                    that.postCancelObject(object);
                     return;
                 }, function (errors) { return; });
             }
@@ -92876,12 +96579,12 @@ var DataBoxExtensionComponent = (function (_super) {
         if ($event) {
             $event.preventDefault();
         }
-        var that = this;
+        var that = this, object = this._dataService.getObject(data);
         // Dialog message
         this._modalService.dialog('Are you sure to remove?').then(function (hasConfirm) {
             if (hasConfirm) {
                 that._dataService.delete(data).then(function (data) {
-                    that.postDeleteObject();
+                    that.postDeleteObject(object);
                     return;
                 }, function (errors) { return; });
             }
@@ -93006,16 +96709,18 @@ var DataBoxExtensionComponent = (function (_super) {
     ////////////////////////////////
     /**
      * Post (after) cancel object event. Use this function to handle event.
-     * @return any
+     * @param object
+     * @returns {DataBoxExtensionComponent}
      */
-    DataBoxExtensionComponent.prototype.postCancelObject = function () {
+    DataBoxExtensionComponent.prototype.postCancelObject = function (object) {
         return this;
     };
     /**
      * Post (after) delete object event. Use this function to handle event.
+     * @param object
      * @return any
      */
-    DataBoxExtensionComponent.prototype.postDeleteObject = function () {
+    DataBoxExtensionComponent.prototype.postDeleteObject = function (object) {
         return this;
     };
     DataBoxExtensionComponent = __decorate([
@@ -93043,7 +96748,8 @@ var DataBoxExtensionComponent = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ts_search_search_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/search/search.module.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ts_expander_expander_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/expander/expander.module.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ts_search_search_pagination_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/search/search-pagination.module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__data_box_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__legend_ts_src_legend_ext_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/legend/ts/src/legend.ext-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__data_box_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -93054,6 +96760,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 // This module doesn't use "ReactiveFormsModule", but it needs to import this class
 // to provide "formBuilder" when inject dependencies in child modules (like form)
+
 
 
 
@@ -93070,12 +96777,13 @@ var DataBoxExtensionModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* ReactiveFormsModule */],
                 __WEBPACK_IMPORTED_MODULE_3__ts_search_search_module__["a" /* SearchModule */],
                 __WEBPACK_IMPORTED_MODULE_5__ts_search_search_pagination_module__["a" /* SearchPaginationModule */],
-                __WEBPACK_IMPORTED_MODULE_4__ts_expander_expander_module__["a" /* ExpanderModule */]
+                __WEBPACK_IMPORTED_MODULE_4__ts_expander_expander_module__["a" /* ExpanderModule */],
+                __WEBPACK_IMPORTED_MODULE_6__legend_ts_src_legend_ext_module__["a" /* LegendExtModule */]
             ],
             declarations: [
-                __WEBPACK_IMPORTED_MODULE_6__data_box_component__["a" /* DataBoxComponent */]
+                __WEBPACK_IMPORTED_MODULE_7__data_box_component__["a" /* DataBoxComponent */]
             ],
-            exports: [__WEBPACK_IMPORTED_MODULE_6__data_box_component__["a" /* DataBoxComponent */]]
+            exports: [__WEBPACK_IMPORTED_MODULE_7__data_box_component__["a" /* DataBoxComponent */]]
         })
     ], DataBoxExtensionModule);
     return DataBoxExtensionModule;
@@ -93088,7 +96796,535 @@ var DataBoxExtensionModule = (function () {
 /***/ "../../../../../src/AppBundle/Resources/public/data-box/ts/templates/data-box.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "\n<div class=\"ibox\">\n            <div class=\"ibox-title\" *ngIf=\"!getProviderExtraDataAttr('hasMergeHeader')\">\n            <h5>\n                <ng-template [ngIf]=\"getProviderAttr('controls')['expander']\"><js_expander\n                    [isExpanded]=\"_isExpanded || null\"\n                    [label]=\"getProviderAttr('label')\"\n                    (onChange)=\"expanderAction($event)\"></js_expander></ng-template>\n                <ng-template [ngIf]=\"!getProviderAttr('controls')['expander']\">\n                    <span [innerHTML]=\"getProviderAttr('label')\"></span>\n                </ng-template>\n            </h5>\n            <div *ngIf=\"_isExpanded\"\n                 class=\"txt-align-r hide-on-empty\">    <div class=\"actions no-user-select\">\n        <ng-template [ngIf]=\"_actionsService.getActionAttr('search', 'isEnabled')\"><js_search class=\"search\"></js_search></ng-template>\n        <div (click)=\"triggerAction($event)\">\n            <ng-template ngFor let-action [ngForOf]=\"_actionsService.getHeadActions()\">\n                <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                   [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                   class=\"-round fa\"\n                   [attr.data-action]=\"action\"></a>\n            </ng-template>\n        </div>\n    </div>\n</div>\n        </div>\n    \n    <div [hidden]=\"!(_isExpanded)\" class=\"ibox-content hide-on-empty\">    <ng-template [ngIf]=\"(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">\n        <div class=\"table-responsive\">\n        <form>\n            <table class=\"data-table table table-striped table-bordered table-hover dataTables-example\">\n                <thead>\n                <tr>\n                    <th *ngFor=\"let searchField of _dataService.getSearch('fields')\">{{ _dataService.getFields('metadata')[searchField].label }}</th>\n                    <th>&nbsp;</th>\n                </tr>\n                </thead>\n                <tbody>\n                <ng-template ngFor let-obj [ngForOf]=\"_dataService.getProviderAttr('objects')\" let-objIndex=\"index\"><tr\n                          (dblclick)=\"editAction($event, objIndex)\"\n                          [class.disabled]=\"obj.hasOwnProperty('isEnabled') && (obj.isEnabled.search('fa-ban') > 0)\">\n                    <td *ngFor=\"let searchField of _dataService.getSearch('fields')\"\n                        [ngClass]=\"getColAlign(searchField)\"\n                        [innerHTML]=\"obj[searchField]\"></td>\n                    <td>\n                        <span *ngIf=\"obj['_isNew']\" class=\"badge badge-info\">New</span>\n                        <span *ngIf=\"obj['_isEdited']\" class=\"badge badge-info\">Edited</span>\n                        <input *ngIf=\"_actionsService.getActionAttr('radioChoice', 'isEnabled')\"\n                               class=\"pull-right action\"\n                               type=\"radio\"\n                               name=\"index[]\"\n                               value=\"{{objIndex}}\"/>\n                        <input *ngIf=\"_actionsService.getActionAttr('checkAll', 'isEnabled')\"\n                               class=\"pull-right action js_checkAll\"\n                               type=\"checkbox\"\n                               name=\"index[]\"\n                               value=\"{{objIndex}}\"\n                               [ngModel]=\"checkAll\"/>\n                        <div class=\"pull-right actions no-user-select\" (click)=\"triggerAction($event)\">\n                            <ng-template ngFor let-action [ngForOf]=\"_actionsService.getDetailActions()\">\n                                <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                                   [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                                   class=\"fa\"\n                                   [attr.data-action]=\"action\"\n                                   [attr.data-value]=\"objIndex\"></a>\n                            </ng-template>\n                        </div>\n                    </td>\n                </tr></ng-template>\n                </tbody>\n            </table>\n        </form>\n    </div>\n    </ng-template><p\n        class=\"text-center\"\n        *ngIf=\"!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">No results.</p>\n</div>\n        <div class=\"ibox-footer\"\n         *ngIf=\"_dataService.countObjects() > 0\"><js_searchPagination></js_searchPagination></div>\n\n</div>\n\n"
+module.exports = "\n\n<div class=\"ibox\" >\n                        <div class=\"ibox-title\" *ngIf=\"!getProviderExtraDataAttr('hasMergeHeader')\">\n                <h5>\n                    <ng-template [ngIf]=\"getProviderAttr('controls')['expander']\"><js_expander\n                        [isExpanded]=\"_isExpanded || null\"\n                        [label]=\"getProviderAttr('label')\"\n                        (onChange)=\"expanderAction($event)\"></js_expander></ng-template>\n                    <ng-template [ngIf]=\"!getProviderAttr('controls')['expander']\">\n                        <span [innerHTML]=\"getProviderAttr('label')\"></span>\n                    </ng-template>\n                </h5>\n                <div *ngIf=\"_isExpanded\"\n                     class=\"txt-align-r hide-on-empty\">    <div class=\"actions no-user-select\">\n        <ng-template [ngIf]=\"_actionsService.getActionAttr('search', 'isEnabled')\"><js_search class=\"search\"></js_search></ng-template>\n        <div (click)=\"triggerAction($event)\">\n            <ng-template ngFor let-action [ngForOf]=\"_actionsService.getHeadActions()\">\n                <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                   [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                   class=\"-round fa\"\n                   [attr.data-action]=\"action\"></a>\n            </ng-template>\n        </div>\n    </div>\n</div>\n            </div>\n            \n    <div [hidden]=\"!(_isExpanded)\" class=\"ibox-content hide-on-empty\">    <ng-template [ngIf]=\"(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">\n        <div class=\"table-responsive\">\n        <form>        <table class=\"data-table table table-striped table-hover dataTables-example table-bordered\">\n            <thead>\n            <tr>\n                <th *ngFor=\"let searchField of _dataService.getSearch('fields')\">{{ _dataService.getFields('metadata')[searchField].label }}</th>\n                <th>&nbsp;</th>\n            </tr>\n            </thead>            <tbody>\n            <ng-template ngFor let-obj [ngForOf]=\"_dataService.getProviderAttr('objects')\" let-objIndex=\"index\">\n            <tr (dblclick)=\"editAction($event, objIndex)\"                [ngClass]=\"getLegendClasses(obj)\">\n                                    <td *ngFor=\"let searchField of _dataService.getSearch('fields')\"\n                        [ngClass]=\"getColAlign(searchField)\"\n                        [innerHTML]=\"obj[searchField]\"></td>\n                                <td>\n                    <span *ngIf=\"obj['_isNew']\" class=\"badge badge-info\">New</span>\n                    <span *ngIf=\"obj['_isEdited']\" class=\"badge badge-info\">Edited</span>\n                    <input *ngIf=\"_actionsService.getActionAttr('radioChoice', 'isEnabled')\"\n                           class=\"pull-right action\"\n                           type=\"radio\"\n                           name=\"index[]\"\n                           value=\"{{objIndex}}\"/>\n                    <input *ngIf=\"_actionsService.getActionAttr('checkAll', 'isEnabled')\"\n                           class=\"pull-right action js_checkAll\"\n                           type=\"checkbox\"\n                           name=\"index[]\"\n                           value=\"{{objIndex}}\"\n                           [ngModel]=\"checkAll\"/>\n                    <div class=\"pull-right actions no-user-select\" (click)=\"triggerAction($event)\">\n                        <ng-template ngFor let-action [ngForOf]=\"_actionsService.getDetailActions()\">\n                            <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                               [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                               class=\"fa\"\n                               [attr.data-action]=\"action\"\n                               [attr.data-value]=\"objIndex\"></a>\n                        </ng-template>\n                    </div>\n                </td>            </tr>\n            </ng-template>\n            </tbody>\n        </table>\n        </form>    </div>\n    </ng-template><p\n        class=\"text-center\"\n        *ngIf=\"!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">No results.</p>\n</div>\n        <div class=\"ibox-footer\"\n         *ngIf=\"_dataService.countObjects() > 0\"><js_searchPagination></js_searchPagination></div>\n\n</div>\n\n<js_legend></js_legend>"
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/file/ts/src/file-form-popup.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FileFormPopupComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var Dropzone = __webpack_require__("../../../../dropzone/dist/dropzone.js");
+
+
+// Component
+var FileFormPopupComponent = (function (_super) {
+    __extends(FileFormPopupComponent, _super);
+    function FileFormPopupComponent(elementRef, renderer, provider, _dataService, _helperService) {
+        var _this = _super.call(this, elementRef, renderer, provider) || this;
+        _this._dataService = _dataService;
+        _this._helperService = _helperService;
+        return _this;
+    }
+    /**
+     * Lifecycle callback
+     */
+    FileFormPopupComponent.prototype.ngOnInit = function () {
+        var that = this, $form = $(this._elementRef.nativeElement).find('form.dropzone');
+        // Set the valid token
+        this._helperService.setFormToken($form);
+        $form.dropzone({
+            url: this.getProviderAttr('url'),
+            paramName: "form[file]",
+            success: function (file, response) {
+                // Add object to objects array provider
+                that._dataService.setObject(response['data']['object']);
+            },
+        });
+    };
+    FileFormPopupComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: '.js_fileUploadPopup',
+            template: '' // Define template in child component
+        }),
+        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('FileFormProvider')),
+        __param(3, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('DataService')),
+        __param(4, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["r" /* ElementRef */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Renderer */], Object, Object, Object])
+    ], FileFormPopupComponent);
+    return FileFormPopupComponent;
+}(__WEBPACK_IMPORTED_MODULE_1__modal_ts_modal_service__["a" /* BaseModalPopup */]));
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/image/ts/src/image-crop-popup.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ImageCropPopupComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ts_post_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/post.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+
+var ImageCropPopupComponent = (function (_super) {
+    __extends(ImageCropPopupComponent, _super);
+    function ImageCropPopupComponent(elementRef, renderer, provider, _postService, _helperService) {
+        var _this = _super.call(this, elementRef, renderer, provider) || this;
+        _this.provider = provider;
+        _this._postService = _postService;
+        _this._helperService = _helperService;
+        return _this;
+    }
+    /**
+     * Get web path
+     * @returns {string}
+     */
+    ImageCropPopupComponent.prototype.getWebPath = function () {
+        return this._helperService.getUploadWebPath(this.getProviderAttr('path'));
+    };
+    /**
+     * Save.
+     * @param $event
+     */
+    ImageCropPopupComponent.prototype.saveAction = function ($event) {
+        $event.preventDefault();
+        // Get data from cropper
+        var data = this._$element.cropper('getData', true);
+        // Set form
+        this._$form.find('.path').val(this.getProviderAttr('path'));
+        this._$form.find('.width').val(data['width']);
+        this._$form.find('.height').val(data['height']);
+        this._$form.find('.x').val(data['x']);
+        this._$form.find('.y').val(data['y']);
+        // Set the valid token
+        this._helperService.setFormToken(this._$form);
+        // Get data from form
+        data = this._$form.serialize();
+        var that = this;
+        that._postService.post(that.getProviderAttr('url'), data).then(function (data) {
+            that.closeAction();
+        }, function (errors) {
+            console.log(errors);
+        });
+    };
+    /**
+     * Close action.
+     * @param $event
+     */
+    ImageCropPopupComponent.prototype.closeAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        this._$element.cropper('destroy');
+        _super.prototype.closeAction.call(this, null);
+    };
+    /**
+     * Lifecycle callback
+     */
+    ImageCropPopupComponent.prototype.ngAfterViewInit = function () {
+        this._$form = $(this._elementRef.nativeElement).find('form');
+        this._$element = this._$form.find('.image');
+        this._$element.cropper({
+            viewMode: 1,
+            preview: '.image-preview',
+            autoCropArea: 0.6,
+            aspectRatio: 1,
+            rotatable: false,
+            zoomOnWheel: false
+        });
+    };
+    ImageCropPopupComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: '.js_imageCropPopup',
+            template: '' // Define template in child component
+        }),
+        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('ImageCropProvider')),
+        __param(4, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["r" /* ElementRef */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Renderer */], Object, __WEBPACK_IMPORTED_MODULE_1__ts_post_service__["a" /* PostService */], Object])
+    ], ImageCropPopupComponent);
+    return ImageCropPopupComponent;
+}(__WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["a" /* BaseModalPopup */]));
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/image/ts/src/image-slide.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ImageSlideComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ts_actions_actions_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/actions/actions.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__image_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/image/ts/src/image.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var Slide = __webpack_require__("../../../../blueimp-gallery/js/blueimp-gallery.js");
+
+
+
+
+
+var ImageSlideComponent = (function (_super) {
+    __extends(ImageSlideComponent, _super);
+    function ImageSlideComponent(viewContainerRef, renderer, provider, dataService, tasksLoaderManagerService, helperService, actionsService, modalService, popups, injector) {
+        // Call parent
+        return _super.call(this, viewContainerRef, renderer, provider, dataService, tasksLoaderManagerService, helperService, actionsService, modalService, popups, injector) || this;
+    }
+    /**
+     * Get web path
+     * @param path
+     * @returns {string}
+     */
+    ImageSlideComponent.prototype.getWebPath = function (path) {
+        return this._helperService.getUploadWebPath(path);
+    };
+    /**
+     * Run slide
+     * @param $event
+     */
+    ImageSlideComponent.prototype.runSlide = function ($event) {
+        $event.preventDefault();
+        $event = $event || window.event;
+        var target = $event.target || $event.srcElement, link = target.src ? target.parentNode : target, $links = $event.currentTarget.getElementsByClassName('js_gallery-item'), options = { index: link, event: $event };
+        Slide($links, options);
+    };
+    ImageSlideComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: '.js_image',
+            template: __webpack_require__("../../../../../src/AppBundle/Resources/public/image/ts/templates/image-slide.component.html")
+        }),
+        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('Provider')),
+        __param(3, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('DataService')),
+        __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
+        __param(8, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('Popups')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["_7" /* ViewContainerRef */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object, __WEBPACK_IMPORTED_MODULE_1__ts_actions_actions_service__["a" /* ActionsService */],
+            __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["b" /* ModalService */], Object, __WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injector */]])
+    ], ImageSlideComponent);
+    return ImageSlideComponent;
+}(__WEBPACK_IMPORTED_MODULE_3__image_component__["a" /* ImageComponent */]));
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/image/ts/src/image-slide.ext-module.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ImageSlideExtModule; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ts_search_search_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/search/search.module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ts_search_search_pagination_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/search/search-pagination.module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ts_expander_expander_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/expander/expander.module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__image_slide_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/image/ts/src/image-slide.component.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+
+
+
+var ImageSlideExtModule = (function () {
+    function ImageSlideExtModule() {
+    }
+    ImageSlideExtModule = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["F" /* NgModule */])({
+            imports: [
+                __WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */],
+                __WEBPACK_IMPORTED_MODULE_2__ts_search_search_module__["a" /* SearchModule */],
+                __WEBPACK_IMPORTED_MODULE_3__ts_search_search_pagination_module__["a" /* SearchPaginationModule */],
+                __WEBPACK_IMPORTED_MODULE_4__ts_expander_expander_module__["a" /* ExpanderModule */]
+            ],
+            declarations: [__WEBPACK_IMPORTED_MODULE_5__image_slide_component__["a" /* ImageSlideComponent */]],
+            exports: [__WEBPACK_IMPORTED_MODULE_5__image_slide_component__["a" /* ImageSlideComponent */]]
+        })
+    ], ImageSlideExtModule);
+    return ImageSlideExtModule;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/image/ts/src/image.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ImageComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ts_actions_actions_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/actions/actions.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__data_box_ts_src_data_box_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+
+
+
+// Component
+var ImageComponent = (function (_super) {
+    __extends(ImageComponent, _super);
+    function ImageComponent(viewContainerRef, renderer, provider, dataService, tasksLoaderManagerService, helperService, actionsService, modalService, popups, injector) {
+        // Call parent
+        return _super.call(this, viewContainerRef, renderer, provider, dataService, tasksLoaderManagerService, helperService, actionsService, modalService, popups, injector) || this;
+    }
+    /**
+     * Get thumbnail path
+     * @param path
+     * @returns {string}
+     */
+    ImageComponent.prototype.getThumbnailPath = function (path) {
+        var partialPath = this._helperService.getUploadWebPath(path), firstPartialPath = partialPath.substring(0, partialPath.lastIndexOf(".")), lastPartialPath = partialPath.substring(partialPath.lastIndexOf("."), partialPath.length);
+        return (firstPartialPath + '.thumbnail_128' + lastPartialPath);
+    };
+    /**
+     * Trigger action
+     * @param $event
+     * @param action (can be provided by $event or directly in the call)
+     * @param data (can be provided by $event or directly in the call)
+     */
+    ImageComponent.prototype.triggerAction = function ($event, action, data) {
+        if (action === void 0) { action = null; }
+        if (data === void 0) { data = null; }
+        if ($event) {
+            $event.preventDefault();
+            $event.stopPropagation(); // Prevent to open the slide show
+        }
+        _super.prototype.triggerAction.call(this, $event, action, data);
+    };
+    /**
+     * Avatar action
+     * @param $event
+     * @param index
+     */
+    ImageComponent.prototype.avatarAction = function ($event, index) {
+        return this.thumbnailAction($event, index);
+    };
+    /**
+     * Thumbnail action
+     * @param $event
+     * @param index
+     */
+    ImageComponent.prototype.thumbnailAction = function ($event, index) {
+        if ($event) {
+            $event.preventDefault();
+        }
+        var imageCropProvider = this.getProviderExtraDataAttr('imageCrop'), providers = [
+            { provide: 'ImageCropProvider', useValue: {
+                    label: imageCropProvider['label'],
+                    url: imageCropProvider['ActionUrl'],
+                    path: this._dataService.getProviderAttr('objects')[index]['path']
+                } }
+        ], popup = {
+            // Needs to be provided by provider to set the correct "templateUrl"
+            module: this.getProviderAttr('imageCropPopupModule'),
+            component: this.getProviderAttr('imageCropPopupComponent'),
+            providers: providers
+        };
+        this._modalService.popup(popup, this._injector).then(function (data) { return; }, function (errors) { console.log(errors); return; });
+    };
+    ImageComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: '.js_dataBoxImage',
+            template: __webpack_require__("../../../../../src/AppBundle/Resources/public/image/ts/templates/image.component.html")
+        }),
+        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('Provider')),
+        __param(3, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('DataService')),
+        __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
+        __param(8, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('Popups')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["_7" /* ViewContainerRef */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object, __WEBPACK_IMPORTED_MODULE_1__ts_actions_actions_service__["a" /* ActionsService */],
+            __WEBPACK_IMPORTED_MODULE_3__modal_ts_modal_service__["b" /* ModalService */], Object, __WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injector */]])
+    ], ImageComponent);
+    return ImageComponent;
+}(__WEBPACK_IMPORTED_MODULE_2__data_box_ts_src_data_box_component__["a" /* DataBoxComponent */]));
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/image/ts/templates/image-slide.component.html":
+/***/ (function(module, exports) {
+
+module.exports = "\n<div class=\"ibox\">\n            <div class=\"ibox-title\" *ngIf=\"!getProviderExtraDataAttr('hasMergeHeader')\">\n            <h5>\n                <ng-template [ngIf]=\"getProviderAttr('controls')['expander']\"><js_expander\n                    [isExpanded]=\"_isExpanded || null\"\n                    [label]=\"getProviderAttr('label')\"\n                    (onChange)=\"expanderAction($event)\"></js_expander></ng-template>\n                <ng-template [ngIf]=\"!getProviderAttr('controls')['expander']\">\n                    <span [innerHTML]=\"getProviderAttr('label')\"></span>\n                </ng-template>\n            </h5>\n            <div *ngIf=\"_isExpanded\"\n                 class=\"txt-align-r hide-on-empty\">    <div class=\"actions no-user-select\">\n        <ng-template [ngIf]=\"_actionsService.getActionAttr('search', 'isEnabled')\"><js_search class=\"search\"></js_search></ng-template>\n        <div (click)=\"triggerAction($event)\">\n            <ng-template ngFor let-action [ngForOf]=\"_actionsService.getHeadActions()\">\n                <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                   [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                   class=\"-round fa\"\n                   [attr.data-action]=\"action\"></a>\n            </ng-template>\n        </div>\n    </div>\n</div>\n        </div>\n    \n    <div [hidden]=\"!(_isExpanded)\" class=\"ibox-content hide-on-empty\">    <ng-template [ngIf]=\"(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">\n        <div class=\"table-responsive\">\n        <div class=\"gallery\" (click)=\"runSlide($event)\">\n            <a class=\"gallery-item js_gallery-item\"\n               *ngFor=\"let obj of _dataService.getProviderAttr('objects'); let index = index\"\n               href=\"{{getWebPath(obj['path'])}}\"\n               title=\"{{obj['name']}}\">\n                <img src=\"{{getThumbnailPath(obj['path'])}}\"\n                     alt=\"{{obj['name']}}\"\n                     width=\"128\"\n                     height=\"128\">\n                <div class=\"actions no-user-select horizontal-group-box\"\n                     (click)=\"triggerAction($event)\">\n                    <ng-template ngFor let-action [ngForOf]=\"_actionsService.getDetailActions()\">\n                        <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                           [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                           class=\"fa\"\n                           [attr.data-action]=\"action\"\n                           [attr.data-value]=\"index\"></a>\n                    </ng-template>\n                </div>\n            </a>\n        </div>\n    </div>\n    </ng-template><p\n        class=\"text-center\"\n        *ngIf=\"!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">No results.</p>\n</div>\n        <div class=\"ibox-footer\"\n         *ngIf=\"_dataService.countObjects() > 0\"><js_searchPagination></js_searchPagination></div>\n\n</div>\n\n"
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/image/ts/templates/image.component.html":
+/***/ (function(module, exports) {
+
+module.exports = "\n<div class=\"ibox\">\n            <div class=\"ibox-title\" *ngIf=\"!getProviderExtraDataAttr('hasMergeHeader')\">\n            <h5>\n                <ng-template [ngIf]=\"getProviderAttr('controls')['expander']\"><js_expander\n                    [isExpanded]=\"_isExpanded || null\"\n                    [label]=\"getProviderAttr('label')\"\n                    (onChange)=\"expanderAction($event)\"></js_expander></ng-template>\n                <ng-template [ngIf]=\"!getProviderAttr('controls')['expander']\">\n                    <span [innerHTML]=\"getProviderAttr('label')\"></span>\n                </ng-template>\n            </h5>\n            <div *ngIf=\"_isExpanded\"\n                 class=\"txt-align-r hide-on-empty\">    <div class=\"actions no-user-select\">\n        <ng-template [ngIf]=\"_actionsService.getActionAttr('search', 'isEnabled')\"><js_search class=\"search\"></js_search></ng-template>\n        <div (click)=\"triggerAction($event)\">\n            <ng-template ngFor let-action [ngForOf]=\"_actionsService.getHeadActions()\">\n                <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                   [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                   class=\"-round fa\"\n                   [attr.data-action]=\"action\"></a>\n            </ng-template>\n        </div>\n    </div>\n</div>\n        </div>\n    \n    <div [hidden]=\"!(_isExpanded)\" class=\"ibox-content hide-on-empty\">    <ng-template [ngIf]=\"(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">\n        <div class=\"table-responsive\">\n        <form><div class=\"gallery\">\n            <div class=\"gallery-item\"\n                 *ngFor=\"let obj of _dataService.getProviderAttr('objects'); let objIndex = index\"\n                 title=\"{{obj['name']}}\">\n                <img src=\"{{getThumbnailPath(obj['path'])}}\"\n                     alt=\"{{obj['name']}}\"\n                     width=\"128\"\n                     height=\"128\">\n                <div class=\"ibox-tools no-user-select\">\n                    <ng-template ngFor let-action [ngForOf]=\"_actionsService.getDetailActions()\">\n                        <a class=\"action -round fa\"\n                           *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                           (click)=\"triggerAction($event, action, objIndex)\"\n                           [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"></a>\n                    </ng-template>\n                </div>\n            </div>\n        </div></form>\n    </div>\n    </ng-template><p\n        class=\"text-center\"\n        *ngIf=\"!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">No results.</p>\n</div>\n        <div class=\"ibox-footer\"\n         *ngIf=\"_dataService.countObjects() > 0\"><js_searchPagination></js_searchPagination></div>\n\n</div>\n\n"
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/legend/ts/src/legend.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LegendComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+// Component
+var LegendComponent = (function () {
+    function LegendComponent(_provider) {
+        this._provider = _provider;
+    }
+    LegendComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'js_legend',
+            template: "\n    <dl *ngIf=\"_provider.length > 0\" class=\"legend\">\n        <ng-template ngFor let-legend [ngForOf]=\"_provider\" let-i=\"index\">\n          <div class=\"dsp-inline-block nowrap\"><dt [ngClass]=\"legend['class']\"></dt><dd>{{legend['label']}}</dd></div>\n        </ng-template>\n    </dl>\n    "
+        }),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('LegendProvider')),
+        __metadata("design:paramtypes", [Object])
+    ], LegendComponent);
+    return LegendComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/legend/ts/src/legend.ext-module.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LegendExtModule; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__legend_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/legend/ts/src/legend.component.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+var LegendExtModule = (function () {
+    function LegendExtModule() {
+    }
+    LegendExtModule = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["F" /* NgModule */])({
+            imports: [__WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */]],
+            declarations: [
+                __WEBPACK_IMPORTED_MODULE_2__legend_component__["a" /* LegendComponent */]
+            ],
+            exports: [__WEBPACK_IMPORTED_MODULE_2__legend_component__["a" /* LegendComponent */]]
+        })
+    ], LegendExtModule);
+    return LegendExtModule;
+}());
+
+
 
 /***/ }),
 
@@ -93418,14 +97654,14 @@ var ModalWrapperExtensionModule = (function () {
 
 "use strict";
 /* unused harmony export AlertTypes */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ModalService; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return ModalService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ts_dynamic_component_loader_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/dynamic-component-loader.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modal_dialog_extension_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal-dialog.extension-module.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__base_modal_popup__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/base-modal-popup.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__modal_wrapper_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal-wrapper.component.ts");
 /* unused harmony reexport BaseModalPopupExt */
-/* unused harmony reexport BaseModalPopup */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_3__base_modal_popup__["a"]; });
 /* unused harmony reexport ModalSizes */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__modal_wrapper_extension_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal-wrapper.extension-module.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -93456,6 +97692,8 @@ var AlertTypes = {
 /**
  * Service
  * Modal uses the Bootstrap classes
+ * NOTE: In modal service it's no use implementing the TaskLoaderManagerService because not works! Modal
+ * are duplicated in the same way, because all clicks are processes one after finish the other and not at same time!
  */
 var ModalService = (function () {
     function ModalService(_dynamicComponentLoaderService) {
@@ -93528,7 +97766,7 @@ var ModalService = (function () {
         }
         // Create popup
         return new Promise(function (resolve, reject) {
-            that._dynamicComponentLoaderService.load(popup.module, popup.component, modalComponentInstance.getModalContainerRef(), (popup.injector || null)).then(function (componentRef) {
+            return that._dynamicComponentLoaderService.load(popup.module, popup.component, modalComponentInstance.getModalContainerRef(), (popup.injector || null)).then(function (componentRef) {
                 var dismissPromise = new Promise(function (resolve, reject) {
                     // Dismiss emitter
                     var onDismissSubscription = componentRef.instance.onDismissEmitter.subscribe(function (data) {
@@ -93772,6 +98010,115 @@ var TabsExtComponent = (function (_super) {
 
 /***/ }),
 
+/***/ "../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TasksLoaderManagerService; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+/**
+ * Tasks Loader Manager manager.
+ * This service manages the load/run of tasks. It controls tasks duplication (like form save, module loading, ect.),
+ * and the loading panel (show and hide) according with pendent tasks.
+ */
+var TasksLoaderManagerService = (function () {
+    function TasksLoaderManagerService(_helperService) {
+        this._helperService = _helperService;
+        // Local variables
+        this._runningTasks = []; // Keep the running tasks to avoid task duplication (like save, etc.)
+        this._loadingTasks = []; // Keep the loading tasks to controls the loading panel
+        this._hasLoader = false;
+        this._$loader = $('.js_loader');
+    }
+    /**
+     * Add Task
+     * @param task (use uppercase keys separated by "_" as convection)
+     * @param hasLoading
+     * @returns {boolean}
+     */
+    TasksLoaderManagerService.prototype.addTask = function (task, hasLoading) {
+        if (hasLoading === void 0) { hasLoading = true; }
+        if (this._helperService.inArray(task, this._runningTasks)) {
+            // Task already is running, so we reject the duplication
+            return false;
+        }
+        // Register running task
+        this._runningTasks.push(task);
+        if (hasLoading) {
+            // Add task to loading tasks to show the loading panel
+            this._loadingTasks.push(task);
+            this.toggleLoading();
+        }
+        return true;
+    };
+    /**
+     * Delete Task
+     * @param task (use uppercase keys separated by "_" as convection)
+     * @returns {boolean}
+     */
+    TasksLoaderManagerService.prototype.delTask = function (task) {
+        var index = null;
+        if ((index = this._helperService.arraySearch(task, this._runningTasks)) != null) {
+            // Remove from tasks
+            this._runningTasks.splice(index, 1);
+            // Remove from loading tasks to hide the loading panel
+            if ((index = this._helperService.arraySearch(task, this._loadingTasks)) != null) {
+                this._loadingTasks.splice(index, 1);
+                this.toggleLoading();
+            }
+            return true;
+        }
+        // Task does not exists
+        return false;
+    };
+    /**
+     * Has Task
+     * @param task (use uppercase keys separated by "_" as convection)
+     * @returns {boolean}
+     */
+    TasksLoaderManagerService.prototype.hasTask = function (task) {
+        return ((this._helperService.arraySearch(task, this._runningTasks)) != null);
+    };
+    /**
+     * Toggle Loading
+     * @returns any
+     */
+    TasksLoaderManagerService.prototype.toggleLoading = function () {
+        if ((this._loadingTasks.length > 0) && !this._hasLoader) {
+            this._$loader.show();
+            this._hasLoader = true;
+        }
+        else if ((this._loadingTasks.length < 1) && this._hasLoader) {
+            this._$loader.hide();
+            this._hasLoader = false;
+        }
+        return this;
+    };
+    TasksLoaderManagerService = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["x" /* Injectable */])(),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
+        __metadata("design:paramtypes", [Object])
+    ], TasksLoaderManagerService);
+    return TasksLoaderManagerService;
+}());
+
+
+
+/***/ }),
+
 /***/ "../../../../../src/AppBundle/Resources/public/ts/actions/actions.service.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -93806,6 +98153,14 @@ var ActionsService = (function () {
         };
         this.copy = {
             icon: 'fa-copy',
+            isEnabled: false
+        };
+        this.email = {
+            icon: 'fa-envelope-o',
+            isEnabled: false
+        };
+        this.pdf = {
+            icon: 'fa-file-pdf-o',
             isEnabled: false
         };
         this.thumbnail = {
@@ -93859,8 +98214,11 @@ var ActionsService = (function () {
             icon: 'fa-angle-double-down',
             isEnabled: false
         };
-        this._headActions = ['refresh', 'deleteAll', 'add', 'checkAll']; // Default actions for massive objects
-        this._detailActions = ['orderUp', 'orderDown', 'detail', 'thumbnail', 'avatar', 'cancel', 'delete', 'copy', 'edit']; // Default actions for single object
+        // Default actions for massive objects
+        this._headActions = ['refresh', 'deleteAll', 'add', 'checkAll'];
+        // Default actions for single object
+        this._detailActions = ['orderUp', 'orderDown', 'detail', 'email', 'pdf', 'thumbnail', 'avatar',
+            'cancel', 'delete', 'copy', 'edit'];
         if (this._provider) {
             for (var action in this._provider) {
                 switch (action) {
@@ -93914,82 +98272,6 @@ var ActionsService = (function () {
 
 /***/ }),
 
-/***/ "../../../../../src/AppBundle/Resources/public/ts/base/base.component.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return BaseComponent; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-
-/**
- * Used only as base component to be extended for others components
- */
-// Component
-var BaseComponent = (function () {
-    function BaseComponent(_elementRef, _renderer, 
-        // This provider can becomes any provider defined by your child
-        // (don't need the "inject" because it's a static class, so will be provider by children components)
-        _provider) {
-        if (_provider === void 0) { _provider = {}; }
-        this._elementRef = _elementRef;
-        this._renderer = _renderer;
-        this._provider = _provider;
-        // Set defaults
-        if (!this._provider) {
-            this._provider = {};
-        }
-        // Set main class
-        var mainClass = this.getProviderExtraDataAttr('class');
-        if (mainClass) {
-            this._renderer.setElementClass(this._elementRef.nativeElement, mainClass, true);
-        }
-    }
-    /**
-     * Get provider attribute
-     * @param attribute
-     * @returns {any|null}
-     */
-    BaseComponent.prototype.getProviderAttr = function (attribute) {
-        return this._provider[attribute] || null;
-    };
-    /**
-     * Get provider extra data attribute
-     * @param attribute
-     * @returns {any|null}
-     */
-    BaseComponent.prototype.getProviderExtraDataAttr = function (attribute) {
-        return ((this._provider['extraData'] && this._provider['extraData'][attribute])
-            ? this._provider['extraData'][attribute]
-            : null);
-    };
-    BaseComponent = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: '.js_base',
-            template: ''
-        }),
-        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["K" /* Optional */])()),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["r" /* ElementRef */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Renderer */], Object])
-    ], BaseComponent);
-    return BaseComponent;
-}());
-
-
-
-/***/ }),
-
 /***/ "../../../../../src/AppBundle/Resources/public/ts/base/base.extension-component.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -94009,20 +98291,26 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var BaseExtensionComponent = (function () {
     function BaseExtensionComponent() {
     }
+    //protected _dataService: any;
     /**
      * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
      * @param elementRef
      * @param renderer
      * @param provider
+     * //@param dataService
      */
     BaseExtensionComponent.prototype.initBaseExtensionComponent = function (elementRef, renderer, 
         // This provider can becomes any provider defined by your child
         // (don't need the "inject" because it's a static class, so will be provider by children components)
-        provider) {
+        provider
+        // @TODO: Disabled for now, but is here to analise later how dataservice can handle with lazy loader
+        //@Optional() @Inject('DataService') dataService: any = null
+    ) {
         // Constructor vars
         this._elementRef = elementRef;
         this._renderer = renderer;
         this._provider = provider;
+        //this._dataService = dataService;
         // Set defaults
         if (!this._provider) {
             this._provider = {};
@@ -94034,12 +98322,30 @@ var BaseExtensionComponent = (function () {
         }
     };
     /**
+     * Set provider attribute
+     * @param attribute
+     * @param value
+     * @returns {any|null}
+     */
+    BaseExtensionComponent.prototype.setProviderAttr = function (attribute, value) {
+        this._provider[attribute] = value;
+        return this;
+    };
+    /**
      * Get provider attribute
      * @param attribute
      * @returns {any|null}
      */
     BaseExtensionComponent.prototype.getProviderAttr = function (attribute) {
         return this._provider[attribute] || null;
+    };
+    /**
+     * Get "localData" attribute
+     * @param attribute
+     * @returns any
+     */
+    BaseExtensionComponent.prototype.getLocalDataAttr = function (attribute) {
+        return (this._provider['localData'][attribute] || null);
     };
     /**
      * Get provider extra data attribute
@@ -94050,6 +98356,14 @@ var BaseExtensionComponent = (function () {
         return ((this._provider['extraData'] && this._provider['extraData'][attribute])
             ? this._provider['extraData'][attribute]
             : null);
+    };
+    /**
+     * Lifecycle callback
+     */
+    BaseExtensionComponent.prototype.ngAfterViewInit = function () {
+        // Start loading lazy images
+        // @TODO: This method should be called from DataService each time that objects are updated
+        $(this._elementRef.nativeElement).find('.js_lazy').Lazy();
     };
     BaseExtensionComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
@@ -94160,7 +98474,9 @@ var OrderTypes = {
     down: 'down'
 };
 var DataService = (function () {
-    function DataService(_postService, _helperService, _provider, _sanitizer) {
+    function DataService(_postService, _helperService, _provider, _sanitizer
+        //@Optional() protected _assetsLazyLoaderManagerService: AssetsLazyLoaderManagerService, // @TODO
+    ) {
         this._postService = _postService;
         this._helperService = _helperService;
         this._provider = _provider;
@@ -94174,6 +98490,11 @@ var DataService = (function () {
         this._objectsProvider = null;
         this._objectsIds = []; // Array of "ids" of objects in provider.objects.value to avoid duplications
         this._newObjectsIds = []; // Array of "ids" with new objects added by the user
+        // Handles with assets lazy loader.
+        // DataService it's that normalize data, so nobody better than him to knows when AssetsLazyLoaderManager should be called.
+        // Assets lazy loader is called only for objects provided in construct, because in the other cases we cannot
+        // control the template rendering to call the lazy loader at the right time.
+        this._hasAssetsLazyLoader = true; // Controls if this feature should be used
         if (this._provider['pin']) {
             this.pinProvider();
         }
@@ -94203,9 +98524,15 @@ var DataService = (function () {
     };
     /**
      * Get object
+     * @param index
      * @returns any
      */
-    DataService.prototype.getObject = function () {
+    DataService.prototype.getObject = function (index) {
+        if (index === void 0) { index = null; }
+        if (index !== null) {
+            var objectsProvider = (this._objectsProvider || this._provider.objects || []);
+            return (objectsProvider[index] || null);
+        }
         return this._object;
     };
     /**
@@ -94291,17 +98618,7 @@ var DataService = (function () {
         var id = (this._object ? this._object['id'] : null);
         if (id) {
             var that_1 = this, route = (this._provider.route['get']['url'] + '/' + id);
-            this.post(route, this.getRequestData(null, false, false)).then(function (data) {
-                // Local data (do not override, merge data)
-                if (data['localData']) {
-                    that_1._provider.localData = that_1._helperService.mergeObjects(that_1._provider.localData, data['localData']);
-                }
-                var obj = (data.object || null);
-                // Refresh object
-                if (obj) {
-                    that_1.setObject(data.object, that_1._objectIndex);
-                }
-            }, function (errors) { console.log(errors); });
+            this._postService.post(route, this.getRequestData(null, false, false)).then(function (data) { that_1.handleResponse(data); }, function (errors) { console.log(errors); });
         }
         return this;
     };
@@ -94319,7 +98636,7 @@ var DataService = (function () {
                 that._postService.post(that._provider.route['get']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData(null, false, false)).then(function (data) {
                     // Local data (do not override, merge data)
                     if (data['localData']) {
-                        that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
+                        that.setLocalData(data['localData']);
                     }
                     // Object
                     that._objectIndex = index; // The index of original object that was selected
@@ -94616,7 +98933,16 @@ var DataService = (function () {
      * @returns {any|null}
      */
     DataService.prototype.getProviderAttr = function (attribute) {
-        return this._provider[attribute] || null;
+        return (this._provider[attribute] || null);
+    };
+    /**
+     * Get "localData" attribute
+     * @param attribute
+     * @returns any
+     */
+    DataService.prototype.getLocalDataAttr = function (attribute) {
+        if (attribute === void 0) { attribute = null; }
+        return (this._provider['localData']['data'][attribute] || null);
     };
     /**
      * Get provider extra data attribute
@@ -94660,43 +98986,51 @@ var DataService = (function () {
      * Detect fields that needs to be rendered to view/template
      * @param objects
      * @param fields
+     * @param fieldsMetadata
+     * @param fieldsChoices
      * @returns any
      */
-    DataService.prototype.normalizeObjectsToTemplate = function (objects, fields) {
+    DataService.prototype.normalizeObjectsToTemplate = function (objects, fields, fieldsMetadata, fieldsChoices) {
         if (objects === void 0) { objects = null; }
         if (fields === void 0) { fields = null; }
+        if (fieldsMetadata === void 0) { fieldsMetadata = null; }
+        if (fieldsChoices === void 0) { fieldsChoices = null; }
         objects = (objects || this._provider.objects);
         fields = (fields || this._provider.fields['view']);
+        fieldsMetadata = (fieldsMetadata || this._provider.fields['metadata'] || {});
+        fieldsChoices = (fieldsChoices || this._provider.fieldsChoices || null);
         if (objects && fields) {
             for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
                 var field = fields_1[_i];
-                var fieldMetadata = this._provider.fields['metadata'][field];
+                var fieldMetadata = fieldsMetadata[field];
                 if (fieldMetadata['skipNormalizer']) {
                     continue;
                 }
                 switch (fieldMetadata['type']) {
+                    case 'img':
+                    case 'avatar':
                     case 'boolean':
                     case 'code':
                     case 'percentage':
                     case 'monetary':
                     case 'icon':
                     case 'link':
-                    case 'img':
-                    case 'avatar':
                     case 'status':
                         for (var _a = 0, objects_2 = objects; _a < objects_2.length; _a++) {
                             var obj = objects_2[_a];
                             if (typeof obj[field] != 'undefined') {
-                                obj[field] = this.renderField(field, obj);
+                                // Keep a copy of original value (usually boolean and monetary field to use in controls)
+                                if (fieldMetadata['keepOriginalNormalizer']) {
+                                    obj['__' + field] = obj[field];
+                                }
+                                obj[field] = this.renderField(field, obj, fieldsMetadata);
                             }
                         }
                         break;
                 }
                 // For "enum" type (key is the label, pattern of Symfony ChoiceType)
-                if (this._provider.fieldsChoices
-                    && this._provider.fieldsChoices[field]
-                    && this._provider.fieldsChoices[field]['value']) {
-                    var enumObj = this._provider.fieldsChoices[field]['value'];
+                if (fieldsChoices && fieldsChoices[field] && fieldsChoices[field]['value']) {
+                    var enumObj = fieldsChoices[field]['value'];
                     for (var _b = 0, objects_3 = objects; _b < objects_3.length; _b++) {
                         var obj = objects_3[_b];
                         for (var enumKey in enumObj) {
@@ -94707,18 +99041,47 @@ var DataService = (function () {
                     }
                 }
             }
+            // @TODO: Analise better how lazy loader should be handled
+            if (this._hasAssetsLazyLoader) {
+                this._hasAssetsLazyLoader = false;
+            }
         }
         return this;
     };
     /**
+     * Set Has Assets Lazy Loader
+     * @TODO: Not used for now, it's here to analise better in future how lazy loader should be handled
+     * @param hasAssetsLazyLoader
+     */
+    /*public setHasAssetsLazyLoader (hasAssetsLazyLoader: boolean)
+    {
+        this._hasAssetsLazyLoader = hasAssetsLazyLoader;
+    }*/
+    /**
+     * Run Assets Lazy Loader
+     * @TODO: Not used for now, it's here to analise better in future how lazy loader should be handled
+     */
+    /*public runAssetsLazyLoader()
+    {
+        // Only can be used in the first load (check out the comment above)
+        if (this._hasAssetsLazyLoader) {
+            this._hasAssetsLazyLoader = false;
+            this._assetsLazyLoaderManagerService.load();
+            console.log("Lazy load called in dataservice");
+        }
+    }*/
+    /**
      * Render field
      * @param field
      * @param object
+     * @param fieldsMetadata
      * @returns {string}
      */
-    DataService.prototype.renderField = function (field, object) {
+    DataService.prototype.renderField = function (field, object, fieldsMetadata) {
+        if (fieldsMetadata === void 0) { fieldsMetadata = null; }
         // Get field metadata
-        var fieldMetadata = (this._provider.fields['metadata'][field] || null), value = object[field];
+        fieldsMetadata = (fieldsMetadata || this._provider.fields['metadata'] || {});
+        var fieldMetadata = (fieldsMetadata[field] || null), value = object[field];
         // Render field to the view/template
         if (fieldMetadata) {
             switch (fieldMetadata['type']) {
@@ -94750,11 +99113,20 @@ var DataService = (function () {
                 case 'img':
                 case 'avatar':
                     var extraClass = ((fieldMetadata['type'] == 'avatar') ? 'img-circle' : 'thumbnail');
-                    return (value
-                        ? ('<img alt="' + fieldMetadata['label'] + '" class="' + extraClass + '" src="'
-                            + (this._helperService.getUploadWebPath(value) || value)
-                            + '">')
-                        : null);
+                    // No image is provided
+                    if (!value) {
+                        return ('<img alt="' + fieldMetadata['label'] + '" class="' + extraClass
+                            + '" src="/assets/img/dummy-48x48.png">');
+                    }
+                    // Regular load
+                    if (!this._hasAssetsLazyLoader) {
+                        return ('<img alt="' + fieldMetadata['label'] + '" class="' + extraClass
+                            + '" src="' + (this._helperService.getUploadWebPath(value) || value) + '">');
+                    }
+                    // Use lazy loader
+                    return this._sanitizer.bypassSecurityTrustHtml('<img alt="' + fieldMetadata['label'] + '" class="js_lazy ' + extraClass
+                        + '" src="/assets/img/dummy-48x48.png" data-src="'
+                        + (this._helperService.getUploadWebPath(value) || value) + '">');
                 case 'status':
                     var statusMap = { 'NO': 'danger', 'PARTIAL': 'warning', 'YES': 'primary' };
                     return ('<span class="status -' + (statusMap[value] || 'danger') + '"></span>');
@@ -94774,7 +99146,7 @@ var DataService = (function () {
         var that = this;
         return new Promise(function (resolve, reject) {
             if (object) {
-                // Objects has pre existent data (for example can be from backend session storage)
+                // Object has pre existent data (for example can be from backend session storage)
                 that.setNewObject(object);
                 return resolve(true);
             }
@@ -94804,7 +99176,7 @@ var DataService = (function () {
                     return that._postService.post(that._provider.route['new']['url'], that.getRequestData()).then(function (data) {
                         // Local data (do not override, merge data)
                         if (data['localData']) {
-                            that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
+                            that.setLocalData(data['localData']);
                         }
                         // Object
                         that.setNewObject(data.object);
@@ -94861,37 +99233,14 @@ var DataService = (function () {
             if (id) {
                 route += ('/' + id);
             }
-            that.post(route, that.getRequestData(data)).then(function (data) {
-                // Refresh all objects
-                if (data.objects) {
-                    that.setObjects(data.objects);
-                }
-                // Refresh fields choices
-                if (data.fieldsChoices) {
-                    that.setFieldsChoices(data.fieldsChoices);
-                }
-                // Local data (do not override, merge data)
-                if (data['localData']) {
-                    that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
-                }
-                var obj = (data.object || null);
-                // Refresh object
-                if (obj) {
-                    that.setObject(data.object, that._objectIndex);
-                }
-                return resolve(obj);
+            that._postService.post(route, that.getRequestData(data)).then(function (data) {
+                that.handleResponse(data);
+                return resolve(data['object'] || null);
             }, function (errors) {
-                // Local data (do not override, merge data). Exception in errors list used in some cases.
-                if (errors['localData']) {
-                    that._provider.localData = that._helperService.mergeObjects(that._provider.localData, errors['localData']);
-                    delete errors['localData']; // It's no more necessary
+                if (errors['data']) {
+                    that.handleResponse(errors['data']);
                 }
-                // Refresh object
-                if (errors['object']) {
-                    that.setObject(errors['object'], that._objectIndex);
-                    delete errors['object']; // It's no more necessary
-                }
-                return reject(errors);
+                return reject(errors['errors'] || {});
             });
         });
     };
@@ -94917,11 +99266,7 @@ var DataService = (function () {
         var that = this;
         // Reset pagination for new search
         this.resetPagination();
-        this.post(this._provider.route['get']['url'], this.getRequestData(null, false)).then(function (data) {
-            // Update list of objects
-            that.setObjects(data.objects || null);
-            that.setFieldsChoices(data.fieldsChoices || null);
-        }, function (errors) { console.log(errors); });
+        this._postService.post(this._provider.route['get']['url'], this.getRequestData(null, false)).then(function (data) { that.handleResponse(data); }, function (errors) { console.log(errors); });
         return this;
     };
     /**
@@ -94930,9 +99275,10 @@ var DataService = (function () {
      */
     DataService.prototype.getMoreObjects = function () {
         var that = this;
-        this.post(this._provider.route['get']['url'], this.getRequestData()).then(function (data) {
-            // Update list of objects
-            that.setObjects(data.objects || [], true);
+        this._postService.post(this._provider.route['get']['url'], this.getRequestData()).then(function (data) {
+            // Update objects
+            data.objects = (data.objects || []);
+            that.handleResponse(data, null, true);
         }, function (errors) { console.log(errors); });
         return this;
     };
@@ -94953,9 +99299,9 @@ var DataService = (function () {
         }
         // No field is necessary, is returned the choices pattern (minimizes data sent)
         this._provider['search']['fields'] = [];
-        this.post(this._provider.route['choices']['url'], this.getRequestData(null, noReset)).then(function (data) {
-            // Update list of objects
-            that.setObjects(data.objects || [], noReset);
+        this._postService.post(this._provider.route['choices']['url'], this.getRequestData(null, noReset)).then(function (data) {
+            data.objects = (data.objects || []);
+            that.handleResponse(data, null, noReset);
         }, function (errors) { console.log(errors); });
         return this;
     };
@@ -94969,20 +99315,10 @@ var DataService = (function () {
         var that = this, objectsProvider = (this._objectsProvider || this._provider.objects);
         if (OrderTypes[type] // Validate order type
             && ((objectsProvider[index]['priority'] > 0) || (OrderTypes[type] == 'down'))) {
-            this.post((this._provider.route['order']['url'] + '/' + objectsProvider[index]['id'] + '/' + OrderTypes[type]), that.getRequestData()).then(function (data) {
-                // Refresh all objects
-                if (data.objects) {
-                    that.setObjects(data.objects);
-                }
-                // Refresh fields choices
-                if (data.fieldsChoices) {
-                    that.setFieldsChoices(data.fieldsChoices);
-                }
-                var obj = (data.object || null);
-                // Refresh object
-                if (obj) {
-                    that.setObject(obj, index);
-                    // If objects are not returned, then order objects by "search" "orderBy" provider
+            this._postService.post((this._provider.route['order']['url'] + '/' + objectsProvider[index]['id'] + '/' + OrderTypes[type]), that.getRequestData()).then(function (data) {
+                that.handleResponse(data, index);
+                // If objects are not returned, then order objects by "search" "orderBy" provider
+                if (data.object) {
                     if (!data.objects) {
                         // Get fields from search
                         var orderFields = that._provider.search.orderBy.map(function ($item) {
@@ -95005,20 +99341,8 @@ var DataService = (function () {
     DataService.prototype.cancel = function (index) {
         var that = this, objectsProvider = (this._objectsProvider || this._provider.objects);
         return new Promise(function (resolve, reject) {
-            that.post(that._provider.route['cancel']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
-                // Refresh all objects
-                if (data.objects) {
-                    that.setObjects(data.objects);
-                }
-                // Refresh fields choices
-                if (data.fieldsChoices) {
-                    that.setFieldsChoices(data.fieldsChoices);
-                }
-                var obj = (data.object || null);
-                // Refresh object
-                if (obj) {
-                    that.setObject(obj, index);
-                }
+            that._postService.post(that._provider.route['cancel']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
+                that.handleResponse(data, index);
                 return resolve(true);
             }, function (errors) { return reject(false); });
         });
@@ -95031,21 +99355,14 @@ var DataService = (function () {
     DataService.prototype.delete = function (index) {
         var that = this, objectsProvider = (this._objectsProvider || this._provider.objects);
         return new Promise(function (resolve, reject) {
-            that.post(that._provider.route['delete']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
-                // Refresh all objects
-                if (data.objects) {
-                    that.setObjects(data.objects);
-                }
-                else {
-                    // Refresh objects array removing the removed object
+            that._postService.post(that._provider.route['delete']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
+                // Refresh objects array removing the removed object
+                if (!data.objects) {
                     that.pullFromObjects(index);
-                }
-                // Refresh fields choices
-                if (data.fieldsChoices) {
-                    that.setFieldsChoices(data.fieldsChoices);
                 }
                 // Reset object index
                 that._objectIndex = null;
+                that.handleResponse(data);
                 return resolve(true);
             }, function (errors) { return reject(false); });
         });
@@ -95068,11 +99385,8 @@ var DataService = (function () {
                 }
             }
         }
-        this.post(this._provider.route['delete']['url'], this.getRequestData({ id: idArr })).then(function (data) {
-            // Refresh fields choices
-            if (data.fieldsChoices) {
-                that.setFieldsChoices(data.fieldsChoices);
-            }
+        this._postService.post(this._provider.route['delete']['url'], this.getRequestData({ id: idArr })).then(function (data) {
+            that.handleResponse(data);
             // Refresh objects array
             // Correction for index (each time you remove an index, all indices needs to be corrected)
             var indexCorrection = 0;
@@ -95103,8 +99417,8 @@ var DataService = (function () {
     DataService.prototype.redirect = function (route, index) {
         if (index === void 0) { index = null; }
         index = ((index == null) ? this._objectIndex : index);
-        var objectsProvider = (this._objectsProvider || this._provider.objects);
-        location.href = (this._provider.route[route]['url'] + '/' + objectsProvider[index]['id']);
+        var objectsProvider = (this._objectsProvider || this._provider.objects), idField = (this._provider.route[route]['idField'] || 'id');
+        location.href = (this._provider.route[route]['url'] + '/' + objectsProvider[index][idField]);
         return;
     };
     /**
@@ -95119,19 +99433,17 @@ var DataService = (function () {
         if (updateData === void 0) { updateData = false; }
         var that = this;
         return new Promise(function (resolve, reject) {
-            return that.post(route, that.getRequestData(data, false, false)).then(function (data) {
+            return that._postService.post(route, that.getRequestData(data, false, false)).then(function (data) {
                 if (updateData) {
-                    // Local data (do not override, merge data)
-                    if (data['localData']) {
-                        that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
-                    }
-                    // Refresh object
-                    if (data['object']) {
-                        that.setObject(data.object, that._objectIndex);
-                    }
+                    that.handleResponse(data);
                 }
                 return resolve(data);
-            }, function (errors) { return reject(errors); });
+            }, function (errors) {
+                if (updateData && errors['data']) {
+                    that.handleResponse(errors['data']);
+                }
+                return reject(errors['errors'] || {});
+            });
         });
     };
     /**
@@ -95164,30 +99476,6 @@ var DataService = (function () {
                 // No indexes to submit
                 return resolve(null);
             }
-        });
-    };
-    /**
-     * Post to server.
-     * @param url
-     * @param data
-     * @returns {Promise}
-     */
-    DataService.prototype.post = function (url, data) {
-        if (data === void 0) { data = null; }
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            return that._postService.post(url, data).then(function (data) {
-                // Update search
-                if (data['search'] && (typeof data['search']['hasMore'] != 'undefined')) {
-                    // Equals search in provider and candidate search to avoid return false
-                    // in comparisons doing unnecessary searches.
-                    that._candidateSearch.hasMore = that._provider.search.hasMore
-                        = that._helperService.castToBoolean(data['search']['hasMore']);
-                    that._candidateSearch.offset = that._provider.search.offset
-                        = (data['search']['offset'] || 0);
-                }
-                return resolve(data);
-            }, function (errors) { return reject(errors); });
         });
     };
     /**
@@ -95231,11 +99519,69 @@ var DataService = (function () {
         this._provider.search.offset = (this._provider.objects.length - this._newObjectsIds.length);
         return this;
     };
+    /**
+     * Set local data
+     * @param localData
+     */
+    DataService.prototype.setLocalData = function (localData) {
+        // Local data (do not override, merge data)
+        if (localData) {
+            if (localData['data']) {
+                this._provider.localData['data'] = this._helperService.mergeObjects(this._provider.localData['data'], localData['data']);
+            }
+            if (localData['template']) {
+                this._provider.localData['template'] = this._helperService.mergeObjects(this._provider.localData['template'], localData['template']);
+            }
+        }
+    };
+    /**
+     * Handle with regular server responses
+     * @param response
+     * @param objectIndex (object index to update object)
+     * @param hasMergeObjects (merge array of objects, otherwise will be override)
+     * @returns {DataService}
+     */
+    DataService.prototype.handleResponse = function (response, objectIndex, hasMergeObjects) {
+        if (objectIndex === void 0) { objectIndex = null; }
+        if (hasMergeObjects === void 0) { hasMergeObjects = false; }
+        // Set default object index (this can be done in method signature)
+        if (objectIndex === null) {
+            objectIndex = this._objectIndex;
+        }
+        // Refresh all objects
+        if (response['objects']) {
+            this.setObjects(response['objects'], hasMergeObjects);
+        }
+        // Refresh object
+        if (response['object']) {
+            this.setObject(response['object'], objectIndex);
+        }
+        // Local data (do not override, merge data)
+        if (response['localData']) {
+            this.setLocalData(response['localData']);
+        }
+        // Refresh fields choices
+        if (response['fieldsChoices']) {
+            this.setFieldsChoices(response['fieldsChoices']);
+        }
+        // Update search pagination
+        if (response['search'] && (typeof response['search']['hasMore'] != 'undefined')) {
+            // Equals search in provider and candidate search to avoid return false
+            // in comparisons doing unnecessary searches.
+            this._candidateSearch.hasMore = this._provider.search.hasMore
+                = this._helperService.castToBoolean(response['search']['hasMore']);
+            this._candidateSearch.offset = this._provider.search.offset
+                = (response['search']['offset'] || 0);
+        }
+        return this;
+    };
     DataService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["x" /* Injectable */])(),
         __param(1, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
         __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('DataServiceProvider')),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__post_service__["a" /* PostService */], Object, Object, __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["b" /* DomSanitizer */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__post_service__["a" /* PostService */], Object, Object, __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["b" /* DomSanitizer */]
+            //@Optional() protected _assetsLazyLoaderManagerService: AssetsLazyLoaderManagerService, // @TODO
+        ])
     ], DataService);
     return DataService;
 }());
@@ -95250,6 +99596,7 @@ var DataService = (function () {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DynamicComponentLoaderService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -95260,10 +99607,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+
 // Service
 var DynamicComponentLoaderService = (function () {
-    function DynamicComponentLoaderService(_compiler) {
+    function DynamicComponentLoaderService(_compiler, _tasksLoaderManagerService) {
         this._compiler = _compiler;
+        this._tasksLoaderManagerService = _tasksLoaderManagerService;
     }
     /**
      * Load component into ViewContainerRef
@@ -95283,10 +99632,12 @@ var DynamicComponentLoaderService = (function () {
      */
     DynamicComponentLoaderService.prototype.load = function (module, component, viewContainerRef, injector) {
         if (injector === void 0) { injector = null; }
+        this._tasksLoaderManagerService.addTask('DYNAMIC_COMPONENT_LOADING');
         var that = this;
         return new Promise(function (resolve, reject) {
             that.getComponentFactory(module, component).then(function (componentFactory) {
                 var componentRef = viewContainerRef.createComponent(componentFactory, 0, injector, []);
+                that._tasksLoaderManagerService.delTask('DYNAMIC_COMPONENT_LOADING');
                 return resolve(componentRef);
             });
         });
@@ -95308,7 +99659,8 @@ var DynamicComponentLoaderService = (function () {
     };
     DynamicComponentLoaderService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["x" /* Injectable */])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* Compiler */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* Compiler */],
+            __WEBPACK_IMPORTED_MODULE_1__tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */]])
     ], DynamicComponentLoaderService);
     return DynamicComponentLoaderService;
 }());
@@ -95497,6 +99849,7 @@ var FlashMessageService = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__post_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/post.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_form_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__data_box_ts_src_data_box_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -95515,12 +99868,14 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 
 
 
+
 var FieldTypeAutoCompleteComponent = (function () {
-    function FieldTypeAutoCompleteComponent(_postService, _modalService, _dataService, _formService, _injector, _autoCompleteProviders, _helperService) {
+    function FieldTypeAutoCompleteComponent(_postService, _modalService, _dataService, _tasksLoaderManagerService, _formService, _injector, _autoCompleteProviders, _helperService) {
         var _this = this;
         this._postService = _postService;
         this._modalService = _modalService;
         this._dataService = _dataService;
+        this._tasksLoaderManagerService = _tasksLoaderManagerService;
         this._formService = _formService;
         this._injector = _injector;
         this._autoCompleteProviders = _autoCompleteProviders;
@@ -95752,6 +100107,8 @@ var FieldTypeAutoCompleteComponent = (function () {
      * Lifecycle callback
      */
     FieldTypeAutoCompleteComponent.prototype.ngOnInit = function () {
+        // Enable load while component initializes, to avoid use the component before init has finished causing errors
+        this._tasksLoaderManagerService.addTask('INIT_AUTO_COMPLETE');
         // Initialize values
         this._provider = (this._autoCompleteProviders[this.field] || null);
         if (this._provider.field) {
@@ -95763,6 +100120,7 @@ var FieldTypeAutoCompleteComponent = (function () {
         if (this._provider.childInjector) {
             this._childInjector = this._provider.childInjector;
             this.init();
+            this._tasksLoaderManagerService.delTask('INIT_AUTO_COMPLETE');
             return;
         }
         // Dependency conf for first time
@@ -95786,6 +100144,7 @@ var FieldTypeAutoCompleteComponent = (function () {
             if (that._provider.urlChoicesParams) {
                 that._childDataServiceChoices.setRoute('choices', (that._childDataServiceChoices.getRoute('choices') + '/' + that._provider.urlChoicesParams));
             }
+            that._tasksLoaderManagerService.delTask('INIT_AUTO_COMPLETE');
         }, function (errors) { console.log(errors); return; });
     };
     /**
@@ -95852,10 +100211,11 @@ var FieldTypeAutoCompleteComponent = (function () {
             }
         }),
         __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('DataService')),
-        __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('AutoCompleteProviders')),
-        __param(6, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
+        __param(6, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('AutoCompleteProviders')),
+        __param(7, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_3__post_service__["a" /* PostService */],
-            __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["a" /* ModalService */], Object, __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_form_form_service__["a" /* FormService */],
+            __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["b" /* ModalService */], Object, __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */],
+            __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_form_form_service__["a" /* FormService */],
             __WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injector */], Object, Object])
     ], FieldTypeAutoCompleteComponent);
     return FieldTypeAutoCompleteComponent;
@@ -95947,7 +100307,7 @@ var FieldTypeDatePickerDirective = (function () {
                             break;
                         }
                         // Limit available dates to ranges
-                        var dateRanges_1 = (this_1._dataService.getProviderAttr('localData')[rule['value']] || []);
+                        var dateRanges_1 = (this_1._dataService.getLocalDataAttr(rule['value']) || []);
                         // Function to check if date is valid (is in range)
                         this_1.control['markDisabled'] = function (date) {
                             var dateToCheck = new Date(date.year, date.month - 1, date.day);
@@ -96652,7 +101012,8 @@ var FormExtensionComponent = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__helper__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/helper.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helper__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/helper.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -96669,13 +101030,16 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 
 
 
+
 var FormService = (function () {
-    function FormService(_modalService, formBuilder, _dataService, _helperService, _provider) {
+    function FormService(_modalService, formBuilder, _dataService, _helperService, _tasksLoaderManagerService, _provider) {
         var _this = this;
         this._modalService = _modalService;
         this._dataService = _dataService;
         this._helperService = _helperService;
+        this._tasksLoaderManagerService = _tasksLoaderManagerService;
         this._provider = _provider;
+        this._component = null; // Parent component that uses and implement this service
         this._originalObject = {}; // Original object to compare changes and reset object in DataService
         this._originalNormalizedObject = {}; // Original normalized (for form) object to compare changes and reset object in form
         this._object = {}; // Object used by form
@@ -96685,12 +101049,12 @@ var FormService = (function () {
         if (!this._provider) {
             this._provider = {};
         }
+        this._uniqueId = this._helperService.getUniqueId();
         this._onObjectChangeEmitter = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* EventEmitter */]();
         // Object change event subscription
         this._onObjectChangeSubscription = this._dataService.getOnObjectChangeEmitter()
             .subscribe(function (object) { return _this.onObjectChangeSubscription(object); });
         this._forceSubmit = false;
-        this._isOnSave = false;
         this._preventObjectOverride = true;
         // Set object, if it has not been setted before open the form
         if (!this._dataService.getObject()) {
@@ -96731,10 +101095,33 @@ var FormService = (function () {
     FormService.prototype.init = function (component) {
         // Local variables
         this._component = component;
-        this._$form = $(component._elementRef.nativeElement).find('form');
+        // @TODO: discontinue this provider, and keep only the second verification
         this._preventObjectOverride = this._component.getProviderAttr('preventObjectOverride');
+        if (this._preventObjectOverride) {
+            this._preventObjectOverride = (!this._provider.hasOwnProperty('hasPreventObjectOverride')
+                || this._provider['hasPreventObjectOverride']);
+        }
+        // Note: _$form needs to be setted each time that the component changes, otherwise if you set the form
+        // only once, form loss your binding consistence from the second time that it is opened and setted a
+        // different object. Ie: "BookingServicePriceEdit", field "isVatIncluded" and "markupValue" loss binding
+        // consistence and the data is not correctly sent to server!!!!
+        this._$form = $(this._component._elementRef.nativeElement).find('form');
         return this;
     };
+    ///////////////////////////////////////////////
+    // It's no more necessary, because we only create the form (open popup) after get the
+    // promise successful response (get, new or clone object), so this code is kept here for future consideration.
+    ///////////////////////////////////////////////
+    /**
+     * Is Initialized
+     * Controls if FormService has been initialized the "formBuilder group",
+     * to avoid the component render the template form before and break
+     * @returns {boolean}
+     */
+    /*public isInitialized(): boolean
+    {
+        return (this.getForm() ? true : false);
+    }*/
     /**
      * Get form object emitter to tell all subscribers about changes
      * @returns {EventEmitter<any>}
@@ -96748,8 +101135,7 @@ var FormService = (function () {
      */
     FormService.prototype.onObjectChangeSubscription = function (object) {
         if ((object != this._originalObject) // Set object only if is different
-            && !this._isOnSave // If form is on save object will be setted by the save method when there are some correct procedures
-        ) {
+            && !this._tasksLoaderManagerService.hasTask('SAVE_' + this._uniqueId)) {
             // Form does not need to confirm object override
             if (!this._preventObjectOverride) {
                 this.setObject(object);
@@ -96808,12 +101194,12 @@ var FormService = (function () {
         if (object != this._originalObject) {
             // Keep the original object from dataService
             this._originalObject = object;
-            this._isOnSave = false; // Waiting mode for save process ends here, after update the original object.
+            this._tasksLoaderManagerService.delTask('SAVE_' + this._uniqueId); // Waiting mode for save process ends here, after update the original object.
             // Normalize object to form
-            this._originalNormalizedObject = __WEBPACK_IMPORTED_MODULE_3__helper__["a" /* Helper */].cloneObject(this._originalObject, true);
+            this._originalNormalizedObject = __WEBPACK_IMPORTED_MODULE_4__helper__["a" /* Helper */].cloneObject(this._originalObject, true);
             this.normalizeObject(this._originalNormalizedObject);
             // Update form object
-            this._object = __WEBPACK_IMPORTED_MODULE_3__helper__["a" /* Helper */].cloneObject(this._originalNormalizedObject, true);
+            this._object = __WEBPACK_IMPORTED_MODULE_4__helper__["a" /* Helper */].cloneObject(this._originalNormalizedObject, true);
             // Reset errors
             this._errors = {};
             // This object is saved in session and needs to be confirmed by user before save them in database
@@ -96939,12 +101325,10 @@ var FormService = (function () {
         if (hasValidation === void 0) { hasValidation = true; }
         var that = this;
         return new Promise(function (resolve, reject) {
-            if (that._isOnSave) {
+            if (!that._tasksLoaderManagerService.addTask('SAVE_' + that._uniqueId)) {
                 // Form is already in save process
                 return reject(false);
             }
-            // Put form in "save" mode
-            that._isOnSave = true;
             // Current form object has changes from user?
             // Note: Objects in session storage enables the "_forceSubmit" by default
             if (that._forceSubmit || !that._object['id'] || that.hasChanges()) {
@@ -96957,7 +101341,7 @@ var FormService = (function () {
                         }
                     }
                     if (that._helperService.objectLength(that._errors) > 0) {
-                        that._isOnSave = false;
+                        that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId); // Cancel save, form has errors
                         return reject(false);
                     }
                 }
@@ -96967,22 +101351,22 @@ var FormService = (function () {
                 var data = that._$form.serialize();
                 var id = that._object['id'] ? that._object['id'] : null;
                 // Save form
-                that._dataService.save(data, id, route).then(function (object) {
+                return that._dataService.save(data, id, route).then(function (object) {
                     // Force submit is reset, each activation is valid  only once
                     that._forceSubmit = false;
-                    // Update form after save with saved object
+                    // Update form with updated object
                     that.setObject(object);
                     return resolve(true);
                 }, function (errors) {
                     if (errors) {
                         that._errors = errors;
                     }
-                    that._isOnSave = false;
+                    that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId);
                     return reject(errors);
                 });
             }
             else {
-                that._isOnSave = false;
+                that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId);
                 return resolve(true);
             }
         });
@@ -97100,9 +101484,9 @@ var FormService = (function () {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["x" /* Injectable */])(),
         __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('DataService')),
         __param(3, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
-        __param(4, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["K" /* Optional */])()), __param(4, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('FormServiceProvider')),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["a" /* ModalService */],
-            __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */], Object, Object, Object])
+        __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["K" /* Optional */])()), __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('FormServiceProvider')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["b" /* ModalService */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */], Object, Object, __WEBPACK_IMPORTED_MODULE_3__tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object])
     ], FormService);
     return FormService;
 }());
@@ -97122,6 +101506,10 @@ var FormService = (function () {
 var Helper = (function () {
     function Helper() {
     }
+    // Get an unique incremental number to be used as unique identifier
+    Helper.getUniqueId = function () {
+        return (Helper.uniqueIdCounter++);
+    };
     /**
      * Get decimal configuration
      * @returns {{unit: {value: number, iterator: number}, total: {value: number, iterator: number}}}
@@ -97330,7 +101718,8 @@ var Helper = (function () {
      */
     Helper.getImageProvider = function (data, localData) {
         return Helper.mergeObjects(Helper.getDataBoxProvider(data), {
-            imageCropPopupModule: localData['imageCropPopupModule']
+            imageCropPopupModule: localData['imageCropPopupModule'],
+            imageCropPopupComponent: localData['imageCropPopupComponent']
         });
     };
     /**
@@ -97351,7 +101740,7 @@ var Helper = (function () {
             label: data.label || '',
             controls: {
                 expander: (data.controls && data.controls.expander),
-                resizable: (data.controls && data.controls.resizable),
+                legend: ((data['controls'] && data['controls']['legend']) ? data['controls']['legend'] : [])
             }
         });
     };
@@ -97366,12 +101755,26 @@ var Helper = (function () {
         });
     };
     /**
+     * Get Entity Detail Preview Provider
+     * @param data
+     * @returns any
+     */
+    Helper.getEntityDetailPreviewProvider = function (data) {
+        return Helper.mergeObjects(Helper.getBaseProvider(data), {
+            object: data['object'] || null,
+            fields: data['fields'] || null,
+            fieldsChoices: data['fieldsChoices'] || null,
+            dependencies: data['dependencies'] || null
+        });
+    };
+    /**
      * Get base provider
      * @param data
      * @returns any
      */
     Helper.getBaseProvider = function (data) {
         return {
+            localData: ((data.localData && data.localData.template) ? data.localData.template : {}),
             extraData: ((data.extraData && data.extraData.template) ? data.extraData.template : null)
         };
     };
@@ -97405,6 +101808,14 @@ var Helper = (function () {
         return (data.actions);
     };
     /**
+     * Get legend provider
+     * @param data
+     * @returns {any}
+     */
+    Helper.getLegendProvider = function (data) {
+        return ((data['controls'] && data['controls']['legend']) ? data['controls']['legend'] : []);
+    };
+    /**
      * Set global var
      * @param index
      * @param value
@@ -97433,13 +101844,41 @@ var Helper = (function () {
         return Helper.deleteVar(Helper.globalVar, index);
     };
     /**
-     * Get upload web path
-     * @param path
+     * Get column alignment.
+     * @param type
      * @returns string
      */
-    Helper.getUploadWebPath = function (path) {
+    Helper.getColAlign = function (type) {
+        switch (type) {
+            case 'number':
+            case 'percentage':
+            case 'monetary':
+            case 'date':
+            case 'datetime':
+                return 'txt-align-r';
+            case 'boolean':
+            case 'icon':
+            case 'img':
+            case 'status':
+                return 'txt-align-c';
+            default:
+                return 'txt-align-l';
+        }
+    };
+    /**
+     * Get upload web path
+     * @param path
+     * @param imageFormat (format of image to return)
+     * @returns string
+     */
+    Helper.getUploadWebPath = function (path, imageFormat) {
+        if (imageFormat === void 0) { imageFormat = null; }
         if (path && path.indexOf("/upload/")) {
-            return (path.substring(path.indexOf("/upload/"), path.length));
+            path = (path.substring(path.indexOf("/upload/"), path.length));
+        }
+        if (imageFormat) {
+            var firstPartialPath = path.substring(0, path.lastIndexOf(".")), lastPartialPath = path.substring(path.lastIndexOf("."), path.length);
+            return (firstPartialPath + '.' + imageFormat + lastPartialPath);
         }
         return path;
     };
@@ -97500,8 +101939,18 @@ var Helper = (function () {
         }
         return Helper;
     };
+    /**
+     * Get Status Map
+     * @returns any
+     */
+    Helper.getStatusMap = function () {
+        return { 'NO': 'danger', 'PARTIAL': 'warning', 'YES': 'primary' };
+    };
     // Object to use in angular modules at runtime to define global variables.
     Helper.globalVar = {};
+    // Controls the generation of a unique incremental number,
+    // to be used as unique identifier by any feature instance ensuring that there is no duplication.
+    Helper.uniqueIdCounter = 0;
     return Helper;
 }());
 
@@ -97516,7 +101965,8 @@ var Helper = (function () {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return NavManagerService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__dynamic_component_loader_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/dynamic-component-loader.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__post_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/post.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__post_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/post.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -97532,6 +101982,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 
 
 
+
 /**
  * Navigation manager.
  * Use this class to manage the navigation between multiple containers.
@@ -97543,8 +101994,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
  * NOTE: Prefix "ll" means "Lazy load"
  */
 var NavManagerService = (function () {
-    function NavManagerService(_helperService, _injector, _dynamicComponentLoaderService, _postService) {
+    function NavManagerService(_helperService, _tasksLoaderManagerService, _injector, _dynamicComponentLoaderService, _postService) {
         this._helperService = _helperService;
+        this._tasksLoaderManagerService = _tasksLoaderManagerService;
         this._injector = _injector;
         this._dynamicComponentLoaderService = _dynamicComponentLoaderService;
         this._postService = _postService;
@@ -97629,13 +102081,34 @@ var NavManagerService = (function () {
         if (hasSubmit === void 0) { hasSubmit = true; }
         var that = this;
         return new Promise(function (resolve, reject) {
+            // Only load module, if module is not yet loading (avoid task duplication)
+            if (!that._tasksLoaderManagerService.addTask('LOAD')) {
+                return reject(false);
+            }
             // Send current container to validation before load the other one
             if (that._component['submitNav'] && hasSubmit) {
                 return that._component.submitNav(that._currentIndex).then(function (data) {
-                    return that.loadNav(index).then(function (data) { return resolve(true); }, function (errors) { console.log(errors); return reject(false); });
-                }, function (errors) { return reject(false); });
+                    return that.loadNav(index).then(function (data) {
+                        that._tasksLoaderManagerService.delTask('LOAD');
+                        return resolve(true);
+                    }, function (errors) {
+                        console.log(errors);
+                        that._tasksLoaderManagerService.delTask('LOAD');
+                        return reject(false);
+                    });
+                }, function (errors) {
+                    that._tasksLoaderManagerService.delTask('LOAD');
+                    return reject(false);
+                });
             }
-            return that.loadNav(index).then(function (data) { return resolve(true); }, function (errors) { console.log(errors); return reject(false); });
+            return that.loadNav(index).then(function (data) {
+                that._tasksLoaderManagerService.delTask('LOAD');
+                return resolve(true);
+            }, function (errors) {
+                console.log(errors);
+                that._tasksLoaderManagerService.delTask('LOAD');
+                return reject(false);
+            });
         });
     };
     /**
@@ -97705,7 +102178,7 @@ var NavManagerService = (function () {
         if (providers) {
             injector = __WEBPACK_IMPORTED_MODULE_0__angular_core__["R" /* ReflectiveInjector */].fromResolvedProviders(__WEBPACK_IMPORTED_MODULE_0__angular_core__["R" /* ReflectiveInjector */].resolve(providers), 
             // Use in firs instance the injector of the component (is more refined)
-            (this._component['_injector'] || this._injector));
+            (lazyLoadData.injector || this._component['_injector'] || this._injector));
         }
         var that = this;
         return this._dynamicComponentLoaderService.load(lazyLoadData.module, lazyLoadData.component, viewContainerRef, injector).then(function (componentRef) {
@@ -97721,9 +102194,10 @@ var NavManagerService = (function () {
     NavManagerService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["x" /* Injectable */])(),
         __param(0, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
-        __metadata("design:paramtypes", [Object, __WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injector */],
+        __metadata("design:paramtypes", [Object, __WEBPACK_IMPORTED_MODULE_2__tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injector */],
             __WEBPACK_IMPORTED_MODULE_1__dynamic_component_loader_service__["a" /* DynamicComponentLoaderService */],
-            __WEBPACK_IMPORTED_MODULE_2__post_service__["a" /* PostService */]])
+            __WEBPACK_IMPORTED_MODULE_3__post_service__["a" /* PostService */]])
     ], NavManagerService);
     return NavManagerService;
 }());
@@ -97739,6 +102213,7 @@ var NavManagerService = (function () {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return PostService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__flash_message_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/flash-message.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -97750,10 +102225,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
+
 // Service
 var PostService = (function () {
-    function PostService(_flashMessageService) {
+    function PostService(_flashMessageService, _tasksLoaderManagerService) {
         this._flashMessageService = _flashMessageService;
+        this._tasksLoaderManagerService = _tasksLoaderManagerService;
     }
     /**
      * Post. Send data to server
@@ -97762,11 +102239,14 @@ var PostService = (function () {
      * @returns {Promise}
      */
     PostService.prototype.post = function (url, data) {
+        if (data === void 0) { data = null; }
+        this._tasksLoaderManagerService.addTask('POSTING_DATA');
         var that = this;
         return new Promise(function (resolve, reject) {
             return $.post(url, data, function (postResponse) {
                 // Unknown response, generally html responses (debug, exceptions, etc.)
                 if (!postResponse || (typeof postResponse !== 'object')) {
+                    that._tasksLoaderManagerService.delTask('POSTING_DATA');
                     that.handleFlashMessages({});
                     return reject({});
                 }
@@ -97776,21 +102256,18 @@ var PostService = (function () {
                 delete postResponse.status; // Is no more necessary
                 // Success
                 if (isSuccess) {
+                    that._tasksLoaderManagerService.delTask('POSTING_DATA');
                     return resolve(postResponse['data'] || null);
                 }
                 // Error
-                var errors = (postResponse['errors'] || {});
-                // Add data exception into errors
-                if (postResponse['data']) {
-                    if (postResponse['data']['localData']) {
-                        errors['localData'] = postResponse['data']['localData'];
-                    }
-                    if (postResponse['data']['object']) {
-                        errors['object'] = postResponse['data']['object'];
-                    }
-                }
+                var errors = {
+                    errors: (postResponse['errors'] || {}),
+                    data: (postResponse['data'] || {})
+                };
+                that._tasksLoaderManagerService.delTask('POSTING_DATA');
                 return reject(errors);
             }).fail(function (errors) {
+                that._tasksLoaderManagerService.delTask('POSTING_DATA');
                 that.handleFlashMessages({});
                 return reject({});
             });
@@ -97816,6 +102293,7 @@ var PostService = (function () {
     PostService.prototype.handleFlashMessages = function (postResponse) {
         // Request failed, no response has been returned.
         if (!('status' in postResponse)) {
+            console.log(postResponse);
             this._flashMessageService.message('Something went wrong, no response has been returned.', 'Unknown error', __WEBPACK_IMPORTED_MODULE_1__flash_message_service__["b" /* FlashMessageTypes */].error);
         }
         // Flash Messages
@@ -97830,7 +102308,8 @@ var PostService = (function () {
     };
     PostService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["x" /* Injectable */])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__flash_message_service__["a" /* FlashMessageService */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__flash_message_service__["a" /* FlashMessageService */],
+            __WEBPACK_IMPORTED_MODULE_2__tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */]])
     ], PostService);
     return PostService;
 }());

@@ -4,7 +4,7 @@ import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts
 import {Helper} from '../../../../../../../AppBundle/Resources/public/ts/helper';
 import {ModalService} from '../../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
 import {NavManagerService} from '../../../../../../../AppBundle/Resources/public/ts/nav-manager/nav-manager.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {TabsComponent, ITabs, LazyLoadData} from '../../../../../../../AppBundle/Resources/public/tabs/ts/src/tabs.component';
 
 // EntityGroupEntity
@@ -75,6 +75,7 @@ export class MainComponent extends TabsComponent implements ITabs
                 providers = [
                     FormService,
                     {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
+                    {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)},
                     {provide: 'AutoCompleteProviders', useValue: {
                         entityObj: {
                             urlConf: (Helper.getAppVar('route') + 'entities/entity/conf'),

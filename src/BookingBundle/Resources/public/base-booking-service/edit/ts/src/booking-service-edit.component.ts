@@ -1,10 +1,10 @@
 import {Component, ElementRef, Inject, Optional, Injector, ReflectiveInjector, Renderer, ViewChild, ViewContainerRef} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {Helper} from '../../../../../../../AppBundle/Resources/public/ts/helper';
-import {FormPopupExtensionComponent, FormProvider} from '../../../../../../../AppBundle/Resources/public/ts/form/form-popup.extension-component';
+import {FormPopupExtensionComponent, FormProvider} from '../../../../../../../AppBundle/Resources/public/form/ts/form-popup.extension-component';
 import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
 import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts/actions/actions.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {DynamicComponentLoaderService} from '../../../../../../../AppBundle/Resources/public/ts/dynamic-component-loader.service';
 import {PostService} from '../../../../../../../AppBundle/Resources/public/ts/post.service';
 

@@ -15,8 +15,8 @@
             'saveAndNew': 'fa-plus',
             'saveAndClose': 'fa-times'
         } %}
-        <div class="form-group">
-            <div class="col-sm-10 col-sm-offset-2">
+        <div class="row">
+            <div class="col-auto ml-auto">
                 {% for field in ['cancel', 'reset', 'save', 'close', 'saveAndEnter', 'saveAndNew', 'saveAndClose']
                     if form[field] is defined
                 %}

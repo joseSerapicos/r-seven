@@ -2,7 +2,7 @@ import {Component, ElementRef, Inject, Optional, Injector, Renderer} from '@angu
 import {FormBuilder} from '@angular/forms';
 import {PriceFormPopupComponent, FormProvider} from '../../../../../../../AppBundle/Resources/public/price/ts/src/price-form-popup.component';
 import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 
 
 @Component({

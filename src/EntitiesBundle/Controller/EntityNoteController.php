@@ -59,6 +59,9 @@ class EntityNoteController extends BaseEntityChildController
             )
         );
 
+        // Legend (disable cancel legend)
+        $this->templateConf['controls']['legend'] = array();
+
         // Extra data
         $this->templateConf['extraData']['template'] = array(
             'class' => '-merge-view'

@@ -1,18 +1,13 @@
 {% extends 'AppBundle::base.html.twig' %}
 
 {% block stylesheets %}
-    {% stylesheets filter="scssphp" output="assets/entities/entity/detail/css/all.css"
-        '@dropzone_css'
-        '@cropper_css'
-        '@AppBundle/Resources/public/scss/_gallery.scss'
-        '@AppBundle/Resources/public/css/image-crop.css'
-        '@AppBundle/Resources/public/css/wizard.css'
-        '@AppBundle/Resources/public/scss/note.scss'
-        '@AppBundle/Resources/public/css/video-player.css'
-        '@AppBundle/Resources/public/scss/select-box.scss'
-        '@videojs_css'
+    {% stylesheets output="assets/entities/entity/detail/css/local.css"
+    '@EntitiesBundle/Resources/public/entity/detail/scss/dist/styles.css'
+    '@dropzone_css'
+    '@cropper_css'
+    '@videojs_css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/blueimp-gallery/css/blueimp-gallery.min.css') }}" />
@@ -82,7 +77,7 @@
     {% endjavascripts %}
 {% endblock %}
 
-{%  block local_javascripts %}
+{%  block javascripts %}
     {% javascripts output="assets/entities/entity/detail/js/local.js"
         '@EntitiesBundle/Resources/public/entity/detail/ts/dist/inline.bundle.js'
         '@EntitiesBundle/Resources/public/entity/detail/ts/dist/polyfills.bundle.js'

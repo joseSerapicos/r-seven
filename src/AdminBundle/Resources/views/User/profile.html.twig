@@ -41,16 +41,16 @@
 {% block header %}{% endblock %}
 
 {% block stylesheets %}
-    {% stylesheets filter="scssphp" output="assets/admin/user/profile/css/local.css"
-        '@AppBundle/Resources/public/scss/select-box.scss'
+    {% stylesheets output="assets/admin/user/profile/css/local.css"
+    '@AdminBundle/Resources/public/user/profile/scss/dist/styles.css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 {% endblock %}
 
 {% block body %}{% endblock %}
 
-{% block local_javascripts %}
+{% block javascripts %}
     {% javascripts output="assets/admin/user/profile/js/local.js"
         '@AdminBundle/Resources/public/user/profile/ts/dist/inline.bundle.js'
         '@AdminBundle/Resources/public/user/profile/ts/dist/polyfills.bundle.js'

@@ -1,27 +1,30 @@
-<div (click)="_navManagerService.navToAction({{key}})"
-     class="panel panel-default">
-    <div class="panel-heading">
-        <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#accordion{{_id}}" href="#panel{{key}}{{_id}}">{{value.label}}</a>
-        </h4>
-        <div *ngIf="_navManagerService.getComponentRef({{key}}) && _navManagerService.getComponentRef({{key}}).instance._actionsService"
-             class="actions no-user-select txt-align-r valign-table-component valign-table-component-middle">
-            <ng-template [ngIf]="_navManagerService.getComponentRef({{key}}).instance._actionsService.getActionAttr('search', 'isEnabled')">
-                <js_search [injector]="_navManagerService.getComponentRef({{key}}).instance._injector || null" class="search"></js_search>
-            </ng-template>
-            <div (click)="_navManagerService.getComponentRef({{key}}).instance.triggerAction($event)">
-                <ng-template ngFor let-action [ngForOf]="_navManagerService.getComponentRef({{key}}).instance._actionsService.getHeadActions()">
-                    <a *ngIf="_navManagerService.getComponentRef({{key}}).instance._actionsService.getActionAttr(action, 'isEnabled')"
-                       [ngClass]="[_navManagerService.getComponentRef({{key}}).instance._actionsService.getActionAttr(action, 'icon')]"
-                       class="-round fa"
-                       [attr.data-action]="action"></a>
+<div class="card">
+    <div class="card-header"><div class="row align-items-center">
+            <h5 class="col mr-auto"
+                (click)="_navManagerService.navToAction({{key}})">{{value.label}}</h5>
+            {% block accordion_container_actions %}
+            <div *ngIf="_navManagerService.getComponentRef({{key}}) && _navManagerService.getComponentRef({{key}}).instance._actionsService"
+                 class="col-auto text-right actions no-user-select">
+                <ng-template [ngIf]="_navManagerService.getComponentRef({{key}}).instance._actionsService.getActionAttr('search', 'isEnabled')">
+                    <js_search [injector]="_navManagerService.getComponentRef({{key}}).instance._injector || null" class="search"></js_search>
                 </ng-template>
+                <div (click)="_navManagerService.getComponentRef({{key}}).instance.triggerAction($event)">
+                    <ng-template ngFor let-action [ngForOf]="_navManagerService.getComponentRef({{key}}).instance._actionsService.getHeadActions()">
+                        <a *ngIf="_navManagerService.getComponentRef({{key}}).instance._actionsService.getActionAttr(action, 'isEnabled')"
+                           [ngClass]="[_navManagerService.getComponentRef({{key}}).instance._actionsService.getActionAttr(action, 'icon')]"
+                           class="-round fa"
+                           [attr.data-action]="action"></a>
+                    </ng-template>
+                </div>
             </div>
-        </div>
-    </div>
-    <div id="panel{{key}}{{_id}}" class="panel-collapse collapse">
-        <div class="panel-body js_lazyLoadContainer_{{key}}">
+            {% endblock %}
+        </div></div>
+    {% block accordion_container_body %}
+    <div class="collapse"
+         [class.show]="{{key}} === _navManagerService.getIndex()">
+        <div class="card-body js_lazyLoadContainer_{{key}}">
             <ng-template #js_lazyLoadContainer></ng-template>
         </div>
     </div>
+    {% endblock %}
 </div>

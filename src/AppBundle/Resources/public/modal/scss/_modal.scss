@@ -10,6 +10,24 @@
     overflow-y: auto;
     z-index: 2050 !important;
     outline: 0;
+
+    .modal-dialog {
+        z-index: 2200;
+    }
+
+    .modal-content {
+        .modal-header {
+            display: block !important;
+        }
+
+        .modal-body {
+            padding: 20px 30px 30px 30px;
+        }
+
+        .modal-footer {
+            display: block !important;
+        }
+    }
 }
 
 .modal-backdrop {

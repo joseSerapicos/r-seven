@@ -1,0 +1,15 @@
+.popover {
+  z-index: 2051 !important;
+  display: none;
+
+  .arrow.arrow {
+    &-left {
+      left: 15px;
+    }
+
+    &-right {
+      right: 15px;
+      left: auto;
+    }
+  }
+}

@@ -112,6 +112,7 @@ export class CalendarComponent extends DataBoxComponent
         this._$calendar = $(this._elementRef.nativeElement).find('.js_calendarControl');
 
         this._$calendar.fullCalendar({
+            themeSystem: 'bootstrap4',
             header: {
                 left: 'prevYear prev,next nextYear today',
                 center: 'title',

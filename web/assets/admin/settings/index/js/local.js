@@ -91827,7 +91827,7 @@ var EditExtModule = (function () {
 /***/ "../../../../../src/AccountingBundle/Resources/public/client-document-type-setting/index/ts/templates/edit.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">    \n            \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_clientDocumentTypeObj\">Document Type</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n        <select id=\"form_clientDocumentTypeObj\" name=\"form[clientDocumentTypeObj]\" [(ngModel)]=\"_formService.getObject().clientDocumentTypeObj\" formControlName=\"clientDocumentTypeObj\" [class.error]=\"_formService.getErrors().clientDocumentTypeObj &amp;&amp; _formService.getErrors().clientDocumentTypeObj.length &gt; 0\" class=\"form-control\">            <option value=\"1\" >Fatura (1)</option>            <option value=\"2\" >Nota de Crédito (2)</option>            <option value=\"3\" >Nota de Débito (3)</option>            <option value=\"4\" >Recibo (4)</option>            <option value=\"5\" >Reembolso (5)</option>            <option value=\"6\" >Aviso de Liquidação (6)</option>            <option value=\"7\" >Recibo de Adiantamento (7)</option></select>\n    <input [(ngModel)]=\"_formService.getObject().clientDocumentTypeObj\"\n           formControlName = clientDocumentTypeObj\n           required=\"required\"           type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().clientDocumentTypeObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_storeObj\">Store</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n        <select id=\"form_storeObj\" name=\"form[storeObj]\" [(ngModel)]=\"_formService.getObject().storeObj\" formControlName=\"storeObj\" [class.error]=\"_formService.getErrors().storeObj &amp;&amp; _formService.getErrors().storeObj.length &gt; 0\" class=\"form-control\"><option value=\"\"></option>            <option value=\"1\" >Lisboa Store (1)</option>            <option value=\"2\" >Rio de Janeiro Store (2)</option>            <option value=\"4\" >Madrid Store (4)</option>            <option value=\"5\" >Luanda Store (5)</option></select>\n    <input [(ngModel)]=\"_formService.getObject().storeObj\"\n           formControlName = storeObj\n                      type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().storeObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_seriesPrefix\">Series Prefix</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_seriesPrefix\" name=\"form[seriesPrefix]\" maxlength=\"8\" [(ngModel)]=\"_formService.getObject().seriesPrefix\" formControlName=\"seriesPrefix\" [class.error]=\"_formService.getErrors().seriesPrefix &amp;&amp; _formService.getErrors().seriesPrefix.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().seriesPrefix\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_seriesNumber\">Series Number</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"number\" id=\"form_seriesNumber\" name=\"form[seriesNumber]\" required=\"required\" [(ngModel)]=\"_formService.getObject().seriesNumber\" formControlName=\"seriesNumber\" [class.error]=\"_formService.getErrors().seriesNumber &amp;&amp; _formService.getErrors().seriesNumber.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().seriesNumber\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
+module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">    \n            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_clientDocumentTypeObj\">Document Type</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n        <select id=\"form_clientDocumentTypeObj\" name=\"form[clientDocumentTypeObj]\" [(ngModel)]=\"_formService.getObject().clientDocumentTypeObj\" formControlName=\"clientDocumentTypeObj\" [class.error]=\"_formService.getErrors().clientDocumentTypeObj &amp;&amp; _formService.getErrors().clientDocumentTypeObj.length &gt; 0\" class=\"form-control\">            <option value=\"1\" >Fatura (1)</option>            <option value=\"2\" >Nota de Crédito (2)</option>            <option value=\"3\" >Nota de Débito (3)</option>            <option value=\"4\" >Recibo (4)</option>            <option value=\"5\" >Reembolso (5)</option>            <option value=\"6\" >Aviso de Liquidação (6)</option>            <option value=\"7\" >Recibo de Adiantamento (7)</option></select>\n    <input [(ngModel)]=\"_formService.getObject().clientDocumentTypeObj\"\n           formControlName = clientDocumentTypeObj\n           required=\"required\"           type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().clientDocumentTypeObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_storeObj\">Store</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n        <select id=\"form_storeObj\" name=\"form[storeObj]\" [(ngModel)]=\"_formService.getObject().storeObj\" formControlName=\"storeObj\" [class.error]=\"_formService.getErrors().storeObj &amp;&amp; _formService.getErrors().storeObj.length &gt; 0\" class=\"form-control\"><option value=\"\"></option>            <option value=\"1\" >Lisboa Store (1)</option>            <option value=\"2\" >Rio de Janeiro Store (2)</option>            <option value=\"4\" >Madrid Store (4)</option>            <option value=\"5\" >Luanda Store (5)</option></select>\n    <input [(ngModel)]=\"_formService.getObject().storeObj\"\n           formControlName = storeObj\n                      type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().storeObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_seriesPrefix\">Series Prefix</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_seriesPrefix\" name=\"form[seriesPrefix]\" maxlength=\"8\" [(ngModel)]=\"_formService.getObject().seriesPrefix\" formControlName=\"seriesPrefix\" [class.error]=\"_formService.getErrors().seriesPrefix &amp;&amp; _formService.getErrors().seriesPrefix.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().seriesPrefix\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_seriesNumber\">Series Number</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"number\" id=\"form_seriesNumber\" name=\"form[seriesNumber]\" required=\"required\" [(ngModel)]=\"_formService.getObject().seriesNumber\" formControlName=\"seriesNumber\" [class.error]=\"_formService.getErrors().seriesNumber &amp;&amp; _formService.getErrors().seriesNumber.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().seriesNumber\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_footer\">Footer</label>\n    \n            <div class=\"col-sm-10\">\n                                            <textarea id=\"form_footer\" name=\"form[footer]\" rows=\"3\" [(ngModel)]=\"_formService.getObject().footer\" formControlName=\"footer\" [class.error]=\"_formService.getErrors().footer &amp;&amp; _formService.getErrors().footer.length &gt; 0\" class=\"form-control\"></textarea>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().footer\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Enabled</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"y_X653isBIPUjhTqIFoEMS38F6y1pjJHhEkNvonaMMU\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
 
 /***/ }),
 
@@ -91933,7 +91933,7 @@ var EditExtModule = (function () {
 /***/ "../../../../../src/AccountingBundle/Resources/public/supplier-document-type-setting/index/ts/templates/edit.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">    \n            \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_supplierDocumentTypeObj\">Document Type</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n        <select id=\"form_supplierDocumentTypeObj\" name=\"form[supplierDocumentTypeObj]\" [(ngModel)]=\"_formService.getObject().supplierDocumentTypeObj\" formControlName=\"supplierDocumentTypeObj\" [class.error]=\"_formService.getErrors().supplierDocumentTypeObj &amp;&amp; _formService.getErrors().supplierDocumentTypeObj.length &gt; 0\" class=\"form-control\">            <option value=\"1\" >Fatura de Fornecedor (1)</option>            <option value=\"2\" >Nota de Crédito de Fornecedor (2)</option>            <option value=\"3\" >Nota de Débito de Fornecedor (3)</option>            <option value=\"4\" >Fatura ao Fornecedor (4)</option>            <option value=\"5\" >Nota de Débito ao Fornecedor (5)</option>            <option value=\"6\" >Pagamento ao Fornecedor (6)</option>            <option value=\"7\" >Reembolso do Fornecedor (7)</option>            <option value=\"8\" >Adiantamento ao Fornecedor (8)</option>            <option value=\"9\" >Aviso de Liquidação ao Fornecedor (9)</option></select>\n    <input [(ngModel)]=\"_formService.getObject().supplierDocumentTypeObj\"\n           formControlName = supplierDocumentTypeObj\n           required=\"required\"           type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().supplierDocumentTypeObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_storeObj\">Store</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n        <select id=\"form_storeObj\" name=\"form[storeObj]\" [(ngModel)]=\"_formService.getObject().storeObj\" formControlName=\"storeObj\" [class.error]=\"_formService.getErrors().storeObj &amp;&amp; _formService.getErrors().storeObj.length &gt; 0\" class=\"form-control\"><option value=\"\"></option>            <option value=\"1\" >Lisboa Store (1)</option>            <option value=\"2\" >Rio de Janeiro Store (2)</option>            <option value=\"4\" >Madrid Store (4)</option>            <option value=\"5\" >Luanda Store (5)</option></select>\n    <input [(ngModel)]=\"_formService.getObject().storeObj\"\n           formControlName = storeObj\n                      type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().storeObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_seriesPrefix\">Series Prefix</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_seriesPrefix\" name=\"form[seriesPrefix]\" maxlength=\"8\" [(ngModel)]=\"_formService.getObject().seriesPrefix\" formControlName=\"seriesPrefix\" [class.error]=\"_formService.getErrors().seriesPrefix &amp;&amp; _formService.getErrors().seriesPrefix.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().seriesPrefix\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_seriesNumber\">Series Number</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"number\" id=\"form_seriesNumber\" name=\"form[seriesNumber]\" required=\"required\" [(ngModel)]=\"_formService.getObject().seriesNumber\" formControlName=\"seriesNumber\" [class.error]=\"_formService.getErrors().seriesNumber &amp;&amp; _formService.getErrors().seriesNumber.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().seriesNumber\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
+module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">    \n            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_supplierDocumentTypeObj\">Document Type</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n        <select id=\"form_supplierDocumentTypeObj\" name=\"form[supplierDocumentTypeObj]\" [(ngModel)]=\"_formService.getObject().supplierDocumentTypeObj\" formControlName=\"supplierDocumentTypeObj\" [class.error]=\"_formService.getErrors().supplierDocumentTypeObj &amp;&amp; _formService.getErrors().supplierDocumentTypeObj.length &gt; 0\" class=\"form-control\">            <option value=\"1\" >Fatura de Fornecedor (1)</option>            <option value=\"2\" >Nota de Crédito de Fornecedor (2)</option>            <option value=\"3\" >Nota de Débito de Fornecedor (3)</option>            <option value=\"4\" >Fatura ao Fornecedor (4)</option>            <option value=\"5\" >Nota de Débito ao Fornecedor (5)</option>            <option value=\"6\" >Pagamento ao Fornecedor (6)</option>            <option value=\"7\" >Reembolso do Fornecedor (7)</option>            <option value=\"8\" >Adiantamento ao Fornecedor (8)</option>            <option value=\"9\" >Aviso de Liquidação ao Fornecedor (9)</option></select>\n    <input [(ngModel)]=\"_formService.getObject().supplierDocumentTypeObj\"\n           formControlName = supplierDocumentTypeObj\n           required=\"required\"           type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().supplierDocumentTypeObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_storeObj\">Store</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n        <select id=\"form_storeObj\" name=\"form[storeObj]\" [(ngModel)]=\"_formService.getObject().storeObj\" formControlName=\"storeObj\" [class.error]=\"_formService.getErrors().storeObj &amp;&amp; _formService.getErrors().storeObj.length &gt; 0\" class=\"form-control\"><option value=\"\"></option>            <option value=\"1\" >Lisboa Store (1)</option>            <option value=\"2\" >Rio de Janeiro Store (2)</option>            <option value=\"4\" >Madrid Store (4)</option>            <option value=\"5\" >Luanda Store (5)</option></select>\n    <input [(ngModel)]=\"_formService.getObject().storeObj\"\n           formControlName = storeObj\n                      type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().storeObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_seriesPrefix\">Series Prefix</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_seriesPrefix\" name=\"form[seriesPrefix]\" maxlength=\"8\" [(ngModel)]=\"_formService.getObject().seriesPrefix\" formControlName=\"seriesPrefix\" [class.error]=\"_formService.getErrors().seriesPrefix &amp;&amp; _formService.getErrors().seriesPrefix.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().seriesPrefix\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_seriesNumber\">Series Number</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"number\" id=\"form_seriesNumber\" name=\"form[seriesNumber]\" required=\"required\" [(ngModel)]=\"_formService.getObject().seriesNumber\" formControlName=\"seriesNumber\" [class.error]=\"_formService.getErrors().seriesNumber &amp;&amp; _formService.getErrors().seriesNumber.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().seriesNumber\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_footer\">Footer</label>\n    \n            <div class=\"col-sm-10\">\n                                            <textarea id=\"form_footer\" name=\"form[footer]\" rows=\"3\" [(ngModel)]=\"_formService.getObject().footer\" formControlName=\"footer\" [class.error]=\"_formService.getErrors().footer &amp;&amp; _formService.getErrors().footer.length &gt; 0\" class=\"form-control\"></textarea>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().footer\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Enabled</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"y_X653isBIPUjhTqIFoEMS38F6y1pjJHhEkNvonaMMU\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
 
 /***/ }),
 
@@ -92040,7 +92040,8 @@ var DocumentTypesSettingsComponent = (function (_super) {
             __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_actions_actions_service__["a" /* ActionsService */],
             { provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data) },
             { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
-            { provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data) }
+            { provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data) },
+            { provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data) }
         ];
         switch (index) {
             case 0:
@@ -92215,7 +92216,8 @@ var EntitiesSettingsComponent = (function (_super) {
             __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_actions_actions_service__["a" /* ActionsService */],
             { provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data) },
             { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
-            { provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data) }
+            { provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data) },
+            { provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data) }
         ];
         switch (index) {
             case 0:
@@ -92412,6 +92414,7 @@ var MainComponent = (function (_super) {
                     { provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data) },
                     { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
                     { provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data) },
+                    { provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data) },
                     { provide: 'Popups', useValue: {
                             module: __WEBPACK_IMPORTED_MODULE_9__BookingBundle_Resources_public_booking_setting_index_ts_src_edit_ext_module__["a" /* EditExtModule */],
                             component: 'EditComponent',
@@ -92558,14 +92561,14 @@ Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* pl
 /***/ "../../../../../src/AdminBundle/Resources/public/settings/index/ts/templates/document-types-settings.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "        <div class=\"accordion\">\n        <div class=\"panel-group\" id=\"accordion-doc-types\">\n                                                <div (click)=\"_navManagerService.navToAction(0)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion-doc-types\" href=\"#panel0-doc-types\">Client Document Types</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(0) && _navManagerService.getComponentRef(0).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(0).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(0).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(0).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel0-doc-types\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_0\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                    <div (click)=\"_navManagerService.navToAction(1)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion-doc-types\" href=\"#panel1-doc-types\">Supplier Document Types</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(1) && _navManagerService.getComponentRef(1).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(1).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(1).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(1).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel1-doc-types\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_1\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                    </div>\n    </div>\n"
+module.exports = "<div class=\"accordion\">\n    <div class=\"panel-group\" id=\"accordion-doc-types\">\n                                                        <div (click)=\"_navManagerService.navToAction(0)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion-doc-types\" href=\"#panel0-doc-types\">Client Document Types</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(0) && _navManagerService.getComponentRef(0).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(0).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(0).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(0).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel0-doc-types\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_0\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                    <div (click)=\"_navManagerService.navToAction(1)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion-doc-types\" href=\"#panel1-doc-types\">Supplier Document Types</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(1) && _navManagerService.getComponentRef(1).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(1).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(1).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(1).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel1-doc-types\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_1\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                        </div>\n</div>"
 
 /***/ }),
 
 /***/ "../../../../../src/AdminBundle/Resources/public/settings/index/ts/templates/entities-settings.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "        <div class=\"accordion\">\n        <div class=\"panel-group\" id=\"accordion-entities\">\n                                                <div (click)=\"_navManagerService.navToAction(0)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion-entities\" href=\"#panel0-entities\">Client Series</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(0) && _navManagerService.getComponentRef(0).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(0).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(0).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(0).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel0-entities\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_0\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                    <div (click)=\"_navManagerService.navToAction(1)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion-entities\" href=\"#panel1-entities\">Supplier Series</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(1) && _navManagerService.getComponentRef(1).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(1).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(1).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(1).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel1-entities\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_1\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                    <div (click)=\"_navManagerService.navToAction(2)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion-entities\" href=\"#panel2-entities\">Entity Series</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(2) && _navManagerService.getComponentRef(2).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(2).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(2).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(2).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(2).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(2).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(2).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel2-entities\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_2\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                    </div>\n    </div>\n"
+module.exports = "<div class=\"accordion\">\n    <div class=\"panel-group\" id=\"accordion-entities\">\n                                                        <div (click)=\"_navManagerService.navToAction(0)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion-entities\" href=\"#panel0-entities\">Client Series</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(0) && _navManagerService.getComponentRef(0).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(0).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(0).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(0).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(0).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel0-entities\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_0\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                    <div (click)=\"_navManagerService.navToAction(1)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion-entities\" href=\"#panel1-entities\">Supplier Series</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(1) && _navManagerService.getComponentRef(1).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(1).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(1).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(1).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(1).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel1-entities\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_1\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                    <div (click)=\"_navManagerService.navToAction(2)\"\n     class=\"panel panel-default\">\n    <div class=\"panel-heading\">\n        <h4 class=\"panel-title\">\n            <a data-toggle=\"collapse\" data-parent=\"#accordion-entities\" href=\"#panel2-entities\">Entity Series</a>\n        </h4>\n        <div *ngIf=\"_navManagerService.getComponentRef(2) && _navManagerService.getComponentRef(2).instance._actionsService\"\n             class=\"actions no-user-select txt-align-r valign-table-component valign-table-component-middle\">\n            <ng-template [ngIf]=\"_navManagerService.getComponentRef(2).instance._actionsService.getActionAttr('search', 'isEnabled')\">\n                <js_search [injector]=\"_navManagerService.getComponentRef(2).instance._injector || null\" class=\"search\"></js_search>\n            </ng-template>\n            <div (click)=\"_navManagerService.getComponentRef(2).instance.triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_navManagerService.getComponentRef(2).instance._actionsService.getHeadActions()\">\n                    <a *ngIf=\"_navManagerService.getComponentRef(2).instance._actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_navManagerService.getComponentRef(2).instance._actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n    <div id=\"panel2-entities\" class=\"panel-collapse collapse\">\n        <div class=\"panel-body js_lazyLoadContainer_2\">\n            <ng-template #js_lazyLoadContainer></ng-template>\n        </div>\n    </div>\n</div>                                        </div>\n</div>"
 
 /***/ }),
 
@@ -92778,11 +92781,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 // Component
 var DataBoxComponent = (function (_super) {
     __extends(DataBoxComponent, _super);
-    function DataBoxComponent(viewContainerRef, renderer, provider, dataService, tasksLoaderManagerService, actionsService, modalService, popups, injector) {
+    function DataBoxComponent(viewContainerRef, renderer, provider, dataService, tasksLoaderManagerService, helperService, actionsService, modalService, popups, injector) {
         var _this = 
         // Call parent
         _super.call(this) || this;
-        _super.prototype.initDataBoxExtensionComponent.call(_this, viewContainerRef, renderer, provider, dataService, tasksLoaderManagerService, actionsService, modalService, popups, injector);
+        _super.prototype.initDataBoxExtensionComponent.call(_this, viewContainerRef, renderer, provider, dataService, tasksLoaderManagerService, helperService, actionsService, modalService, popups, injector);
         return _this;
     }
     DataBoxComponent = __decorate([
@@ -92792,10 +92795,10 @@ var DataBoxComponent = (function (_super) {
         }),
         __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('Provider')),
         __param(3, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('DataService')),
-        __param(7, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('Popups')),
+        __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
+        __param(8, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('Popups')),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["_7" /* ViewContainerRef */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */],
-            __WEBPACK_IMPORTED_MODULE_3__ts_actions_actions_service__["a" /* ActionsService */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["S" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object, __WEBPACK_IMPORTED_MODULE_3__ts_actions_actions_service__["a" /* ActionsService */],
             __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["a" /* ModalService */], Object, __WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injector */]])
     ], DataBoxComponent);
     return DataBoxComponent;
@@ -92862,7 +92865,7 @@ var DataBoxExtensionComponent = (function (_super) {
      * @param injector
      */
     DataBoxExtensionComponent.prototype.initDataBoxExtensionComponent = function (viewContainerRef, renderer, provider, dataService, // Any is used, otherwise you get an error "[Class] is not defined"
-        tasksLoaderManagerService, actionsService, modalService, 
+        tasksLoaderManagerService, helperService, actionsService, modalService, 
         // You can provide a popup by action:
         // provide('Popups', {useValue: {
         //     add: Popup,
@@ -92879,6 +92882,7 @@ var DataBoxExtensionComponent = (function (_super) {
         this._viewContainerRef = viewContainerRef;
         this._dataService = dataService;
         this._tasksLoaderManagerService = tasksLoaderManagerService;
+        this._helperService = helperService;
         this._actionsService = actionsService;
         this._modalService = modalService;
         this._popups = popups;
@@ -92891,6 +92895,8 @@ var DataBoxExtensionComponent = (function (_super) {
      * @returns {any}
      */
     DataBoxExtensionComponent.prototype.getColAlign = function (field) {
+        // @TODO call helperservice
+        // return this.helperService.getColAlign(this._dataService.getFields('metadata')[field]['type']);
         switch (this._dataService.getFields('metadata')[field].type) {
             case 'number':
             case 'percentage':
@@ -92906,6 +92912,38 @@ var DataBoxExtensionComponent = (function (_super) {
             default:
                 return 'txt-align-l';
         }
+    };
+    /**
+     * Get legend classes
+     * @param object
+     * @returns {string}
+     */
+    DataBoxExtensionComponent.prototype.getLegendClasses = function (object) {
+        var legend = this._provider['controls']['legend'], hasClass;
+        if (!object || !legend) {
+            return '';
+        }
+        for (var _i = 0, legend_1 = legend; _i < legend_1.length; _i++) {
+            var legendControl = legend_1[_i];
+            hasClass = false;
+            var field = legendControl['field'], expr = (legendControl['expr'] || 'notNull'), isExprNotNull = (expr == 'notNull'), 
+            // Check in original field first if defined
+            fieldValue = ((object['__' + field] !== undefined) ? object['__' + field] : object[field]);
+            // Normalize value
+            if (this._dataService.getFields('metadata')[field]) {
+                switch (this._dataService.getFields('metadata')[field].type) {
+                    case 'boolean':
+                        fieldValue = this._helperService.castToBoolean(fieldValue);
+                        break;
+                }
+            }
+            if ((fieldValue && isExprNotNull) || (!fieldValue && !isExprNotNull)) {
+                // Apply only the class of the first legend to avoid override of classes,
+                // "Cancel" legend class should be priority and never override
+                return legendControl['class'];
+            }
+        }
+        return '';
     };
     /**
      * Trigger action
@@ -92988,12 +93026,12 @@ var DataBoxExtensionComponent = (function (_super) {
         if ($event) {
             $event.preventDefault();
         }
-        var that = this;
+        var that = this, object = this._dataService.getObject(data);
         // Dialog message
         this._modalService.dialog('Are you sure to cancel/enable?').then(function (hasConfirm) {
             if (hasConfirm) {
                 that._dataService.cancel(data).then(function (data) {
-                    that.postCancelObject();
+                    that.postCancelObject(object);
                     return;
                 }, function (errors) { return; });
             }
@@ -93013,12 +93051,12 @@ var DataBoxExtensionComponent = (function (_super) {
         if ($event) {
             $event.preventDefault();
         }
-        var that = this;
+        var that = this, object = this._dataService.getObject(data);
         // Dialog message
         this._modalService.dialog('Are you sure to remove?').then(function (hasConfirm) {
             if (hasConfirm) {
                 that._dataService.delete(data).then(function (data) {
-                    that.postDeleteObject();
+                    that.postDeleteObject(object);
                     return;
                 }, function (errors) { return; });
             }
@@ -93143,16 +93181,18 @@ var DataBoxExtensionComponent = (function (_super) {
     ////////////////////////////////
     /**
      * Post (after) cancel object event. Use this function to handle event.
-     * @return any
+     * @param object
+     * @returns {DataBoxExtensionComponent}
      */
-    DataBoxExtensionComponent.prototype.postCancelObject = function () {
+    DataBoxExtensionComponent.prototype.postCancelObject = function (object) {
         return this;
     };
     /**
      * Post (after) delete object event. Use this function to handle event.
+     * @param object
      * @return any
      */
-    DataBoxExtensionComponent.prototype.postDeleteObject = function () {
+    DataBoxExtensionComponent.prototype.postDeleteObject = function (object) {
         return this;
     };
     DataBoxExtensionComponent = __decorate([
@@ -93180,7 +93220,8 @@ var DataBoxExtensionComponent = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ts_search_search_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/search/search.module.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ts_expander_expander_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/expander/expander.module.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ts_search_search_pagination_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/search/search-pagination.module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__data_box_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__legend_ts_src_legend_ext_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/legend/ts/src/legend.ext-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__data_box_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -93191,6 +93232,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 // This module doesn't use "ReactiveFormsModule", but it needs to import this class
 // to provide "formBuilder" when inject dependencies in child modules (like form)
+
 
 
 
@@ -93207,12 +93249,13 @@ var DataBoxExtensionModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* ReactiveFormsModule */],
                 __WEBPACK_IMPORTED_MODULE_3__ts_search_search_module__["a" /* SearchModule */],
                 __WEBPACK_IMPORTED_MODULE_5__ts_search_search_pagination_module__["a" /* SearchPaginationModule */],
-                __WEBPACK_IMPORTED_MODULE_4__ts_expander_expander_module__["a" /* ExpanderModule */]
+                __WEBPACK_IMPORTED_MODULE_4__ts_expander_expander_module__["a" /* ExpanderModule */],
+                __WEBPACK_IMPORTED_MODULE_6__legend_ts_src_legend_ext_module__["a" /* LegendExtModule */]
             ],
             declarations: [
-                __WEBPACK_IMPORTED_MODULE_6__data_box_component__["a" /* DataBoxComponent */]
+                __WEBPACK_IMPORTED_MODULE_7__data_box_component__["a" /* DataBoxComponent */]
             ],
-            exports: [__WEBPACK_IMPORTED_MODULE_6__data_box_component__["a" /* DataBoxComponent */]]
+            exports: [__WEBPACK_IMPORTED_MODULE_7__data_box_component__["a" /* DataBoxComponent */]]
         })
     ], DataBoxExtensionModule);
     return DataBoxExtensionModule;
@@ -93225,7 +93268,82 @@ var DataBoxExtensionModule = (function () {
 /***/ "../../../../../src/AppBundle/Resources/public/data-box/ts/templates/data-box.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "\n<div class=\"ibox\">\n            <div class=\"ibox-title\" *ngIf=\"!getProviderExtraDataAttr('hasMergeHeader')\">\n            <h5>\n                <ng-template [ngIf]=\"getProviderAttr('controls')['expander']\"><js_expander\n                    [isExpanded]=\"_isExpanded || null\"\n                    [label]=\"getProviderAttr('label')\"\n                    (onChange)=\"expanderAction($event)\"></js_expander></ng-template>\n                <ng-template [ngIf]=\"!getProviderAttr('controls')['expander']\">\n                    <span [innerHTML]=\"getProviderAttr('label')\"></span>\n                </ng-template>\n            </h5>\n            <div *ngIf=\"_isExpanded\"\n                 class=\"txt-align-r hide-on-empty\">    <div class=\"actions no-user-select\">\n        <ng-template [ngIf]=\"_actionsService.getActionAttr('search', 'isEnabled')\"><js_search class=\"search\"></js_search></ng-template>\n        <div (click)=\"triggerAction($event)\">\n            <ng-template ngFor let-action [ngForOf]=\"_actionsService.getHeadActions()\">\n                <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                   [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                   class=\"-round fa\"\n                   [attr.data-action]=\"action\"></a>\n            </ng-template>\n        </div>\n    </div>\n</div>\n        </div>\n    \n    <div [hidden]=\"!(_isExpanded)\" class=\"ibox-content hide-on-empty\">    <ng-template [ngIf]=\"(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">\n        <div class=\"table-responsive\">\n        <form>\n            <table class=\"data-table table table-striped table-bordered table-hover dataTables-example\">\n                <thead>\n                <tr>\n                    <th *ngFor=\"let searchField of _dataService.getSearch('fields')\">{{ _dataService.getFields('metadata')[searchField].label }}</th>\n                    <th>&nbsp;</th>\n                </tr>\n                </thead>\n                <tbody>\n                <ng-template ngFor let-obj [ngForOf]=\"_dataService.getProviderAttr('objects')\" let-objIndex=\"index\"><tr\n                          (dblclick)=\"editAction($event, objIndex)\"\n                          [class.disabled]=\"obj.hasOwnProperty('isEnabled') && (obj.isEnabled.search('fa-ban') > 0)\">\n                    <td *ngFor=\"let searchField of _dataService.getSearch('fields')\"\n                        [ngClass]=\"getColAlign(searchField)\"\n                        [innerHTML]=\"obj[searchField]\"></td>\n                    <td>\n                        <span *ngIf=\"obj['_isNew']\" class=\"badge badge-info\">New</span>\n                        <span *ngIf=\"obj['_isEdited']\" class=\"badge badge-info\">Edited</span>\n                        <input *ngIf=\"_actionsService.getActionAttr('radioChoice', 'isEnabled')\"\n                               class=\"pull-right action\"\n                               type=\"radio\"\n                               name=\"index[]\"\n                               value=\"{{objIndex}}\"/>\n                        <input *ngIf=\"_actionsService.getActionAttr('checkAll', 'isEnabled')\"\n                               class=\"pull-right action js_checkAll\"\n                               type=\"checkbox\"\n                               name=\"index[]\"\n                               value=\"{{objIndex}}\"\n                               [ngModel]=\"checkAll\"/>\n                        <div class=\"pull-right actions no-user-select\" (click)=\"triggerAction($event)\">\n                            <ng-template ngFor let-action [ngForOf]=\"_actionsService.getDetailActions()\">\n                                <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                                   [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                                   class=\"fa\"\n                                   [attr.data-action]=\"action\"\n                                   [attr.data-value]=\"objIndex\"></a>\n                            </ng-template>\n                        </div>\n                    </td>\n                </tr></ng-template>\n                </tbody>\n            </table>\n        </form>\n    </div>\n    </ng-template><p\n        class=\"text-center\"\n        *ngIf=\"!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">No results.</p>\n</div>\n        <div class=\"ibox-footer\"\n         *ngIf=\"_dataService.countObjects() > 0\"><js_searchPagination></js_searchPagination></div>\n\n</div>\n\n"
+module.exports = "\n\n<div class=\"ibox\" >\n                        <div class=\"ibox-title\" *ngIf=\"!getProviderExtraDataAttr('hasMergeHeader')\">\n                <h5>\n                    <ng-template [ngIf]=\"getProviderAttr('controls')['expander']\"><js_expander\n                        [isExpanded]=\"_isExpanded || null\"\n                        [label]=\"getProviderAttr('label')\"\n                        (onChange)=\"expanderAction($event)\"></js_expander></ng-template>\n                    <ng-template [ngIf]=\"!getProviderAttr('controls')['expander']\">\n                        <span [innerHTML]=\"getProviderAttr('label')\"></span>\n                    </ng-template>\n                </h5>\n                <div *ngIf=\"_isExpanded\"\n                     class=\"txt-align-r hide-on-empty\">    <div class=\"actions no-user-select\">\n        <ng-template [ngIf]=\"_actionsService.getActionAttr('search', 'isEnabled')\"><js_search class=\"search\"></js_search></ng-template>\n        <div (click)=\"triggerAction($event)\">\n            <ng-template ngFor let-action [ngForOf]=\"_actionsService.getHeadActions()\">\n                <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                   [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                   class=\"-round fa\"\n                   [attr.data-action]=\"action\"></a>\n            </ng-template>\n        </div>\n    </div>\n</div>\n            </div>\n            \n    <div [hidden]=\"!(_isExpanded)\" class=\"ibox-content hide-on-empty\">    <ng-template [ngIf]=\"(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">\n        <div class=\"table-responsive\">\n        <form>        <table class=\"data-table table table-striped table-hover dataTables-example table-bordered\">\n            <thead>\n            <tr>\n                <th *ngFor=\"let searchField of _dataService.getSearch('fields')\">{{ _dataService.getFields('metadata')[searchField].label }}</th>\n                <th>&nbsp;</th>\n            </tr>\n            </thead>            <tbody>\n            <ng-template ngFor let-obj [ngForOf]=\"_dataService.getProviderAttr('objects')\" let-objIndex=\"index\">\n            <tr (dblclick)=\"editAction($event, objIndex)\"                [ngClass]=\"getLegendClasses(obj)\">\n                                    <td *ngFor=\"let searchField of _dataService.getSearch('fields')\"\n                        [ngClass]=\"getColAlign(searchField)\"\n                        [innerHTML]=\"obj[searchField]\"></td>\n                                <td>\n                    <span *ngIf=\"obj['_isNew']\" class=\"badge badge-info\">New</span>\n                    <span *ngIf=\"obj['_isEdited']\" class=\"badge badge-info\">Edited</span>\n                    <input *ngIf=\"_actionsService.getActionAttr('radioChoice', 'isEnabled')\"\n                           class=\"pull-right action\"\n                           type=\"radio\"\n                           name=\"index[]\"\n                           value=\"{{objIndex}}\"/>\n                    <input *ngIf=\"_actionsService.getActionAttr('checkAll', 'isEnabled')\"\n                           class=\"pull-right action js_checkAll\"\n                           type=\"checkbox\"\n                           name=\"index[]\"\n                           value=\"{{objIndex}}\"\n                           [ngModel]=\"checkAll\"/>\n                    <div class=\"pull-right actions no-user-select\" (click)=\"triggerAction($event)\">\n                        <ng-template ngFor let-action [ngForOf]=\"_actionsService.getDetailActions()\">\n                            <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                               [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                               class=\"fa\"\n                               [attr.data-action]=\"action\"\n                               [attr.data-value]=\"objIndex\"></a>\n                        </ng-template>\n                    </div>\n                </td>            </tr>\n            </ng-template>\n            </tbody>\n        </table>\n        </form>    </div>\n    </ng-template><p\n        class=\"text-center\"\n        *ngIf=\"!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">No results.</p>\n</div>\n        <div class=\"ibox-footer\"\n         *ngIf=\"_dataService.countObjects() > 0\"><js_searchPagination></js_searchPagination></div>\n\n</div>\n\n<js_legend></js_legend>"
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/legend/ts/src/legend.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LegendComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+// Component
+var LegendComponent = (function () {
+    function LegendComponent(_provider) {
+        this._provider = _provider;
+    }
+    LegendComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'js_legend',
+            template: "\n    <dl *ngIf=\"_provider.length > 0\" class=\"legend\">\n        <ng-template ngFor let-legend [ngForOf]=\"_provider\" let-i=\"index\">\n          <div class=\"dsp-inline-block nowrap\"><dt [ngClass]=\"legend['class']\"></dt><dd>{{legend['label']}}</dd></div>\n        </ng-template>\n    </dl>\n    "
+        }),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('LegendProvider')),
+        __metadata("design:paramtypes", [Object])
+    ], LegendComponent);
+    return LegendComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/legend/ts/src/legend.ext-module.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LegendExtModule; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__legend_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/legend/ts/src/legend.component.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+var LegendExtModule = (function () {
+    function LegendExtModule() {
+    }
+    LegendExtModule = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["F" /* NgModule */])({
+            imports: [__WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */]],
+            declarations: [
+                __WEBPACK_IMPORTED_MODULE_2__legend_component__["a" /* LegendComponent */]
+            ],
+            exports: [__WEBPACK_IMPORTED_MODULE_2__legend_component__["a" /* LegendComponent */]]
+        })
+    ], LegendExtModule);
+    return LegendExtModule;
+}());
+
+
 
 /***/ }),
 
@@ -94056,6 +94174,14 @@ var ActionsService = (function () {
             icon: 'fa-copy',
             isEnabled: false
         };
+        this.email = {
+            icon: 'fa-envelope-o',
+            isEnabled: false
+        };
+        this.pdf = {
+            icon: 'fa-file-pdf-o',
+            isEnabled: false
+        };
         this.thumbnail = {
             icon: 'fa-picture-o',
             isEnabled: false
@@ -94107,8 +94233,11 @@ var ActionsService = (function () {
             icon: 'fa-angle-double-down',
             isEnabled: false
         };
-        this._headActions = ['refresh', 'deleteAll', 'add', 'checkAll']; // Default actions for massive objects
-        this._detailActions = ['orderUp', 'orderDown', 'detail', 'thumbnail', 'avatar', 'cancel', 'delete', 'copy', 'edit']; // Default actions for single object
+        // Default actions for massive objects
+        this._headActions = ['refresh', 'deleteAll', 'add', 'checkAll'];
+        // Default actions for single object
+        this._detailActions = ['orderUp', 'orderDown', 'detail', 'email', 'pdf', 'thumbnail', 'avatar',
+            'cancel', 'delete', 'copy', 'edit'];
         if (this._provider) {
             for (var action in this._provider) {
                 switch (action) {
@@ -94257,20 +94386,26 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var BaseExtensionComponent = (function () {
     function BaseExtensionComponent() {
     }
+    //protected _dataService: any;
     /**
      * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
      * @param elementRef
      * @param renderer
      * @param provider
+     * //@param dataService
      */
     BaseExtensionComponent.prototype.initBaseExtensionComponent = function (elementRef, renderer, 
         // This provider can becomes any provider defined by your child
         // (don't need the "inject" because it's a static class, so will be provider by children components)
-        provider) {
+        provider
+        // @TODO: Disabled for, but is here to analise later how dataservice can handle with lazy loader
+        //@Optional() @Inject('DataService') dataService: any = null
+    ) {
         // Constructor vars
         this._elementRef = elementRef;
         this._renderer = renderer;
         this._provider = provider;
+        //this._dataService = dataService;
         // Set defaults
         if (!this._provider) {
             this._provider = {};
@@ -94282,12 +94417,31 @@ var BaseExtensionComponent = (function () {
         }
     };
     /**
+     * Set provider attribute
+     * @param attribute
+     * @param value
+     * @returns {any|null}
+     */
+    BaseExtensionComponent.prototype.setProviderAttr = function (attribute, value) {
+        this._provider[attribute] = value;
+        return this;
+    };
+    /**
      * Get provider attribute
      * @param attribute
      * @returns {any|null}
      */
     BaseExtensionComponent.prototype.getProviderAttr = function (attribute) {
         return this._provider[attribute] || null;
+    };
+    /**
+     * Get "localData" attribute
+     * @param attribute
+     * @returns any
+     */
+    BaseExtensionComponent.prototype.getLocalDataAttr = function (attribute) {
+        if (attribute === void 0) { attribute = null; }
+        return (this._provider['localData']['template'][attribute] || null);
     };
     /**
      * Get provider extra data attribute
@@ -94298,6 +94452,14 @@ var BaseExtensionComponent = (function () {
         return ((this._provider['extraData'] && this._provider['extraData'][attribute])
             ? this._provider['extraData'][attribute]
             : null);
+    };
+    /**
+     * Lifecycle callback
+     */
+    BaseExtensionComponent.prototype.ngAfterViewInit = function () {
+        // Start loading lazy images
+        // @TODO: This method should be called from DataService each time that objects are updated
+        $(this._elementRef.nativeElement).find('.js_lazy').Lazy();
     };
     BaseExtensionComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
@@ -94408,7 +94570,9 @@ var OrderTypes = {
     down: 'down'
 };
 var DataService = (function () {
-    function DataService(_postService, _helperService, _provider, _sanitizer) {
+    function DataService(_postService, _helperService, _provider, _sanitizer
+        //@Optional() protected _assetsLazyLoaderManagerService: AssetsLazyLoaderManagerService, // @TODO
+    ) {
         this._postService = _postService;
         this._helperService = _helperService;
         this._provider = _provider;
@@ -94422,6 +94586,11 @@ var DataService = (function () {
         this._objectsProvider = null;
         this._objectsIds = []; // Array of "ids" of objects in provider.objects.value to avoid duplications
         this._newObjectsIds = []; // Array of "ids" with new objects added by the user
+        // Handles with assets lazy loader.
+        // DataService it's that normalize data, so nobody better than him to knows when AssetsLazyLoaderManager should be called.
+        // Assets lazy loader is called only for objects provided in construct, because in the other cases we cannot
+        // control the template rendering to call the lazy loader at the right time.
+        this._hasAssetsLazyLoader = true; // Controls if this feature should be used
         if (this._provider['pin']) {
             this.pinProvider();
         }
@@ -94451,9 +94620,15 @@ var DataService = (function () {
     };
     /**
      * Get object
+     * @param index
      * @returns any
      */
-    DataService.prototype.getObject = function () {
+    DataService.prototype.getObject = function (index) {
+        if (index === void 0) { index = null; }
+        if (index !== null) {
+            var objectsProvider = (this._objectsProvider || this._provider.objects || []);
+            return (objectsProvider[index] || null);
+        }
         return this._object;
     };
     /**
@@ -94539,17 +94714,7 @@ var DataService = (function () {
         var id = (this._object ? this._object['id'] : null);
         if (id) {
             var that_1 = this, route = (this._provider.route['get']['url'] + '/' + id);
-            this.post(route, this.getRequestData(null, false, false)).then(function (data) {
-                // Local data (do not override, merge data)
-                if (data['localData']) {
-                    that_1._provider.localData = that_1._helperService.mergeObjects(that_1._provider.localData, data['localData']);
-                }
-                var obj = (data.object || null);
-                // Refresh object
-                if (obj) {
-                    that_1.setObject(data.object, that_1._objectIndex);
-                }
-            }, function (errors) { console.log(errors); });
+            this._postService.post(route, this.getRequestData(null, false, false)).then(function (data) { that_1.handleResponse(data); }, function (errors) { console.log(errors); });
         }
         return this;
     };
@@ -94567,7 +94732,7 @@ var DataService = (function () {
                 that._postService.post(that._provider.route['get']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData(null, false, false)).then(function (data) {
                     // Local data (do not override, merge data)
                     if (data['localData']) {
-                        that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
+                        that.setLocalData(data['localData']);
                     }
                     // Object
                     that._objectIndex = index; // The index of original object that was selected
@@ -94864,7 +95029,16 @@ var DataService = (function () {
      * @returns {any|null}
      */
     DataService.prototype.getProviderAttr = function (attribute) {
-        return this._provider[attribute] || null;
+        return (this._provider[attribute] || null);
+    };
+    /**
+     * Get "localData" attribute
+     * @param attribute
+     * @returns any
+     */
+    DataService.prototype.getLocalDataAttr = function (attribute) {
+        if (attribute === void 0) { attribute = null; }
+        return (this._provider['localData']['data'][attribute] || null);
     };
     /**
      * Get provider extra data attribute
@@ -94908,43 +95082,51 @@ var DataService = (function () {
      * Detect fields that needs to be rendered to view/template
      * @param objects
      * @param fields
+     * @param fieldsMetadata
+     * @param fieldsChoices
      * @returns any
      */
-    DataService.prototype.normalizeObjectsToTemplate = function (objects, fields) {
+    DataService.prototype.normalizeObjectsToTemplate = function (objects, fields, fieldsMetadata, fieldsChoices) {
         if (objects === void 0) { objects = null; }
         if (fields === void 0) { fields = null; }
+        if (fieldsMetadata === void 0) { fieldsMetadata = null; }
+        if (fieldsChoices === void 0) { fieldsChoices = null; }
         objects = (objects || this._provider.objects);
         fields = (fields || this._provider.fields['view']);
+        fieldsMetadata = (fieldsMetadata || this._provider.fields['metadata'] || {});
+        fieldsChoices = (fieldsChoices || this._provider.fieldsChoices || null);
         if (objects && fields) {
             for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
                 var field = fields_1[_i];
-                var fieldMetadata = this._provider.fields['metadata'][field];
+                var fieldMetadata = fieldsMetadata[field];
                 if (fieldMetadata['skipNormalizer']) {
                     continue;
                 }
                 switch (fieldMetadata['type']) {
+                    case 'img':
+                    case 'avatar':
                     case 'boolean':
                     case 'code':
                     case 'percentage':
                     case 'monetary':
                     case 'icon':
                     case 'link':
-                    case 'img':
-                    case 'avatar':
                     case 'status':
                         for (var _a = 0, objects_2 = objects; _a < objects_2.length; _a++) {
                             var obj = objects_2[_a];
                             if (typeof obj[field] != 'undefined') {
-                                obj[field] = this.renderField(field, obj);
+                                // Keep a copy of original value (usually boolean and monetary field to use in controls)
+                                if (fieldMetadata['keepOriginalNormalizer']) {
+                                    obj['__' + field] = obj[field];
+                                }
+                                obj[field] = this.renderField(field, obj, fieldsMetadata);
                             }
                         }
                         break;
                 }
                 // For "enum" type (key is the label, pattern of Symfony ChoiceType)
-                if (this._provider.fieldsChoices
-                    && this._provider.fieldsChoices[field]
-                    && this._provider.fieldsChoices[field]['value']) {
-                    var enumObj = this._provider.fieldsChoices[field]['value'];
+                if (fieldsChoices && fieldsChoices[field] && fieldsChoices[field]['value']) {
+                    var enumObj = fieldsChoices[field]['value'];
                     for (var _b = 0, objects_3 = objects; _b < objects_3.length; _b++) {
                         var obj = objects_3[_b];
                         for (var enumKey in enumObj) {
@@ -94955,18 +95137,47 @@ var DataService = (function () {
                     }
                 }
             }
+            // @TODO: Analise better how lazy loader should be handled
+            if (this._hasAssetsLazyLoader) {
+                this._hasAssetsLazyLoader = false;
+            }
         }
         return this;
     };
     /**
+     * Set Has Assets Lazy Loader
+     * @TODO: Not used for now, it's here to analise better in future how lazy loader should be handled
+     * @param hasAssetsLazyLoader
+     */
+    /*public setHasAssetsLazyLoader (hasAssetsLazyLoader: boolean)
+    {
+        this._hasAssetsLazyLoader = hasAssetsLazyLoader;
+    }*/
+    /**
+     * Run Assets Lazy Loader
+     * @TODO: Not used for now, it's here to analise better in future how lazy loader should be handled
+     */
+    /*public runAssetsLazyLoader()
+    {
+        // Only can be used in the first load (check out the comment above)
+        if (this._hasAssetsLazyLoader) {
+            this._hasAssetsLazyLoader = false;
+            this._assetsLazyLoaderManagerService.load();
+            console.log("Lazy load called in dataservice");
+        }
+    }*/
+    /**
      * Render field
      * @param field
      * @param object
+     * @param fieldsMetadata
      * @returns {string}
      */
-    DataService.prototype.renderField = function (field, object) {
+    DataService.prototype.renderField = function (field, object, fieldsMetadata) {
+        if (fieldsMetadata === void 0) { fieldsMetadata = null; }
         // Get field metadata
-        var fieldMetadata = (this._provider.fields['metadata'][field] || null), value = object[field];
+        fieldsMetadata = (fieldsMetadata || this._provider.fields['metadata'] || {});
+        var fieldMetadata = (fieldsMetadata[field] || null), value = object[field];
         // Render field to the view/template
         if (fieldMetadata) {
             switch (fieldMetadata['type']) {
@@ -94998,11 +95209,20 @@ var DataService = (function () {
                 case 'img':
                 case 'avatar':
                     var extraClass = ((fieldMetadata['type'] == 'avatar') ? 'img-circle' : 'thumbnail');
-                    return (value
-                        ? ('<img alt="' + fieldMetadata['label'] + '" class="' + extraClass + '" src="'
-                            + (this._helperService.getUploadWebPath(value) || value)
-                            + '">')
-                        : null);
+                    // No image is provided
+                    if (!value) {
+                        return ('<img alt="' + fieldMetadata['label'] + '" class="' + extraClass
+                            + '" src="/assets/img/dummy-48x48.png">');
+                    }
+                    // Regular load
+                    if (!this._hasAssetsLazyLoader) {
+                        return ('<img alt="' + fieldMetadata['label'] + '" class="' + extraClass
+                            + '" src="' + (this._helperService.getUploadWebPath(value) || value) + '">');
+                    }
+                    // Use lazy loader
+                    return this._sanitizer.bypassSecurityTrustHtml('<img alt="' + fieldMetadata['label'] + '" class="js_lazy ' + extraClass
+                        + '" src="/assets/img/dummy-48x48.png" data-src="'
+                        + (this._helperService.getUploadWebPath(value) || value) + '">');
                 case 'status':
                     var statusMap = { 'NO': 'danger', 'PARTIAL': 'warning', 'YES': 'primary' };
                     return ('<span class="status -' + (statusMap[value] || 'danger') + '"></span>');
@@ -95022,7 +95242,7 @@ var DataService = (function () {
         var that = this;
         return new Promise(function (resolve, reject) {
             if (object) {
-                // Objects has pre existent data (for example can be from backend session storage)
+                // Object has pre existent data (for example can be from backend session storage)
                 that.setNewObject(object);
                 return resolve(true);
             }
@@ -95052,7 +95272,7 @@ var DataService = (function () {
                     return that._postService.post(that._provider.route['new']['url'], that.getRequestData()).then(function (data) {
                         // Local data (do not override, merge data)
                         if (data['localData']) {
-                            that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
+                            that.setLocalData(data['localData']);
                         }
                         // Object
                         that.setNewObject(data.object);
@@ -95109,37 +95329,14 @@ var DataService = (function () {
             if (id) {
                 route += ('/' + id);
             }
-            that.post(route, that.getRequestData(data)).then(function (data) {
-                // Refresh all objects
-                if (data.objects) {
-                    that.setObjects(data.objects);
-                }
-                // Refresh fields choices
-                if (data.fieldsChoices) {
-                    that.setFieldsChoices(data.fieldsChoices);
-                }
-                // Local data (do not override, merge data)
-                if (data['localData']) {
-                    that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
-                }
-                var obj = (data.object || null);
-                // Refresh object
-                if (obj) {
-                    that.setObject(data.object, that._objectIndex);
-                }
-                return resolve(obj);
+            that._postService.post(route, that.getRequestData(data)).then(function (data) {
+                that.handleResponse(data);
+                return resolve(data['object'] || null);
             }, function (errors) {
-                // Local data (do not override, merge data). Exception in errors list used in some cases.
-                if (errors['localData']) {
-                    that._provider.localData = that._helperService.mergeObjects(that._provider.localData, errors['localData']);
-                    delete errors['localData']; // It's no more necessary
+                if (errors['data']) {
+                    that.handleResponse(errors['data']);
                 }
-                // Refresh object
-                if (errors['object']) {
-                    that.setObject(errors['object'], that._objectIndex);
-                    delete errors['object']; // It's no more necessary
-                }
-                return reject(errors);
+                return reject(errors['errors'] || {});
             });
         });
     };
@@ -95165,11 +95362,7 @@ var DataService = (function () {
         var that = this;
         // Reset pagination for new search
         this.resetPagination();
-        this.post(this._provider.route['get']['url'], this.getRequestData(null, false)).then(function (data) {
-            // Update list of objects
-            that.setObjects(data.objects || null);
-            that.setFieldsChoices(data.fieldsChoices || null);
-        }, function (errors) { console.log(errors); });
+        this._postService.post(this._provider.route['get']['url'], this.getRequestData(null, false)).then(function (data) { that.handleResponse(data); }, function (errors) { console.log(errors); });
         return this;
     };
     /**
@@ -95178,9 +95371,10 @@ var DataService = (function () {
      */
     DataService.prototype.getMoreObjects = function () {
         var that = this;
-        this.post(this._provider.route['get']['url'], this.getRequestData()).then(function (data) {
-            // Update list of objects
-            that.setObjects(data.objects || [], true);
+        this._postService.post(this._provider.route['get']['url'], this.getRequestData()).then(function (data) {
+            // Update objects
+            data.objects = (data.objects || []);
+            that.handleResponse(data, null, true);
         }, function (errors) { console.log(errors); });
         return this;
     };
@@ -95201,9 +95395,9 @@ var DataService = (function () {
         }
         // No field is necessary, is returned the choices pattern (minimizes data sent)
         this._provider['search']['fields'] = [];
-        this.post(this._provider.route['choices']['url'], this.getRequestData(null, noReset)).then(function (data) {
-            // Update list of objects
-            that.setObjects(data.objects || [], noReset);
+        this._postService.post(this._provider.route['choices']['url'], this.getRequestData(null, noReset)).then(function (data) {
+            data.objects = (data.objects || []);
+            that.handleResponse(data, null, noReset);
         }, function (errors) { console.log(errors); });
         return this;
     };
@@ -95217,20 +95411,10 @@ var DataService = (function () {
         var that = this, objectsProvider = (this._objectsProvider || this._provider.objects);
         if (OrderTypes[type] // Validate order type
             && ((objectsProvider[index]['priority'] > 0) || (OrderTypes[type] == 'down'))) {
-            this.post((this._provider.route['order']['url'] + '/' + objectsProvider[index]['id'] + '/' + OrderTypes[type]), that.getRequestData()).then(function (data) {
-                // Refresh all objects
-                if (data.objects) {
-                    that.setObjects(data.objects);
-                }
-                // Refresh fields choices
-                if (data.fieldsChoices) {
-                    that.setFieldsChoices(data.fieldsChoices);
-                }
-                var obj = (data.object || null);
-                // Refresh object
-                if (obj) {
-                    that.setObject(obj, index);
-                    // If objects are not returned, then order objects by "search" "orderBy" provider
+            this._postService.post((this._provider.route['order']['url'] + '/' + objectsProvider[index]['id'] + '/' + OrderTypes[type]), that.getRequestData()).then(function (data) {
+                that.handleResponse(data, index);
+                // If objects are not returned, then order objects by "search" "orderBy" provider
+                if (data.object) {
                     if (!data.objects) {
                         // Get fields from search
                         var orderFields = that._provider.search.orderBy.map(function ($item) {
@@ -95253,20 +95437,8 @@ var DataService = (function () {
     DataService.prototype.cancel = function (index) {
         var that = this, objectsProvider = (this._objectsProvider || this._provider.objects);
         return new Promise(function (resolve, reject) {
-            that.post(that._provider.route['cancel']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
-                // Refresh all objects
-                if (data.objects) {
-                    that.setObjects(data.objects);
-                }
-                // Refresh fields choices
-                if (data.fieldsChoices) {
-                    that.setFieldsChoices(data.fieldsChoices);
-                }
-                var obj = (data.object || null);
-                // Refresh object
-                if (obj) {
-                    that.setObject(obj, index);
-                }
+            that._postService.post(that._provider.route['cancel']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
+                that.handleResponse(data, index);
                 return resolve(true);
             }, function (errors) { return reject(false); });
         });
@@ -95279,21 +95451,14 @@ var DataService = (function () {
     DataService.prototype.delete = function (index) {
         var that = this, objectsProvider = (this._objectsProvider || this._provider.objects);
         return new Promise(function (resolve, reject) {
-            that.post(that._provider.route['delete']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
-                // Refresh all objects
-                if (data.objects) {
-                    that.setObjects(data.objects);
-                }
-                else {
-                    // Refresh objects array removing the removed object
+            that._postService.post(that._provider.route['delete']['url'] + '/' + objectsProvider[index]['id'], that.getRequestData()).then(function (data) {
+                // Refresh objects array removing the removed object
+                if (!data.objects) {
                     that.pullFromObjects(index);
-                }
-                // Refresh fields choices
-                if (data.fieldsChoices) {
-                    that.setFieldsChoices(data.fieldsChoices);
                 }
                 // Reset object index
                 that._objectIndex = null;
+                that.handleResponse(data);
                 return resolve(true);
             }, function (errors) { return reject(false); });
         });
@@ -95316,11 +95481,8 @@ var DataService = (function () {
                 }
             }
         }
-        this.post(this._provider.route['delete']['url'], this.getRequestData({ id: idArr })).then(function (data) {
-            // Refresh fields choices
-            if (data.fieldsChoices) {
-                that.setFieldsChoices(data.fieldsChoices);
-            }
+        this._postService.post(this._provider.route['delete']['url'], this.getRequestData({ id: idArr })).then(function (data) {
+            that.handleResponse(data);
             // Refresh objects array
             // Correction for index (each time you remove an index, all indices needs to be corrected)
             var indexCorrection = 0;
@@ -95351,8 +95513,8 @@ var DataService = (function () {
     DataService.prototype.redirect = function (route, index) {
         if (index === void 0) { index = null; }
         index = ((index == null) ? this._objectIndex : index);
-        var objectsProvider = (this._objectsProvider || this._provider.objects);
-        location.href = (this._provider.route[route]['url'] + '/' + objectsProvider[index]['id']);
+        var objectsProvider = (this._objectsProvider || this._provider.objects), idField = (this._provider.route[route]['idField'] || 'id');
+        location.href = (this._provider.route[route]['url'] + '/' + objectsProvider[index][idField]);
         return;
     };
     /**
@@ -95367,19 +95529,17 @@ var DataService = (function () {
         if (updateData === void 0) { updateData = false; }
         var that = this;
         return new Promise(function (resolve, reject) {
-            return that.post(route, that.getRequestData(data, false, false)).then(function (data) {
+            return that._postService.post(route, that.getRequestData(data, false, false)).then(function (data) {
                 if (updateData) {
-                    // Local data (do not override, merge data)
-                    if (data['localData']) {
-                        that._provider.localData = that._helperService.mergeObjects(that._provider.localData, data['localData']);
-                    }
-                    // Refresh object
-                    if (data['object']) {
-                        that.setObject(data.object, that._objectIndex);
-                    }
+                    that.handleResponse(data);
                 }
                 return resolve(data);
-            }, function (errors) { return reject(errors); });
+            }, function (errors) {
+                if (updateData && errors['data']) {
+                    that.handleResponse(errors['data']);
+                }
+                return reject(errors['errors'] || {});
+            });
         });
     };
     /**
@@ -95412,30 +95572,6 @@ var DataService = (function () {
                 // No indexes to submit
                 return resolve(null);
             }
-        });
-    };
-    /**
-     * Post to server.
-     * @param url
-     * @param data
-     * @returns {Promise}
-     */
-    DataService.prototype.post = function (url, data) {
-        if (data === void 0) { data = null; }
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            return that._postService.post(url, data).then(function (data) {
-                // Update search
-                if (data['search'] && (typeof data['search']['hasMore'] != 'undefined')) {
-                    // Equals search in provider and candidate search to avoid return false
-                    // in comparisons doing unnecessary searches.
-                    that._candidateSearch.hasMore = that._provider.search.hasMore
-                        = that._helperService.castToBoolean(data['search']['hasMore']);
-                    that._candidateSearch.offset = that._provider.search.offset
-                        = (data['search']['offset'] || 0);
-                }
-                return resolve(data);
-            }, function (errors) { return reject(errors); });
         });
     };
     /**
@@ -95479,11 +95615,69 @@ var DataService = (function () {
         this._provider.search.offset = (this._provider.objects.length - this._newObjectsIds.length);
         return this;
     };
+    /**
+     * Set local data
+     * @param localData
+     */
+    DataService.prototype.setLocalData = function (localData) {
+        // Local data (do not override, merge data)
+        if (localData) {
+            if (localData['data']) {
+                this._provider.localData['data'] = this._helperService.mergeObjects(this._provider.localData['data'], localData['data']);
+            }
+            if (localData['template']) {
+                this._provider.localData['template'] = this._helperService.mergeObjects(this._provider.localData['template'], localData['template']);
+            }
+        }
+    };
+    /**
+     * Handle with regular server responses
+     * @param response
+     * @param objectIndex (object index to update object)
+     * @param hasMergeObjects (merge array of objects, otherwise will be override)
+     * @returns {DataService}
+     */
+    DataService.prototype.handleResponse = function (response, objectIndex, hasMergeObjects) {
+        if (objectIndex === void 0) { objectIndex = null; }
+        if (hasMergeObjects === void 0) { hasMergeObjects = false; }
+        // Set default object index (this can be done in method signature)
+        if (objectIndex === null) {
+            objectIndex = this._objectIndex;
+        }
+        // Refresh all objects
+        if (response['objects']) {
+            this.setObjects(response['objects'], hasMergeObjects);
+        }
+        // Refresh object
+        if (response['object']) {
+            this.setObject(response['object'], objectIndex);
+        }
+        // Local data (do not override, merge data)
+        if (response['localData']) {
+            this.setLocalData(response['localData']);
+        }
+        // Refresh fields choices
+        if (response['fieldsChoices']) {
+            this.setFieldsChoices(response['fieldsChoices']);
+        }
+        // Update search pagination
+        if (response['search'] && (typeof response['search']['hasMore'] != 'undefined')) {
+            // Equals search in provider and candidate search to avoid return false
+            // in comparisons doing unnecessary searches.
+            this._candidateSearch.hasMore = this._provider.search.hasMore
+                = this._helperService.castToBoolean(response['search']['hasMore']);
+            this._candidateSearch.offset = this._provider.search.offset
+                = (response['search']['offset'] || 0);
+        }
+        return this;
+    };
     DataService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["x" /* Injectable */])(),
         __param(1, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('HelperService')),
         __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Inject */])('DataServiceProvider')),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__post_service__["a" /* PostService */], Object, Object, __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["b" /* DomSanitizer */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__post_service__["a" /* PostService */], Object, Object, __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["b" /* DomSanitizer */]
+            //@Optional() protected _assetsLazyLoaderManagerService: AssetsLazyLoaderManagerService, // @TODO
+        ])
     ], DataService);
     return DataService;
 }());
@@ -95498,6 +95692,7 @@ var DataService = (function () {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DynamicComponentLoaderService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -95508,10 +95703,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+
 // Service
 var DynamicComponentLoaderService = (function () {
-    function DynamicComponentLoaderService(_compiler) {
+    function DynamicComponentLoaderService(_compiler, _tasksLoaderManagerService) {
         this._compiler = _compiler;
+        this._tasksLoaderManagerService = _tasksLoaderManagerService;
     }
     /**
      * Load component into ViewContainerRef
@@ -95531,10 +95728,12 @@ var DynamicComponentLoaderService = (function () {
      */
     DynamicComponentLoaderService.prototype.load = function (module, component, viewContainerRef, injector) {
         if (injector === void 0) { injector = null; }
+        this._tasksLoaderManagerService.addTask('DYNAMIC_COMPONENT_LOADING');
         var that = this;
         return new Promise(function (resolve, reject) {
             that.getComponentFactory(module, component).then(function (componentFactory) {
                 var componentRef = viewContainerRef.createComponent(componentFactory, 0, injector, []);
+                that._tasksLoaderManagerService.delTask('DYNAMIC_COMPONENT_LOADING');
                 return resolve(componentRef);
             });
         });
@@ -95556,7 +95755,8 @@ var DynamicComponentLoaderService = (function () {
     };
     DynamicComponentLoaderService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["x" /* Injectable */])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* Compiler */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["k" /* Compiler */],
+            __WEBPACK_IMPORTED_MODULE_1__tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */]])
     ], DynamicComponentLoaderService);
     return DynamicComponentLoaderService;
 }());
@@ -96203,7 +96403,7 @@ var FieldTypeDatePickerDirective = (function () {
                             break;
                         }
                         // Limit available dates to ranges
-                        var dateRanges_1 = (this_1._dataService.getProviderAttr('localData')[rule['value']] || []);
+                        var dateRanges_1 = (this_1._dataService.getProviderAttr('localData')['data'][rule['value']] || []);
                         // Function to check if date is valid (is in range)
                         this_1.control['markDisabled'] = function (date) {
                             var dateToCheck = new Date(date.year, date.month - 1, date.day);
@@ -96878,7 +97078,6 @@ var FormService = (function () {
         this._helperService = _helperService;
         this._tasksLoaderManagerService = _tasksLoaderManagerService;
         this._provider = _provider;
-        // Local variables
         this._component = null; // Parent component that uses and implement this service
         this._originalObject = {}; // Original object to compare changes and reset object in DataService
         this._originalNormalizedObject = {}; // Original normalized (for form) object to compare changes and reset object in form
@@ -96889,6 +97088,7 @@ var FormService = (function () {
         if (!this._provider) {
             this._provider = {};
         }
+        this._uniqueId = this._helperService.getUniqueId();
         this._onObjectChangeEmitter = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* EventEmitter */]();
         // Object change event subscription
         this._onObjectChangeSubscription = this._dataService.getOnObjectChangeEmitter()
@@ -96934,7 +97134,12 @@ var FormService = (function () {
     FormService.prototype.init = function (component) {
         // Local variables
         this._component = component;
+        // @TODO: discontinue this provider, and keep only the second verification
         this._preventObjectOverride = this._component.getProviderAttr('preventObjectOverride');
+        if (this._preventObjectOverride) {
+            this._preventObjectOverride = (!this._provider.hasOwnProperty('hasPreventObjectOverride')
+                || this._provider['hasPreventObjectOverride']);
+        }
         // Note: _$form needs to be setted each time that the component changes, otherwise if you set the form
         // only once, form loss your binding consistence from the second time that it is opened and setted a
         // different object. Ie: "BookingServicePriceEdit", field "isVatIncluded" and "markupValue" loss binding
@@ -96969,7 +97174,7 @@ var FormService = (function () {
      */
     FormService.prototype.onObjectChangeSubscription = function (object) {
         if ((object != this._originalObject) // Set object only if is different
-            && !this._tasksLoaderManagerService.hasTask('SAVE')) {
+            && !this._tasksLoaderManagerService.hasTask('SAVE_' + this._uniqueId)) {
             // Form does not need to confirm object override
             if (!this._preventObjectOverride) {
                 this.setObject(object);
@@ -97028,7 +97233,7 @@ var FormService = (function () {
         if (object != this._originalObject) {
             // Keep the original object from dataService
             this._originalObject = object;
-            this._tasksLoaderManagerService.delTask('SAVE'); // Waiting mode for save process ends here, after update the original object.
+            this._tasksLoaderManagerService.delTask('SAVE_' + this._uniqueId); // Waiting mode for save process ends here, after update the original object.
             // Normalize object to form
             this._originalNormalizedObject = __WEBPACK_IMPORTED_MODULE_4__helper__["a" /* Helper */].cloneObject(this._originalObject, true);
             this.normalizeObject(this._originalNormalizedObject);
@@ -97159,7 +97364,7 @@ var FormService = (function () {
         if (hasValidation === void 0) { hasValidation = true; }
         var that = this;
         return new Promise(function (resolve, reject) {
-            if (!that._tasksLoaderManagerService.addTask('SAVE')) {
+            if (!that._tasksLoaderManagerService.addTask('SAVE_' + that._uniqueId)) {
                 // Form is already in save process
                 return reject(false);
             }
@@ -97175,7 +97380,7 @@ var FormService = (function () {
                         }
                     }
                     if (that._helperService.objectLength(that._errors) > 0) {
-                        that._tasksLoaderManagerService.delTask('SAVE'); // Cancel save, form has errors
+                        that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId); // Cancel save, form has errors
                         return reject(false);
                     }
                 }
@@ -97195,12 +97400,12 @@ var FormService = (function () {
                     if (errors) {
                         that._errors = errors;
                     }
-                    that._tasksLoaderManagerService.delTask('SAVE');
+                    that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId);
                     return reject(errors);
                 });
             }
             else {
-                that._tasksLoaderManagerService.delTask('SAVE');
+                that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId);
                 return resolve(true);
             }
         });
@@ -97340,6 +97545,10 @@ var FormService = (function () {
 var Helper = (function () {
     function Helper() {
     }
+    // Get an unique incremental number to be used as unique identifier
+    Helper.getUniqueId = function () {
+        return (Helper.uniqueIdCounter++);
+    };
     /**
      * Get decimal configuration
      * @returns {{unit: {value: number, iterator: number}, total: {value: number, iterator: number}}}
@@ -97548,7 +97757,8 @@ var Helper = (function () {
      */
     Helper.getImageProvider = function (data, localData) {
         return Helper.mergeObjects(Helper.getDataBoxProvider(data), {
-            imageCropPopupModule: localData['imageCropPopupModule']
+            imageCropPopupModule: localData['imageCropPopupModule'],
+            imageCropPopupComponent: localData['imageCropPopupComponent']
         });
     };
     /**
@@ -97569,7 +97779,7 @@ var Helper = (function () {
             label: data.label || '',
             controls: {
                 expander: (data.controls && data.controls.expander),
-                resizable: (data.controls && data.controls.resizable),
+                legend: ((data['controls'] && data['controls']['legend']) ? data['controls']['legend'] : [])
             }
         });
     };
@@ -97581,6 +97791,19 @@ var Helper = (function () {
     Helper.getEntityDetailProvider = function (data) {
         return Helper.mergeObjects(Helper.getBaseProvider(data), {
             popup: null // Create this value in component
+        });
+    };
+    /**
+     * Get Entity Detail Preview Provider
+     * @param data
+     * @returns any
+     */
+    Helper.getEntityDetailPreviewProvider = function (data) {
+        return Helper.mergeObjects(Helper.getBaseProvider(data), {
+            object: data['object'] || null,
+            fields: data['fields'] || null,
+            fieldsChoices: data['fieldsChoices'] || null,
+            dependencies: data['dependencies'] || null
         });
     };
     /**
@@ -97623,6 +97846,14 @@ var Helper = (function () {
         return (data.actions);
     };
     /**
+     * Get legend provider
+     * @param data
+     * @returns {any}
+     */
+    Helper.getLegendProvider = function (data) {
+        return ((data['controls'] && data['controls']['legend']) ? data['controls']['legend'] : []);
+    };
+    /**
      * Set global var
      * @param index
      * @param value
@@ -97649,6 +97880,28 @@ var Helper = (function () {
      */
     Helper.deleteGlobalVar = function (index) {
         return Helper.deleteVar(Helper.globalVar, index);
+    };
+    /**
+     * Get column alignment.
+     * @param type
+     * @returns string
+     */
+    Helper.getColAlign = function (type) {
+        switch (type) {
+            case 'number':
+            case 'percentage':
+            case 'monetary':
+            case 'date':
+            case 'datetime':
+                return 'txt-align-r';
+            case 'boolean':
+            case 'icon':
+            case 'img':
+            case 'status':
+                return 'txt-align-c';
+            default:
+                return 'txt-align-l';
+        }
     };
     /**
      * Get upload web path
@@ -97718,8 +97971,18 @@ var Helper = (function () {
         }
         return Helper;
     };
+    /**
+     * Get Status Map
+     * @returns any
+     */
+    Helper.getStatusMap = function () {
+        return { 'NO': 'danger', 'PARTIAL': 'warning', 'YES': 'primary' };
+    };
     // Object to use in angular modules at runtime to define global variables.
     Helper.globalVar = {};
+    // Controls the generation of a unique incremental number,
+    // to be used as unique identifier by any feature instance ensuring that there is no duplication.
+    Helper.uniqueIdCounter = 0;
     return Helper;
 }());
 
@@ -97947,7 +98210,7 @@ var NavManagerService = (function () {
         if (providers) {
             injector = __WEBPACK_IMPORTED_MODULE_0__angular_core__["R" /* ReflectiveInjector */].fromResolvedProviders(__WEBPACK_IMPORTED_MODULE_0__angular_core__["R" /* ReflectiveInjector */].resolve(providers), 
             // Use in firs instance the injector of the component (is more refined)
-            (this._component['_injector'] || this._injector));
+            (lazyLoadData.injector || this._component['_injector'] || this._injector));
         }
         var that = this;
         return this._dynamicComponentLoaderService.load(lazyLoadData.module, lazyLoadData.component, viewContainerRef, injector).then(function (componentRef) {
@@ -97982,6 +98245,7 @@ var NavManagerService = (function () {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return PostService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__flash_message_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/flash-message.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -97993,10 +98257,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
+
 // Service
 var PostService = (function () {
-    function PostService(_flashMessageService) {
+    function PostService(_flashMessageService, _tasksLoaderManagerService) {
         this._flashMessageService = _flashMessageService;
+        this._tasksLoaderManagerService = _tasksLoaderManagerService;
     }
     /**
      * Post. Send data to server
@@ -98005,11 +98271,14 @@ var PostService = (function () {
      * @returns {Promise}
      */
     PostService.prototype.post = function (url, data) {
+        if (data === void 0) { data = null; }
+        this._tasksLoaderManagerService.addTask('POSTING_DATA');
         var that = this;
         return new Promise(function (resolve, reject) {
             return $.post(url, data, function (postResponse) {
                 // Unknown response, generally html responses (debug, exceptions, etc.)
                 if (!postResponse || (typeof postResponse !== 'object')) {
+                    that._tasksLoaderManagerService.delTask('POSTING_DATA');
                     that.handleFlashMessages({});
                     return reject({});
                 }
@@ -98019,21 +98288,18 @@ var PostService = (function () {
                 delete postResponse.status; // Is no more necessary
                 // Success
                 if (isSuccess) {
+                    that._tasksLoaderManagerService.delTask('POSTING_DATA');
                     return resolve(postResponse['data'] || null);
                 }
                 // Error
-                var errors = (postResponse['errors'] || {});
-                // Add data exception into errors
-                if (postResponse['data']) {
-                    if (postResponse['data']['localData']) {
-                        errors['localData'] = postResponse['data']['localData'];
-                    }
-                    if (postResponse['data']['object']) {
-                        errors['object'] = postResponse['data']['object'];
-                    }
-                }
+                var errors = {
+                    errors: (postResponse['errors'] || {}),
+                    data: (postResponse['data'] || {})
+                };
+                that._tasksLoaderManagerService.delTask('POSTING_DATA');
                 return reject(errors);
             }).fail(function (errors) {
+                that._tasksLoaderManagerService.delTask('POSTING_DATA');
                 that.handleFlashMessages({});
                 return reject({});
             });
@@ -98059,6 +98325,7 @@ var PostService = (function () {
     PostService.prototype.handleFlashMessages = function (postResponse) {
         // Request failed, no response has been returned.
         if (!('status' in postResponse)) {
+            console.log(postResponse);
             this._flashMessageService.message('Something went wrong, no response has been returned.', 'Unknown error', __WEBPACK_IMPORTED_MODULE_1__flash_message_service__["b" /* FlashMessageTypes */].error);
         }
         // Flash Messages
@@ -98073,7 +98340,8 @@ var PostService = (function () {
     };
     PostService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["x" /* Injectable */])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__flash_message_service__["a" /* FlashMessageService */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__flash_message_service__["a" /* FlashMessageService */],
+            __WEBPACK_IMPORTED_MODULE_2__tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */]])
     ], PostService);
     return PostService;
 }());
@@ -98769,7 +99037,7 @@ var EditExtModule = (function () {
 /***/ "../../../../../src/BookingBundle/Resources/public/booking-setting/index/ts/templates/edit.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">    \n            \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_storeObj\">Store</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n        <select id=\"form_storeObj\" name=\"form[storeObj]\" [(ngModel)]=\"_formService.getObject().storeObj\" formControlName=\"storeObj\" [class.error]=\"_formService.getErrors().storeObj &amp;&amp; _formService.getErrors().storeObj.length &gt; 0\" class=\"form-control\"><option value=\"\"></option>            <option value=\"1\" >Lisboa Store (1)</option>            <option value=\"2\" >Rio de Janeiro Store (2)</option>            <option value=\"4\" >Madrid Store (4)</option>            <option value=\"5\" >Luanda Store (5)</option></select>\n    <input [(ngModel)]=\"_formService.getObject().storeObj\"\n           formControlName = storeObj\n                      type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().storeObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_moduleMenuObj\">Booking Type</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n        <select id=\"form_moduleMenuObj\" name=\"form[moduleMenuObj]\" [(ngModel)]=\"_formService.getObject().moduleMenuObj\" formControlName=\"moduleMenuObj\" [class.error]=\"_formService.getErrors().moduleMenuObj &amp;&amp; _formService.getErrors().moduleMenuObj.length &gt; 0\" class=\"form-control\">            <option value=\"34\" >Travel</option>            <option value=\"35\" >Basic</option>            <option value=\"51\" >Package</option></select>\n    <input [(ngModel)]=\"_formService.getObject().moduleMenuObj\"\n           formControlName = moduleMenuObj\n           required=\"required\"           type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().moduleMenuObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_seriesPrefix\">Series Prefix</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_seriesPrefix\" name=\"form[seriesPrefix]\" maxlength=\"8\" [(ngModel)]=\"_formService.getObject().seriesPrefix\" formControlName=\"seriesPrefix\" [class.error]=\"_formService.getErrors().seriesPrefix &amp;&amp; _formService.getErrors().seriesPrefix.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().seriesPrefix\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_seriesNumber\">Series Number</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"number\" id=\"form_seriesNumber\" name=\"form[seriesNumber]\" required=\"required\" [(ngModel)]=\"_formService.getObject().seriesNumber\" formControlName=\"seriesNumber\" [class.error]=\"_formService.getErrors().seriesNumber &amp;&amp; _formService.getErrors().seriesNumber.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().seriesNumber\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"TcyNUc0ivaNc2Bzv96jY_ov6RXK7ED_ZXIRcdRl89Ag\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
+module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">    \n            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_storeObj\">Store</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n        <select id=\"form_storeObj\" name=\"form[storeObj]\" [(ngModel)]=\"_formService.getObject().storeObj\" formControlName=\"storeObj\" [class.error]=\"_formService.getErrors().storeObj &amp;&amp; _formService.getErrors().storeObj.length &gt; 0\" class=\"form-control\"><option value=\"\"></option>            <option value=\"1\" >Lisboa Store (1)</option>            <option value=\"2\" >Rio de Janeiro Store (2)</option>            <option value=\"4\" >Madrid Store (4)</option>            <option value=\"5\" >Luanda Store (5)</option></select>\n    <input [(ngModel)]=\"_formService.getObject().storeObj\"\n           formControlName = storeObj\n                      type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().storeObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_moduleMenuObj\">Booking Type</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n        <select id=\"form_moduleMenuObj\" name=\"form[moduleMenuObj]\" [(ngModel)]=\"_formService.getObject().moduleMenuObj\" formControlName=\"moduleMenuObj\" [class.error]=\"_formService.getErrors().moduleMenuObj &amp;&amp; _formService.getErrors().moduleMenuObj.length &gt; 0\" class=\"form-control\">            <option value=\"34\" >Travel</option>            <option value=\"35\" >Basic</option>            <option value=\"51\" >Package</option></select>\n    <input [(ngModel)]=\"_formService.getObject().moduleMenuObj\"\n           formControlName = moduleMenuObj\n           required=\"required\"           type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().moduleMenuObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_seriesPrefix\">Series Prefix</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_seriesPrefix\" name=\"form[seriesPrefix]\" maxlength=\"8\" [(ngModel)]=\"_formService.getObject().seriesPrefix\" formControlName=\"seriesPrefix\" [class.error]=\"_formService.getErrors().seriesPrefix &amp;&amp; _formService.getErrors().seriesPrefix.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().seriesPrefix\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_seriesNumber\">Series Number</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"number\" id=\"form_seriesNumber\" name=\"form[seriesNumber]\" required=\"required\" [(ngModel)]=\"_formService.getObject().seriesNumber\" formControlName=\"seriesNumber\" [class.error]=\"_formService.getErrors().seriesNumber &amp;&amp; _formService.getErrors().seriesNumber.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().seriesNumber\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"-arBfgnMKJ9Cnd7vsv23HHuU_n0w--dDwk6y-vfr0uI\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
 
 /***/ }),
 

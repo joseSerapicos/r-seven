@@ -1,22 +1,20 @@
-<div class="modal-body">
-    <div class="form-wrapper gray-bg">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>
-                        <div class="txt-align-r actions">
-                            <a class="-round fa fa-times"
-                               (click)="closeAction($event)"></a>
-                        </div>
-                    </div>
-                        
+    
     <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
-                    <div class="ibox-content">        
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12">        
     <section>
                                         
 
-                <div class="form-group" *ngIf="_formService.getObject().icon">
+                <div class="row form-group" *ngIf="_formService.getObject().icon">
 
                         <label class="col-sm-2 control-label" for="form_bookingServiceObj_icon">Icon</label>
     
@@ -29,7 +27,7 @@
         </div>
                                                     
 
-                <div class="form-group" *ngIf="_formService.getObject().name">
+                <div class="row form-group" *ngIf="_formService.getObject().name">
 
                         <label class="col-sm-2 control-label" for="form_bookingServiceObj_name">Name</label>
     
@@ -42,7 +40,7 @@
         </div>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_bookingServiceObj_description">Description</label>
     
@@ -53,7 +51,7 @@
         </div>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_bookingServiceObj_supplierObj">Supplier</label>
     
@@ -63,14 +61,14 @@
            name="form[bookingServiceObj][supplierObj]"
                       type="hidden">
     <js_autoComplete [field]="'supplierObj'"
-                     [selfReference]="_dataService.getFieldChoicesAttr('supplierObj', 'selfReference')"
+                     [hasSelfReference]="_dataService.getFieldChoicesAttr('supplierObj', 'hasSelfReference')"
                                                                        ></js_autoComplete>
                     <label class="error" *ngFor="let error of _formService.getErrors().supplierObj">{{error}}</label>
             </div>
         </div>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_bookingServiceObj_reference">Reference</label>
     
@@ -82,7 +80,7 @@
                                                     <ng-template [ngIf]="_formService.getObject()['type'] == 'TRAVEL'">
                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_bookingServiceObj_placeObj">From</label>
     
@@ -92,14 +90,14 @@
            name="form[bookingServiceObj][placeObj]"
                       type="hidden">
     <js_autoComplete [field]="'placeObj'"
-                     [selfReference]="_dataService.getFieldChoicesAttr('placeObj', 'selfReference')"
+                     [hasSelfReference]="_dataService.getFieldChoicesAttr('placeObj', 'hasSelfReference')"
                                                                        ></js_autoComplete>
                     <label class="error" *ngFor="let error of _formService.getErrors().placeObj">{{error}}</label>
             </div>
         </div>
                         
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_bookingServiceObj_placeToObj">To</label>
     
@@ -109,13 +107,13 @@
            name="form[bookingServiceObj][placeToObj]"
                       type="hidden">
     <js_autoComplete [field]="'placeToObj'"
-                     [selfReference]="_dataService.getFieldChoicesAttr('placeToObj', 'selfReference')"
+                     [hasSelfReference]="_dataService.getFieldChoicesAttr('placeToObj', 'hasSelfReference')"
                                                                        ></js_autoComplete>
                     <label class="error" *ngFor="let error of _formService.getErrors().placeToObj">{{error}}</label>
             </div>
         </div>
                     </ng-template>
-                                                                    <div class="form-group">
+                                                                    <div class="row form-group">
                                 <label class="col-sm-2 control-label required" for="form_bookingServiceObj_startDate">Start Date</label>
                         <div class="col-sm-10"
                          *ngIf="_formService.getObject()['isAutoAvailability'] || _formService.getObject()['isAutoAllot']">
@@ -126,11 +124,27 @@
                     </div>
                     <div class="col-sm-10"
                          *ngIf="!_formService.getObject()['isAutoAvailability'] && !_formService.getObject()['isAutoAllot']">
-                                                    <input type="date" id="form_bookingServiceObj_startDateManual" name="form[bookingServiceObj][startDateManual]" required="required" [(ngModel)]="_formService.getObject().startDateManual" formControlName="startDateManual" [class.error]="_formService.getErrors().startDateManual &amp;&amp; _formService.getErrors().startDateManual.length &gt; 0" class="form-control" />
+                                                
+    <div class="input-group js_dataPicker"
+         [datePicker]="'startDateManual'"
+         #dpk_startDateManual="" [control]="dpk_startDateManual">
+        <input type="text"
+               class="form-control"
+               placeholder="yyyy-mm-dd"
+               [(ngModel)]="_formService.getObject().startDateManual"
+               formControlName = startDateManual
+               name="form[bookingServiceObj][startDateManual]"
+               required="required"               [class.error]="_formService.getErrors()['startDateManual'] && (_formService.getErrors()['startDateManual'].length > 0)"
+               ngbDatepicker #dpk_startDateManual="ngbDatepicker">
+        <div class="input-group-append">
+            <button class="btn" type="button"><a class="fa fa-calendar"></a></button>
+        </div>
+    </div>
+    
                 <label class="error" *ngFor="let error of _formService.getErrors().startDateManual">{{error}}</label>
                     </div>
                 </div>
-                                                <div class="form-group">
+                                                <div class="row form-group">
                                 <label class="col-sm-2 control-label required" for="form_bookingServiceObj_endDate">End Date</label>
                         <div class="col-sm-10"
                          *ngIf="_formService.getObject()['isAutoAvailability'] || _formService.getObject()['isAutoAllot']">
@@ -141,11 +155,27 @@
                     </div>
                     <div class="col-sm-10"
                          *ngIf="!_formService.getObject()['isAutoAvailability'] && !_formService.getObject()['isAutoAllot']">
-                                                    <input type="date" id="form_bookingServiceObj_endDateManual" name="form[bookingServiceObj][endDateManual]" required="required" [(ngModel)]="_formService.getObject().endDateManual" formControlName="endDateManual" [class.error]="_formService.getErrors().endDateManual &amp;&amp; _formService.getErrors().endDateManual.length &gt; 0" class="form-control" />
+                                                
+    <div class="input-group js_dataPicker"
+         [datePicker]="'endDateManual'"
+         #dpk_endDateManual="" [control]="dpk_endDateManual">
+        <input type="text"
+               class="form-control"
+               placeholder="yyyy-mm-dd"
+               [(ngModel)]="_formService.getObject().endDateManual"
+               formControlName = endDateManual
+               name="form[bookingServiceObj][endDateManual]"
+               required="required"               [class.error]="_formService.getErrors()['endDateManual'] && (_formService.getErrors()['endDateManual'].length > 0)"
+               ngbDatepicker #dpk_endDateManual="ngbDatepicker">
+        <div class="input-group-append">
+            <button class="btn" type="button"><a class="fa fa-calendar"></a></button>
+        </div>
+    </div>
+    
                 <label class="error" *ngFor="let error of _formService.getErrors().endDateManual">{{error}}</label>
                     </div>
                 </div>
-                                                <div class="form-group">
+                                                <div class="row form-group">
                                 <label class="col-sm-2 control-label required" for="form_bookingServiceObj_quantity">Quantity</label>
                         <div class="col-sm-10"
                          *ngIf="_formService.getObject()['isAutoAllot']">
@@ -160,7 +190,7 @@
                 <label class="error" *ngFor="let error of _formService.getErrors().quantityManual">{{error}}</label>
                     </div>
                 </div>
-                                                <div class="form-group">
+                                                <div class="row form-group">
                                 <label class="col-sm-2 control-label required" for="form_bookingServiceObj_confirmationStatus">Confirmation</label>
                         <div class="col-sm-10"
                          *ngIf="_formService.getObject()['isAutoAllot']">
@@ -171,23 +201,44 @@
                     </div>
                     <div class="col-sm-10"
                          *ngIf="!_formService.getObject()['isAutoAllot']">
-                                                    <select id="form_bookingServiceObj_confirmationStatusManual" name="form[bookingServiceObj][confirmationStatusManual]" [(ngModel)]="_formService.getObject().confirmationStatusManual" formControlName="confirmationStatusManual" [class.error]="_formService.getErrors().confirmationStatusManual &amp;&amp; _formService.getErrors().confirmationStatusManual.length &gt; 0" class="form-control">            <option value="NO" >&lt;span class=&quot;status -danger&quot;&gt;&lt;/span&gt;</option>            <option value="PARTIAL" >&lt;span class=&quot;status -warning&quot;&gt;&lt;/span&gt;</option>            <option value="YES" >&lt;span class=&quot;status -primary&quot;&gt;&lt;/span&gt;</option></select>
-                <label class="error" *ngFor="let error of _formService.getErrors().confirmationStatusManual">{{error}}</label>
+                                                                                <div class="html-select"
+         [htmlSelect]="'confirmationStatusManual'"
+                               >
+        <div class="input-group-control"
+             [class.error]="_formService.getErrors()['confirmationStatusManual'] && (_formService.getErrors()['confirmationStatusManual'].length > 0)">
+            <span class="js_label form-control"></span>
+            <a class="pull-right"><i class="fa fa-angle-down"></i></a>
+        </div>
+        <div class="choices js_choices">
+            <ul class="form-control-box">                    <li data-value="NO"><span class="status -danger"></span></li>
+                    <li data-value="PARTIAL"><span class="status -warning"></span></li>
+                    <li data-value="YES"><span class="status -primary"></span></li>
+            </ul>
+        </div>
+    </div>
+    <input [(ngModel)]="_formService.getObject().confirmationStatusManual"
+           formControlName = confirmationStatusManual
+           name="form[bookingServiceObj][confirmationStatusManual]"
+           required="required"           type="hidden">
+                                <label class="error" *ngFor="let error of _formService.getErrors().confirmationStatusManual">{{error}}</label>
                     </div>
                 </div>
                                                                                                             </section>
 
     <section><ng-template #js_lazyLoadContainer></ng-template></section>
 </div>
-                    <div class="ibox-footer hide-on-empty">    
-                    <div class="form-group">
-            <div class="col-sm-10 col-sm-offset-2">
-                                            <button                                     class="btn"
+    </div>
+</div>
+<div class="modal-footer hide-on-empty">
+        
+                    <div class="row">
+            <div class="col-auto ml-auto">
+                                            <button                                     class="btn btn-light"
                                     (click)="cancelAction($event)"
                                         id="form_cancel"
             name="form[cancel]"
             type="button"><i class="fa fa-times"></i>&nbsp;Cancel</button>
-                                                <button                                     class="btn"
+                                                <button                                     class="btn btn-light"
                                     (click)="resetAction($event)"
                                         id="form_reset"
             name="form[reset]"
@@ -204,10 +255,5 @@
             type="button"><i class="fa fa-times"></i>&nbsp;Save and Close</button>
                                 </div>
         </div>
-    </div>                        
-    <input type="hidden" id="form__token" name="form[_token]" value="y_X653isBIPUjhTqIFoEMS38F6y1pjJHhEkNvonaMMU" /></form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    </div>    
+    <input type="hidden" id="form__token" name="form[_token]" value="sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo" /></form>

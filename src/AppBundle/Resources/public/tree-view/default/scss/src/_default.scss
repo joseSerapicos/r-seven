@@ -1,0 +1,22 @@
+.tree-view {
+  list-style-type: none;
+  padding: 0;
+
+  li {
+    clear: both;
+    padding-top: 8px;
+    list-style-type: none;
+
+    > a {
+      color: $left-sidebar-active-txtcolor;
+    }
+
+    i + * {
+      padding: 0 8px;
+    }
+
+    .actions {
+      float: right;
+    }
+  }
+}

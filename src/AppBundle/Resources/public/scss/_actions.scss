@@ -1,4 +1,7 @@
-@import "variables";
+$primaryColor: #007bff;
+$colorPrimary-hover: #0069d9;
+$colorPrimary-active: #0062cc;
+$colorWhite: #fff;
 
 .actions {
     position: relative; // For the expander of search components
@@ -13,7 +16,7 @@
 .accordion .panel-heading .actions a { // Used to get a more specific elements to override styles
     display: inline-block;
     vertical-align: middle;
-    color: $link_color_primary;
+    color: $colorWhite;
     font-weight: 600;
     font-size: 14px;
     margin-left: 8px !important; // Checkbox need "important" flag to override defaults
@@ -29,15 +32,14 @@
     }
 
     &:hover {
-        color: $link-hover_color;
+        color: $colorWhite;
     }
 
     &:active, &.active {
-        color: $link-active_color;
+        color: $colorWhite;
     }
 
     &.fa {
-        font-family: "FontAwesome";
         font-weight: normal;
 
         &:before {
@@ -50,25 +52,26 @@
     }
 
     &.-round {
-        height: 20px;
+        height: 22px;
+        width: 22px;
 
         &.-round:before {
-            height: 20px;
-            width: 20px;
+            height: 22px;
+            width: 22px;
             overflow: hidden;
-            color: $link_color_secondary;
-            background-color: $link_color_primary;
-            border-radius: 12px;
+            color: $colorWhite;
+            background-color: $primaryColor;
+            border-radius: 14px;
         }
 
         &:hover:before {
-            background-color: $link-hover_color;
-            color: $link_color_secondary;
+            background-color: $colorPrimary-hover;
+            color: $colorWhite;
         }
 
         &:active:before {
-            background-color: $link-active_color;
-            color: $link_color_secondary;
+            background-color: $colorPrimary-active;
+            color: $colorWhite;
         }
     }
 }

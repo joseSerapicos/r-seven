@@ -1,6 +1,6 @@
 import {Component, ElementRef, Inject, Optional, Injector, Renderer} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
-import {FormPopupExtensionComponent, FormProvider} from '../../../../../../AppBundle/Resources/public/ts/form/form-popup.extension-component';
+import {FormPopupExtensionComponent, FormProvider} from '../../../../../../AppBundle/Resources/public/form/ts/form-popup.extension-component';
 import {DataService} from '../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
 
 

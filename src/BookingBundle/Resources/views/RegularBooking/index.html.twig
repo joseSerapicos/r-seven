@@ -1,10 +1,10 @@
 {% extends 'AppBundle::base.html.twig' %}
 
 {% block stylesheets %}
-    {% stylesheets filter="scssphp" output="assets/booking/regular-booking/index/css/main.css"
-        '@AppBundle/Resources/public/scss/select-box.scss'
+    {% stylesheets output="assets/booking/regular-booking/index/css/local.css"
+    '@BookingBundle/Resources/public/regular-booking/index/scss/dist/styles.css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 {% endblock %}
 
@@ -15,7 +15,7 @@
     <div class="js_dataBox"></div>
 {% endblock %}
 
-{% block local_javascripts %}
+{% block javascripts %}
     {% javascripts output="assets/booking/regular-booking/index/js/local.js"
         '@BookingBundle/Resources/public/regular-booking/index/ts/dist/inline.bundle.js'
         '@BookingBundle/Resources/public/regular-booking/index/ts/dist/polyfills.bundle.js'

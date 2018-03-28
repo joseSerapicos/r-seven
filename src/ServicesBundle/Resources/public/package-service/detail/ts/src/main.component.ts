@@ -3,7 +3,7 @@ import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/da
 import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts/actions/actions.service';
 import {Helper} from '../../../../../../../AppBundle/Resources/public/ts/helper';
 import {ModalService} from '../../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {NavManagerService} from '../../../../../../../AppBundle/Resources/public/ts/nav-manager/nav-manager.service';
 import {LazyLoadData} from '../../../../../../../AppBundle/Resources/public/tabs/ts/src/tabs.component';
 import {MainComponent as BaseServiceComponent, BaseServiceProvider} from '../../../../base-service/detail/ts/src/main.component';

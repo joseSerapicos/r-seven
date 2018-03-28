@@ -1,0 +1,26 @@
+.legend {
+    dt {
+        border: 1px solid #000;
+        height: 15px;
+        width: 20px;
+    }
+
+    dt, dd {
+        display: inline-block;
+        vertical-align: middle;
+        margin: 5px;
+    }
+
+    &-canceled {
+        color: $secondaryLightColor;
+        background-color: $lightColor;
+    }
+
+    &-grouper {
+        background-color: $warningLightColor;
+    }
+
+    &-grouped {
+        background-color: $warningLighterColor;
+    }
+}

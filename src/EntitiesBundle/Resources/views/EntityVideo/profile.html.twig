@@ -1,14 +1,12 @@
 {% extends 'AppBundle::base.html.twig' %}
 
 {% block stylesheets %}
-    {% stylesheets filter="scssphp" output="assets/entities/entity-video/profile/css/all.css"
-        '@AppBundle/Resources/public/css/wizard.css'
-        '@AppBundle/Resources/public/scss/_gallery.scss'
-        '@AppBundle/Resources/public/css/video-player.css'
-        '@dropzone_css'
-        '@videojs_css'
+    {% stylesheets output="assets/entities/entity-video/profile/css/local.css"
+    '@EntitiesBundle/Resources/public/entity-video/profile/scss/dist/styles.css'
+    '@dropzone_css'
+    '@videojs_css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 {% endblock %}
 
@@ -19,7 +17,7 @@
     <div class="js_video"></div>
 {% endblock %}
 
-{%  block local_javascripts %}
+{%  block javascripts %}
     {% javascripts output="assets/entities/entity-video/profile/js/local.js"
         '@EntitiesBundle/Resources/public/entity-video/profile/ts/dist/inline.bundle.js'
         '@EntitiesBundle/Resources/public/entity-video/profile/ts/dist/polyfills.bundle.js'

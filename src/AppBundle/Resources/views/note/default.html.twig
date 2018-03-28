@@ -1,14 +1,13 @@
 {% extends 'AppBundle:data-box:base.html.twig' %}
 {% block body_container %}
-    <div class="row">
-        <ul class="notes">
-            <li class="col-sm-6 col-md-4"
+        <ul class="row notes">
+            <li class="col-md-6 col-lg-4"
                 *ngFor="let obj of _dataService.getProviderAttr('objects'); let index = index">
                 <div>
                     <small>{% verbatim %}{{obj['insertTime']}}{% endverbatim %}</small>
                     <h4>{% verbatim %}{{obj['name']}}{% endverbatim %}</h4>
                     <div [innerHTML]="obj['description']"></div>
-                    <span class="txt-align-r actions no-user-select"
+                    <span class="txt-align-r actions no-user-select badge badge-light text-secondary"
                           (click)="triggerAction($event)">
                         <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
                             <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
@@ -21,5 +20,4 @@
                 </div>
             </li>
         </ul>
-    </div>
 {% endblock %}

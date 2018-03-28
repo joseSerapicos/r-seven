@@ -1,10 +1,10 @@
 import {Component, ElementRef, Inject, Optional, Injector, Renderer} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
-import {FormExtensionComponent, FormProvider} from '../../../../../../../AppBundle/Resources/public/ts/form/form.extension-component';
+import {FormExtensionComponent, FormProvider} from '../../../../../../../AppBundle/Resources/public/form/ts/form.extension-component';
 import {NavManagerService} from '../../../../../../../AppBundle/Resources/public/ts/nav-manager/nav-manager.service';
 import {ModalService, Popup} from '../../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
 import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 
 // Re-exports
 export {FormProvider}

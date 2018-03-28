@@ -90,9 +90,14 @@ export class TreeViewDataService extends DataService
                         // The index of original object that was selected
                         that._objectIndex = objIndex;
                         that._objectsProviderIndex = parentNodeIndex;
+                        that._objectsProvider = objectsProvider; // Necessary to set normalized object correctly
 
                         that.setLocalObject(data.object);
-                        that._normalizedObject = objectsProvider[objIndex];
+
+                        // Now object has all of fields with the values, is not limited to the search selected field,
+                        // so we need normalize the object, because now it can has new values.
+                        that.setNormalizedObject();
+
                         return resolve(true);
                     },
                     errors => { console.log(errors); reject(false); });

@@ -8,10 +8,10 @@
 {% set popoverClass = (popoverClass is defined ? popoverClass : '') %}
 
 <span class="{{popoverClass}}" [popover]="'{{position}}'" [align]="'{{align}}'" [elementTarget]="'{{elementTarget}}'">
-    <i class="fa fa-info-circle txt-lg txt-info js_icon"></i>
-    <div class="popover fade {{position}} in js_popover">
+    <i class="fa fa-info-circle txt-lg text-info js_icon"></i>
+    <div class="popover bs-popover-{{position}} js_popover">
         <div class="arrow arrow-{{align}}"></div>
-        <h3 class="popover-title">{% block popover_header %}{% endblock %}</h3>
-        <div class="popover-content">{% block popover_container %}{% endblock %}</div>
+        <h3 class="popover-header">{% block popover_header %}{% endblock %}</h3>
+        <div class="popover-body">{% block popover_container %}{% endblock %}</div>
     </div>
 </span>

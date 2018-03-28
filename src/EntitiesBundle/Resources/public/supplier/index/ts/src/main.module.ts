@@ -4,8 +4,6 @@ import {BrowserModule} from '@angular/platform-browser';
 // to provide "formBuilder" when inject dependencies in child modules (like form)
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {SearchModule} from '../../../../../../../AppBundle/Resources/public/ts/search/search.module';
-import {ExpanderModule} from '../../../../../../../AppBundle/Resources/public/ts/expander/expander.module';
 import {Helper} from '../../../../../../../AppBundle/Resources/public/ts/helper';
 import {TasksLoaderManagerService} from '../../../../../../../AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service';
 import {PostService} from '../../../../../../../AppBundle/Resources/public/ts/post.service';
@@ -14,31 +12,21 @@ import {FlashMessageService} from '../../../../../../../AppBundle/Resources/publ
 import {DynamicComponentLoaderService} from '../../../../../../../AppBundle/Resources/public/ts/dynamic-component-loader.service';
 import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
 import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts/actions/actions.service';
-import {SearchPaginationModule} from '../../../../../../../AppBundle/Resources/public/ts/search/search-pagination.module';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
-import {MainExtModule as AppBasicsExtModule} from '../../../../../../../AppBundle/Resources/public/app-basics/ts/src/main.ext-module';
-import {MainComponent as AppBasicsComponent} from '../../../../../../../AppBundle/Resources/public/app-basics/ts/src/main.component';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
+import {MainExtModule as AppBasicsExtModule} from '../../../../../../../AppBundle/Resources/public/app-basics/default/ts/src/main.ext-module';
+import {MainComponent as AppBasicsComponent} from '../../../../../../../AppBundle/Resources/public/app-basics/default/ts/src/main.component';
 import {DataBoxExtensionModule} from '../../../../../../../AppBundle/Resources/public/data-box/ts/src/data-box.extension-module';
 import {DataBoxComponent} from '../../../../../../../AppBundle/Resources/public/data-box/ts/src/data-box.component';
 import {EditExtModule} from './edit.ext-module';
 
 
 // Auto-complete
-import {AutoCompleteProviders} from '../../../../../../../AppBundle/Resources/public/ts/form/field-types/field-type-auto-complete.component';
+import {AutoCompleteProviders} from '../../../../../../../AppBundle/Resources/public/form/ts/field-types/field-type-auto-complete.component';
 // Entity dependency
-import {EditExtModule as EntitiesEntityEditExtModule} from '../../../../entity/index/ts/src/edit.ext-module';
 let autoCompleteProviders: AutoCompleteProviders = {
     selectEntityObj: {
         urlConf: (Helper.getAppVar('route') + 'entities/entity/conf'),
-        control: 'edit',
-        popups: {
-            module: EntitiesEntityEditExtModule,
-            component: 'EditComponent',
-            providers: [
-                {provide: 'Provider', useValue: Helper.getFormProvider(_app.conf)},
-                FormService
-            ]
-        }
+        control: 'none'
     }
 };
 
@@ -50,10 +38,7 @@ let autoCompleteProviders: AutoCompleteProviders = {
         ReactiveFormsModule,
         NgbModule.forRoot(),
         AppBasicsExtModule,
-        DataBoxExtensionModule,
-        SearchModule,
-        SearchPaginationModule,
-        ExpanderModule
+        DataBoxExtensionModule
     ],
     providers: [
         PostService,

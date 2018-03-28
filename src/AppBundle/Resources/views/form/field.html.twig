@@ -19,7 +19,7 @@
             'metadata': metadata
         } %}
     {% else %}
-        <div class="form-group" {% if (metadata['acl'] == 'read') %}*ngIf="_formService.getObject().{{field}}"{% endif %}>
+        <div class="row form-group" {% if (metadata['acl'] == 'read') %}*ngIf="_formService.getObject().{{field}}"{% endif %}>
 
             {% include 'AppBundle:form:label.html.twig' with {
                 'formField': formField,

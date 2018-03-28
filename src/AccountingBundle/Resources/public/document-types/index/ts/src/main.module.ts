@@ -11,8 +11,8 @@ import {ModalService} from '../../../../../../../AppBundle/Resources/public/moda
 import {FlashMessageService} from '../../../../../../../AppBundle/Resources/public/ts/flash-message.service';
 import {DynamicComponentLoaderService} from '../../../../../../../AppBundle/Resources/public/ts/dynamic-component-loader.service';
 import {NavManagerService} from '../../../../../../../AppBundle/Resources/public/ts/nav-manager/nav-manager.service';
-import {MainExtModule as AppBasicsExtModule} from '../../../../../../../AppBundle/Resources/public/app-basics/ts/src/main.ext-module';
-import {MainComponent as AppBasicsComponent} from '../../../../../../../AppBundle/Resources/public/app-basics/ts/src/main.component';
+import {MainExtModule as AppBasicsExtModule} from '../../../../../../../AppBundle/Resources/public/app-basics/default/ts/src/main.ext-module';
+import {MainComponent as AppBasicsComponent} from '../../../../../../../AppBundle/Resources/public/app-basics/default/ts/src/main.component';
 import {SearchModule} from '../../../../../../../AppBundle/Resources/public/ts/search/search.module';
 import {MainComponent} from './main.component';
 

@@ -3,15 +3,18 @@
     <div class="input-group js_dataPicker"
          [datePicker]="'{{field}}'"
          #dpk_{{field}}="" [control]="dpk_{{field}}">
-        <input [(ngModel)]="_formService.getObject().{{field}}"
+        <input type="text"
+               class="form-control"
+               placeholder="yyyy-mm-dd"
+               [(ngModel)]="_formService.getObject().{{field}}"
                formControlName = {{field}}
                name="{{formField.vars.full_name}}"
                {% if formField.vars.required %}required="required"{% endif %}
-               class="form-control"
                [class.error]="_formService.getErrors()['{{field}}'] && (_formService.getErrors()['{{field}}'].length > 0)"
-               placeholder="yyyy-mm-dd"
                ngbDatepicker #dpk_{{field}}="ngbDatepicker">
-        <a class="input-group-addon action dsp-table-cell fa fa-calendar"></a>
+        <div class="input-group-append">
+            <button class="btn" type="button"><a class="fa fa-calendar"></a></button>
+        </div>
     </div>
     {% do formField.setRendered %}
 

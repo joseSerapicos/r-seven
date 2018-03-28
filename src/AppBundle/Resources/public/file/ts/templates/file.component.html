@@ -1,49 +1,51 @@
 
-<div class="ibox">
-            <div class="ibox-title" *ngIf="!getProviderExtraDataAttr('hasMergeHeader')">
-            <h5>
-                <ng-template [ngIf]="getProviderAttr('controls')['expander']"><js_expander
-                    [isExpanded]="_isExpanded || null"
-                    [label]="getProviderAttr('label')"
-                    (onChange)="expanderAction($event)"></js_expander></ng-template>
-                <ng-template [ngIf]="!getProviderAttr('controls')['expander']">
-                    <span [innerHTML]="getProviderAttr('label')"></span>
+
+<div class="ibox" >
+                        <div class="ibox-title" *ngIf="!getProviderExtraDataAttr('hasMergeHeader')">
+                <h5>
+                    <ng-template [ngIf]="getProviderAttr('controls')['expander']"><js_expander
+                        [isExpanded]="_isExpanded || null"
+                        [label]="getProviderAttr('label')"
+                        (onChange)="expanderAction($event)"></js_expander></ng-template>
+                    <ng-template [ngIf]="!getProviderAttr('controls')['expander']">
+                        <span [innerHTML]="getProviderAttr('label')"></span>
+                    </ng-template>
+                </h5>
+                <div *ngIf="_isExpanded"
+                     class="txt-align-r hide-on-empty">    <div class="row align-items-center">
+        <div class="col ml-auto text-right actions no-user-select">
+            <ng-template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search class="search"></js_search></ng-template>
+            <div (click)="triggerAction($event)">
+                <ng-template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
+                    <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                       [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
+                       class="-round fa"
+                       [attr.data-action]="action"></a>
                 </ng-template>
-            </h5>
-            <div *ngIf="_isExpanded"
-                 class="txt-align-r hide-on-empty">    <div class="actions no-user-select">
-        <ng-template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search class="search"></js_search></ng-template>
-        <div (click)="triggerAction($event)">
-            <ng-template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
-                <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
-                   [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
-                   class="-round fa"
-                   [attr.data-action]="action"></a>
-            </ng-template>
+            </div>
         </div>
     </div>
 </div>
-        </div>
-    
+            </div>
+            
     <div [hidden]="!(_isExpanded)" class="ibox-content hide-on-empty">    <ng-template [ngIf]="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">
-        <div class="table-responsive">
-        <div class="files">
-            <a class="files-item"
-               *ngFor="let obj of _dataService.getProviderAttr('objects'); let index = index"
+        <div class="row align-items-center files"
+         *ngFor="let obj of _dataService.getProviderAttr('objects'); let index = index">
+        <div class="col">
+            <a class="files-item text-secondary"
                href="{{getWebPath(obj['path'])}}"
                target="_blank"
-               title="{{obj['name']}}"><span>{{obj['name']}}</span>
-                <div class="txt-align-r actions no-user-select"
-                     (click)="triggerAction($event)">
-                    <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
-                        <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
-                           [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
-                           class="fa"
-                           [attr.data-action]="action"
-                           [attr.data-value]="index"></a>
-                   </ng-template>
-                </div>
-            </a>
+               title="{{obj['name']}}"><span>{{obj['name']}}</span></a>
+        </div>
+        <div class="col-auto txt-align-r actions no-user-select text-secondary"
+             (click)="triggerAction($event)">
+            <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
+                <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                   [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
+                   class="fa"
+                   [attr.data-action]="action"
+                   [attr.data-value]="index"></a>
+            </ng-template>
         </div>
     </div>
     </ng-template><p
@@ -55,3 +57,4 @@
 
 </div>
 
+<js_legend></js_legend>

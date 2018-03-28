@@ -1,0 +1,10 @@
+{% embed 'AppBundle:form:field-types/html-select.html.twig' with {
+'field': field,
+'formField': formField
+} %}
+    {% block choices %}
+        <ng-template ngFor let-choice [ngForOf]="_dataService.getFieldChoices('{{field}}')">
+            <li [attr.data-value]="choice['id']" [innerHtml]="choice['label']"></li>
+        </ng-template>
+    {% endblock %}
+{% endembed %}

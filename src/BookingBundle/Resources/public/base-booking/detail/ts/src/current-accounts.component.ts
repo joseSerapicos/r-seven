@@ -3,7 +3,7 @@ import {Helper} from '../../../../../../../AppBundle/Resources/public/ts/helper'
 import {AccordionComponent, IAccordion, LazyLoadData} from '../../../../../../../AppBundle/Resources/public/accordion/ts/src/accordion.component';
 import {NavManagerService} from '../../../../../../../AppBundle/Resources/public/ts/nav-manager/nav-manager.service';
 import {WizardManagerService} from '../../../../../../../AppBundle/Resources/public/wizard/ts/src/wizard-manager.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
 import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts/actions/actions.service';
 

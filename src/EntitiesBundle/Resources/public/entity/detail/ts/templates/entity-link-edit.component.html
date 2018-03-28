@@ -1,21 +1,19 @@
-<div class="modal-body">
-    <div class="form-wrapper gray-bg">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>
-                        <div class="txt-align-r actions">
-                            <a class="-round fa fa-times"
-                               (click)="closeAction($event)"></a>
-                        </div>
-                    </div>
-                        
+    
     <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
-                    <div class="ibox-content">    
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12">    
             
 
-            <div class="form-group" *ngIf="_formService.getObject().id">
+                <div class="row form-group" *ngIf="_formService.getObject().id">
 
                         <label class="col-sm-2 control-label required" for="form_id">Id</label>
     
@@ -28,40 +26,36 @@
         </div>
                 
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_appIconObj">Icon</label>
     
             <div class="col-sm-10">
-                                            <div [htmlSelect]="'appIconObj'"
-         class="html-select"
+                                                                        <div class="html-select"
+         [htmlSelect]="'appIconObj'"
                                >
-        <div class="form-control"
+        <div class="input-group-control"
              [class.error]="_formService.getErrors()['appIconObj'] && (_formService.getErrors()['appIconObj'].length > 0)">
-            <span class="control">
-                <span class="js_label"></span><a class="pull-right"><i class="fa fa-angle-down"></i></a>
-            </span>
+            <span class="js_label form-control"></span>
+            <a class="pull-right"><i class="fa fa-angle-down"></i></a>
         </div>
         <div class="choices js_choices">
-            <ul class="form-control-box">
-                                    <li data-value="13"><i class="fa fa-facebook-square"></i> (Facebook)</li>
-                                    <li data-value="14"><i class="fa fa-linkedin-square"></i> (Linkedin)</li>
-                                    <li data-value="15"><i class="fa fa-twitter-square"></i> (Twitter)</li>
-                                    <li data-value="16"><i class="fa fa-instagram"></i> (Instagram)</li>
-                                    <li data-value="39"><i class="fa fa-link"></i> (Link)</li>
-                            </ul>
+            <ul class="form-control-box">        <ng-template ngFor let-choice [ngForOf]="_dataService.getFieldChoices('appIconObj')">
+            <li [attr.data-value]="choice['id']" [innerHtml]="choice['label']"></li>
+        </ng-template>
+    </ul>
         </div>
     </div>
     <input [(ngModel)]="_formService.getObject().appIconObj"
            formControlName = appIconObj
            name="form[appIconObj]"
                       type="hidden">
-                    <label class="error" *ngFor="let error of _formService.getErrors().appIconObj">{{error}}</label>
+                                <label class="error" *ngFor="let error of _formService.getErrors().appIconObj">{{error}}</label>
             </div>
         </div>
                 
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_name">Name / Description</label>
     
@@ -72,7 +66,7 @@
         </div>
                 
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_link">Link</label>
     
@@ -83,7 +77,7 @@
         </div>
                 
 
-            <div class="form-group" *ngIf="_formService.getObject().insertTime">
+                <div class="row form-group" *ngIf="_formService.getObject().insertTime">
 
                         <label class="col-sm-2 control-label required" for="form_insertTime">Insert Time</label>
     
@@ -96,7 +90,7 @@
         </div>
                 
 
-            <div class="form-group" *ngIf="_formService.getObject().insertUser">
+                <div class="row form-group" *ngIf="_formService.getObject().insertUser">
 
                         <label class="col-sm-2 control-label required" for="form_insertUser">Insert User</label>
     
@@ -109,7 +103,7 @@
         </div>
                 
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label">Enabled</label>
     
@@ -120,15 +114,18 @@
             </div>
         </div>
         </div>
-                    <div class="ibox-footer hide-on-empty">    
-                    <div class="form-group">
-            <div class="col-sm-10 col-sm-offset-2">
-                                            <button                                     class="btn"
+    </div>
+</div>
+<div class="modal-footer hide-on-empty">
+        
+                    <div class="row">
+            <div class="col-auto ml-auto">
+                                            <button                                     class="btn btn-light"
                                     (click)="cancelAction($event)"
                                         id="form_cancel"
             name="form[cancel]"
             type="button"><i class="fa fa-times"></i>&nbsp;Cancel</button>
-                                                <button                                     class="btn"
+                                                <button                                     class="btn btn-light"
                                     (click)="resetAction($event)"
                                         id="form_reset"
             name="form[reset]"
@@ -145,10 +142,5 @@
             type="button"><i class="fa fa-times"></i>&nbsp;Save and Close</button>
                                 </div>
         </div>
-    </div>                        
-    <input type="hidden" id="form__token" name="form[_token]" value="M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso" /></form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    </div>    
+    <input type="hidden" id="form__token" name="form[_token]" value="sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo" /></form>

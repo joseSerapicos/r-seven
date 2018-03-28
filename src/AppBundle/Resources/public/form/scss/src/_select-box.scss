@@ -1,0 +1,106 @@
+.auto-complete,
+.html-select {
+    position: relative;
+
+    .input-group,
+    .input-group-control {
+        height: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+
+        > input,
+        > span {
+            min-height: 38px;
+            font-size: 13px;
+        }
+
+        > a {
+            position: absolute;
+            color: $baseColor;
+            background-color: #fff;
+            z-index: 9;
+            top: 2px;
+            right: 1px;
+        }
+    }
+
+    .choices {
+        position: absolute;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        z-index: 999;
+
+        > ul {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            list-style-type: none;
+            border: 1px solid #e5e6e7;
+            border-top: 0 none;
+            border-radius: 0 0 3px 3px;
+            background-color: #fff;
+            line-height: 24px;
+            max-height: 132px;
+            overflow: auto;
+
+            li {
+                padding: 3px 6px;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: #e5e6e7;
+                }
+
+                &.-pagination {
+                    overflow: hidden;
+                    text-align: center;
+                    cursor: pointer;
+
+                    > span {
+                        font-family: serif;
+                        font-weight: bold;
+                        font-size: 46px;
+                        line-height: 8px;
+                        position: relative;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.html-select {
+    > .form-control {
+        cursor: pointer;
+    }
+
+    .input-group-control {
+        > span {
+            display: block;
+        }
+
+        > a {
+            padding: 5px 8px;
+        }
+    }
+}
+
+.auto-complete {
+    .input-group {
+        > a {
+            padding: 8px;
+        }
+
+        > .input-group-append {
+            > button {
+                border-top-right-radius: .25rem !important;
+                border-bottom-right-radius: .25rem !important;
+            }
+
+            + a {
+                right: 46px;
+            }
+        }
+    }
+}

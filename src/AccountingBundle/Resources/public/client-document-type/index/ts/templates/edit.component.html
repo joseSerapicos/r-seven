@@ -1,21 +1,19 @@
-<div class="modal-body">
-    <div class="form-wrapper gray-bg">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>
-                        <div class="txt-align-r actions">
-                            <a class="-round fa fa-times"
-                               (click)="closeAction($event)"></a>
-                        </div>
-                    </div>
-                        
+    
     <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
-                    <div class="ibox-content">        
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12">        
                                         
 
-            <div class="form-group" *ngIf="_formService.getObject().id">
+                <div class="row form-group" *ngIf="_formService.getObject().id">
 
                         <label class="col-sm-2 control-label required" for="form_id">Id</label>
     
@@ -28,7 +26,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_name">Name</label>
     
@@ -39,7 +37,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_prefix">Prefix</label>
     
@@ -50,72 +48,72 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_type">Type</label>
     
             <div class="col-sm-10">
-                                        
+                                                                    
         <select id="form_type" name="form[type]" [(ngModel)]="_formService.getObject().type" formControlName="type" [class.error]="_formService.getErrors().type &amp;&amp; _formService.getErrors().type.length &gt; 0" class="form-control">            <option value="INVOICE" >Invoice</option>            <option value="RECTIFICATION" >Rectification</option>            <option value="RECEIPT" >Receipt</option>            <option value="PAYMENT" >Payment</option>            <option value="SETTLEMENT" >Settlement</option></select>
     <input [(ngModel)]="_formService.getObject().type"
            formControlName = type
            required="required"           type="hidden">
 
-                <label class="error" *ngFor="let error of _formService.getErrors().type">{{error}}</label>
+                            <label class="error" *ngFor="let error of _formService.getErrors().type">{{error}}</label>
             </div>
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_operation">Operation</label>
     
             <div class="col-sm-10">
-                                        
+                                                                    
         <select id="form_operation" name="form[operation]" [(ngModel)]="_formService.getObject().operation" formControlName="operation" [class.error]="_formService.getErrors().operation &amp;&amp; _formService.getErrors().operation.length &gt; 0" class="form-control">            <option value="DEBIT" >Debit</option>            <option value="CREDIT" >Credit</option>            <option value="NONE" >None</option></select>
     <input [(ngModel)]="_formService.getObject().operation"
            formControlName = operation
            required="required"           type="hidden">
 
-                <label class="error" *ngFor="let error of _formService.getErrors().operation">{{error}}</label>
+                            <label class="error" *ngFor="let error of _formService.getErrors().operation">{{error}}</label>
             </div>
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_acl">Access Control List</label>
     
             <div class="col-sm-10">
-                                        
+                                                                    
         <select id="form_acl" name="form[acl]" [(ngModel)]="_formService.getObject().acl" formControlName="acl" [class.error]="_formService.getErrors().acl &amp;&amp; _formService.getErrors().acl.length &gt; 0" class="form-control">            <option value="1" >Read</option>            <option value="2" >Edit</option>            <option value="4" >Cancel</option>            <option value="7" >All</option></select>
     <input [(ngModel)]="_formService.getObject().acl"
            formControlName = acl
            required="required"           type="hidden">
 
-                <label class="error" *ngFor="let error of _formService.getErrors().acl">{{error}}</label>
+                            <label class="error" *ngFor="let error of _formService.getErrors().acl">{{error}}</label>
             </div>
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_aclTargetDocs">ACL For Docs.</label>
     
             <div class="col-sm-10">
-                                        
+                                                                    
         <select id="form_aclTargetDocs" name="form[aclTargetDocs]" [(ngModel)]="_formService.getObject().aclTargetDocs" formControlName="aclTargetDocs" [class.error]="_formService.getErrors().aclTargetDocs &amp;&amp; _formService.getErrors().aclTargetDocs.length &gt; 0" class="form-control">            <option value="CREATED" >Created</option>            <option value="NOT_ACCESSED" >Not Accessed</option></select>
     <input [(ngModel)]="_formService.getObject().aclTargetDocs"
            formControlName = aclTargetDocs
            required="required"           type="hidden">
 
-                <label class="error" *ngFor="let error of _formService.getErrors().aclTargetDocs">{{error}}</label>
+                            <label class="error" *ngFor="let error of _formService.getErrors().aclTargetDocs">{{error}}</label>
             </div>
         </div>
                                                     <ng-template [ngIf]="_userRole == 'ROLE_SYSADMIN'">
                     
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label">Requires Sysadmin Role</label>
     
@@ -128,7 +126,7 @@
                     </ng-template>
                                                 
 
-            <div class="form-group" *ngIf="_formService.getObject().insertTime">
+                <div class="row form-group" *ngIf="_formService.getObject().insertTime">
 
                         <label class="col-sm-2 control-label required" for="form_insertTime">Insert Time</label>
     
@@ -141,7 +139,7 @@
         </div>
                                                     
 
-            <div class="form-group" *ngIf="_formService.getObject().insertUser">
+                <div class="row form-group" *ngIf="_formService.getObject().insertUser">
 
                         <label class="col-sm-2 control-label required" for="form_insertUser">Insert User</label>
     
@@ -154,7 +152,7 @@
         </div>
                                                     
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label">Enabled</label>
     
@@ -165,15 +163,18 @@
             </div>
         </div>
                             </div>
-                    <div class="ibox-footer hide-on-empty">    
-                    <div class="form-group">
-            <div class="col-sm-10 col-sm-offset-2">
-                                            <button                                     class="btn"
+    </div>
+</div>
+<div class="modal-footer hide-on-empty">
+        
+                    <div class="row">
+            <div class="col-auto ml-auto">
+                                            <button                                     class="btn btn-light"
                                     (click)="cancelAction($event)"
                                         id="form_cancel"
             name="form[cancel]"
             type="button"><i class="fa fa-times"></i>&nbsp;Cancel</button>
-                                                <button                                     class="btn"
+                                                <button                                     class="btn btn-light"
                                     (click)="resetAction($event)"
                                         id="form_reset"
             name="form[reset]"
@@ -190,10 +191,5 @@
             type="button"><i class="fa fa-times"></i>&nbsp;Save and Close</button>
                                 </div>
         </div>
-    </div>                        
-    <input type="hidden" id="form__token" name="form[_token]" value="M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso" /></form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    </div>    
+    <input type="hidden" id="form__token" name="form[_token]" value="sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo" /></form>

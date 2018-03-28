@@ -1,7 +1,0 @@
-{% if app.session.get('_app.stores') is iterable %}
-    {% for store in app.session.get('_app.stores') %}
-        <li><a href="{{ path('_app__default__index', {'store': store['id']}) }}">{{store['name']}}</a></li>
-    {% endfor %}
-{% else %}
-    <span>No stores available!</span>
-{% endif %}

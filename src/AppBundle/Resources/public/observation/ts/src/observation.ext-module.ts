@@ -7,6 +7,7 @@ import {SearchModule} from '../../../ts/search/search.module';
 import {ExpanderModule} from '../../../ts/expander/expander.module';
 import {SearchPaginationModule} from '../../../ts/search/search-pagination.module';
 import {ObservationComponent} from './observation.component';
+import {LegendExtModule} from "../../../legend/ts/src/legend.ext-module";
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import {ObservationComponent} from './observation.component';
         ReactiveFormsModule,
         SearchModule,
         SearchPaginationModule,
-        ExpanderModule
+        ExpanderModule,
+        LegendExtModule
     ],
     declarations: [
         ObservationComponent

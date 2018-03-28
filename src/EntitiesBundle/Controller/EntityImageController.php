@@ -79,6 +79,9 @@ class EntityImageController extends BaseEntityChildController
             )
         );
 
+        // Legend (disable cancel legend)
+        $this->templateConf['controls']['legend'] = array();
+
         // Extra data
         $parent = reset($this->parentConf);
 

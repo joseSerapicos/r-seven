@@ -1,9 +1,9 @@
 import {Component, ElementRef, Inject, Optional, Injector, Renderer} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
-import {FormProvider} from '../../../../../../../AppBundle/Resources/public/ts/form/form-popup.extension-component';
+import {FormProvider} from '../../../../../../../AppBundle/Resources/public/form/ts/form-popup.extension-component';
 import {FormPopupComponent as ClientDocumentRectificationEditFormPopupComponent} from '../../../edit/ts/src/form-popup.component';
 import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 
 
 /**

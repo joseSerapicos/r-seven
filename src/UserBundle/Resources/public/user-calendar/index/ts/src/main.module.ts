@@ -8,13 +8,13 @@ import {Helper} from '../../../../../../../AppBundle/Resources/public/ts/helper'
 import {TasksLoaderManagerService} from '../../../../../../../AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service';
 import {PostService} from '../../../../../../../AppBundle/Resources/public/ts/post.service';
 import {ModalService} from '../../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {FlashMessageService} from '../../../../../../../AppBundle/Resources/public/ts/flash-message.service';
 import {DynamicComponentLoaderService} from '../../../../../../../AppBundle/Resources/public/ts/dynamic-component-loader.service';
 import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
 import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts/actions/actions.service';
-import {MainExtModule as AppBasicsExtModule} from '../../../../../../../AppBundle/Resources/public/app-basics/ts/src/main.ext-module';
-import {MainComponent as AppBasicsComponent} from '../../../../../../../AppBundle/Resources/public/app-basics/ts/src/main.component';
+import {MainExtModule as AppBasicsExtModule} from '../../../../../../../AppBundle/Resources/public/app-basics/default/ts/src/main.ext-module';
+import {MainComponent as AppBasicsComponent} from '../../../../../../../AppBundle/Resources/public/app-basics/default/ts/src/main.component';
 import {CalendarExtModule} from '../../../../../../../AppBundle/Resources/public/calendar/ts/src/calendar.ext-module';
 import {CalendarComponent} from '../../../../../../../AppBundle/Resources/public/calendar/ts/src/calendar.component';
 import {EditExtModule} from './edit.ext-module';

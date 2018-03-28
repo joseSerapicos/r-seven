@@ -8,7 +8,7 @@
     {% if (form and fields) %}
         {% for field in fields['form'] %}
             {% if field == 'startDateManual' %}
-                <div class="form-group">
+                <div class="row form-group">
                     {% include 'AppBundle:form:label.html.twig' with {
                     'formField': form['bookingServiceObj'][field],
                     'metadata': fields['metadata'][field]
@@ -42,7 +42,7 @@
                     } %}
                 {% endblock %}
             {% elseif field == 'quantityManual' %}
-                <div class="form-group">
+                <div class="row form-group">
                     {% include 'AppBundle:form:label.html.twig' with {
                     'formField': form['bookingServiceObj'][field],
                     'metadata': fields['metadata'][field]
@@ -72,7 +72,7 @@
                     </div>
                 </div>
             {% elseif field == 'confirmationStatus' %}
-                <div class="form-group">
+                <div class="row form-group">
                     {% include 'AppBundle:form:label.html.twig' with {
                     'formField': form['bookingServiceObj'][field],
                     'metadata': fields['metadata'][field]
@@ -95,7 +95,7 @@
                     </div>
                 </div>
             {% elseif field == 'isAutoAvailability' %}
-                <div class="form-group"
+                <div class="row form-group"
                      *ngIf="_formService.getObject()['isEnabledAvailability'] ||
                             _formService.getObject()['isEnabledAllot'] ||
                             _formService.getObject()['isEnabledPrice']">
@@ -137,7 +137,7 @@
                             class="status -{{ _statusMap[getControlDebug('priceDebug')['status']] || 'danger' }}"></span>{% endverbatim %}
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="row form-group">
                     <div class="col-sm-12">
                         {% include 'AppBundle:form:field-types/button.html.twig' with {
                         'field': 'change',

@@ -1,15 +1,11 @@
 {% extends 'AppBundle::base.html.twig' %}
 
 {% block stylesheets %}
-    {% stylesheets filter="scssphp" output="assets/booking/regular-booking/detail/css/all.css"
-        '@AppBundle/Resources/public/scss/select-box.scss'
-        '@AppBundle/Resources/public/tree-view/scss/styles.scss'
-        '@AccountingBundle/Resources/public/base-document/scss/_document.scss'
-        '@dropzone_css'
-        '@AppBundle/Resources/public/css/wizard.css'
-        '@BookingBundle/Resources/public/regular-booking/detail/scss/main.scss'
+    {% stylesheets output="assets/booking/regular-booking/detail/css/local.css"
+    '@BookingBundle/Resources/public/regular-booking/detail/scss/dist/styles.css'
+    '@dropzone_css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 {% endblock %}
 
@@ -33,7 +29,7 @@
 {% block header %}{% endblock %}
 {% block body %}{% endblock %}
 
-{% block local_javascripts %}
+{% block javascripts %}
     {% javascripts output="assets/booking/regular-booking/detail/js/local.js"
         '@BookingBundle/Resources/public/regular-booking/detail/ts/dist/inline.bundle.js'
         '@BookingBundle/Resources/public/regular-booking/detail/ts/dist/polyfills.bundle.js'

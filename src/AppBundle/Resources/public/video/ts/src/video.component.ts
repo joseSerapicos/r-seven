@@ -85,7 +85,7 @@ export class VideoComponent extends DataBoxComponent
      * @param action (can be provided by $event or directly in the call)
      * @param data (can be provided by $event or directly in the call)
      */
-    protected triggerAction($event: any, action: string = null, data: any = null): void
+    public triggerAction($event: any, action: string = null, data: any = null): void
     {
         if ($event) {
             $event.preventDefault();

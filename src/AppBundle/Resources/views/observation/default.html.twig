@@ -1,25 +1,29 @@
 {% extends 'AppBundle:data-box:base.html.twig' %}
 {% block body_container %}
     <div class="row">
-        <div class="col-sm-6"
+        <div class="col col-md-6 pb-3"
              *ngFor="let obj of _dataService.getProviderAttr('objects'); let index = index">
-            <div class="panel"
-                 [class.panel-default]="obj['type'] == 'DEFAULT'"
-                 [class.panel-info]="obj['type'] == 'INFO'"
-                 [class.panel-warning]="obj['type'] == 'WARNING'"
-                 [class.panel-danger]="obj['type'] == 'DANGER'">
-                <div class="panel-heading">
+            <div class="card"
+                 [class.border-info]="obj['type'] == 'INFO'"
+                 [class.border-warning]="obj['type'] == 'WARNING'"
+                 [class.border-danger]="obj['type'] == 'DANGER'">
+                <div class="card-header"
+                     [class.bg-light]="obj['type'] == 'DEFAULT'"
+                     [class.bg-info]="obj['type'] == 'INFO'"
+                     [class.bg-warning]="obj['type'] == 'WARNING'"
+                     [class.bg-danger]="obj['type'] == 'DANGER'"
+                     [class.text-white]="obj['type'] != 'DEFAULT'">
                     <i class="fa"
-                       [class.panel-default]="obj['type'] == 'DEFAULT'"
+                       [class.fa-check-circle]="obj['type'] == 'DEFAULT'"
                        [class.fa-info-circle]="obj['type'] == 'INFO'"
                        [class.fa-warning]="obj['type'] == 'WARNING'"
-                       [class.panel-danger]="obj['type'] == 'DANGER'"></i>&nbsp;{% verbatim %}{{obj['name']}}{% endverbatim %}
+                       [class.fa-minus-circle]="obj['type'] == 'DANGER'"></i>&nbsp;{% verbatim %}{{obj['name']}}{% endverbatim %}
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <p>{% verbatim %}{{obj['description']}}{% endverbatim %}</p>
                 </div>
-                <div class="panel-footer txt-align-r">
-                    <span class="txt-align-r actions no-user-select"
+                <div class="card-footer text-right">
+                    <span class="txt-align-r actions no-user-select text-secondary"
                           (click)="triggerAction($event)">
                         <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
                             <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"

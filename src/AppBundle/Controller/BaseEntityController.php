@@ -38,6 +38,10 @@ abstract class BaseEntityController extends BaseController
         $this->responseConf['objects'] = null;
         $this->responseConf['hasObject'] = true;
         $this->responseConf['object'] = null;
+        // Mark session storage object with a flag to be identified by template
+        $this->responseConf['addObjectSessionStorageFlag'] = true;
+        // Update fields choices with self reference (generally used in 'edit' and 'delete' actions)
+        $this->responseConf['hasFieldsChoicesUpdate'] = false;
         /* /Response */
 
         return $this;
@@ -137,7 +141,6 @@ abstract class BaseEntityController extends BaseController
         /* Fields */
         $templateFieldsConf = $this->getTemplateFieldsConf();
         $this->templateConf['fields'] = $templateFieldsConf['fields'];
-        $this->templateConf['fieldsChoices'] = $templateFieldsConf['fieldsChoices'];
         /* /Fields */
 
         /* Route */
@@ -155,7 +158,7 @@ abstract class BaseEntityController extends BaseController
         if (isset($this->localConf['entityFields']['priority'])) {
             $orderByField = array('field' => 'priority', 'value' => 'ASC');
         } elseif (isset($this->localConf['entityFields']['name'])) {
-            $orderByField = array('field' => 'name', 'value' => 'DESC');
+            $orderByField = array('field' => 'name', 'value' => 'ASC');
         } else {
             $orderByField = array('field' => 'id', 'value' => 'DESC');
         }
@@ -200,9 +203,9 @@ abstract class BaseEntityController extends BaseController
             'fields' => array(
                 'view' => array(), // Fields to render in 'view context'
                 'form' => array(), // Fields to render in 'form context'
-                'metadata' => array() // Metadata about fields
+                'metadata' => array(), // Metadata about fields
+                'choices' => array() // Choices for object or enum fields
             ),
-            'fieldsChoices' => array(),
             'defaultSelection' => array() // Fields selected by default to be shown in view (selected in search conf)
         );
 
@@ -212,28 +215,15 @@ abstract class BaseEntityController extends BaseController
         }
 
         $defaultChoices = array(
-            'autoRefresh' => false,
-            'selfReference' => false,
+            'type' => null,
+            'hasSelfReference' => false,
             'query' => null,
-            'value' => null,
+            'value' => null
         );
 
         foreach ($this->localConf['entityFields'] as $field => $fieldMetadata) {
             $contextType = $this->getFieldMetadata($field, 'type', $context);
             $formType = $this->getFieldMetadata($field, 'type', 'form');
-
-            // Object choices
-            if (!empty($fieldMetadata['typeDetail']) && !empty($fieldMetadata['typeDetail']['choices'])) {
-                // Normalize choices array
-                $choices = array_merge($defaultChoices, $fieldMetadata['typeDetail']['choices']);
-
-                if ($choices['autoRefresh']) {
-                    $choices['value'] = $this->getFieldChoices($field);
-                }
-
-                unset($choices['query']); // This information shouldn't be in template
-                $templateFieldsConf['fieldsChoices'][$field] = $choices;
-            }
 
             // Add field
             $notAllowedTypes = array(
@@ -295,11 +285,36 @@ abstract class BaseEntityController extends BaseController
                     'parent' => (empty($fieldMetadata['parent']) ? null : $fieldMetadata['parent'])
                 );
 
+                // Choices (object and enum type, 'auto-complete' get choices at run-time, so does not need this conf)
+                if (in_array($fieldMetadata['type'], array('object', 'enum')) &&
+                    !in_array($formType, array('auto-complete', 'hidden-entity'))) {
+                    // Normalize choices array
+                    $choices = array_merge(
+                        $defaultChoices,
+                        ((isset($fieldMetadata['typeDetail']) && isset($fieldMetadata['typeDetail']['choices'])) ?
+                            $fieldMetadata['typeDetail']['choices'] :
+                            array()
+                        )
+                    );
+
+                    // Used to determine the method to render in view
+                    $choices['type'] = $fieldMetadata['type'];
+
+                    // NOTE: Choices values for foreign key objects are not defined here,
+                    // to avoid get object from database all times that conf is initialized,
+                    // so we handle with this choices values only when this information is necessary,
+                    // and this is determined in the response.
+
+                    $templateFieldsConf['fields']['choices'][$field] = $choices;
+                }
+
                 // Merge with specific data for view
-                if (isset($fieldMetadata['view'])) {
+                if (($fieldsContext == 'view') && isset($fieldMetadata['view'])) {
                     $templateFieldsConf['fields']['metadata'][$field] = array_merge(
-                        $templateFieldsConf['fields']['metadata'][$field],
-                        $fieldMetadata['view']
+                    // NOTE: This array first to be override by the second
+                    // (where fields like 'type' are more refined according with form context)
+                        $fieldMetadata['view'],
+                        $templateFieldsConf['fields']['metadata'][$field]
                     );
                 }
 
@@ -636,8 +651,8 @@ abstract class BaseEntityController extends BaseController
             }
         }
 
-        // Refresh to update fields choices
-        $this->refreshConf();
+        // Update fields choices with self reference
+        $this->responseConf['hasFieldsChoicesUpdate'] = true;
 
         $this->addFlashMessage( // Flash message to display to user
             'The data has been deleted',
@@ -685,8 +700,8 @@ abstract class BaseEntityController extends BaseController
         }
 
         if ($this->responseConf['status'] === 1) {
-            // Refresh to update fields choices
-            $this->refreshConf();
+            // Update fields choices with self reference
+            $this->responseConf['hasFieldsChoicesUpdate'] = true;
 
             // Config response
             $this->responseConf['object'] = $this->normalizeObject($obj); // Object updated
@@ -716,24 +731,6 @@ abstract class BaseEntityController extends BaseController
         $this->responseConf['hasConf'] = true;
         $this->responseConf['hasObjects'] = true;
         return $this->getResponse(true);
-    }
-
-    /**
-     * Refresh conf
-     * @return $this
-     */
-    protected function refreshConf()
-    {
-        // Fields choices
-        if (is_array($this->templateConf['fieldsChoices'])) {
-            foreach ($this->templateConf['fieldsChoices'] as $key => $value) {
-                if ($value['autoRefresh']) {
-                    $this->templateConf['fieldsChoices'][$key]['value'] = $this->getFieldChoices($key);
-                }
-            }
-        }
-
-        return $this;
     }
 
     /**
@@ -1215,8 +1212,8 @@ abstract class BaseEntityController extends BaseController
             // otherwise the flush method was not called and the object has not yet persisted in database,
             // this procedure is used when we have many operations in the same "flush" (transaction)
         ) {
-            // Refresh to update fields choices
-            $this->refreshConf();
+            // Update fields choices with self reference
+            $this->responseConf['hasFieldsChoicesUpdate'] = true;
 
             // Flash messages to display to user
             $this->addFlashMessage(
@@ -1563,114 +1560,105 @@ abstract class BaseEntityController extends BaseController
     }
 
     /**
-     * Get field choices
+     * Get fields choices
+     * @param $hasSelfReferenceOnly (if enabled, define choices only for fields with self reference enabled)
+     * @return array
+     */
+    protected function getFieldsChoices($hasSelfReferenceOnly = false)
+    {
+        $candidateFieldsChoices = $this->templateConf['fields']['choices'];
+        $fieldsChoices = array();
+
+        if (is_array($candidateFieldsChoices) && (count($candidateFieldsChoices) > 0)) {
+            foreach ($candidateFieldsChoices as $candidateField => $candidateFieldChoices) {
+                if (!$hasSelfReferenceOnly || ($hasSelfReferenceOnly && $candidateFieldChoices['hasSelfReference'])) {
+                    if ($candidateFieldChoices['type'] == 'object') {
+                        $fieldsChoices[$candidateField]['value'] = $this->getFieldChoicesFromDb($candidateField);
+                    } else {
+                        // Enum
+                        $fieldsChoices[$candidateField]['value'] = array();
+
+                        if (is_array($candidateFieldChoices['value']) && (count($candidateFieldChoices['value']) > 0)) {
+                            foreach ($candidateFieldChoices['value'] as $label => $id) {
+                                $fieldsChoices[$candidateField]['value'][] = array('id' => $id, 'label' => $label);
+                            }
+                        }
+                    }
+                    unset($fieldsChoices[$candidateField]['query']); // This information shouldn't be in template
+                }
+            }
+        }
+
+        return $fieldsChoices;
+    }
+
+    /**
+     * Get field choices from database
      * @param $field
      * @return array
      */
-    protected function getFieldChoices($field)
+    protected function getFieldChoicesFromDb($field)
     {
-        $autoRefresh = $this->getFieldMetadata($field, 'autoRefresh');
+        $choices = array();
 
-        ////////
-        // If not auto refresh, retrieve an array of objects to be renderer by "EntityType" in form
-        ////////////////////////////////
-        if (!$autoRefresh) {
-            // Specific query to get choices
-            $query = $this->getFieldMetadata($field, 'query');
+        // Query to get choices in repository
+        $query = $this->getFieldMetadata($field, 'query'); // Specific defined in metadata
+        if (empty($query)) { $query = 'getChoices'; } // Default
 
-            // Generic query to get choices
-            if (empty($query)) { $query = 'getChoices'; }
-
-            //if (in_array($field, array('storeObj', 'userObj', 'userGroupObj', 'shareUserObj'))) {
-
-            return $this->getLocalRepositoryService()
-                // Repository needs to be redefined to the field entity repository,
-                // however local repository service is used to use the local entity manager
-                // (local database is injected in the constructor of the repository service)
-                ->setEntityRepository(
-                    $this->getFieldMetadata($field, 'Bundle') . ':' . $this->getFieldMetadata($field, 'entity')
-                )
-                ->execute($query);
-        }
-
-        ////////
-        // If auto refresh, retrieve array of arrays to be converted in Json object and renderer by Angular
-        ////////////////////////////////
-        $table = $this->getFieldMetadata($field, 'parentTable');
-        $formType = $this->getFieldMetadata($field, 'type', 'form');
-
-        // To force to resolve dependencies (ie: User has the name field in Entity) don't use the format "table.field"
-        $fields = array('id', 'name');
-        if ($formType == 'tree-view') {
-            $fields[] = $field; // Self reference
-        }
-
-        // Use Entity Repository of table
         $entity = $this->getFieldMetadata($field, 'entity');
         $Bundle = $this->getFieldMetadata($field, 'Bundle');
-        $choicesValue = $this->getRepositoryService($entity, $Bundle)
-            ->execute(
-                'queryBuilder',
-                array(
-                    array(
-                        'fields' => $fields,
-                        'orderBy' => array(
-                            array('field' => 'name', 'value' => 'ASC')
-                        ),
-                        // Don't use this criteria, when edit child nodes of disabled parents,
-                        // the parent doesn't appears!
-                        'criteria' => (($formType == 'tree-view')
-                            ? array(array('field' => 'isEnabled', 'expr' => 'eq', 'value' => 1))
-                            : array())
-                    )
-                )
-            );
-        // @TODO create index label instead and consider send field of label as parameter
-        // $labelFields = array('id', 'name') has as result "id - name"
-        $choicesValue = array_map(
-            function($value) {
-                $value['name'] = ($value['id'] . ' - ' . $value['name']);
-                return $value;
-            },
-            $choicesValue
-        );
+        $formType = $this->getFieldMetadata($field, 'type', 'form');
 
-        switch ($formType) {
-            case 'tree-view':
-                // Order nodes in array by parent node, using the parent id as index (0 for root nodes)
-                // It needs that the parameter "field" has been configured into the parameter "object"
-                $nodes = array();
-                if (is_array($choicesValue) && (count($choicesValue) > 0)) {
-                    foreach ($choicesValue as $choice) {
-                        $index = (empty($choice[$field]) ? 0 : $choice[$field]);
-                        $nodes[$index][] = $choice;
+        $objects = $this->getLocalRepositoryService()
+            // Repository needs to be redefined to the field entity repository,
+            // however local repository service is used to use the local entity manager
+            // (local database is injected in the constructor of the repository service)
+            ->setEntityRepository($Bundle . ':' . $entity)
+            ->execute($query);
+
+        // Normalize choices
+        if (is_array($objects) && (count($objects ) > 0)) {
+            switch ($formType) {
+                case 'tree-view':
+                    // Order nodes in array by parent node, using the parent id as index (0 for root nodes)
+                    // It needs that the parameter "field" has been configured into the parameter "object"
+                    $nodes = array();
+                    $getMethod = ('get'.ucfirst($field));
+
+                    foreach ($objects as $object) {
+                        $parentId = ($object->$getMethod() ? $object->$getMethod()->getId() : null);
+                        $index = (empty($parentId) ? 0 : $parentId);
+                        $nodes[$index][] = array('id' => $object->getId(), $field => $parentId, 'label' => $object->__toString());
                     }
-                }
 
-                // Order nodes in array by level dependency, immediately bellow your parent node
-                $choicesValue = array();
-                $getRecursiveNodes = function($index, $levelPrefix, $ascendantNodes) use (&$getRecursiveNodes, &$nodes, &$choicesValue)
-                {
-                    if (!empty($nodes[$index]) && is_array($nodes[$index])) {
-                        foreach ($nodes[$index] as $node) {
-                            // Send the name whit the prefix based on the level
-                            $node['name'] = ($levelPrefix.$node['name']);
+                    // Order nodes in array by level dependency, immediately bellow your parent node
+                    $choices = array();
+                    $getRecursiveNodes = function ($index, $levelPrefix, $ascendantNodes) use (&$getRecursiveNodes, &$nodes, &$choices) {
+                        if (!empty($nodes[$index]) && is_array($nodes[$index])) {
+                            foreach ($nodes[$index] as $node) {
+                                // Send the name whit the prefix based on the level
+                                $node['label'] = ($levelPrefix . $node['label']);
 
-                            // Array of ascendant nodes
-                            $localAscendantNodes = $ascendantNodes;
-                            $localAscendantNodes[$node['id']] = $node['id'];
-                            $node['ascendantNodes'] = $localAscendantNodes;
+                                // Array of ascendant nodes
+                                $localAscendantNodes = $ascendantNodes;
+                                $localAscendantNodes[$node['id']] = $node['id'];
+                                $node['ascendantNodes'] = $localAscendantNodes;
 
-                            $choicesValue[] = $node;
-                            $getRecursiveNodes($node['id'], $levelPrefix.'. ', $localAscendantNodes);
+                                $choices[] = $node;
+                                $getRecursiveNodes($node['id'], $levelPrefix . '. ', $localAscendantNodes);
+                            }
                         }
+                    };
+                    $getRecursiveNodes(0, '', array());
+                    break;
+                default:
+                    foreach ($objects as $object) {
+                        $choices[] = array('id' => $object->getId(), 'label' => $object->__toString());
                     }
-                };
-                $getRecursiveNodes(0, '', array());
-                break;
+            }
         }
 
-        return $choicesValue;
+        return $choices;
     }
 
     /**
@@ -1902,9 +1890,10 @@ abstract class BaseEntityController extends BaseController
      * Normalize and get the response for user
      * @param bool $isJson (is a json response)
      * @param array $extraData (extra data to merge into response)
+     * @param $hasSymfonyResponse (wrap the response in a Symfony response)
      * @return array
      */
-    protected function getResponse($isJson = false, $extraData = array())
+    protected function getResponse($isJson = false, $extraData = array(), $hasSymfonyResponse = true)
     {
         $data = array();
 
@@ -1931,12 +1920,19 @@ abstract class BaseEntityController extends BaseController
             }
         }
 
-        // Add mandatory conf if is not configured to send
-        if (!$this->responseConf['hasConf']) {
-            $data['fieldsChoices'] = $this->templateConf['fieldsChoices'];
+        // Update mandatory conf
+        if ($this->responseConf['hasConf']) {
+            // Set field choices (usually added in 'conf' and 'data' actions)
+            $this->templateConf['fields']['choices'] = $this->getFieldsChoices();
+        } else {
+            // Add mandatory conf if is not configured to send
+            if ($this->responseConf['hasFieldsChoicesUpdate']) {
+                // Update fields choices with self reference (generally used in 'edit' and 'delete' actions)
+                $data['fields']['choices'] = $this->getFieldsChoices(true);
+            }
         }
 
-        return parent::getResponse($isJson, array_merge($data, $extraData));
+        return parent::getResponse($isJson, array_merge($data, $extraData), $hasSymfonyResponse);
     }
 
     /**

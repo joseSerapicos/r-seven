@@ -1,10 +1,11 @@
 {% extends 'AppBundle::base.html.twig' %}
 
 {% block stylesheets %}
-    {% stylesheets filter="scssphp" output="assets/app/file/css/all.css"
-        '@dropzone_css'
+    {% stylesheets output="assets/entities/entity-file/profile/css/local.css"
+    '@EntitiesBundle/Resources/public/entity-file/profile/scss/dist/styles.css'
+    '@dropzone_css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 {% endblock %}
 
@@ -15,7 +16,7 @@
     <div class="js_file"></div>
 {% endblock %}
 
-{%  block local_javascripts %}
+{%  block javascripts %}
     {% javascripts output="assets/entities/entity-file/profile/js/local.js"
         '@EntitiesBundle/Resources/public/entity-file/profile/ts/dist/inline.bundle.js'
         '@EntitiesBundle/Resources/public/entity-file/profile/ts/dist/polyfills.bundle.js'

@@ -9,8 +9,8 @@
 
 {% block first_step %}
     {% include 'AppBundle:wizard:start-static-container.html.twig' %}
-        <div class="row m-t-md">
-            <div class="col-sm-12">
+        <div class="row">
+            <div class="col-12">
                 <div class="form-control-box"
                      [ngClass]="{'error': errors.source && (errors.source.length > 0)}">
                     <input [(ngModel)]="_source" name="source" type="hidden">

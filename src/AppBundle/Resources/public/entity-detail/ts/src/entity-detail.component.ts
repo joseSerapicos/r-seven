@@ -57,7 +57,7 @@ export class EntityDetailComponent extends BaseExtensionComponent
      * @param $event
      * @param action (can be provided by $event or directly in the call)
      */
-    protected triggerAction($event: any, action: string = null): void
+    public triggerAction($event: any, action: string = null): void
     {
         if ($event) { $event.preventDefault(); }
 

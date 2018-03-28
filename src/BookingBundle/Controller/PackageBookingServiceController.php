@@ -118,10 +118,10 @@ class PackageBookingServiceController extends BaseBookingServiceController
 
         /* Legend for template/view */
         $this->templateConf['controls']['legend'][] = array(
-            'label' => 'Grouped Service', 'class' => 'bg-warning-light', 'field' => 'grouperBookingServiceObj'
+            'label' => 'Grouper Service', 'class' => 'legend-grouper', 'field' => 'grouperBookingServicePriceObj'
         );
         $this->templateConf['controls']['legend'][] = array(
-            'label' => 'Grouper Service', 'class' => 'bg-warning', 'field' => 'grouperBookingServicePriceObj'
+            'label' => 'Grouped Service', 'class' => 'legend-grouped', 'field' => 'grouperBookingServiceObj'
         );
         /* /Legend for template/view */
 
@@ -563,7 +563,9 @@ class PackageBookingServiceController extends BaseBookingServiceController
                         'packageServiceServiceObj' => $packageServiceServiceObj->getId(),
                         'bookingServiceObj' => $newBookingServiceObj->getId(),
                         'thumbnail' => $packageServiceService_serviceObj->getThumbnail(),
-                        'icon' => $packageServiceService_serviceObj->getAppIconObj()->getIcon(),
+                        'icon' => ($packageServiceService_serviceObj->getAppIconObj() ?
+                            $packageServiceService_serviceObj->getAppIconObj()->getIcon() : ''
+                        ),
                         'name' => $packageServiceService_serviceObj->getName(),
                         'description' => $newBookingServiceObj->getDescription(),
                         'startDate' => $newBookingServiceObj->normalizeDate($newBookingServiceObj->getStartDate()),
@@ -835,6 +837,10 @@ class PackageBookingServiceController extends BaseBookingServiceController
     public function confLocalChildForBookingAction(Request $request, $booking)
     {
         $this->initChild($request, array($booking));
+
+        // Remove legend
+        $this->templateConf['controls']['legend'] = array();
+
         // Avoid DataService normalization (boolean)
         $this->templateConf['fields']['metadata']['isAutoAllot']['type'] = 'number';
         // Keep original value to sum objects in view

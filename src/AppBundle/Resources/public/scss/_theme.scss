@@ -1,0 +1,83 @@
+// Vendor
+@import "../../../../../node_modules/font-awesome-base64/_index.scss";
+
+@import "../../../../../node_modules/bootstrap/scss/bootstrap.scss";
+@import "../../../../../node_modules/bootstrap/scss/bootstrap-grid.scss";
+
+
+/////////////////////////
+// variables
+//////////////////////////////
+// Check out documentation: https://getbootstrap.com/docs/4.0/getting-started/theming/
+
+
+/////////////////////////
+// media queries
+//////////////////////////////
+// Check out documentation: https://getbootstrap.com/docs/4.0/layout/overview/
+
+
+/////////////////////////
+// grid
+//////////////////////////////
+// Check out documentation: https://getbootstrap.com/docs/4.0/layout/grid/
+
+
+/////////////////////////
+// colors
+//////////////////////////////
+// Check out documentation: https://getbootstrap.com/docs/4.0/utilities/colors/
+
+// Base colors to merge with bootstrap
+$logoPrimaryColor: #02bcfa;
+
+// Use logo colors to personalize bootstrap
+$logoSecondaryColor: #fad102;
+$baseColor: #404447;
+$theme-colors: (
+    "base": $baseColor,
+    "primary": $logoPrimaryColor,
+    "warning": $logoSecondaryColor
+);
+
+
+$left-sidebar-bgcolor: #343a40; // bg-dark
+$left-sidebar-txtcolor: #adb5bd; //  // text-lighter
+$left-sidebar-active-bgcolor: #f8f9fa; // bg-light
+$left-sidebar-active-txtcolor: #343a40; // text-dark
+$left-sidebar-selected-bgcolor: #dadfe3; // bg-light:hover
+$left-sidebar-selected-txtcolor: #343a40; // text-dark
+
+
+$top-sidebar-active-bgcolor-hover: #dadfe3; // bg-light:hover
+$top-sidebar-active-bgcolor: #f8f9fa; // bg-light
+
+// general colors
+////////////////////////////////////////////////
+$primaryColor: #007bff; // Bootstrap base
+$primaryDarkColor: #0069d9; // Bootstrap hover
+$primaryDarkerColor: #0062cc; // Bootstrap active (click)
+
+$secondaryLighterColor: #93a0aa;
+$secondaryLightColor: #8a959a; // Custom (used in legends)
+$secondaryColor: #6c757d; // Bootstrap base
+$secondaryDarkColor: #5a6268; // Bootstrap hover
+$secondaryDarkerColor: #545b62; // Bootstrap active (click)
+
+$warningLighterColor: #FBFFBC; // Custom (used in legends)
+$warningLightColor: #FFF99D; // Custom (used in legends)
+$warningColor: #ffc107; // Bootstrap base
+$warningDarkColor: #e0a800; // Bootstrap hover
+$warningDarkerColor: #d39e00; // Bootstrap active (click)
+
+$lightColor: #f8f9fa; // Bootstrap base
+$lightDarkColor: #e2e6ea; // Bootstrap hover
+$lightDarkerColor: #dae0e5; // Bootstrap active (click)
+
+$darkColor: #343a40; // Bootstrap base
+$darkDarkColor: #23272b; // Bootstrap hover
+$darkDarkerColor: #1d2124; // Bootstrap active (click)
+
+// specific colors
+////////////////////////////////////////////////
+$borderColor: #dee2e6;

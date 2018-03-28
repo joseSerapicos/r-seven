@@ -325,9 +325,6 @@ abstract class BaseDocumentController extends BaseEntityController
                     $this->responseConf['object'] = $this->normalizeObject($obj); // Object updated
                 }
 
-                // Refresh to update fields choices
-                $this->refreshConf();
-
                 // Flash messages to display to user
                 $this->addFlashMessage(
                     'The data has been updated',
@@ -442,9 +439,6 @@ abstract class BaseDocumentController extends BaseEntityController
                     $this->responseConf['object'] = $this->normalizeObject($obj); // Object updated
                 }
 
-                // Refresh to update fields choices
-                $this->refreshConf();
-
                 // Flash messages to display to user
                 $this->addFlashMessage(
                     'The data has been updated',
@@ -550,9 +544,6 @@ abstract class BaseDocumentController extends BaseEntityController
                 if ($this->responseConf['hasObject']) {
                     $this->responseConf['object'] = $this->normalizeObject($obj); // Object updated
                 }
-
-                // Refresh to update fields choices
-                $this->refreshConf();
 
                 // Flash messages to display to user
                 $this->addFlashMessage(
@@ -664,9 +655,6 @@ abstract class BaseDocumentController extends BaseEntityController
                 if ($this->responseConf['hasObject']) {
                     $this->responseConf['object'] = $this->normalizeObject($obj); // Object updated
                 }
-
-                // Refresh to update fields choices
-                $this->refreshConf();
 
                 // Flash messages to display to user
                 $this->addFlashMessage(

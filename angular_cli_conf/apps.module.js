@@ -29,6 +29,13 @@ module.exports = function() {
         ngConf['apps'][0]['tsconfig'] = ("../tsconfig.json");
         ngConf['lint'][0]['project'] = ("../tsconfig.json");
 
+        // Check if app is correctly configured.
+        var ngInFile = (ngConf['apps'][0]['root'] + '/' + ngConf['apps'][0]['main']);
+        if (!fs.existsSync(ngInFile)) {
+            console.log("\n[Warning] Entry not found for app '" + app + "'.\n");
+            return null;
+        }
+
         fs.writeFile(__dirname + "/../.angular-cli.json", JSON.stringify(ngConf), function(err) {
             if(err) { console.log(err); return null; }
         });
@@ -42,7 +49,7 @@ module.exports = function() {
         ];
 
         fs.writeFile(appPaths['rootDir'] + "tsconfig.json", JSON.stringify(tsConf), function(err) {
-            if(err) { console.log(err); return null; }
+            if(err) { console.log('[Error] ' + err); return null; }
         });
 
         return ngConf;

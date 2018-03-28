@@ -1,7 +1,7 @@
 import {Component, ElementRef, Inject, Optional, Injector, ReflectiveInjector, Renderer, ViewChild, ViewContainerRef} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {DynamicComponentLoaderService} from '../../../../../../../AppBundle/Resources/public/ts/dynamic-component-loader.service';
 import {PostService} from '../../../../../../../AppBundle/Resources/public/ts/post.service';
 import {BookingServiceEditComponent as BaseBookingServiceEditComponent, BaseBookingServiceEditProvider} from '../../../../base-booking-service/edit/ts/src/booking-service-edit.component';

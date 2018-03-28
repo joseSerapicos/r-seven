@@ -1,17 +1,17 @@
-{% if (field is defined) and (formField is defined) and (selfReference is defined) %}
+{% if (field is defined) and (formField is defined) and (hasSelfReference is defined) %}
     {% include 'AppBundle:form:field-types/select-start.html.twig' with {
         'formField': formField,
         'field': field
     } %}
         <option value=""></option>
-        {% if selfReference %}
-            <ng-template ngFor let-choice [ngForOf]="_dataService.getFieldChoices('{{ field }}')">
+        {% if hasSelfReference %}
+            <ng-template ngFor let-choice [ngForOf]="_dataService.getFieldChoices('{{field}}')">
                 <option *ngIf="choice['id'] != _formService.getObject()['id']"
-                        value="{% verbatim %}{{choice['id']}}{% endverbatim %}">{% verbatim %}{{choice['name']}}{% endverbatim %}</option>
+                        value="{% verbatim %}{{choice['id']}}{% endverbatim %}">{% verbatim %}{{choice['label']}}{% endverbatim %}</option>
             </ng-template>
         {% else %}
             <option *ngFor="let choice of _dataService.getFieldChoices('{{ field }}')"
-                    value="{% verbatim %}{{choice['id']}}{% endverbatim %}">{% verbatim %}{{choice['name']}}{% endverbatim %}</option>
+                    value="{% verbatim %}{{choice['id']}}{% endverbatim %}">{% verbatim %}{{choice['label']}}{% endverbatim %}</option>
         {% endif %}
     </select>
     {% do formField.setRendered %}

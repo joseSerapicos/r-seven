@@ -14,32 +14,7 @@ export interface VideoPlayerProvider extends BaseProvider {
 
 @Component({
     selector: '.js_videoPlayerPopup',
-    template: `
-    <div class="modal-body">
-        <div class="form-wrapper gray-bg">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="ibox float-e-margins">
-                        <div class="ibox-title">
-                            <h5>Video Player</h5>
-                            <div class="txt-align-r actions">
-                                <a class="-round fa fa-times"
-                                   (click)="closeAction($event)"></a>
-                            </div>
-                        </div>
-                        <div class="ibox-content video-player">
-                            <video *ngIf="getProviderAttr('source') == 'file'"
-                                   class="js_flvPlayer video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
-                                   controls><source [src]="_url" type="video/{{getExtension()}}"></video>
-                            <iframe *ngIf="getProviderAttr('source') == 'youtube'" [src]="_url" frameborder="0" allowfullscreen></iframe>
-                            <iframe *ngIf="getProviderAttr('source') == 'vimeo'" [src]="_url" frameborder="0" allowfullscreen></iframe>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    `
+    templateUrl: '../templates/video-player-popup.component.html'
 })
 export class VideoPlayerPopupComponent extends BaseModalPopup
 {

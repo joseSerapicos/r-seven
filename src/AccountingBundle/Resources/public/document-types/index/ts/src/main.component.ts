@@ -1,7 +1,7 @@
 import {Component, Optional, ElementRef, Inject, Renderer, QueryList, ViewContainerRef, ViewChildren} from '@angular/core';
 import {AccordionComponent, IAccordion, LazyLoadData} from '../../../../../../../AppBundle/Resources/public/accordion/ts/src/accordion.component';
 import {NavManagerService} from '../../../../../../../AppBundle/Resources/public/ts/nav-manager/nav-manager.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {DataBoxExtensionModule} from '../../../../../../../AppBundle/Resources/public/data-box/ts/src/data-box.extension-module';
 import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
 import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts/actions/actions.service';
@@ -83,7 +83,8 @@ export class MainComponent extends AccordionComponent implements IAccordion
             ActionsService,
             {provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data)},
             {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
-            {provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data)}
+            {provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data)},
+            {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)}
         ];
 
         switch (index) {

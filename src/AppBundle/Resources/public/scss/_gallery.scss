@@ -1,5 +1,3 @@
-@import "variables";
-
 .gallery {
     text-align: center;
 }
@@ -14,7 +12,7 @@
     position: relative;
     width: 180px;
     height: 136px;
-    background-color: #676a6c;
+    background-color: $secondaryColor;
 }
 .gallery > .gallery-item.-video > span {
     width: 180px;

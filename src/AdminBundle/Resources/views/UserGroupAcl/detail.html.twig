@@ -1,12 +1,10 @@
 {% extends 'AppBundle::base.html.twig' %}
 
 {% block stylesheets %}
-    {% stylesheets filter="scssphp" output="assets/admin/user-group-acl/detail/css/all.css"
-        '@AppBundle/Resources/public/tree-view/scss/styles.scss'
-        '@AppBundle/Resources/public/scss/select-box.scss'
-        '@AppBundle/Resources/public/scss/choices-box.scss'
+    {% stylesheets output="assets/admin/user-group-acl/detail/css/local.css"
+    '@AdminBundle/Resources/public/user-group-acl/detail/scss/dist/styles.css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 {% endblock %}
 
@@ -34,7 +32,7 @@
     } %}
 {% endblock %}
 
-{% block local_javascripts %}
+{% block javascripts %}
     {% javascripts output="assets/admin/user-group-acl/detail/js/local.js"
         '@AdminBundle/Resources/public/user-group-acl/detail/ts/dist/inline.bundle.js'
         '@AdminBundle/Resources/public/user-group-acl/detail/ts/dist/polyfills.bundle.js'

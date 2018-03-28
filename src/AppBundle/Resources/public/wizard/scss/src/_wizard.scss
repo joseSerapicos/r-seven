@@ -1,0 +1,72 @@
+.wizard-nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+}
+
+.wizard-step {
+    display: inline-block;
+    position: relative;
+    background-color: $left-sidebar-active-bgcolor;
+    height: 50px;
+    line-height: 50px;
+    margin: 0 16px 1px 0;
+    white-space: nowrap;
+}
+.wizard-step:nth-child(n+2):before {
+    content: "";
+    width: 1px;
+    height: 1px;
+    position: absolute;
+    left: -13px;
+    background: transparent;
+    border: 20px solid transparent;
+    border-width: 25px 13px 25px 13px;
+    border-top-color: $left-sidebar-active-bgcolor;
+    border-bottom-color: $left-sidebar-active-bgcolor;
+}
+.wizard-step:after {
+    content: "";
+    width: 1px;
+    height: 1px;
+    position: absolute;
+    top: 0;
+    right: -26px;
+    background: transparent;
+    border: 20px solid transparent;
+    border-width: 25px 13px 25px 13px;
+    border-left-color: $left-sidebar-active-bgcolor;
+}
+
+.wizard-step span {
+    display: inline-block;
+    padding: 0 12px;
+}
+.wizard-step .step-number {
+    text-align: center;
+    border-right: 1px solid #fff;
+    font-weight: bold;
+}
+
+.wizard-step.step-active {
+    background: $primaryColor;
+    color: #fff;
+}
+.wizard-step.step-active:before {
+    border-top-color: $primaryColor;
+    border-bottom-color: $primaryColor;
+}
+.wizard-step.step-active:after {
+    border-left-color: $primaryColor;
+}
+
+@media (max-width: 350px) {
+    .wizard-step .step-text {
+        display: none;
+    }
+    .wizard-step .step-number {
+        border-right: 0;
+    }
+}

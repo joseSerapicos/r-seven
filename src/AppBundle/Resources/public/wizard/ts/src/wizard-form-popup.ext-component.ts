@@ -1,6 +1,6 @@
 import {Component, ElementRef, Inject, Optional, Injector, Renderer, ViewContainerRef, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {IForm} from '../../../ts/form/form.service';
+import {IForm} from '../../../form/ts/form.service';
 import {IWizardManager as IWizard, LazyLoadData} from './wizard-manager.service';
 import {WizardPopupExtComponent, WizardPopupProvider} from './wizard-popup.ext-component';
 

@@ -1,7 +1,7 @@
 import {Component, ElementRef, Inject, Optional, Injector, Renderer} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
-import {FormExtensionComponent, FormProvider} from '../../../ts/form/form.extension-component';
-import {FormService} from '../../../ts/form/form.service';
+import {FormExtensionComponent, FormProvider} from '../../../form/ts/form.extension-component';
+import {FormService} from '../../../form/ts/form.service';
 
 // Re-exports
 export {FormProvider}

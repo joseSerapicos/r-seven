@@ -14,13 +14,12 @@
         <input type="hidden" value="" name="x" class="x">
         <input type="hidden" value="" name="y" class="y">
     {{ form_end(_form) }}
-
-    <div class="hr-line-solid"></div>
-
-    <div class="form-horizontal"><div class="form-group">
-        <div class="col-sm-12">
-            <button class="btn-default btn" type="button" (click)="closeAction($event)">Cancel</button>
-            <button class="btn-primary btn" type="button" (click)="saveAction($event)">Save and Close</button>
+{% endblock %}
+{% block footer_container %}
+    <div class="row">
+        <div class="col-auto ml-auto">
+            <button type="button" class="btn-light btn" (click)="closeAction($event)">Cancel</button>
+            <button type="button" class="btn-primary btn" (click)="saveAction($event)">Save and Close</button>
         </div>
-    </div></div>
+    </div>
 {% endblock %}

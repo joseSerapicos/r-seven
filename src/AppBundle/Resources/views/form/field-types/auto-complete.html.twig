@@ -6,7 +6,7 @@
            {% if (formField.vars.required and isRequired) %}required="required"{% endif %}
            type="hidden">
     <js_autoComplete [field]="'{{field}}'"
-                     [selfReference]="_dataService.getFieldChoicesAttr('{{ field }}', 'selfReference')"
+                     [hasSelfReference]="_dataService.getFieldChoicesAttr('{{ field }}', 'hasSelfReference')"
                      {% if (formField.vars.attr is defined) %}
                          {% for attr, value in formField.vars.attr %}{{attr}}="{{value}}"{% endfor %}
                      {% endif %}

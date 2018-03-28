@@ -189,7 +189,7 @@ abstract class BaseType extends AbstractType
             case 'html-select':
             case 'auto-complete':
             case 'hidden-entity':
-                // Choices from static array
+                // Choices from static array (rendered by Symfony Forms)
                 if ($type == 'enum') {
                     $formBuilder->add($field, ChoiceType::class, array_merge(
                         $baseAttrArr,
@@ -200,25 +200,22 @@ abstract class BaseType extends AbstractType
                         )
                     ));
                 }
-                // Choices from entity (database)
+                // Choices from entity (database, rendered by Angular)
                 else {
-                    $autoRefresh = $entityRepositoryClass::getFieldMetadata($field, 'autoRefresh', $entityMetadata);
-                    if (!$autoRefresh) { // Auto refresh choices are loaded on init and rendered by Angular
-                        // Determine query
-                        $query = $entityRepositoryClass::getFieldMetadata($field, 'query', $entityMetadata); // Specific query to get choices
-                        if (empty($query)) { $query = 'getChoices'; } // Generic query to get choices
+                    // Query to get choices in repository
+                    $query = $entityRepositoryClass::getFieldMetadata($field, 'query', $entityMetadata); // Specific defined in metadata
+                    if (empty($query)) { $query = 'getChoices'; } // Default
 
-                        $baseAttrArr['query_builder'] = function($entityRepository) use ($query) {
-                            return $entityRepository->$query(false);
-                        };
-                    }
                     $formBuilder->add($field, EntityType::class, array_merge(
                         $baseAttrArr,
                         array(
                             'class' => $entityRepositoryClass::getFieldMetadata($field, 'entityClass', $entityMetadata),
                             'expanded' => in_array($formType, array('radio', 'checkbox')),
                             'multiple' => in_array($formType, array('checkbox')),
-                            'em' => $this->conf['entityDatabase']
+                            'em' => $this->conf['entityDatabase'],
+                            'query_builder' => function($entityRepository) use ($query) {
+                                return $entityRepository->$query(false);
+                            }
                         )
                     ));
                 }
@@ -295,7 +292,7 @@ abstract class BaseType extends AbstractType
                 case 'cancel':
                     $formBuilder->add('cancel', ButtonType::class, array(
                         'attr' => array(
-                            'class' => 'btn',
+                            'class' => 'btn btn-light',
                             '(click)' => 'cancelAction($event)'
                         ),
                         'label' => 'Cancel'
@@ -304,7 +301,7 @@ abstract class BaseType extends AbstractType
                 case 'reset':
                     $formBuilder->add('reset', ButtonType::class, array(
                         'attr' => array(
-                            'class' => 'btn',
+                            'class' => 'btn btn-light',
                             '(click)' => $actionsMethodPrefix . 'resetAction($event)'
                         ),
                         'label' => 'Reset'

@@ -71,7 +71,7 @@ class BookingServicePriceController extends BaseEntityChildController
 
         /* Legend for template/view */
         $this->templateConf['controls']['legend'][] = array(
-            'label' => 'Grouped Price', 'class' => 'bg-warning-light', 'field' => 'grouperBookingServicePriceObj'
+            'label' => 'Grouped Price', 'class' => 'legend-grouped', 'field' => 'grouperBookingServicePriceObj'
         );
         /* /Legend for template/view */
 

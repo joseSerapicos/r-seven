@@ -35,7 +35,7 @@ class DocumentTypesController extends BaseController
 
         // Extra data
         $this->templateConf['extraData']['template'] = array(
-            'class' => 'accordion-white'
+            'class' => 'white-accordion'
         );
 
         return $this;

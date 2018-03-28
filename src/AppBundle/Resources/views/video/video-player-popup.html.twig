@@ -1,0 +1,13 @@
+{% extends 'AppBundle::base-popup.html.twig' %}
+
+{% block header_container %}Video Player{% endblock %}
+{% block body %}
+    <div class="video-player">
+        <video *ngIf="getProviderAttr('source') == 'file'"
+               class="js_flvPlayer video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
+               controls><source [src]="_url" type="video/{% verbatim %}{{getExtension()}}{% endverbatim %}"></video>
+        <iframe *ngIf="getProviderAttr('source') == 'youtube'" [src]="_url" frameborder="0" allowfullscreen></iframe>
+        <iframe *ngIf="getProviderAttr('source') == 'vimeo'" [src]="_url" frameborder="0" allowfullscreen></iframe>
+    </div>
+{% endblock %}
+{% block footer %}{% endblock %}

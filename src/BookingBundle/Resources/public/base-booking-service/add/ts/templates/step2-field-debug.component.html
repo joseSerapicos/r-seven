@@ -1,29 +1,24 @@
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">Debug&nbsp;<small>{{getProviderAttr('label')}}</small></h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
 <div class="modal-body">
-    <div class="form-wrapper gray-bg">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>Debug&nbsp;<small>{{getProviderAttr('label')}}</small></h5>
-                        <div class="txt-align-r actions">
-                            <a class="-round fa fa-times"
-                               (click)="closeAction($event)"></a>
-                        </div>
-                    </div>
-                                        <div class="ibox-content">    <div class="accordion">
-    <div class="panel-group" id="accordion">
-            <ng-template ngFor let-panel [ngForOf]="[&#039;availability&#039;, &#039;allot&#039;, &#039;price&#039;]" let-index="index">
-        <ng-template [ngIf]="getProviderAttr('data')[panel]">        <div (click)="_navManagerService.navToAction(index)"
-             class="panel panel-default">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    <a data-toggle="collapse"
-                       data-parent="#accordion"
-                       href="#panel{{index}}"><span class="status -{{ _statusMap[getProviderAttr('data')[panel]['status']] || 'danger' }}"></span>&nbsp;{{_helperService.uCFirst(panel)}}</a>
-                </h4>
-            </div>
-            <div id="panel{{index}}" class="panel-collapse collapse m-t-sm">
-                            <ul class="no-bullets"><li class="p-xxs" *ngFor="let debugDetail of getProviderAttr('data')[panel]['detail'];">
+    <div class="row">
+        <div class="col-12">    <div class="accordion" id="accordion">
+        <ng-template ngFor let-panel [ngForOf]="[&#039;availability&#039;, &#039;allot&#039;, &#039;price&#039;]" let-index="index">
+        <ng-template [ngIf]="getProviderAttr('data')[panel]">        <div class="card">
+            <div class="card-header"><div class="row align-items-center">
+                    <h5 class="col"
+                        (click)="_navManagerService.navToAction(index)"><span class="status -{{ _statusMap[getProviderAttr('data')[panel]['status']] || 'danger' }}"></span>&nbsp;{{_helperService.uCFirst(panel)}}</h5>
+                </div></div>
+            <div class="collapse"
+                 [class.show]="index === _navManagerService.getIndex()">
+                <div class="card-body">
+                                <ul class="no-bullets"><li class="p-xxs" *ngFor="let debugDetail of getProviderAttr('data')[panel]['detail'];">
                     <span class="status -{{ _statusMap[debugDetail['status']] || 'danger' }}"></span><span
                     >&nbsp;{{debugDetail['date']}}</span>
 
@@ -33,16 +28,15 @@
                             <strong>Cost:</strong>&nbsp;{{priceDetail['costValue']}}&nbsp;<strong>Sell:</strong>&nbsp;{{priceDetail['sellValue']}}
                         </li></ul>
                 </li></ul>
-                    </div>
-        </div>
-        </ng-template>    </ng-template>
-    </div>
-</div></div>
-                    <div class="ibox-footer hide-on-empty">                        <div class="form-horizontal"><div class="form-group"><div class="col-sm-10 col-sm-offset-2">
-                                                        <button class="btn btn-primary" (click)="closeAction($event, true)">Ok</button>
-                        </div></div></div>
-                    </div>                                    </div>
+                        </div>
             </div>
         </div>
+        </ng-template>    </ng-template>
+</div></div>
     </div>
 </div>
+<div class="modal-footer hide-on-empty">
+            <div class="row"><div class="col-auto ml-auto">
+            <button type="button" class="btn btn-primary" (click)="closeAction($event, true)">Ok</button>
+        </div></div>
+    </div>

@@ -36,5 +36,6 @@ export abstract class AccordionComponent extends BaseExtensionComponent {
     {
         // Initializes the children navigation manager service
         this._navManagerService.init(this, this.lazyLoadViewContainerRefQL);
+        this._navManagerService.setHasToggleContainer(true);
     }
 }

@@ -4,12 +4,12 @@ import {Component} from '@angular/core';
 @Component({
     selector: '#js_main',
     template: `
-    <div class="row page-heading border-bottom white-bg main-head-container"><div class="col-lg-12">
+    <div class="row border-bottom white-bg"><div class="col-12">
         <div class="js_entityDetail"></div>
     </div></div>
     
-    <div class="row wrapper-content main-body-container"><div class="col-lg-12">
-        <div class="js_contacts accordion-white m-b-md"></div>
+    <div class="row wrapper-content main-body-container"><div class="col-12">
+        <div class="js_contacts white-accordion"></div>
     </div></div>
     `
 })

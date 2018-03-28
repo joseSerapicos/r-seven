@@ -114,8 +114,7 @@ class SupplierController extends BaseEntityTypeController
 
     /**
      * @Route("/entities/supplier/choices",
-     *     name="_entities__supplier__choices",
-     *     defaults={"id" = null},
+     *     name="_entities__supplier__choices"
      * )
      *
      * Action to get a list/array of objects to use as choices

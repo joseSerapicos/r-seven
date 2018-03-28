@@ -292,7 +292,7 @@ class Service extends BaseEntity
     public function __toString()
     {
         return (
-            '<i class="fa ' . $this->getAppIconObj()->getIcon() . '"></i> '
+            ($this->getAppIconObj() ? ('<i class="fa ' . $this->getAppIconObj()->getIcon() . '"></i> ') : '')
             . $this->getName()
             . ' (' . $this->getId() . ')'
         );

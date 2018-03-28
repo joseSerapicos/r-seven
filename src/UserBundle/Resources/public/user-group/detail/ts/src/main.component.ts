@@ -4,7 +4,7 @@ import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts
 import {Helper} from '../../../../../../../AppBundle/Resources/public/ts/helper';
 import {ModalService} from '../../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
 import {NavManagerService} from '../../../../../../../AppBundle/Resources/public/ts/nav-manager/nav-manager.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {TabsComponent, ITabs, LazyLoadData} from '../../../../../../../AppBundle/Resources/public/tabs/ts/src/tabs.component';
 
 // EntityGroupEntity
@@ -89,6 +89,7 @@ export class MainComponent extends TabsComponent implements ITabs
             ActionsService,
             {provide: 'Popups', useValue: null},
             {provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data)},
+            {provide: 'LegendProvider', useValue: Helper.getLegendProvider(data)},
             {provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data)}
         ]);
 

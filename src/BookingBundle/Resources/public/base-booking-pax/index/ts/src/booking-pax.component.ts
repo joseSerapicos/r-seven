@@ -17,7 +17,8 @@ export class BookingPaxComponent extends DataBoxExtensionComponent
     // so we can refresh the objects and keep them updated (feature "clientIsPax" in parent can change booking pax data)
     protected _onParentObjectChangeSubscription: any;
 
-    protected _clientIsPax: boolean; // Copy of field to controls when this property change in parent object
+    // Copy of client pax fields to controls when this property change in parent object
+    protected _clientPax: {clientIsPax: boolean; bookingPaxObj: any};
 
     constructor(
         viewContainerRef: ViewContainerRef,
@@ -47,7 +48,11 @@ export class BookingPaxComponent extends DataBoxExtensionComponent
             injector
         );
 
-        this._clientIsPax = this._parentDataService.getObject()['clientIsPax']; // Save initial value
+        // Save initial value
+        this._clientPax = {
+            clientIsPax: this._parentDataService.getObject()['clientIsPax'],
+            bookingPaxObj: this._parentDataService.getObject()['bookingPaxObj']
+        };
         this._onParentObjectChangeSubscription = this._parentDataService.getOnObjectChangeEmitter()
             .subscribe(object => this.onParentObjectChange(object));
     }
@@ -60,47 +65,30 @@ export class BookingPaxComponent extends DataBoxExtensionComponent
     protected onParentObjectChange(object): void
     {
         // Check if "clientIsPax" change
-        if (this._clientIsPax != object['clientIsPax']) {
-            this._clientIsPax = object['clientIsPax'];
+        if (this._clientPax.clientIsPax != object['clientIsPax']) {
+            // Update fields
+            this._clientPax.clientIsPax = object['clientIsPax'];
+            this._clientPax.bookingPaxObj = object['bookingPaxObj'];
+
             // Refresh objects, because parent change pax
             this._dataService.refresh();
         }
     }
 
     /**
-     * Overrides parent.
-     * If pax was removed, the removed pax can be the "clientIsPax" of bookingObj, so we need to refresh the bookingObj
-     * @param $event
-     * @param data
+     * Post (after) delete object event. Use this function to handle event.
+     * @param object
+     * @return any
      */
-    public deleteAction($event: any, data: any): void
+    protected postDeleteObject(object)
     {
-        if ($event) { $event.preventDefault(); }
+        // Only make sense if clientIsPax is active and is the client pax object
+        if (this._clientPax.clientIsPax &&
+            (this._clientPax.bookingPaxObj == object['bookingPaxObj'])) {
+            this._parentDataService.refreshObject();
+        }
 
-            let that = this;
-
-            // Dialog message
-            this._modalService.dialog('Are you sure to remove?').then(
-                hasConfirm => {
-                    if (hasConfirm) {
-                        that._dataService.delete(data).then(
-                            data => {
-                                // Only make sense if clientIsPax is active
-                                if (that._clientIsPax) {
-                                    that._parentDataService.refreshObject();
-                                }
-                                return;
-                            },
-                            errors => { return; }
-                        );
-                    } else {
-                        return;
-                    }
-                },
-                errors => {
-                    console.log(errors);
-                }
-            );
+        return this;
     }
 
     /**

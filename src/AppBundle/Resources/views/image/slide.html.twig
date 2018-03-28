@@ -10,7 +10,7 @@
                      alt="{% verbatim %}{{obj['name']}}{% endverbatim %}"
                      width="128"
                      height="128">
-                <div class="actions no-user-select horizontal-group-box"
+                <div class="actions no-user-select horizontal-group-box text-secondary"
                      (click)="triggerAction($event)">
                     <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
                         <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"

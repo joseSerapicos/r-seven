@@ -489,8 +489,8 @@ export class DataService {
     public getFieldChoice(field: string, key = null)
     {
         // Return a specific field choice by key
-        if (key in this._provider.fieldsChoices[field]['value']) {
-            return this._provider.fieldsChoices[field]['value'][key];
+        if (key in this._provider.fields.choices[field]['value']) {
+            return this._provider.fields.choices[field]['value'][key];
         }
         return null
     }
@@ -504,8 +504,8 @@ export class DataService {
     public getFieldChoicesAttr(field: string, attribute: string)
     {
         // Return a specific attribute of field choices
-        if (this._provider.fieldsChoices[field] && (attribute in this._provider.fieldsChoices[field])) {
-            return this._provider.fieldsChoices[field][attribute];
+        if (this._provider.fields.choices[field] && (attribute in this._provider.fields.choices[field])) {
+            return this._provider.fields.choices[field][attribute];
         }
         return null
     }
@@ -517,7 +517,7 @@ export class DataService {
      */
     public getFieldChoices(field: string)
     {
-        return this._provider.fieldsChoices[field]['value'] || null;
+        return this._provider.fields.choices[field]['value'] || null;
     }
 
     /**
@@ -525,9 +525,14 @@ export class DataService {
      * @param fieldsChoices
      * @returns {DataService}
      */
-    public setFieldsChoices(fieldsChoices): DataService
+    protected setFieldsChoices(fieldsChoices): DataService
     {
-        this._provider.fieldsChoices = fieldsChoices;
+        // Merge only defined fields (generally foreign key object with sef reference)
+        this._provider['fields']['choices'] = this._helperService.mergeObjects(
+            this._provider['fields']['choices'],
+            fieldsChoices || {}
+        );
+
         return this;
     }
 
@@ -641,7 +646,7 @@ export class DataService {
         objects = (objects || this._provider.objects);
         fields = (fields || this._provider.fields['view']);
         fieldsMetadata = (fieldsMetadata || this._provider.fields['metadata'] || {});
-        fieldsChoices = (fieldsChoices || this._provider.fieldsChoices || null);
+        fieldsChoices = (fieldsChoices || this._provider.fields.choices || null);
 
         if(objects && fields) {
             for (let field of fields) {
@@ -758,7 +763,7 @@ export class DataService {
                 case 'icon':
                     return ('<i class="fa ' + value + '"></i>');
                 case 'link':
-                    return ('<a href="' + value + '" target="_blank">' + value + '</a>');
+                    return ('<a href="' + value + '" target="_blank" class="text-base">' + value + '</a>');
                 case 'img':
                 case 'avatar':
                     let extraClass = ((fieldMetadata['type'] == 'avatar') ? 'img-circle' : 'thumbnail');
@@ -1002,7 +1007,11 @@ export class DataService {
         // Only search if parameters have changed (only criteria is changed)
         if (!this._helperService.isEqualObject(this._provider['search']['criteria'], this._candidateSearch['criteria'])) {
             // Update search
-            this._provider['search']['criteria'] = this._helperService.cloneObject(this._candidateSearch['criteria'], true);
+            this._provider['search']['criteria'] = this._candidateSearch['criteria'].slice(0);
+
+            console.log(this._provider['search']['criteria']);
+            console.log(this._candidateSearch['criteria']);
+
             // Reset pagination for new search
             this.resetPagination();
             // To reset objects
@@ -1355,8 +1364,8 @@ export class DataService {
         }
 
         // Refresh fields choices
-        if (response['fieldsChoices']) {
-            this.setFieldsChoices(response['fieldsChoices']);
+        if (response['fields'] && response['fields']['choices']) {
+            this.setFieldsChoices(response['fields']['choices']);
         }
 
         // Update search pagination

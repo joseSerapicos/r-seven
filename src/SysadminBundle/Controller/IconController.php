@@ -29,6 +29,9 @@ class IconController extends BaseEntityController
             ),
             'delete' => array(
                 'name' => '_sysadmin__icon__delete'
+            ),
+            'choices' => array(
+                'name' => '_sysadmin__icon__choices'
             )
         );
 
@@ -110,5 +113,33 @@ class IconController extends BaseEntityController
     public function deleteAction(Request $request, $id)
     {
         return parent::deleteAction($request, $id);
+    }
+
+    /**
+     * @Route("/sysadmin/icon/conf",
+     *     name="_sysadmin__icon__conf"
+     * )
+     *
+     * Action to get configuration
+     * @param Request $request
+     * @return mixed
+     */
+    public function confAction(Request $request)
+    {
+        return parent::confAction($request);
+    }
+
+    /**
+     * @Route("/sysadmin/icon/choices",
+     *     name="_sysadmin__icon__choices"
+     * )
+     *
+     * Action to get a list/array of objects to use as choices
+     * @param Request $request
+     * @return mixed
+     */
+    public function choicesAction(Request $request)
+    {
+        return parent::choicesAction($request);
     }
 }

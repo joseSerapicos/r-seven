@@ -1,0 +1,45 @@
+$top-sidebar-active-bgcolor-hover: #dadfe3; // bg-light:hover
+$top-sidebar-active-bgcolor: #f8f9fa; // bg-light
+
+.minimalize-styl-2 {
+  padding: 4px 12px;
+  margin: 10px;
+  font-size: 14px;
+  float: left;
+}
+
+.navbar-top-links {
+  margin: 0 !important;
+
+  .dropdown-menu {
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  li {
+    display: inline-block;
+    padding: 20px 10px;
+    min-height: 50px;
+
+    .dropdown-menu a:hover,
+    .dropdown-menu a:focus {
+      color: $baseColor;
+      background: $top-sidebar-active-bgcolor;
+      text-decoration: none;
+    }
+
+    &:hover,
+    // NOTE: "active" needs to be after to override "hover" and "focus", otherwise does not work.
+    .dropdown-menu a:active {
+      color: $baseColor;
+      background: $top-sidebar-active-bgcolor-hover;
+      text-decoration: none;
+    }
+  }
+
+  a {
+    color: $secondaryColor;
+    font-size: 14px;
+    padding: 10px 25px;
+  }
+}

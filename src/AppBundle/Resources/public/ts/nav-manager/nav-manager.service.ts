@@ -69,7 +69,8 @@ export class NavManagerService
     protected _component: any; // Parent component that uses and implement this service
     protected _llViewContainerRefArr: ViewContainerRef[] = [];
     protected _llComponentRefArr: any = {}; // Array of ComponentRef with loaded containers
-    protected _currentIndex: number = 0; // Index of current container
+    protected _currentIndex: number = null; // Index of current container
+    protected _hasToggleContainer: boolean = false; // Determines if has toggle in container when it is already selected
 
     constructor(
         @Inject('HelperService') protected _helperService: any,
@@ -113,8 +114,19 @@ export class NavManagerService
         this._component = null;
         this._llViewContainerRefArr = [];
         this._llComponentRefArr = {};
-        this._currentIndex = 0;
+        this._currentIndex = null;
 
+        return this;
+    }
+
+    /**
+     * Set Has Toggle Container
+     * @param hasToggleContainer
+     * @returns {NavManagerService}
+     */
+    public setHasToggleContainer(hasToggleContainer: boolean = true)
+    {
+        this._hasToggleContainer = hasToggleContainer;
         return this;
     }
 
@@ -169,6 +181,12 @@ export class NavManagerService
         let that = this;
 
         return new Promise(function (resolve, reject) {
+            // Used in accordion, if the index is the same, then reset the index closing the current container
+            if ((index === that.getIndex()) && that._hasToggleContainer) {
+                that._currentIndex = null;
+                return resolve(true);
+            }
+
             // Only load module, if module is not yet loading (avoid task duplication)
             if (!that._tasksLoaderManagerService.addTask('LOAD')) {
                 return reject(false);

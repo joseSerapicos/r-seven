@@ -47,6 +47,7 @@ export class WizardManagerService
         
         // Initializes the NavManagerService
         this._navManagerService.init(component, lazyLoadViewContainerRefQL);
+        this._navManagerService.navTo(0);
     }
 
     /**

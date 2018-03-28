@@ -12,11 +12,11 @@ interface AppInterface {
       menu: number
     },
     label: string,
-    fieldsChoices: any,
     fields: {
       view: string[],
       form: string[],
-      metadata: any
+      metadata: any,
+      choices: any
     },
     route: any,
     search: {

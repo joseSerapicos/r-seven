@@ -9,9 +9,9 @@ export {LegendProvider}
 @Component({
     selector: 'js_legend',
     template: `
-    <dl *ngIf="_provider.length > 0" class="legend">
+    <dl *ngIf="_provider.length > 0" class="row legend">
         <ng-template ngFor let-legend [ngForOf]="_provider" let-i="index">
-          <div class="dsp-inline-block nowrap"><dt [ngClass]="legend['class']"></dt><dd>{{legend['label']}}</dd></div>
+          <div class="col-auto mr-auto"><dt [ngClass]="legend['class']"></dt><dd>{{legend['label']}}</dd></div>
         </ng-template>
     </dl>
     `

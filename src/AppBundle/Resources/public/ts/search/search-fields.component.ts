@@ -6,13 +6,15 @@ import {DataService} from '../data-service/data.service';
     selector: 'js_searchFields',
     template: `
     <js_expander [label]="'Fields'" [hasIcon]="false" [customClass]="'action'" (onChange)="toggleIsExpanded($event, 'fields')"></js_expander>
-    <div [hidden]="!_isExpanded" class="col-xs-12 col-sm-12 white-dropdown search-fields">
-        <select multiple size="6" [(ngModel)]="_search['fields']" class="form-control">
-            <ng-template ngFor let-field [ngForOf]="_fields">
-                <option *ngIf="!_helperService.inArray(_fieldsMetadata[field]['type'], _deniedTypes)"
-                        value="{{field}}">{{_fieldsMetadata[field]['label']}}</option>
-            </ng-template>
-        </select>
+    <div [hidden]="!_isExpanded" class="container-fluid py-3 rounded white-dropdown search-fields">
+        <div class="row"><div class="col">
+            <select multiple size="6" [(ngModel)]="_search['fields']" class="form-control">
+                <ng-template ngFor let-field [ngForOf]="_fields">
+                    <option *ngIf="!_helperService.inArray(_fieldsMetadata[field]['type'], _deniedTypes)"
+                            value="{{field}}">{{_fieldsMetadata[field]['label']}}</option>
+                </ng-template>
+            </select>
+        </div></div>
     </div>
     `,
     host: {

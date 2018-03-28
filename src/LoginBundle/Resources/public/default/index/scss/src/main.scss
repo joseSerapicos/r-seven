@@ -1,0 +1,36 @@
+// Base
+@import "../../../../../../../AppBundle/Resources/public/scss/theme";
+@import "../../../../../../../AppBundle/Resources/public/scss/helper";
+@import "../../../../../../../AppBundle/Resources/public/scss/styles";
+
+
+.loginColumns {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 25px;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+hr {
+  height: 1px;
+  border: 0;
+}
+
+.links {
+  i {
+    width: 20px;
+    text-align: left;
+  }
+}
+
+.devices {
+  i {
+    font-size: 32px;
+    padding: 25px 15px 0;
+  }
+}

@@ -6,9 +6,10 @@ import {DataService} from '../data-service/data.service';
     selector: 'js_searchOrderBy',
     template: `
     <js_expander [label]="'Order'" [hasIcon]="false" [customClass]="'action'" (onChange)="toggleIsExpanded($event, 'fields')"></js_expander>
-    <div [hidden]="!_isExpanded" class="col-xs-12 col-sm-12 white-dropdown search-order-by">
+    <div [hidden]="!_isExpanded" class="container-fluid py-3 rounded white-dropdown search-order-by">
+        <div class="row">
         <ng-template ngFor let-orderBy [ngForOf]="_orderByArray" let-i="index">
-            <div class="col-sm-6 controller">
+            <div class="col col-md-6 controller">
                 <div class="select">
                     <select [(ngModel)]="orderBy['field']" class="form-control">
                         <ng-template ngFor let-field [ngForOf]="_fields">
@@ -27,6 +28,7 @@ import {DataService} from '../data-service/data.service';
                 </div>
             </div>
         </ng-template>
+        </div>
     </div>
     `,
     host: {

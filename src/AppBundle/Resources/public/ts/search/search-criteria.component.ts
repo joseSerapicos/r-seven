@@ -64,9 +64,10 @@ export class SearchCriteriaMap {
     selector: 'js_searchCriteria',
     template: `
     <js_expander [label]="'Filter'" [hasIcon]="false" [customClass]="'action'" (onChange)="toggleIsExpanded($event, 'fields')"></js_expander>
-    <div [hidden]="!_isExpanded" class="col-xs-12 col-sm-12 white-dropdown search-criteria">
+    <div [hidden]="!_isExpanded" class="container-fluid py-3 rounded white-dropdown search-criteria">
+        <div class="row">
         <ng-template ngFor let-criteria [ngForOf]="_criteriaArr" let-i="index">
-            <div class="col-sm-6 controller">
+            <div class="col col-md-6 controller">
                 <div class="select">
                     <select [(ngModel)]="criteria['field']"
                             (change)="onFieldChange($event, criteria)"
@@ -100,6 +101,7 @@ export class SearchCriteriaMap {
                 </div>
             </div>
         </ng-template>
+        </div>
     </div>
     `,
     host: {

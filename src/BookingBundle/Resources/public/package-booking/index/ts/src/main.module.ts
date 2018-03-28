@@ -16,10 +16,10 @@ import {DynamicComponentLoaderService} from '../../../../../../../AppBundle/Reso
 import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
 import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts/actions/actions.service';
 import {SearchPaginationModule} from '../../../../../../../AppBundle/Resources/public/ts/search/search-pagination.module';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
-import {MainExtModule as AppBasicsExtModule} from '../../../../../../../AppBundle/Resources/public/app-basics/ts/src/main.ext-module';
-import {MainComponent as AppBasicsComponent} from '../../../../../../../AppBundle/Resources/public/app-basics/ts/src/main.component';
-import {AutoCompleteProviders} from '../../../../../../../AppBundle/Resources/public/ts/form/field-types/field-type-auto-complete.component';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
+import {MainExtModule as AppBasicsExtModule} from '../../../../../../../AppBundle/Resources/public/app-basics/default/ts/src/main.ext-module';
+import {MainComponent as AppBasicsComponent} from '../../../../../../../AppBundle/Resources/public/app-basics/default/ts/src/main.component';
+import {AutoCompleteProviders} from '../../../../../../../AppBundle/Resources/public/form/ts/field-types/field-type-auto-complete.component';
 import {NavManagerService} from '../../../../../../../AppBundle/Resources/public/ts/nav-manager/nav-manager.service';
 import {WizardManagerService} from '../../../../../../../AppBundle/Resources/public/wizard/ts/src/wizard-manager.service';
 import {MainComponent} from './main.component';
@@ -28,25 +28,14 @@ import {EditExtModule} from './edit.ext-module';
 
 
 // Auto-complete
-import {EditExtModule as EntitiesEntityEditExtModule} from '../../../../../../../EntitiesBundle/Resources/public/entity/index/ts/src/edit.ext-module';
 import {EditExtModule as EntitiesClientEditExtModule} from '../../../../../../../EntitiesBundle/Resources/public/client/index/ts/src/edit.ext-module';
 import {EditExtModule as EntitiesSupplierEditExtModule} from '../../../../../../../EntitiesBundle/Resources/public/supplier/index/ts/src/edit.ext-module';
 import {EditExtModule as CommonPlaceEditExtModule} from '../../../../../../../CommonBundle/Resources/public/place/index/ts/src/edit.ext-module';
 import {EditExtModule as CommonCountryEditExtModule} from '../../../../../../../CommonBundle/Resources/public/country/index/ts/src/edit.ext-module';
 let autoCompleteProviders = {
-    entityObj: {
+    selectEntityObj: {
         urlConf: (Helper.getAppVar('route') + 'entities/entity/conf'),
-        control: 'edit',
-        popups: {
-            module: EntitiesEntityEditExtModule,
-            component: 'EditComponent',
-            providers: [
-                {provide: 'Provider', useValue: Helper.getFormProvider({label: 'Entity'})},
-                FormService,
-                // Reset FormServiceProvider to use DataServiceProvider as default values
-                {provide: 'FormServiceProvider', useValue: {}}
-            ]
-        }
+        control: 'none'
     },
     clientObj: {
         urlConf: (Helper.getAppVar('route') + 'entities/client/conf'),

@@ -57,6 +57,9 @@ class EntityFileController extends BaseEntityChildController
         // Actions for template/view
         $this->templateConf['actions']['edit'] = false;
 
+        // Legend (disable cancel legend)
+        $this->templateConf['controls']['legend'] = array();
+
         // Extra data
         $this->templateConf['extraData']['template'] = array(
             'class' => '-merge-view'

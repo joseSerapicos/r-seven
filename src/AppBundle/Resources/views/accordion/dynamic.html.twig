@@ -4,17 +4,16 @@
 {% block panels %}
     <ng-template ngFor let-panel [ngForOf]="[{{panels}}]" let-index="index">
         {% block panel_restriction_start %}{% endblock %}
-        <div (click)="_navManagerService.navToAction(index)"
-             class="panel panel-default">
-            <div class="panel-heading">
-                <h4 class="panel-title">
-                    <a data-toggle="collapse"
-                       data-parent="#accordion{{_id}}"
-                       href="#panel{% verbatim %}{{index}}{% endverbatim %}{{_id}}">{% block panel_label %}{% endblock %}</a>
-                </h4>
-            </div>
-            <div id="panel{% verbatim %}{{index}}{% endverbatim %}{{_id}}" class="panel-collapse collapse m-t-sm">
-                {% block panel_container %}{% endblock %}
+        <div class="card">
+            <div class="card-header"><div class="row align-items-center">
+                    <h5 class="col"
+                        (click)="_navManagerService.navToAction(index)">{% block panel_label %}{% endblock %}</h5>
+                </div></div>
+            <div class="collapse"
+                 [class.show]="index === _navManagerService.getIndex()">
+                <div class="card-body">
+                    {% block panel_container %}{% endblock %}
+                </div>
             </div>
         </div>
         {% block panel_restriction_end %}{% endblock %}

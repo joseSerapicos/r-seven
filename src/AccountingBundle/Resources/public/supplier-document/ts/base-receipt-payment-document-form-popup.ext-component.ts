@@ -3,7 +3,7 @@ import {FormBuilder} from '@angular/forms';
 import {BaseFormPopupExtComponent, FormProvider} from '../../base-document/ts/base-form-popup.ext-component';
 import {DataService} from '../../../../../AppBundle/Resources/public/ts/data-service/data.service';
 import {ActionsService} from '../../../../../AppBundle/Resources/public/ts/actions/actions.service';
-import {FormService} from '../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {DynamicComponentLoaderService} from '../../../../../AppBundle/Resources/public/ts/dynamic-component-loader.service';
 import {PostService} from '../../../../../AppBundle/Resources/public/ts/post.service';
 

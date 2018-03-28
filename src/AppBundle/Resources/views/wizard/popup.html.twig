@@ -5,17 +5,15 @@
 
     {% block wizard_container %}
         {% if (_containers is defined) %}
-            <div class="wizard">
-                <ul class="wizard-nav">
-                    {% for key, value in _containers %}
-                        <li class="wizard-step"
-                            [class.step-active]="{{key}} == _wizardManagerService.getIndex()">
-                            <span class="step-number">{{key + 1}}</span>
-                            <span class="step-text">{{value['label']}}</span>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <ul class="row mb-3 no-gutters wizard-nav">
+                {% for key, value in _containers %}
+                    <li class="col-auto wizard-step"
+                        [class.step-active]="{{key}} == _wizardManagerService.getIndex()">
+                        <span class="step-number">{{key + 1}}</span>
+                        <span class="step-text">{{value['label']}}</span>
+                    </li>
+                {% endfor %}
+            </ul>
 
             {% block before_steps %}{% endblock %}
 
@@ -35,19 +33,17 @@
 {% endblock %}
 
 {% block footer_container %}
-    <div class="form-horizontal">
-        <div class="form-group">
-            <div class="col-sm-10 col-sm-offset-2">
-                <button class="btn-default btn" type="button" (click)="_wizardManagerService.cancelAction($event)">Cancel</button>
-                <button class="btn-primary btn" type="button" (click)="_wizardManagerService.prevAction($event)"
-                        *ngIf="0 < _wizardManagerService.getIndex()">Prev</button>
-                <button class="btn-primary btn" type="button" (click)="_wizardManagerService.nextAction($event)"
-                        *ngIf="{{(_containers|length) - 1}} > _wizardManagerService.getIndex()">Next</button>
-                {% block buttons %}
-                    <button class="btn-primary btn" type="button" (click)="_wizardManagerService.finishAction($event)"
-                            *ngIf="{{(_containers|length) - 1}} == _wizardManagerService.getIndex()">Finish</button>
-                {% endblock %}
-            </div>
+    <div class="row justify-content-center">
+        <div class="col-auto">
+            <button type="button" class="btn-light btn" (click)="_wizardManagerService.cancelAction($event)">Cancel</button>
+            <button type="button" class="btn-primary btn" (click)="_wizardManagerService.prevAction($event)"
+                    *ngIf="0 < _wizardManagerService.getIndex()">Prev</button>
+            <button type="button" class="btn-primary btn" (click)="_wizardManagerService.nextAction($event)"
+                    *ngIf="{{(_containers|length) - 1}} > _wizardManagerService.getIndex()">Next</button>
+            {% block buttons %}
+                <button type="button" class="btn-primary btn" (click)="_wizardManagerService.finishAction($event)"
+                        *ngIf="{{(_containers|length) - 1}} == _wizardManagerService.getIndex()">Finish</button>
+            {% endblock %}
         </div>
     </div>
 {% endblock %}

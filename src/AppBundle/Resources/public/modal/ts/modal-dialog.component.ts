@@ -9,8 +9,12 @@ import {BaseModalPopup} from './base-modal-popup';
     </div>
     <div class="modal-body">{{body}}</div>
     <div class="modal-footer">
-        <button *ngIf="isDialog" class="btn btn-default" (click)="closeAction($event, false)">Cancel</button>
-        <button class="btn btn-primary" (click)="closeAction($event, true)">Ok</button>
+        <div class="row">
+            <div class="col-auto ml-auto">
+                <button *ngIf="isDialog" class="btn btn-light" (click)="closeAction($event, false)">Cancel</button>
+                <button class="btn btn-primary" (click)="closeAction($event, true)">Ok</button>
+            </div>
+        </div>
     </div>
     `
 })

@@ -1,7 +1,7 @@
 import {Component, ElementRef, Inject, Optional, Injector, Renderer} from '@angular/core';
-import {FormPopupExtensionComponent, FormProvider} from '../../../ts/form/form-popup.extension-component';
+import {FormPopupExtensionComponent, FormProvider} from '../../../form/ts/form-popup.extension-component';
 import {DataService} from '../../../ts/data-service/data.service';
-import {FormService} from '../../../ts/form/form.service';
+import {FormService} from '../../../form/ts/form.service';
 
 @Component({
     selector: '#js_entityNotePopup',

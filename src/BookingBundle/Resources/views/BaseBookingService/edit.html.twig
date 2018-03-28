@@ -8,7 +8,7 @@
     {% if (form and fields) %}
         {% for field in fields['form'] %}
             {% if field == 'confirmationStatus' %}
-                <div class="form-group">
+                <div class="row form-group">
                     {% include 'AppBundle:form:label.html.twig' with {
                         'formField': form['bookingServiceObj'][field],
                         'metadata': fields['metadata'][field]
@@ -31,7 +31,7 @@
                     </div>
                 </div>
             {% elseif field == 'startDate' %}
-                <div class="form-group">
+                <div class="row form-group">
                     {% include 'AppBundle:form:label.html.twig' with {
                         'formField': form['bookingServiceObj'][field],
                         'metadata': fields['metadata'][field]
@@ -54,7 +54,7 @@
                     </div>
                 </div>
             {% elseif field == 'endDate' %}
-                <div class="form-group">
+                <div class="row form-group">
                     {% include 'AppBundle:form:label.html.twig' with {
                         'formField': form['bookingServiceObj'][field],
                         'metadata': fields['metadata'][field]
@@ -77,7 +77,7 @@
                     </div>
                 </div>
             {% elseif field == 'quantity' %}
-                <div class="form-group">
+                <div class="row form-group">
                     {% include 'AppBundle:form:label.html.twig' with {
                         'formField': form['bookingServiceObj'][field],
                         'metadata': fields['metadata'][field]

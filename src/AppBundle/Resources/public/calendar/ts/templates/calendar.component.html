@@ -1,19 +1,20 @@
 
-<div class="ibox">
-            <div class="ibox-title" *ngIf="!getProviderExtraDataAttr('hasMergeHeader')">
-            <h5>
-                <ng-template [ngIf]="getProviderAttr('controls')['expander']"><js_expander
-                    [isExpanded]="_isExpanded || null"
-                    [label]="getProviderAttr('label')"
-                    (onChange)="expanderAction($event)"></js_expander></ng-template>
-                <ng-template [ngIf]="!getProviderAttr('controls')['expander']">
-                    <span [innerHTML]="getProviderAttr('label')"></span>
-                </ng-template>
-            </h5>
-            <div *ngIf="_isExpanded"
-                 class="txt-align-r hide-on-empty"></div>
-        </div>
-    
+
+<div class="ibox" >
+                        <div class="ibox-title" *ngIf="!getProviderExtraDataAttr('hasMergeHeader')">
+                <h5>
+                    <ng-template [ngIf]="getProviderAttr('controls')['expander']"><js_expander
+                        [isExpanded]="_isExpanded || null"
+                        [label]="getProviderAttr('label')"
+                        (onChange)="expanderAction($event)"></js_expander></ng-template>
+                    <ng-template [ngIf]="!getProviderAttr('controls')['expander']">
+                        <span [innerHTML]="getProviderAttr('label')"></span>
+                    </ng-template>
+                </h5>
+                <div *ngIf="_isExpanded"
+                     class="txt-align-r hide-on-empty"></div>
+            </div>
+            
     <div [hidden]="!(_isExpanded)" class="ibox-content hide-on-empty"><div class='js_calendarControl'></div></div>
     <div [hidden]="_isExpanded" class="ibox-footer hide-on-empty"></div>
 </div>

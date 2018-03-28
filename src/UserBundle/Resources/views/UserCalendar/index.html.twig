@@ -1,10 +1,11 @@
 {% extends 'AppBundle::base.html.twig' %}
 
 {% block stylesheets %}
-    {% stylesheets filter="scssphp" output="assets/user/user-calendar/index/css/all.css"
-        '@fullcalendar_css'
+    {% stylesheets output="assets/user/user-calendar/index/css/local.css"
+    '@UserBundle/Resources/public/user-calendar/index/scss/dist/styles.css'
+    '@fullcalendar_css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 {% endblock %}
 
@@ -26,7 +27,7 @@
     {% endjavascripts %}
 {% endblock %}
 
-{% block local_javascripts %}
+{% block javascripts %}
     {% javascripts output="assets/user/user-calendar/index/js/local.js"
         '@UserBundle/Resources/public/user-calendar/index/ts/dist/inline.bundle.js'
         '@UserBundle/Resources/public/user-calendar/index/ts/dist/polyfills.bundle.js'

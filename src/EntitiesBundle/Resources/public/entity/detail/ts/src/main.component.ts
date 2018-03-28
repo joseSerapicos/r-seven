@@ -3,7 +3,7 @@ import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/da
 import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts/actions/actions.service';
 import {Helper} from '../../../../../../../AppBundle/Resources/public/ts/helper';
 import {ModalService} from '../../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {NavManagerService} from '../../../../../../../AppBundle/Resources/public/ts/nav-manager/nav-manager.service';
 import {TabsComponent, ITabs, LazyLoadData} from '../../../../../../../AppBundle/Resources/public/tabs/ts/src/tabs.component';
 
@@ -201,7 +201,8 @@ export class MainComponent extends TabsComponent implements ITabs
             {provide: 'DataService', useClass: DataService},
             ActionsService,
             {provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data)},
-            {provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data)}
+            {provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data)},
+            {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)}
         ]);
 
         return providers;

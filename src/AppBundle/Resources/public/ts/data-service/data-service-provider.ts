@@ -10,11 +10,11 @@ export interface Search {
 
 // Provider interface
 export interface DataServiceProvider {
-    fieldsChoices: any,
     fields: {
         view: string[],
         form: string[],
-        metadata: any
+        metadata: any,
+        choices: any
     },
     route: any,
     search: Search,

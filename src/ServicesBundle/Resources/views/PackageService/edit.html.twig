@@ -7,7 +7,7 @@
     {% if (form and fields) %}
         {% for field in fields['form'] %}
             {% if field == 'hasFixedDuration' %}
-                <div class="form-group">
+                <div class="row form-group">
                     {% include 'AppBundle:form:label.html.twig' with {
                         'formField': form[field],
                         'metadata': fields['metadata'][field]
@@ -47,7 +47,7 @@
             {% elseif field == 'priceFrom' %}
                 {% embed 'AppBundle:form:form-control-box.html.twig' with {'label': 'Marketing'} %}
                     {% block container %}
-                        <div class="form-group">
+                        <div class="row form-group">
                             {% include 'AppBundle:form:label.html.twig' with {
                                 'formField': form[field],
                                 'metadata': fields['metadata'][field]

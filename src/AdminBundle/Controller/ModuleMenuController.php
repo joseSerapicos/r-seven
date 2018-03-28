@@ -67,7 +67,7 @@ class ModuleMenuController extends BaseEntityChildController
             array(
                 'add' => (
                     $this->templateConf['acl']['add']
-                    && (count($this->templateConf['fieldsChoices']['appModuleMenuObj']['value']) > 0)
+                    && (count($this->templateConf['fields']['choices']['appModuleMenuObj']['value']) > 0)
                 ),
                 'delete' => $this->templateConf['acl']['delete']
             )
@@ -229,7 +229,7 @@ class ModuleMenuController extends BaseEntityChildController
      * @param $field
      * @return mixed
      */
-    protected function getFieldChoices($field)
+    protected function getFieldChoicesFromDb($field)
     {
         $parent = reset($this->parentConf);
         $appModuleId = ($parent['obj'] ?

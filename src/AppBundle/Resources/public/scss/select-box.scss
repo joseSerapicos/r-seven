@@ -1,5 +1,3 @@
-@import "variables";
-
 .auto-complete,
 .html-select {
     position: relative;
@@ -49,18 +47,18 @@
                 }
 
                 &.-pagination {
-                    color: $link_color_primary;
+                    //color: $link_color_primary;
                     font-weight: bold;
                     overflow: hidden;
                     text-align: center;
                     cursor: pointer;
 
                     &:hover {
-                        color: $link-hover_color;
+                        //color: $link-hover_color;
                     }
 
                     &:active {
-                        color: $link-active_color;
+                        //color: $link-active_color;
                     }
 
                     > span {

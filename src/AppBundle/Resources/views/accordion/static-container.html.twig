@@ -1,0 +1,11 @@
+{% extends 'AppBundle:accordion:lazy-load-container.html.twig' %}
+
+{% block accordion_container_actions %}{% endblock %}
+{% block accordion_container_body %}
+    <div class="collapse"
+         [class.show]="{{key}} === _navManagerService.getIndex()">
+        <div class="card-body">
+            {% block accordion_container_body_container %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

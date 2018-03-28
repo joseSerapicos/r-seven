@@ -4,7 +4,7 @@ import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/da
 import {PostService} from '../../../../../../../AppBundle/Resources/public/ts/post.service';
 import {WizardFormPopupComponent, WizardPopupProvider, IWizard} from '../../../../../../../AppBundle/Resources/public/wizard/ts/src/wizard-form-popup.component';
 import {WizardManagerService} from '../../../../../../../AppBundle/Resources/public/wizard/ts/src/wizard-manager.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 
 
 @Component({

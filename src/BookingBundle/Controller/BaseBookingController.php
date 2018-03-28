@@ -430,7 +430,7 @@ abstract class BaseBookingController extends BaseEntityController
         $preview = array(
             'object' => $controller->normalizeObject($bookingObj),
             'fields' => $templateFieldsConf['fields'],
-            'fieldsChoices' => $templateFieldsConf['fieldsChoices'],
+            'fieldsChoices' => $templateFieldsConf['fields']['choices'],
             'dependencies' => array(
                 'pax' => array(),
                 'service' => array()
@@ -451,7 +451,7 @@ abstract class BaseBookingController extends BaseEntityController
                     'label' => $className::getLabel(),
                     'objects' => $controller->getChildObjectsFromSS($object->getId(), $bookingContextUC . 'BookingPax', true),
                     'fields' => $templateFieldsConf['fields'],
-                    'fieldsChoices' => $templateFieldsConf['fieldsChoices']
+                    'fieldsChoices' => $templateFieldsConf['fields']['choices']
                 );
 
                 // Set service configuration
@@ -469,7 +469,7 @@ abstract class BaseBookingController extends BaseEntityController
                     'label' => $className::getLabel(),
                     'objects' => $controller->getChildObjectsFromSS($bookingObj->getId(), $bookingContextUC . 'BookingService', true),
                     'fields' => $templateFieldsConf['fields'],
-                    'fieldsChoices' => $templateFieldsConf['fieldsChoices']
+                    'fieldsChoices' => $templateFieldsConf['fields']['choices']
                 );
                 break;
             default: // db

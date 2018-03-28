@@ -3,14 +3,15 @@
 {% block stylesheets %}
     {{ parent() }}
 
-    {% stylesheets filter="scssphp" output="assets/services/regular-service/index/css/local.css"
+    {% stylesheets output="assets/services/regular-service/index/css/local.css"
+    '@ServicesBundle/Resources/public/regular-service/index/scss/dist/styles.css'
         '@AppBundle/Resources/public/scss/select-box.scss'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 {% endblock %}
 
-{% block local_javascripts %}
+{% block javascripts %}
     {% javascripts output="assets/services/regular-service/index/js/local.js"
         '@ServicesBundle/Resources/public/regular-service/index/ts/dist/inline.bundle.js'
         '@ServicesBundle/Resources/public/regular-service/index/ts/dist/polyfills.bundle.js'

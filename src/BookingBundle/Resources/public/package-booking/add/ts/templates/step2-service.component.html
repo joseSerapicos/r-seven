@@ -12,15 +12,17 @@
                     </ng-template>
                 </h5>
                 <div *ngIf="_isExpanded"
-                     class="txt-align-r hide-on-empty">    <div class="actions no-user-select">
-        <ng-template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search class="search"></js_search></ng-template>
-        <div (click)="triggerAction($event)">
-            <ng-template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
-                <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
-                   [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
-                   class="-round fa"
-                   [attr.data-action]="action"></a>
-            </ng-template>
+                     class="txt-align-r hide-on-empty">    <div class="row align-items-center">
+        <div class="col ml-auto text-right actions no-user-select">
+            <ng-template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search class="search"></js_search></ng-template>
+            <div (click)="triggerAction($event)">
+                <ng-template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
+                    <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                       [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
+                       class="-round fa"
+                       [attr.data-action]="action"></a>
+                </ng-template>
+            </div>
         </div>
     </div>
 </div>
@@ -28,7 +30,7 @@
             
     <div [hidden]="!(_isExpanded)" class="ibox-content hide-on-empty">    <ng-template [ngIf]="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">
         <div class="table-responsive">
-                <table class="data-table table table-striped table-hover dataTables-example">
+                <table class="data-table table table-hover dataTables-example">
                         <tbody>
             <ng-template ngFor let-obj [ngForOf]="_dataService.getProviderAttr('objects')" let-objIndex="index">
             <tr                 [ngClass]="getLegendClasses(obj)">

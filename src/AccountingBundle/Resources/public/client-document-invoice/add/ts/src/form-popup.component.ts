@@ -1,6 +1,6 @@
 import {Component, ElementRef, Inject, Injector, Renderer, QueryList, Optional, ViewChildren, ViewContainerRef, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {Helper} from '../../../../../../../AppBundle/Resources/public/ts/helper';
 import {DataService} from "../../../../../../../AppBundle/Resources/public/ts/data-service/data.service";
 import {WizardPopupProvider, LazyLoadData} from '../../../../../../../AppBundle/Resources/public/wizard/ts/src/wizard-form-popup.ext-component';
@@ -19,7 +19,7 @@ var bookingContext = ((Helper.getAppVar('conf')['localData']['data']['bookingCon
     bookingId = (bookingContext ? Helper.getAppVar('conf')['object']['id'] : null);
 
 // BOOKING SERVICE PRICE CHOICES
-import {TreeViewExtModule} from '../../../../../../../AppBundle/Resources/public/tree-view/ts/src/tree-view.ext-module';
+import {TreeViewExtModule} from '../../../../../../../AppBundle/Resources/public/tree-view/default/ts/src/tree-view.ext-module';
 // Form edit
 import {Step2ExtModule as ClientDocumentInvoiceDetailAddStep2ExtModule} from './step2.ext-module';
 

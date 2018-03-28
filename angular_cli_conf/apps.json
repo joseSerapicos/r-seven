@@ -1,7 +1,7 @@
 {
-    "app": { "bundle": "app", "controller": "app", "action": null },
+    "appAppBasicsDefault": { "bundle": "app", "controller": "app-basics", "action": "default" },
     "dataBox": { "bundle": "app", "controller": "data-box", "action": null },
-    "treeView": { "bundle": "app", "controller": "tree-view", "action": null },
+    "treeView": { "bundle": "app", "controller": "tree-view", "action": "default" },
     "calendar": { "bundle": "app", "controller": "calendar", "action": null },
     "note": { "bundle": "app", "controller": "note", "action": null },
     "file": { "bundle": "app", "controller": "file", "action": null },
@@ -13,7 +13,9 @@
     "commonCountryIndex": { "bundle": "common", "controller": "country", "action": "index" },
     "commonPlaceIndex": { "bundle": "common", "controller": "place", "action": "index" },
 
-    "home": { "bundle": "home", "controller": "default", "action": "index" },
+    "loginDefaultIndex": { "bundle": "login", "controller": "default", "action": "index" },
+
+    "homeDefaultIndex": { "bundle": "home", "controller": "default", "action": "index" },
 
     "sysadminSystemIndex": { "bundle": "sysadmin", "controller": "system", "action": "index" },
     "sysadminModuleIndex": { "bundle": "sysadmin", "controller": "module", "action": "index" },
@@ -100,6 +102,8 @@
     "accountingDocumentTypesIndex": { "bundle": "accounting", "controller": "document-types", "action": "index" },
     "accountingClientDocumentTypeSettingIndex": { "bundle": "accounting", "controller": "client-document-type-setting", "action": "index" },
     "accountingSupplierDocumentTypeSettingIndex": { "bundle": "accounting", "controller": "supplier-document-type-setting", "action": "index" },
+
+    "accountingBaseDocumentIndex": { "bundle": "accounting", "controller": "base-document", "action": "index" },
 
     "accountingClientDocumentIndex": { "bundle": "accounting", "controller": "client-document", "action": "index" },
     "accountingClientDocumentAdd": { "bundle": "accounting", "controller": "client-document", "action": "add" },

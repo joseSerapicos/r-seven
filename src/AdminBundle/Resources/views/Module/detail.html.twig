@@ -1,10 +1,10 @@
 {% extends 'AppBundle::base.html.twig' %}
 
 {% block stylesheets %}
-    {% stylesheets filter="scssphp" output="assets/admin/module/detail/css/all.css"
-        '@AppBundle/Resources/public/css/wizard.css'
+    {% stylesheets output="assets/admin/module/detail/css/local.css"
+    '@AdminBundle/Resources/public/module/detail/scss/dist/styles.css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 {% endblock %}
 
@@ -23,7 +23,7 @@
     )) }}
 {% endblock %}
 
-{% block local_javascripts %}
+{% block javascripts %}
     {% javascripts output="assets/admin/module/detail/js/local.js"
         '@AdminBundle/Resources/public/module/detail/ts/dist/inline.bundle.js'
         '@AdminBundle/Resources/public/module/detail/ts/dist/polyfills.bundle.js'

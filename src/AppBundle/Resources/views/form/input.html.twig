@@ -6,78 +6,89 @@
                [innerHTML]="_formService.getViewObject().{{field}}"></p>
         {% endif %}
         {% do formField.setRendered %}
-    {% elseif (_conf['fieldsChoices'][field] is defined) and (_conf['fieldsChoices'][field]['autoRefresh']) %}
-        {% if (metadata['type'] == 'radio') %}
-            {% include 'AppBundle:form:field-types/dynamic-radio.html.twig' with {
+    {% elseif (_conf['fields']['choices'][field] is defined) %}
+        {% if (_conf['fields']['choices'][field]['type'] == 'enum') %}
+            {# Rendered by Symfony Forms (static choices) #}
+            {% if (metadata['type'] == 'radio') %}
+                {% include 'AppBundle:form:field-types/radio.html.twig' with {
+                'formField': formField,
+                'field': field,
+                'type': metadata['type']
+                } %}
+            {% elseif (metadata['type'] == 'html-select') %}
+                {% include 'AppBundle:form:field-types/static-html-select.html.twig' with {
+                'formField': formField,
+                'field': field
+                } %}
+            {% else %}
+                {% include 'AppBundle:form:field-types/enum.html.twig' with {
+                'formField': formField,
+                'field': field,
+                'type': metadata['type']
+                } %}
+            {% endif %}
+        {% else %}
+            {# Rendered by Angular (dynamic choices) #}
+            {% if (metadata['type'] == 'radio') %}
+                {% include 'AppBundle:form:field-types/dynamic-radio.html.twig' with {
                 'field': field,
                 'formField': formField
-            } %}
-        {% elseif (metadata['type'] == 'tree-view') %}
-            {% include 'AppBundle:form:field-types/dynamic-tree-view.html.twig' with {
+                } %}
+            {% elseif (metadata['type'] == 'tree-view') %}
+                {% include 'AppBundle:form:field-types/dynamic-tree-view.html.twig' with {
                 'field': field,
                 'formField': formField,
-                'selfReference': _conf['fieldsChoices'][field]['selfReference']
-            } %}
-        {% else %}
-            {% include 'AppBundle:form:field-types/dynamic-select.html.twig' with {
+                'hasSelfReference': _conf['fields']['choices'][field]['hasSelfReference']
+                } %}
+            {% elseif (metadata['type'] == 'html-select') %}
+                {% include 'AppBundle:form:field-types/dynamic-html-select.html.twig' with {
+                'formField': formField,
+                'field': field
+                } %}
+            {% else %}
+                {% include 'AppBundle:form:field-types/dynamic-select.html.twig' with {
                 'field': field,
                 'formField': formField,
-                'selfReference': _conf['fieldsChoices'][field]['selfReference']
-            } %}
+                'hasSelfReference': _conf['fields']['choices'][field]['hasSelfReference']
+                } %}
+            {% endif %}
         {% endif %}
     {% else %}
         {% if (metadata['type'] == 'date') %}
             {% include 'AppBundle:form:field-types/date-picker.html.twig' with {
-                'formField': formField,
-                'field': field
+            'formField': formField,
+            'field': field
             } %}
         {% elseif (metadata['type'] == 'auto-complete') %}
             {% include 'AppBundle:form:field-types/auto-complete.html.twig' with {
-                'field': field,
-                'formField': formField
-            } %}
-        {% elseif (metadata['type'] == 'radio') %}
-            {% include 'AppBundle:form:field-types/radio.html.twig' with {
-                'formField': formField,
-                'field': field,
-                'type': metadata['type']
+            'field': field,
+            'formField': formField
             } %}
         {% elseif (metadata['type'] == 'checkbox') %}
             {% include 'AppBundle:form:field-types/multi-checkbox.html.twig' with {
-                'formField': formField,
-                'field': field,
-                'type': metadata['type']
-            } %}
-        {% elseif (metadata['type'] in ['select', 'multi-select', 'entity']) %}
-            {% include 'AppBundle:form:field-types/enum.html.twig' with {
-                'formField': formField,
-                'field': field,
-                'type': metadata['type']
+            'formField': formField,
+            'field': field,
+            'type': metadata['type']
             } %}
         {% elseif (metadata['type'] == 'password') %}
             {% include 'AppBundle:form:field-types/password.html.twig' with {
-                'formField': formField,
-                'field': field
+            'formField': formField,
+            'field': field
             } %}
         {% elseif (metadata['type'] == 'color') %}
             {% include 'AppBundle:form:field-types/color.html.twig' with {
-                'formField': formField,
-                'field': field
-            } %}
-        {% elseif (metadata['type'] == 'html-select') %}
-            {% include 'AppBundle:form:field-types/html-select.html.twig' with {
-                'formField': formField,
-                'field': field
+            'formField': formField,
+            'field': field
             } %}
         {% elseif (metadata['type'] == 'hidden-entity') %}
             {% include 'AppBundle:form:field-types/hidden.html.twig' with {
-                'formField': formField,
-                'field': field
+            'formField': formField,
+            'field': field
             } %}
         {% else %}
             {% include 'AppBundle:form:field-types/default.html.twig' with {
-                'formField': formField,
-                'field': field
+            'formField': formField,
+            'field': field
             } %}
         {% endif %}
     {% endif %}

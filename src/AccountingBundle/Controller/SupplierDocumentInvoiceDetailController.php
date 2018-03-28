@@ -69,6 +69,9 @@ class SupplierDocumentInvoiceDetailController extends BaseDocumentInvoiceDetailC
         // Empty criteria to be able to see all registers because "search" action is disabled.
         $this->templateConf['search']['criteria'] = array();
 
+        // Legend (disable cancel legend)
+        $this->templateConf['controls']['legend'] = array();
+
         // Extra data
         $this->templateConf['extraData']['template'] = array(
             'class' => '-merge-view'

@@ -188,9 +188,6 @@ class EntityGroupEntityControllerbbbbbb extends BaseEntityChildController
 
             // Return
             if ($this->responseConf['status'] === 1) {
-                // Refresh to update fields choices
-                $this->refreshConf();
-
                 // Flash messages to display to user
                 $this->addFlashMessage(
                     'The data has been updated',

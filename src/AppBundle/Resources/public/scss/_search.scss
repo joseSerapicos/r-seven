@@ -1,7 +1,5 @@
-@import "variables";
-
 .search {
-    border: solid 1px $link_color_primary;
+    border: solid 1px $borderColor;
     border-radius: 4px;
     display: inline-block;
     padding: 0 1px 1px 0;
@@ -39,7 +37,7 @@
     }
 
     &-fields {
-        > select {
+        select {
             border: 0 none;
             margin: 0;
             padding: 0;
@@ -47,7 +45,6 @@
     }
 
     &-pagination {
-        color: $link_color_primary;
         font-weight: bold;
         overflow: hidden;
 
@@ -58,20 +55,13 @@
         }
 
         > a {
-            color: $link_color_primary;
-            cursor: pointer;
+            font-family: serif;
+            font-weight: bold;
             font-size: 46px;
             line-height: 32px;
+            cursor: pointer;
             position: relative;
             top: -14px;
-
-            &:hover {
-                color: $link-hover_color;
-            }
-
-            &:active {
-                color: $link-active_color;
-            }
         }
     }
 }

@@ -41,7 +41,7 @@
                            name="index[]"
                            value="{% verbatim %}{{objIndex}}{% endverbatim %}"
                            [ngModel]="checkAll"/>
-                    <div class="pull-right actions no-user-select" (click)="triggerAction($event)">
+                    <div class="pull-right actions no-user-select text-secondary" (click)="triggerAction($event)">
                         <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
                             <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
                                [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"

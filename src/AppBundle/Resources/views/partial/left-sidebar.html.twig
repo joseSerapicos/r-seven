@@ -1,0 +1,27 @@
+<div class="container">
+<div class="row left-sidebar-user">
+    <div class="col-12 text-left py-3">
+        <div><img alt="Avatar" class="img-circle" src="{{app.session.get('_app.user')['avatar']}}"/></div>
+        <div class="m-t-xs info text-white">{{app.session.get('_app.user')['name']}}</div>
+        <div class="m-t-xs info">{% include 'AppBundle:partial:store-name.html.twig' %}</div>
+    </div>
+</div>
+<div class="row">
+    <nav class="col-12 p-0 left-sidebar-nav">
+        {# Modules #}
+        {% set store = app.session.get('_app.store') %}
+        {% set modules = (store ? app.session.get('_app.stores')[store]['modules'] : app.session.get('_app.modules')) %}
+        {# /Modules #}
+        <ul class="metismenu" id="js_navbar">
+            {% for module in modules[0] %}
+                {% include 'AppBundle:partial:navbar-module-menus.html.twig' with {
+                module: module,
+                selectedModule: _conf['selectedMenu']['module'][0],
+                selectedMenu: _conf['selectedMenu']['menu'],
+                moduleLevel: 'second'
+                } %}
+            {% endfor %}
+        </ul>
+    </nav>
+</div>
+</div>

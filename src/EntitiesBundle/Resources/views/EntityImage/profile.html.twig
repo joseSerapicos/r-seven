@@ -1,13 +1,12 @@
 {% extends 'AppBundle::base.html.twig' %}
 
 {% block stylesheets %}
-    {% stylesheets filter="scssphp" output="assets/entities/entity-image/profile/css/all.css"
-        '@dropzone_css'
-        '@cropper_css'
-        '@AppBundle/Resources/public/scss/_gallery.scss'
-        '@AppBundle/Resources/public/css/image-crop.css'
+    {% stylesheets output="assets/entities/entity-image/profile/css/local.css"
+    '@EntitiesBundle/Resources/public/entity-image/profile/scss/dist/styles.css'
+    '@dropzone_css'
+    '@cropper_css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/blueimp-gallery/css/blueimp-gallery.min.css') }}" />
@@ -42,7 +41,7 @@
     {% endjavascripts %}
 {% endblock %}
 
-{%  block local_javascripts %}
+{%  block javascripts %}
     {% javascripts output="assets/entities/entity-image/profile/js/local.js"
         '@EntitiesBundle/Resources/public/entity-image/profile/ts/dist/inline.bundle.js'
         '@EntitiesBundle/Resources/public/entity-image/profile/ts/dist/polyfills.bundle.js'

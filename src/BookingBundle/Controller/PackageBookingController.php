@@ -408,9 +408,6 @@ class PackageBookingController extends BaseBookingController
             // Remove objects from session
             $this->deleteObjectFromSS($packageBookingObj->getId());
 
-            // Refresh to update fields choices
-            $this->refreshConf();
-
             // Flash messages to display to user
             $this->addFlashMessage(
                 'The data has been updated',

@@ -1,15 +1,17 @@
 {% set entityDetail_status = (entityDetail_status is defined ? entityDetail_status : true) %}
 <ng-template [ngIf]="_object && _object['id']">
-    <div class="row">
-        <div class="col-sm-{{entityDetail_status ? 9 : 12}}">
-            <h2 class="valign-div-container" *ngIf="!_object['_isSessionStorage']"><span [innerHTML]="_object['code'] || _object['id']"></span><span *ngIf="_object['name']">&nbsp;&nbsp;@&nbsp;&nbsp;{% verbatim %}{{ _object['name'] }}{% endverbatim %}</span>{% block entityDetail_actions %}<a
-                    *ngIf="_actionsService.getActionAttr('edit', 'isEnabled')"
-                    [ngClass]="[_actionsService.getActionAttr('edit', 'icon')]"
-                    class="action valign-div-component valign-div-component-middle -round fa"
-                    (click)="editAction($event, 'edit')"></a>{% endblock %}</h2>
-            <div class="row m-l-xs">
+    <div class="container-fluid py-3"><div class="row">
+        <div class="col col-md-{{entityDetail_status ? 9 : 12}}">
+            <div class="row">
+                <h2 class="col-12 valign-div-container" *ngIf="!_object['_isSessionStorage']"><span [innerHTML]="_object['code'] || _object['id']"></span><span *ngIf="_object['name']">&nbsp;&nbsp;@&nbsp;&nbsp;{% verbatim %}{{ _object['name'] }}{% endverbatim %}</span>{% block entityDetail_actions %}<a
+                        *ngIf="_actionsService.getActionAttr('edit', 'isEnabled')"
+                        [ngClass]="[_actionsService.getActionAttr('edit', 'icon')]"
+                        class="action valign-div-component valign-div-component-middle -round fa"
+                        (click)="editAction($event, 'edit')"></a>{% endblock %}</h2>
+            </div>
+            <div class="row">
                 <ng-template ngFor let-field [ngForOf]="_fields['view']">
-                    <div class="col-sm-6"
+                    <div class="col col-md-6"
                          *ngIf="!_helperService.inArray(field, ['id', 'code', 'name', 'isEnabled', 'insertTime', 'insertUser']) && _object[field]">
                         <p *ngIf="_helperService.inArray(_fields['metadata'][field]['type'], ['number', 'percentage', 'monetary', 'icon'])"><strong>{% verbatim %}{{ _fields['metadata'][field]['label'] }}{% endverbatim %}</strong>:&nbsp;<span [innerHTML]="_object[field]"></span></p>
                         <p *ngIf="_helperService.inArray(_fields['metadata'][field]['type'], ['boolean', 'status'])"><span [innerHTML]="_object[field]"></span>&nbsp;<strong>{% verbatim %}{{ _fields['metadata'][field]['label'] }}{% endverbatim %}</strong></p>
@@ -20,14 +22,16 @@
             </div>
         </div>
         {% if entityDetail_status %}
-        <div class="col-sm-3">
-            <div class="well m-b-sm m-t-md">
-                <p><span [innerHTML]="_object['isEnabled']"></span>&nbsp;<strong>{% verbatim %}{{ _fields['metadata']['isEnabled']['label'] }}{% endverbatim %}</strong></p>
-                <p><strong>{% verbatim %}{{ _fields['metadata']['insertTime']['label'] }}{% endverbatim %}</strong><br/><span [innerHTML]="_object['insertTime']"></span></p>
-                <p><strong>{% verbatim %}{{ _fields['metadata']['insertUser']['label'] }}{% endverbatim %}</strong><br/><span [innerHTML]="_object['insertUser']"></span></p>
+            <div class="col col-md-3">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <p><span [innerHTML]="_object['isEnabled']"></span>&nbsp;<strong>{% verbatim %}{{ _fields['metadata']['isEnabled']['label'] }}{% endverbatim %}</strong></p>
+                        <p><strong>{% verbatim %}{{ _fields['metadata']['insertTime']['label'] }}{% endverbatim %}</strong><br/><span [innerHTML]="_object['insertTime']"></span></p>
+                        <p><strong>{% verbatim %}{{ _fields['metadata']['insertUser']['label'] }}{% endverbatim %}</strong><br/><span [innerHTML]="_object['insertUser']"></span></p>
+                    </div>
+                </div>
             </div>
-        </div>
         {% endif %}
-    </div>
+    </div></div>
 </ng-template>
 {% block afterContainer %}{% endblock %}

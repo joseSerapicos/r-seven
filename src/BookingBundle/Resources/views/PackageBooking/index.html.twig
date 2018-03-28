@@ -1,12 +1,10 @@
 {% extends 'AppBundle::base.html.twig' %}
 
 {% block stylesheets %}
-    {% stylesheets filter="scssphp" output="assets/booking/package-booking/index/css/main.css"
-        '@AppBundle/Resources/public/css/wizard.css'
-        '@AppBundle/Resources/public/scss/select-box.scss'
-        '@BookingBundle/Resources/public/package-booking/index/scss/main.scss'
+    {% stylesheets output="assets/booking/package-booking/index/css/local.css"
+    '@BookingBundle/Resources/public/package-booking/index/scss/dist/styles.css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 {% endblock %}
 
@@ -17,7 +15,7 @@
     <div class="js_dataBox"></div>
 {% endblock %}
 
-{% block local_javascripts %}
+{% block javascripts %}
     {% javascripts output="assets/booking/package-booking/index/js/local.js"
         '@BookingBundle/Resources/public/package-booking/index/ts/dist/inline.bundle.js'
         '@BookingBundle/Resources/public/package-booking/index/ts/dist/polyfills.bundle.js'

@@ -50,7 +50,7 @@ export class EntityDetailPreviewComponent extends BaseExtensionComponent
             [this._object],
             this._fields['view'],
             this._fields['metadata'],
-            this._provider.fieldsChoices
+            this._provider['fields']['choices']
         );
 
         this._dependenciesArr = [];
@@ -62,7 +62,7 @@ export class EntityDetailPreviewComponent extends BaseExtensionComponent
                     this._dependencies[dependency]['objects'],
                     this._dependencies[dependency]['fields']['view'],
                     this._dependencies[dependency]['fields']['metadata'],
-                    this._dependencies[dependency]['fieldsChoices']
+                    this._dependencies[dependency]['fields']['choices']
                 );
             }
         }

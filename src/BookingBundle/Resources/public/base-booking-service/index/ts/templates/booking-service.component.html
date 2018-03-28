@@ -12,15 +12,17 @@
                     </ng-template>
                 </h5>
                 <div *ngIf="_isExpanded"
-                     class="txt-align-r hide-on-empty">    <div class="actions no-user-select">
-        <ng-template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search class="search"></js_search></ng-template>
-        <div (click)="triggerAction($event)">
-            <ng-template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
-                <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
-                   [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
-                   class="-round fa"
-                   [attr.data-action]="action"></a>
-            </ng-template>
+                     class="txt-align-r hide-on-empty">    <div class="row align-items-center">
+        <div class="col ml-auto text-right actions no-user-select">
+            <ng-template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search class="search"></js_search></ng-template>
+            <div (click)="triggerAction($event)">
+                <ng-template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
+                    <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                       [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
+                       class="-round fa"
+                       [attr.data-action]="action"></a>
+                </ng-template>
+            </div>
         </div>
     </div>
 </div>
@@ -28,7 +30,7 @@
             
     <div [hidden]="!(_isExpanded)" class="ibox-content hide-on-empty">    <ng-template [ngIf]="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">
         <div class="table-responsive">
-        <form>        <table class="data-table table table-striped table-hover dataTables-example table-bordered">
+        <form>        <table class="data-table table table-hover dataTables-example table-bordered">
             <thead>
             <tr>
                 <th *ngFor="let searchField of _dataService.getSearch('fields')">{{ _dataService.getFields('metadata')[searchField].label }}</th>
@@ -54,7 +56,7 @@
                            name="index[]"
                            value="{{objIndex}}"
                            [ngModel]="checkAll"/>
-                    <div class="pull-right actions no-user-select" (click)="triggerAction($event)">
+                    <div class="pull-right actions no-user-select text-secondary" (click)="triggerAction($event)">
                         <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
                             <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
                                [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"

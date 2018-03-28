@@ -173,9 +173,6 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
             // @TODO: this is necessary????: Default value (if auto allot is enabled this value will be override)
             $bookingServiceObj->setConfirmationStatus($data['form']['bookingServiceObj']['confirmationStatusManual']);
             if (!$this->handleAllot($this, $bookingServiceObj)) {
-                // @TODO: try avoid this: Set object updated with the allotStatus to response
-                //$this->responseConf['hasObject'] = true;
-                //$this->responseConf['object'] = $this->normalizeObject($obj);
                 $hasError = true;
             }
 
@@ -324,9 +321,6 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
         if ($this->responseConf['status'] == 1) {
             // Remove objects from session
             $this->deleteObjectFromSS($sessionIds['localBookingService']);
-
-            // Refresh to update fields choices
-            $this->refreshConf();
 
             // Flash messages to display to user
             $this->addFlashMessage(
@@ -660,7 +654,7 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
         if ($hasValidation) {
             return $this->validateAvailability($bookingServiceObj);
         }
-        
+
         return true;
     }
 
@@ -732,37 +726,49 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
             // Check dates against data ranges for debug
             $startDate = $bookingServiceObj->getStartDate();
             $endDate = $bookingServiceObj->getEndDate();
-            $statusCounter = array('NO' => 0, 'YES' => 0, 'TOTAL' => 0); // Used to determine the general status
+            $duration = $bookingServiceObj->getDurationDays();
+            // Set limit of days, otherwise the difference can be very large and break the process
+            if ($duration > 90) { // Max 3 months
+                $this->responseConf['status'] = 0;
+                $this->addFlashMessage(
+                    'Invalid data range (> 90 days).',
+                    'Data not persisted',
+                    'error'
+                );
+                $this->handleExit(null, true);
+            } else {
+                $statusCounter = array('NO' => 0, 'YES' => 0, 'TOTAL' => 0); // Used to determine the general status
 
-            $date = $startDate->format('Y-m-d');
-            $endTime = strtotime($endDate->format('Y-m-d'));
-            while (strtotime($date) <= $endTime) {
-                $isDateValidated = false;
-                foreach ($currentAvailability as $availabilityDate) {
-                    if (($date >= $availabilityDate['startDate']) && ($date <= $availabilityDate['endDate'])) {
-                        $isDateValidated = true;
-                        break;
+                $date = $startDate->format('Y-m-d');
+                $endTime = strtotime($endDate->format('Y-m-d'));
+                while (strtotime($date) <= $endTime) {
+                    $isDateValidated = false;
+                    foreach ($currentAvailability as $availabilityDate) {
+                        if (($date >= $availabilityDate['startDate']) && ($date <= $availabilityDate['endDate'])) {
+                            $isDateValidated = true;
+                            break;
+                        }
                     }
+
+                    $status = ($isDateValidated ? 'YES' : 'NO');
+                    $debug['detail'][] = array(
+                        'date' => $date,
+                        'status' => $status
+                    );
+                    $statusCounter[$status]++;
+                    $statusCounter['TOTAL']++;
+
+                    $date = date("Y-m-d", strtotime("+1 day", strtotime($date)));
                 }
 
-                $status = ($isDateValidated ? 'YES' : 'NO');
-                $debug['detail'][] = array(
-                    'date' => $date,
-                    'status' => $status
-                );
-                $statusCounter[$status]++;
-                $statusCounter['TOTAL']++;
-
-                $date = date("Y-m-d", strtotime("+1 day", strtotime($date)));
-            }
-
-            // Set general status
-            if ($statusCounter['YES'] == $statusCounter['TOTAL']) {
-                $debug['status'] = 'YES';
-            } elseif ($statusCounter['NO'] == $statusCounter['TOTAL']) {
-                $debug['status'] = 'NO';
-            } else {
-                $debug['status'] = 'PARTIAL';
+                // Set general status
+                if ($statusCounter['YES'] == $statusCounter['TOTAL']) {
+                    $debug['status'] = 'YES';
+                } elseif ($statusCounter['NO'] == $statusCounter['TOTAL']) {
+                    $debug['status'] = 'NO';
+                } else {
+                    $debug['status'] = 'PARTIAL';
+                }
             }
         }
 

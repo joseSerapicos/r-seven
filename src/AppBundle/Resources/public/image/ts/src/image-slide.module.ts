@@ -6,17 +6,18 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SearchModule} from '../../../ts/search/search.module';
 import {SearchPaginationModule} from '../../../ts/search/search-pagination.module';
 import {ExpanderModule} from '../../../ts/expander/expander.module';
+import {LegendExtModule} from '../../../legend/ts/src/legend.ext-module';
 import {Helper} from '../../../ts/helper';
 import {TasksLoaderManagerService} from '../../../tasks-loader-manager/ts/tasks-loader-manager.service';
 import {PostService} from '../../../ts/post.service';
 import {ModalService} from '../../../modal/ts/modal.service';
-import {FormService} from '../../../ts/form/form.service';
+import {FormService} from '../../../form/ts/form.service';
 import {FlashMessageService} from '../../../ts/flash-message.service';
 import {DynamicComponentLoaderService} from '../../../ts/dynamic-component-loader.service';
 import {DataService} from '../../../ts/data-service/data.service';
 import {ActionsService} from '../../../ts/actions/actions.service';
-import {MainExtModule as AppBasicsExtModule} from '../../../app-basics/ts/src/main.ext-module';
-import {MainComponent as AppBasicsComponent} from '../../../app-basics/ts/src/main.component';
+import {MainExtModule as AppBasicsExtModule} from '../../../app-basics/default/ts/src/main.ext-module';
+import {MainComponent as AppBasicsComponent} from '../../../app-basics/default/ts/src/main.component';
 import {ImageSlideComponent} from './image-slide.component';
 
 // You need extend this component to define "templateUrl"
@@ -40,7 +41,8 @@ let localData = {
         AppBasicsExtModule,
         SearchModule,
         SearchPaginationModule,
-        ExpanderModule
+        ExpanderModule,
+        LegendExtModule
     ],
     declarations: [
         ImageSlideComponent
@@ -58,6 +60,7 @@ let localData = {
         {provide: 'DataServiceProvider', useValue: Helper.getDataServiceProvider(_app.conf)},
         {provide: 'Provider', useValue: Helper.getImageProvider(_app.conf, localData)},
         {provide: 'ActionsServiceProvider', useValue: Helper.getActionsServiceProvider(_app.conf)},
+        {provide: 'LegendProvider', useValue: Helper.getLegendProvider(_app.conf)},
         {provide: 'Popups', useValue: {
             module: FileFormPopupExtModule,
             component: 'FileFormPopupComponent',

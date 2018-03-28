@@ -8,7 +8,7 @@
                title="{% verbatim %}{{obj['name']}}{% endverbatim %}">
                 <img *ngIf="obj['thumbnail']" src="{% verbatim %}{{obj['thumbnail']}}{% endverbatim %}" alt="{% verbatim %}{{obj['name']}}{% endverbatim %}">
                 <span *ngIf="!obj['thumbnail']">{% verbatim %}{{obj['name']}}{% endverbatim %}</span>
-                <div class="actions no-user-select horizontal-group-box"
+                <div class="actions no-user-select horizontal-group-box text-secondary"
                      (click)="triggerAction($event)">
                     <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
                         <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"

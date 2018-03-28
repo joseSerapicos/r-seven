@@ -59,6 +59,9 @@ class ModuleController extends BaseEntityController
             'localParentField' => 'appModuleObj'
         );
 
+        // Legend (disable cancel legend)
+        $this->templateConf['controls']['legend'] = array();
+
         return $this;
     }
 

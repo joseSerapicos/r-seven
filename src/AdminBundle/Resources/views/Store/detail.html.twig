@@ -1,14 +1,12 @@
 {% extends 'AppBundle::base.html.twig' %}
 
 {% block stylesheets %}
-    {% stylesheets filter="scssphp" output="assets/admin/store/detail/css/all.css"
-        '@dropzone_css'
-        '@cropper_css'
-        '@AppBundle/Resources/public/scss/_gallery.scss'
-        '@AppBundle/Resources/public/css/image-crop.css'
-        '@AppBundle/Resources/public/scss/select-box.scss'
+    {% stylesheets output="assets/admin/store/detail/css/local.css"
+    '@AdminBundle/Resources/public/store/detail/scss/dist/styles.css'
+    '@dropzone_css'
+    '@cropper_css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/blueimp-gallery/css/blueimp-gallery.min.css') }}" />
@@ -74,7 +72,7 @@
     {% endjavascripts %}
 {% endblock %}
 
-{%  block local_javascripts %}
+{%  block javascripts %}
     {% javascripts output="assets/admin/store/detail/js/local.js"
         '@AdminBundle/Resources/public/store/detail/ts/dist/inline.bundle.js'
         '@AdminBundle/Resources/public/store/detail/ts/dist/polyfills.bundle.js'

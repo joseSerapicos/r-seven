@@ -56,7 +56,7 @@ class StoreRepositddddory extends BaseEntityRepository
                 'typeDetail' => array(
                     'bundle' => 'admin', 'table' => 'store', 'field' => 'name', 'type' => 'text',
                     'choices' => array(
-                        'autoRefresh' => true, 'selfReference' => true
+                        'autoRefresh' => true, 'hasSelfReference' => true
                     )
                 ),
                 'form' => array('type' => 'select')

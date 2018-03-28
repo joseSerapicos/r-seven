@@ -1,6 +1,6 @@
 {% extends 'AppBundle::base.html.twig' %}
 
-{% block stylesheets %}{% endblock %}
+{% block stylesheets %}{{ parent() }}{% endblock %}
 
 {% block header %}{% endblock %}
 
@@ -9,4 +9,4 @@
     <div class="js_dataBox"></div>
 {% endblock %}
 
-{% block local_javascripts %}{% endblock %}
+{% block javascripts %}{% endblock %}

@@ -121,8 +121,7 @@ class EntityController extends BaseEntityController
 
     /**
      * @Route("/entities/entity/choices",
-     *     name="_entities__entity__choices",
-     *     defaults={"id" = null},
+     *     name="_entities__entity__choices"
      * )
      *
      * Action to get a list/array of objects to use as choices

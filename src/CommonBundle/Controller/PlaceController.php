@@ -76,8 +76,7 @@ class PlaceController extends BaseEntityController
 
     /**
      * @Route("/common/place/choices",
-     *     name="_common__place__choices",
-     *     defaults={"id" = null},
+     *     name="_common__place__choices"
      * )
      *
      * Action to get a list/array of objects to use as choices

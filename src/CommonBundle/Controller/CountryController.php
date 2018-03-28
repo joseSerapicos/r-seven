@@ -76,8 +76,7 @@ class CountryController extends BaseEntityController
 
     /**
      * @Route("/common/country/choices",
-     *     name="_common__country__choices",
-     *     defaults={"id" = null},
+     *     name="_common__country__choices"
      * )
      *
      * Action to get a list/array of objects to use as choices

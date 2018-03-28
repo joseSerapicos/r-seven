@@ -3,15 +3,17 @@
 {% block before_container %}{% endblock %}
 
 {% block header_container %}
-    <div class="actions no-user-select">
-        <ng-template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search class="search"></js_search></ng-template>
-        <div (click)="triggerAction($event)">
-            <ng-template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
-                <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
-                   [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
-                   class="-round fa"
-                   [attr.data-action]="action"></a>
-            </ng-template>
+    <div class="row align-items-center">
+        <div class="col ml-auto text-right actions no-user-select">
+            <ng-template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search class="search"></js_search></ng-template>
+            <div (click)="triggerAction($event)">
+                <ng-template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
+                    <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                       [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
+                       class="-round fa"
+                       [attr.data-action]="action"></a>
+                </ng-template>
+            </div>
         </div>
     </div>
 {% endblock %}

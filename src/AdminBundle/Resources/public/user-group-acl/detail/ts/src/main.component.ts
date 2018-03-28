@@ -4,7 +4,7 @@ import {TreeViewDataService} from '../../../../../../../AppBundle/Resources/publ
 import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts/actions/actions.service';
 import {ModalService} from '../../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
 import {NavManagerService} from '../../../../../../../AppBundle/Resources/public/ts/nav-manager/nav-manager.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {TabsComponent, ITabs, LazyLoadData} from '../../../../../../../AppBundle/Resources/public/tabs/ts/src/tabs.component';
 
 // UserGroupAclMenu
@@ -91,6 +91,7 @@ export class MainComponent extends TabsComponent implements ITabs
                     {provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data)},
                     FormService,
                     {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
+                    {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)},
                     {provide: 'AutoCompleteProviders', useValue: {
                         userObj: {
                             urlConf: (this._helperService.getAppVar('route') + 'admin/user/conf'),

@@ -56,7 +56,7 @@ class EntityGroupRepository extends BaseEntityRepository
                 'typeDetail' => array(
                     'table' => 'entityGroup', 'bundle' => 'entities', 'type' => 'text', 'isRequired' => false,
                     'choices' => array(
-                        'autoRefresh' => true, 'selfReference' => true
+                        'autoRefresh' => true, 'hasSelfReference' => true
                     )
                 ),
                 'form' => array('type' => 'tree-view')

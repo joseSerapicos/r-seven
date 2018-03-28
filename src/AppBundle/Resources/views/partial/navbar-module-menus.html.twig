@@ -1,14 +1,13 @@
-<li{% if (module['id'] == selectedModule) %} class="active"{% endif %}>
+<li{% if (module['id'] == selectedModule)  %} class="active{% if (module['menus']|length < 2)  %} selected{% endif %}"{% endif %}>
 
     {% if (module['menus']|length > 1) or (modules[module['id']] is defined) %}
-        <a href="#" aria-expanded="{{ module['id'] == selectedModule }}"><i
-            class="fa {{ module['icon'] }}"></i><span class="nav-label">{{ module['name'] }}</span><span
-                class="fa arrow"></span></a>
-        <ul class="nav nav-{{ moduleLevel }}-level" aria-expanded="{{ module['id'] == selectedModule }}">
+        <a title="{{ module['name'] }}" class="has-arrow" href="#" aria-expanded="{{ module['id'] == selectedModule }}"><i
+            class="fa {{ module['icon'] }}"></i><span class="nav-label ml-2">{{ module['name'] }}</span></a>
+        <ul aria-expanded="{{ module['id'] == selectedModule }}">
 
             {% for menu in module['menus'] %}
-                <li{% if (menu['id'] == selectedMenu) %} class="active"{% endif %}>
-                    <a href="{{ menu['url'] }}">{{ menu['name'] }}</a></li>
+                <li{% if (menu['id'] == selectedMenu) %} class="active selected"{% endif %}>
+                    <a title="{{ menu['name'] }}" href="{{ menu['url'] }}">{{ menu['name'] }}</a></li>
             {% endfor %}
 
             {% if modules[module['id']] is defined %}
@@ -23,8 +22,8 @@
 
         </ul>
     {% else %}
-        <a href="{{ module['menus'][0]['url'] }}"><i
-            class="fa {{ module['icon'] }}"></i><span class="nav-label">{{ module['name'] }}</span></a>
+        <a title="{{ module['name'] }}" href="{{ module['menus'][0]['url'] }}"><i
+            class="fa {{ module['icon'] }}"></i><span class="nav-label ml-2">{{ module['name'] }}</span></a>
     {% endif %}
 
 </li>

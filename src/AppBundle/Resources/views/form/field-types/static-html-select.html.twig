@@ -1,0 +1,10 @@
+{% embed 'AppBundle:form:field-types/html-select.html.twig' with {
+'field': field,
+'formField': formField
+} %}
+    {% block choices %}
+        {% for choice in formField.vars.choices %}
+            <li data-value="{{choice.value}}">{{choice.label|raw}}</li>
+        {% endfor %}
+    {% endblock %}
+{% endembed %}

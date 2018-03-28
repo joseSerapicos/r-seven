@@ -1,11 +1,10 @@
 {% extends 'AppBundle::base.html.twig' %}
 
 {% block stylesheets %}
-    {% stylesheets filter="scssphp" output="assets/user/user-group/detail/css/all.css"
-        '@AppBundle/Resources/public/scss/select-box.scss'
-        '@AppBundle/Resources/public/scss/choices-box.scss'
+    {% stylesheets output="assets/user/user-group/detail/css/local.css"
+    '@UserBundle/Resources/public/user-group/detail/scss/dist/styles.css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 {% endblock %}
 
@@ -32,7 +31,7 @@
     <div id="js_main"></div>
 {% endblock %}
 
-{%  block local_javascripts %}
+{%  block javascripts %}
     {% javascripts output="assets/user/user-group/detail/js/local.js"
         '@UserBundle/Resources/public/user-group/detail/ts/dist/inline.bundle.js'
         '@UserBundle/Resources/public/user-group/detail/ts/dist/polyfills.bundle.js'

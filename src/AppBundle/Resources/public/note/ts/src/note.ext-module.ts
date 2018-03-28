@@ -6,6 +6,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SearchModule} from '../../../ts/search/search.module';
 import {SearchPaginationModule} from '../../../ts/search/search-pagination.module';
 import {ExpanderModule} from '../../../ts/expander/expander.module';
+import {LegendExtModule} from '../../../legend/ts/src/legend.ext-module';
+
 import {NoteComponent} from './note.component';
 
 
@@ -16,7 +18,8 @@ import {NoteComponent} from './note.component';
         ReactiveFormsModule,
         SearchModule,
         SearchPaginationModule,
-        ExpanderModule
+        ExpanderModule,
+        LegendExtModule
     ],
     declarations: [
         NoteComponent

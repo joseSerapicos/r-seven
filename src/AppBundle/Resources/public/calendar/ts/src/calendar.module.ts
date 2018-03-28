@@ -8,13 +8,13 @@ import {Helper} from '../../../ts/helper';
 import {TasksLoaderManagerService} from '../../../tasks-loader-manager/ts/tasks-loader-manager.service';
 import {PostService} from '../../../ts/post.service';
 import {ModalService} from '../../../modal/ts/modal.service';
-import {FormService} from '../../../ts/form/form.service';
+import {FormService} from '../../../form/ts/form.service';
 import {FlashMessageService} from '../../../ts/flash-message.service';
 import {DynamicComponentLoaderService} from '../../../ts/dynamic-component-loader.service';
 import {DataService} from '../../../ts/data-service/data.service';
 import {ActionsService} from '../../../ts/actions/actions.service';
-import {MainExtModule as AppBasicsExtModule} from '../../../../../../AppBundle/Resources/public/app-basics/ts/src/main.ext-module';
-import {MainComponent as AppBasicsComponent} from '../../../app-basics/ts/src/main.component';
+import {MainExtModule as AppBasicsExtModule} from '../../../../../../AppBundle/Resources/public/app-basics/default/ts/src/main.ext-module';
+import {MainComponent as AppBasicsComponent} from '../../../app-basics/default/ts/src/main.component';
 import {CalendarComponent} from './calendar.component';
 import {FormPopupExtensionModule} from './form-popup.extension-module';
 

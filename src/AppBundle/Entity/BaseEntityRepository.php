@@ -590,19 +590,17 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
             )
         );
 
-        $qb = $this->queryBuilder($options, false);
+        $result = $this->queryBuilder($options, false);
 
         if ($hasExecute) {
-            $result = $this->executeQueryBuilder($qb, $executeMethod);
+            $result = $this->executeQueryBuilder($result, $executeMethod);
 
             if (!is_array($result)) {
                 $result = array($result);
             }
-
-            return $result;
         }
 
-        return $qb;
+        return $result;
     }
 
     /**

@@ -1,14 +1,12 @@
 {% set _id = (_id is defined ? ('-' ~ _id) : '') %}
-<div class="accordion">
-    <div class="panel-group" id="accordion{{_id}}">
-        {% block panels %}
-            {% if (_containers is defined) %}
-                {% for key, value in _containers %}
-                    {% include 'AppBundle:accordion:lazy-load-container.html.twig' with {
-                    '_id': _id
-                    } %}
-                {% endfor %}
-            {% endif %}
-        {% endblock %}
-    </div>
+<div class="accordion" id="accordion{{_id}}">
+    {% block panels %}
+        {% if (_containers is defined) %}
+            {% for key, value in _containers %}
+                {% include 'AppBundle:accordion:lazy-load-container.html.twig' with {
+                '_id': _id
+                } %}
+            {% endfor %}
+        {% endif %}
+    {% endblock %}
 </div>

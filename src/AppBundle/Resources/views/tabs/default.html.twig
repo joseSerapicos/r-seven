@@ -1,22 +1,25 @@
 {% if (_containers is defined) %}
-    <div class="row m-b-md animated fadeInRight"><div class="col-lg-12 m-b-xs"><div class="tabs-container">
-        <ul class="nav nav-tabs">
+    <nav>
+        <div class="nav nav-tabs" role="tablist">
             {% for key, value in _containers %}
-                <li (click)="_navManagerService.navToAction({{key}})"
-                    [class.active]="{{key}} == _navManagerService.getIndex()"><a
-                            [attr.data-index]="{{key}}" data-toggle="tab" href="#tab{{key}}">{{value['label']}}</a></li>
-            {% endfor %}
-        </ul>
-        <div class="tab-content">
-            {% for key, value in _containers %}
-                <div id="tab{{key}}"
-                     class="tab-pane"
-                     [class.active]="{{key}} == _navManagerService.getIndex()">
-                    <div class="panel-body js_lazyLoadContainer_{{key}}">
-                        <ng-template #js_lazyLoadContainer></ng-template>
-                    </div>
-                </div>
+                <a class="nav-item nav-link"
+                   role="tab"
+                   (click)="_navManagerService.navToAction({{key}})"
+                   [class.active]="{{key}} == _navManagerService.getIndex()"
+                   [attr.data-index]="{{key}}"
+                   {# href="#tab{{key}}"#}>{{value['label']}}</a>
             {% endfor %}
         </div>
-    </div></div></div>
+    </nav>
+    <div class="tab-content">
+        {% for key, value in _containers %}
+            <div class="tab-pane p-3 fade js_lazyLoadContainer_{{key}}"
+                 {# id="tab{{key}}" #}
+                 role="tabpanel"
+                 [class.show]="{{key}} == _navManagerService.getIndex()"
+                 [class.active]="{{key}} == _navManagerService.getIndex()">
+                <ng-template #js_lazyLoadContainer></ng-template>
+            </div>
+        {% endfor %}
+    </div>
 {% endif %}

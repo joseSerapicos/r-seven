@@ -1,7 +1,7 @@
 {% if (formField is defined) and (field is defined) %}
     <input [(ngModel)]="_formService.getObject().{{field}}"
            formControlName = {{field}}
-           class="form-control"
+           class="form-control -color"
            [class.error]="_formService.getErrors().{{field}} && (_formService.getErrors().{{field}}.length > 0)"
            id="{{ formField.vars.id }}"
            name="{{ formField.vars.full_name }}"

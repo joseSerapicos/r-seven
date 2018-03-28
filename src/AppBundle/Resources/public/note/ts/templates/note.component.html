@@ -1,40 +1,42 @@
 
-<div class="ibox">
-            <div class="ibox-title" *ngIf="!getProviderExtraDataAttr('hasMergeHeader')">
-            <h5>
-                <ng-template [ngIf]="getProviderAttr('controls')['expander']"><js_expander
-                    [isExpanded]="_isExpanded || null"
-                    [label]="getProviderAttr('label')"
-                    (onChange)="expanderAction($event)"></js_expander></ng-template>
-                <ng-template [ngIf]="!getProviderAttr('controls')['expander']">
-                    <span [innerHTML]="getProviderAttr('label')"></span>
+
+<div class="ibox" >
+                        <div class="ibox-title" *ngIf="!getProviderExtraDataAttr('hasMergeHeader')">
+                <h5>
+                    <ng-template [ngIf]="getProviderAttr('controls')['expander']"><js_expander
+                        [isExpanded]="_isExpanded || null"
+                        [label]="getProviderAttr('label')"
+                        (onChange)="expanderAction($event)"></js_expander></ng-template>
+                    <ng-template [ngIf]="!getProviderAttr('controls')['expander']">
+                        <span [innerHTML]="getProviderAttr('label')"></span>
+                    </ng-template>
+                </h5>
+                <div *ngIf="_isExpanded"
+                     class="txt-align-r hide-on-empty">    <div class="row align-items-center">
+        <div class="col ml-auto text-right actions no-user-select">
+            <ng-template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search class="search"></js_search></ng-template>
+            <div (click)="triggerAction($event)">
+                <ng-template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
+                    <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                       [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
+                       class="-round fa"
+                       [attr.data-action]="action"></a>
                 </ng-template>
-            </h5>
-            <div *ngIf="_isExpanded"
-                 class="txt-align-r hide-on-empty">    <div class="actions no-user-select">
-        <ng-template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search class="search"></js_search></ng-template>
-        <div (click)="triggerAction($event)">
-            <ng-template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
-                <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
-                   [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
-                   class="-round fa"
-                   [attr.data-action]="action"></a>
-            </ng-template>
+            </div>
         </div>
     </div>
 </div>
-        </div>
-    
+            </div>
+            
     <div [hidden]="!(_isExpanded)" class="ibox-content hide-on-empty">    <ng-template [ngIf]="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">
-        <div class="row">
-        <ul class="notes">
-            <li class="col-sm-6 col-md-4"
+            <ul class="row notes">
+            <li class="col-md-6 col-lg-4"
                 *ngFor="let obj of _dataService.getProviderAttr('objects'); let index = index">
                 <div>
                     <small>{{obj['insertTime']}}</small>
                     <h4>{{obj['name']}}</h4>
                     <div [innerHTML]="obj['description']"></div>
-                    <span class="txt-align-r actions no-user-select"
+                    <span class="txt-align-r actions no-user-select badge badge-light text-secondary"
                           (click)="triggerAction($event)">
                         <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
                             <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
@@ -47,7 +49,6 @@
                 </div>
             </li>
         </ul>
-    </div>
     </ng-template><p
         class="text-center"
         *ngIf="!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">No results.</p>
@@ -57,3 +58,4 @@
 
 </div>
 
+<js_legend></js_legend>

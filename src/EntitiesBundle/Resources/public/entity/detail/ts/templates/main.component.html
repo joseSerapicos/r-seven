@@ -1,56 +1,66 @@
-    <div class="row m-b-md animated fadeInRight"><div class="col-lg-12 m-b-xs"><div class="tabs-container">
-        <ul class="nav nav-tabs">
-                            <li (click)="_navManagerService.navToAction(0)"
-                    [class.active]="0 == _navManagerService.getIndex()"><a
-                            [attr.data-index]="0" data-toggle="tab" href="#tab0">Contacts</a></li>
-                            <li (click)="_navManagerService.navToAction(1)"
-                    [class.active]="1 == _navManagerService.getIndex()"><a
-                            [attr.data-index]="1" data-toggle="tab" href="#tab1">Notes</a></li>
-                            <li (click)="_navManagerService.navToAction(2)"
-                    [class.active]="2 == _navManagerService.getIndex()"><a
-                            [attr.data-index]="2" data-toggle="tab" href="#tab2">Files</a></li>
-                            <li (click)="_navManagerService.navToAction(3)"
-                    [class.active]="3 == _navManagerService.getIndex()"><a
-                            [attr.data-index]="3" data-toggle="tab" href="#tab3">Gallery</a></li>
-                            <li (click)="_navManagerService.navToAction(4)"
-                    [class.active]="4 == _navManagerService.getIndex()"><a
-                            [attr.data-index]="4" data-toggle="tab" href="#tab4">Videos</a></li>
-                    </ul>
-        <div class="tab-content">
-                            <div id="tab0"
-                     class="tab-pane"
-                     [class.active]="0 == _navManagerService.getIndex()">
-                    <div class="panel-body js_lazyLoadContainer_0">
-                        <ng-template #js_lazyLoadContainer></ng-template>
+    <nav>
+        <div class="nav nav-tabs" role="tablist">
+                            <a class="nav-item nav-link"
+                   role="tab"
+                   (click)="_navManagerService.navToAction(0)"
+                   [class.active]="0 == _navManagerService.getIndex()"
+                   [attr.data-index]="0"
+                   >Contacts</a>
+                            <a class="nav-item nav-link"
+                   role="tab"
+                   (click)="_navManagerService.navToAction(1)"
+                   [class.active]="1 == _navManagerService.getIndex()"
+                   [attr.data-index]="1"
+                   >Notes</a>
+                            <a class="nav-item nav-link"
+                   role="tab"
+                   (click)="_navManagerService.navToAction(2)"
+                   [class.active]="2 == _navManagerService.getIndex()"
+                   [attr.data-index]="2"
+                   >Files</a>
+                            <a class="nav-item nav-link"
+                   role="tab"
+                   (click)="_navManagerService.navToAction(3)"
+                   [class.active]="3 == _navManagerService.getIndex()"
+                   [attr.data-index]="3"
+                   >Gallery</a>
+                            <a class="nav-item nav-link"
+                   role="tab"
+                   (click)="_navManagerService.navToAction(4)"
+                   [class.active]="4 == _navManagerService.getIndex()"
+                   [attr.data-index]="4"
+                   >Videos</a>
                     </div>
-                </div>
-                            <div id="tab1"
-                     class="tab-pane"
-                     [class.active]="1 == _navManagerService.getIndex()">
-                    <div class="panel-body js_lazyLoadContainer_1">
-                        <ng-template #js_lazyLoadContainer></ng-template>
-                    </div>
-                </div>
-                            <div id="tab2"
-                     class="tab-pane"
-                     [class.active]="2 == _navManagerService.getIndex()">
-                    <div class="panel-body js_lazyLoadContainer_2">
-                        <ng-template #js_lazyLoadContainer></ng-template>
-                    </div>
-                </div>
-                            <div id="tab3"
-                     class="tab-pane"
-                     [class.active]="3 == _navManagerService.getIndex()">
-                    <div class="panel-body js_lazyLoadContainer_3">
-                        <ng-template #js_lazyLoadContainer></ng-template>
-                    </div>
-                </div>
-                            <div id="tab4"
-                     class="tab-pane"
-                     [class.active]="4 == _navManagerService.getIndex()">
-                    <div class="panel-body js_lazyLoadContainer_4">
-                        <ng-template #js_lazyLoadContainer></ng-template>
-                    </div>
-                </div>
-                    </div>
-    </div></div></div>
+    </nav>
+    <div class="tab-content">
+                    <div class="tab-pane p-3 fade js_lazyLoadContainer_0"
+                                  role="tabpanel"
+                 [class.show]="0 == _navManagerService.getIndex()"
+                 [class.active]="0 == _navManagerService.getIndex()">
+                <ng-template #js_lazyLoadContainer></ng-template>
+            </div>
+                    <div class="tab-pane p-3 fade js_lazyLoadContainer_1"
+                                  role="tabpanel"
+                 [class.show]="1 == _navManagerService.getIndex()"
+                 [class.active]="1 == _navManagerService.getIndex()">
+                <ng-template #js_lazyLoadContainer></ng-template>
+            </div>
+                    <div class="tab-pane p-3 fade js_lazyLoadContainer_2"
+                                  role="tabpanel"
+                 [class.show]="2 == _navManagerService.getIndex()"
+                 [class.active]="2 == _navManagerService.getIndex()">
+                <ng-template #js_lazyLoadContainer></ng-template>
+            </div>
+                    <div class="tab-pane p-3 fade js_lazyLoadContainer_3"
+                                  role="tabpanel"
+                 [class.show]="3 == _navManagerService.getIndex()"
+                 [class.active]="3 == _navManagerService.getIndex()">
+                <ng-template #js_lazyLoadContainer></ng-template>
+            </div>
+                    <div class="tab-pane p-3 fade js_lazyLoadContainer_4"
+                                  role="tabpanel"
+                 [class.show]="4 == _navManagerService.getIndex()"
+                 [class.active]="4 == _navManagerService.getIndex()">
+                <ng-template #js_lazyLoadContainer></ng-template>
+            </div>
+            </div>

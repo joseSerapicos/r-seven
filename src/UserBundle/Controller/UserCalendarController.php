@@ -41,7 +41,7 @@ class UserCalendarController extends BaseEntityController
         $isAdmin = $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN');
         if (!$isAdmin) { // Only admin can create event for all users
             unset($this->localConf['entityFields']['shareToType']['typeDetail']['choices']['value']['All']);
-            unset($this->templateConf['fieldsChoices']['shareToType']['value']['All']);
+            unset($this->templateConf['fields']['choices']['shareToType']['value']['All']);
         }
 
         // Search

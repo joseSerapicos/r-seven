@@ -1,16 +1,14 @@
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">{{getProviderAttr('label')}}</h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
 <div class="modal-body">
-    <div class="form-wrapper gray-bg">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>{{getProviderAttr('label')}}</h5>
-                        <div class="txt-align-r actions">
-                            <a class="-round fa fa-times"
-                               (click)="closeAction($event)"></a>
-                        </div>
-                    </div>
-                                        <div class="ibox-content">    
+    <div class="row">
+        <div class="col-12">    
 
     <form name="form" method="post" (ngSubmit)="saveAction($event)" class="dropzone form-horizontal" ngNoForm="">
 
@@ -19,15 +17,14 @@
 
     
 
-    <input type="hidden" id="form__token" name="form[_token]" value="M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso" /></form>
+    <input type="hidden" id="form__token" name="form[_token]" value="sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo" /></form>
 </div>
-                    <div class="ibox-footer hide-on-empty">    <div class="form-horizontal"><div class="form-group">
-            <div class="col-sm-12">
-                <button class="btn-primary btn" type="button" (click)="closeAction($event)">Finish</button>
-            </div>
-        </div></div>
-</div>                                    </div>
-            </div>
-        </div>
     </div>
+</div>
+<div class="modal-footer hide-on-empty">
+    <div class="row">
+    <div class="col-auto ml-auto">
+        <button type="button" class="btn-primary btn" (click)="closeAction($event)">Finish</button>
+    </div>
+</div>
 </div>

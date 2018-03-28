@@ -6,6 +6,11 @@
     
     <div class="row">
         <div class="col-sm-6">
+            <img *ngIf="_dataService.getLocalDataAttr('storeLogo')"
+                 height="96"
+                 alt="logo"
+                 class="m-b-md"
+                 [src]="_helperService.getUploadWebPath(_dataService.getLocalDataAttr('storeLogo'), 'resize_96')">
             <address>
                 <strong>{{_formService.getObject().storeLegalName}}</strong><br>
                 <ng-template
@@ -17,8 +22,7 @@
                     ><span>{{_formService.getObject().storePostCode}} {{_formService.getObject().storeCity}}</span><br></ng-template><ng-template
                     [ngIf]="_formService.getObject().storeRegion"
                     ><span>{{_formService.getObject().storeRegion}}</span><br></ng-template>            </address>
-            <ng-template
-                ngFor let-field [ngForOf]="_dataService.getProviderAttr('localData')['storeInfo']"><span
+            <ng-template ngFor let-field [ngForOf]="_dataService.getLocalDataAttr('storeInfo')"><span
                     [innerHtml]="field"></span><br></ng-template>
             <p class="m-t-sm">Tax Number: {{_formService.getObject().storeTaxNumber}}</p>
         </div>
@@ -36,14 +40,17 @@
     <div class="input-group js_dataPicker"
          [datePicker]="'date'"
          #dpk_date="" [control]="dpk_date">
-        <input [(ngModel)]="_formService.getObject().date"
+        <input type="text"
+               class="form-control"
+               placeholder="yyyy-mm-dd"
+               [(ngModel)]="_formService.getObject().date"
                formControlName = date
                name="form[date]"
-               required="required"               class="form-control"
-               [class.error]="_formService.getErrors()['date'] && (_formService.getErrors()['date'].length > 0)"
-               placeholder="yyyy-mm-dd"
+               required="required"               [class.error]="_formService.getErrors()['date'] && (_formService.getErrors()['date'].length > 0)"
                ngbDatepicker #dpk_date="ngbDatepicker">
-        <a class="input-group-addon action dsp-table-cell fa fa-calendar"></a>
+        <div class="input-group-append">
+            <button class="btn" type="button"><a class="fa fa-calendar"></a></button>
+        </div>
     </div>
     
                 <label class="error" *ngFor="let error of _formService.getErrors().date">{{error}}</label>
@@ -52,10 +59,11 @@
                                 </tbody>
             </table>
 
-            <div class="dsp-table">
-                <span class="pd-r-xs">To:</span>
-                <div class="document-entity m-t-xs">
-                    <span *ngIf="_formService.getObject().entity_avatar" [innerHTML]="_formService.getViewObject().entity_avatar" class="pd-r-xs"></span>
+            <div class="">
+                <span class="">To:</span>
+                <div class="document-entity mt-1">
+                    <span *ngIf="_formService.getObject().entity_avatar"
+                          [innerHTML]="_formService.getViewObject().entity_avatar" class="pr-1"></span>
                     <address>
                         <strong>{{_formService.getObject().entityLegalName}}</strong><br>
                         <div class="m-t-xs m-b-xs">
@@ -64,7 +72,7 @@
            name="form[entityAddressObj]"
                       type="hidden">
     <js_autoComplete [field]="'entityAddressObj'"
-                     [selfReference]="_dataService.getFieldChoicesAttr('entityAddressObj', 'selfReference')"
+                     [hasSelfReference]="_dataService.getFieldChoicesAttr('entityAddressObj', 'hasSelfReference')"
                                               (onChange)="onEntityAddressChange($event)"[placeholder]="&#039;Address&#039;"                         ></js_autoComplete>
                     <label class="error" *ngFor="let error of _formService.getErrors().entityAddressObj">{{error}}</label>
                         </div>
@@ -79,13 +87,13 @@
                             ><span>{{_formService.getObject().entityRegion}}</span><br></ng-template>                    </address>
                 </div>
             </div>
-            <p class="m-t-sm">Tax Number: {{_formService.getObject().entityTaxNumber}}</p>
+            <p class="mt-2">Tax Number: {{_formService.getObject().entityTaxNumber}}</p>
         </div>
     </div>
 
-    <div class="m-t-sm">
+    <div class="mt-2">
         <span>Comments</span>
-        <div class="well document-comments">                            <textarea id="form_comments" name="form[comments]" rows="3" [(ngModel)]="_formService.getObject().comments" formControlName="comments" [class.error]="_formService.getErrors().comments &amp;&amp; _formService.getErrors().comments.length &gt; 0" class="form-control"></textarea>
+        <div class="border rounded document-comments">                            <textarea id="form_comments" name="form[comments]" rows="3" [(ngModel)]="_formService.getObject().comments" formControlName="comments" [class.error]="_formService.getErrors().comments &amp;&amp; _formService.getErrors().comments.length &gt; 0" class="form-control"></textarea>
                 <label class="error" *ngFor="let error of _formService.getErrors().comments">{{error}}</label>
 </div>
     </div>
@@ -102,11 +110,11 @@
 </tr>        </tbody>
     </table>
 </div></div>
-    <div class="well m-t">
-        It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less
-    </div>
+    <div *ngIf="_dataService.getLocalDataAttr('documentInfo') && _dataService.getLocalDataAttr('documentInfo')['footer']"
+         class="rounded mt-2 bg-light p-3"
+         [innerHTML]="_dataService.getLocalDataAttr('documentInfo')['footer']"></div>
 
 
     
 
-    <input type="hidden" id="form__token" name="form[_token]" value="M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso" /></form>
+    <input type="hidden" id="form__token" name="form[_token]" value="sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo" /></form>

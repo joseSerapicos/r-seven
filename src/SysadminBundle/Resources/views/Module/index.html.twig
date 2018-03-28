@@ -1,16 +1,14 @@
 {% extends 'AppBundle:tree-view:index.html.twig' %}
 
 {% block stylesheets %}
-    {{ parent() }}
-
-    {% stylesheets filter="scssphp" output="assets/sysadmin/module/index/css/local.css"
-        '@AppBundle/Resources/public/scss/select-box.scss'
+    {% stylesheets output="assets/sysadmin/module/index/css/local.css"
+    '@SysadminBundle/Resources/public/module/index/scss/dist/styles.css'
     %}
-        <link rel="stylesheet" href="{{ asset_url }}" />
+    <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
 {% endblock %}
 
-{% block local_javascripts %}
+{% block javascripts %}
     {% javascripts output="assets/sysadmin/module/index/js/local.js"
         '@SysadminBundle/Resources/public/module/index/ts/dist/inline.bundle.js'
         '@SysadminBundle/Resources/public/module/index/ts/dist/polyfills.bundle.js'

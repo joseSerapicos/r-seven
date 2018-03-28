@@ -9,7 +9,7 @@
 {% if (form and fields) %}
     {% for field in fields['form'] %}
         {% if field == 'originalDocument_code' %}
-            <div class="form-group -multiple-field">
+            <div class="row form-group -multiple-field">
                 {% include 'AppBundle:form:label.html.twig' with {
                     'formField': form[field],
                     'metadata': fields['metadata'][field]
@@ -28,7 +28,7 @@
                 </div>
             </div>
         {% elseif field == 'service_name' %}
-            <div class="form-group -multiple-field">
+            <div class="row form-group -multiple-field">
                 {% include 'AppBundle:form:label.html.twig' with {
                     'formField': form[field],
                     'metadata': fields['metadata'][field]
@@ -47,7 +47,7 @@
                 </div>
             </div>
         {% elseif field == 'user_value' %}
-            <div class="form-group">
+            <div class="row form-group">
                 {% include 'AppBundle:form:label.html.twig' with {
                     'formField': documentForm[field],
                     'metadata': fields['metadata'][field]

@@ -172,9 +172,6 @@ class UserGroupAclMenuController extends BaseEntityChildController
 
             // Return
             if ($this->responseConf['status'] === 1) {
-                // Refresh to update fields choices
-                $this->refreshConf();
-
                 // Set response conf
                 $this->responseConf['hasObjects'] = true; // Updated list of ACL's
 

@@ -58,7 +58,7 @@ class ModuleController extends BaseEntityController
             array(
                 'add' => (
                     $this->templateConf['acl']['add']
-                    && (count($this->templateConf['fieldsChoices']['appModuleObj']['value']) > 0)
+                    && (count($this->templateConf['fields']['choices']['appModuleObj']['value']) > 0)
                 ),
                 'delete' => $this->templateConf['acl']['delete'],
                 'detail' => true
@@ -81,6 +81,9 @@ class ModuleController extends BaseEntityController
             'localParentField' => 'appParentModuleObj',
             'parentTargetField' => 'appModuleObj'
         );
+
+        // Legend (disable cancel legend)
+        $this->templateConf['controls']['legend'] = array();
 
         // Search. Local conf search, mandatory fields and criteria.
         $this->localConf['search']['fields'][] = 'appParentModuleObj'; // To get parent for tree view (is mandatory)
@@ -228,7 +231,7 @@ class ModuleController extends BaseEntityController
      * @param $field
      * @return mixed
      */
-    protected function getFieldChoices($field)
+    protected function getFieldChoicesFromDb($field)
     {
         $localRepositoryService = $this->getLocalRepositoryService();
         $systemRepositoryService = $this->get('sysadmin.service.repository')

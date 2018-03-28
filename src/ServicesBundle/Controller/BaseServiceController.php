@@ -257,6 +257,9 @@ abstract class BaseServiceController extends BaseEntityController
             'search' => true
         );
 
+        // Remove legend
+        $this->templateConf['controls']['legend'] = array();
+
         return $this;
     }
 

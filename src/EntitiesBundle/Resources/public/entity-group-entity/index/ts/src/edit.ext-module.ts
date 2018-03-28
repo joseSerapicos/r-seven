@@ -1,9 +1,10 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {FieldTypesExtensionModule} from '../../../../../../../AppBundle/Resources/public/ts/form/field-types/field-types.extension-module';
+import {FieldTypesExtensionModule} from '../../../../../../../AppBundle/Resources/public/form/ts/field-types/field-types.extension-module';
 import {SearchModule} from '../../../../../../../AppBundle/Resources/public/ts/search/search.module';
 import {ExpanderModule} from '../../../../../../../AppBundle/Resources/public/ts/expander/expander.module';
+import {LegendExtModule} from '../../../../../../../AppBundle/Resources/public/legend/ts/src/legend.ext-module';
 import {EditComponent} from './edit.component';
 
 
@@ -14,7 +15,8 @@ import {EditComponent} from './edit.component';
         ReactiveFormsModule,
         FieldTypesExtensionModule,
         SearchModule,
-        ExpanderModule
+        ExpanderModule,
+        LegendExtModule
     ],
     declarations: [
         EditComponent

@@ -7,7 +7,7 @@
             <label {% if formField.vars.required %}class="required"{% endif %}><input
                 type="radio"
                 value="{% verbatim %}{{choice['id']}}{% endverbatim %}"
-                [checked]="_formService.getObject().{{field}} == choice['id']">&nbsp;<span [innerHTML]="choice['name']"></span></label>
+                [checked]="_formService.getObject().{{field}} == choice['id']">&nbsp;<span [innerHTML]="choice['label']"></span></label>
             <div class="tip-box"
                  *ngIf="(_formService.getObject().{{field}} == choice['id']) && (choice['description'])"><small>{% verbatim %}{{choice['description']}}{% endverbatim %}</small></div>
         </div>

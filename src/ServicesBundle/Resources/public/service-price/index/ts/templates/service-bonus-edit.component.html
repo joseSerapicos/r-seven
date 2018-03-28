@@ -1,21 +1,19 @@
-<div class="modal-body">
-    <div class="form-wrapper gray-bg">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>
-                        <div class="txt-align-r actions">
-                            <a class="-round fa fa-times"
-                               (click)="closeAction($event)"></a>
-                        </div>
-                    </div>
-                        
+    
     <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
-                    <div class="ibox-content">        
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12">        
                                         
 
-                <div class="form-group" *ngIf="_formService.getObject().id">
+                <div class="row form-group" *ngIf="_formService.getObject().id">
 
                         <label class="col-sm-2 control-label required" for="form_id">Id</label>
     
@@ -28,7 +26,7 @@
         </div>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_description">Description</label>
     
@@ -37,26 +35,26 @@
                 <label class="error" *ngFor="let error of _formService.getErrors().description">{{error}}</label>
             </div>
         </div>
-                                                    <div class="form-group">
+                                                    <div class="row form-group">
                                 <label class="col-sm-2 control-label required" for="form_rule">Rule</label>
                         <div class="col-sm-10"><div class="row">
                         <div class="col-sm-4">
-                                                    
+                                                                                
         <select id="form_rule" name="form[rule]" [(ngModel)]="_formService.getObject().rule" formControlName="rule" [class.error]="_formService.getErrors().rule &amp;&amp; _formService.getErrors().rule.length &gt; 0" class="form-control">            <option value="PAX" >Pax/Quantity</option>            <option value="DAYS" >Days</option></select>
     <input [(ngModel)]="_formService.getObject().rule"
            formControlName = rule
            required="required"           type="hidden">
 
-                <label class="error" *ngFor="let error of _formService.getErrors().rule">{{error}}</label>
+                            <label class="error" *ngFor="let error of _formService.getErrors().rule">{{error}}</label>
                         </div>
                         <div class="col-sm-4">
-                                                    
+                                                                                
         <select id="form_ruleExpr" name="form[ruleExpr]" [(ngModel)]="_formService.getObject().ruleExpr" formControlName="ruleExpr" [class.error]="_formService.getErrors().ruleExpr &amp;&amp; _formService.getErrors().ruleExpr.length &gt; 0" class="form-control">            <option value="&gt;" >&gt;</option>            <option value="&lt;" >&lt;</option>            <option value="=" >=</option></select>
     <input [(ngModel)]="_formService.getObject().ruleExpr"
            formControlName = ruleExpr
            required="required"           type="hidden">
 
-                <label class="error" *ngFor="let error of _formService.getErrors().ruleExpr">{{error}}</label>
+                            <label class="error" *ngFor="let error of _formService.getErrors().ruleExpr">{{error}}</label>
                         </div>
                         <div class="col-sm-4">
                                                         <input type="number" id="form_ruleValue" name="form[ruleValue]" required="required" [(ngModel)]="_formService.getObject().ruleValue" formControlName="ruleValue" [class.error]="_formService.getErrors().ruleValue &amp;&amp; _formService.getErrors().ruleValue.length &gt; 0" class="form-control" />
@@ -66,7 +64,7 @@
                 </div>
                                                                                         
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label">VAT included</label>
     
@@ -76,45 +74,39 @@
                 <label class="error" *ngFor="let error of _formService.getErrors().isVatIncluded">{{error}}</label>
             </div>
         </div>
-                                                    <div class="form-group">
+                                                    <div class="row form-group">
                                 <label class="col-sm-2 control-label required" for="form_bonusServiceObj">Bonus Service</label>
                         <div class="col-sm-10"><div class="row">
                         <div class="col-sm-4">
-                                                        <div [htmlSelect]="'bonusServiceObj'"
-         class="html-select"
+                                                                                    <div class="html-select"
+         [htmlSelect]="'bonusServiceObj'"
                                >
-        <div class="form-control"
+        <div class="input-group-control"
              [class.error]="_formService.getErrors()['bonusServiceObj'] && (_formService.getErrors()['bonusServiceObj'].length > 0)">
-            <span class="control">
-                <span class="js_label"></span><a class="pull-right"><i class="fa fa-angle-down"></i></a>
-            </span>
+            <span class="js_label form-control"></span>
+            <a class="pull-right"><i class="fa fa-angle-down"></i></a>
         </div>
         <div class="choices js_choices">
-            <ul class="form-control-box">
-                                    <li data-value="1"><i class="fa fa-car"></i> Rent a Car (Mercedes) (1)</li>
-                                    <li data-value="3"><i class="fa fa-bicycle"></i> Rent a Bike (3)</li>
-                                    <li data-value="4"><i class="fa fa-cubes"></i> Package (4)</li>
-                                    <li data-value="7"><i class="fa fa-puzzle-piece"></i> Passeio BTT (7)</li>
-                                    <li data-value="8"><i class="fa fa-puzzle-piece"></i> Trekking Asturias (8)</li>
-                                    <li data-value="9"><i class="fa fa-bicycle"></i> Helmet (9)</li>
-                                    <li data-value="10"><i class="fa fa-coffee"></i> Snack Ovomaltine (10)</li>
-                            </ul>
+            <ul class="form-control-box">        <ng-template ngFor let-choice [ngForOf]="_dataService.getFieldChoices('bonusServiceObj')">
+            <li [attr.data-value]="choice['id']" [innerHtml]="choice['label']"></li>
+        </ng-template>
+    </ul>
         </div>
     </div>
     <input [(ngModel)]="_formService.getObject().bonusServiceObj"
            formControlName = bonusServiceObj
            name="form[bonusServiceObj]"
            required="required"           type="hidden">
-                    <label class="error" *ngFor="let error of _formService.getErrors().bonusServiceObj">{{error}}</label>
+                                <label class="error" *ngFor="let error of _formService.getErrors().bonusServiceObj">{{error}}</label>
                         </div>
                         <div class="col-sm-4">
-                                                    
+                                                                                
         <select id="form_bonusMethod" name="form[bonusMethod]" (change)="onBonusMethodChange($event.target.value)" [(ngModel)]="_formService.getObject().bonusMethod" formControlName="bonusMethod" [class.error]="_formService.getErrors().bonusMethod &amp;&amp; _formService.getErrors().bonusMethod.length &gt; 0" class="form-control">            <option value="PERCENTAGE" >Percentage</option>            <option value="FIXED" >Fixed</option></select>
     <input [(ngModel)]="_formService.getObject().bonusMethod"
            formControlName = bonusMethod
            required="required"           type="hidden">
 
-                <label class="error" *ngFor="let error of _formService.getErrors().bonusMethod">{{error}}</label>
+                            <label class="error" *ngFor="let error of _formService.getErrors().bonusMethod">{{error}}</label>
                         </div>
                         <div class="col-sm-4">
                                                         <input type="text" id="form_user_bonusValue" name="form[user_bonusValue]" (input)="onBonusValueEnterKey($event.target.value)" (focusout)="onBonusValueEnterKey($event.target.value)" [(ngModel)]="_formService.getObject().user_bonusValue" formControlName="user_bonusValue" [class.error]="_formService.getErrors().user_bonusValue &amp;&amp; _formService.getErrors().user_bonusValue.length &gt; 0" class="form-control" />
@@ -126,17 +118,17 @@
 
                                             <input type="hidden" id="form_bonusValue" name="form[bonusValue]" [(ngModel)]="_formService.getObject().bonusValue" formControlName="bonusValue" [class.error]="_formService.getErrors().bonusValue &amp;&amp; _formService.getErrors().bonusValue.length &gt; 0" />
                 <label class="error" *ngFor="let error of _formService.getErrors().bonusValue">{{error}}</label>
-                                                                        <div class="form-group">
+                                                                        <div class="row form-group">
                                 <label class="col-sm-2 control-label required" for="form_paxToApplyType">Pax/Quantity to Apply</label>
                         <div class="col-sm-10"><div class="row">
                         <div class="col-sm-6">
-                                                    
+                                                                                
         <select id="form_paxToApplyType" name="form[paxToApplyType]" [(ngModel)]="_formService.getObject().paxToApplyType" formControlName="paxToApplyType" [class.error]="_formService.getErrors().paxToApplyType &amp;&amp; _formService.getErrors().paxToApplyType.length &gt; 0" class="form-control">            <option value="ALL" >All</option>            <option value="FIXED" >Fixed</option>            <option value="AFTER" >After</option></select>
     <input [(ngModel)]="_formService.getObject().paxToApplyType"
            formControlName = paxToApplyType
            required="required"           type="hidden">
 
-                <label class="error" *ngFor="let error of _formService.getErrors().paxToApplyType">{{error}}</label>
+                            <label class="error" *ngFor="let error of _formService.getErrors().paxToApplyType">{{error}}</label>
                         </div>
                         <div class="col-sm-6">
                                                         <input type="number" id="form_paxToApplyValue" name="form[paxToApplyValue]" [(ngModel)]="_formService.getObject().paxToApplyValue" formControlName="paxToApplyValue" [class.error]="_formService.getErrors().paxToApplyValue &amp;&amp; _formService.getErrors().paxToApplyValue.length &gt; 0" class="form-control" />
@@ -144,17 +136,17 @@
                         </div>
                     </div></div>
                 </div>
-                                                                    <div class="form-group">
+                                                                    <div class="row form-group">
                                 <label class="col-sm-2 control-label required" for="form_daysToApplyType">Days to Apply</label>
                         <div class="col-sm-10"><div class="row">
                         <div class="col-sm-6">
-                                                    
+                                                                                
         <select id="form_daysToApplyType" name="form[daysToApplyType]" [(ngModel)]="_formService.getObject().daysToApplyType" formControlName="daysToApplyType" [class.error]="_formService.getErrors().daysToApplyType &amp;&amp; _formService.getErrors().daysToApplyType.length &gt; 0" class="form-control">            <option value="ALL" >All</option>            <option value="FIXED" >Fixed</option>            <option value="AFTER" >After</option></select>
     <input [(ngModel)]="_formService.getObject().daysToApplyType"
            formControlName = daysToApplyType
            required="required"           type="hidden">
 
-                <label class="error" *ngFor="let error of _formService.getErrors().daysToApplyType">{{error}}</label>
+                            <label class="error" *ngFor="let error of _formService.getErrors().daysToApplyType">{{error}}</label>
                         </div>
                         <div class="col-sm-6">
                                                         <input type="number" id="form_daysToApplyValue" name="form[daysToApplyValue]" [(ngModel)]="_formService.getObject().daysToApplyValue" formControlName="daysToApplyValue" [class.error]="_formService.getErrors().daysToApplyValue &amp;&amp; _formService.getErrors().daysToApplyValue.length &gt; 0" class="form-control" />
@@ -164,7 +156,7 @@
                 </div>
                                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_startDate">Start Date</label>
     
@@ -173,14 +165,17 @@
     <div class="input-group js_dataPicker"
          [datePicker]="'startDate'"
          #dpk_startDate="" [control]="dpk_startDate">
-        <input [(ngModel)]="_formService.getObject().startDate"
+        <input type="text"
+               class="form-control"
+               placeholder="yyyy-mm-dd"
+               [(ngModel)]="_formService.getObject().startDate"
                formControlName = startDate
                name="form[startDate]"
-               required="required"               class="form-control"
-               [class.error]="_formService.getErrors()['startDate'] && (_formService.getErrors()['startDate'].length > 0)"
-               placeholder="yyyy-mm-dd"
+               required="required"               [class.error]="_formService.getErrors()['startDate'] && (_formService.getErrors()['startDate'].length > 0)"
                ngbDatepicker #dpk_startDate="ngbDatepicker">
-        <a class="input-group-addon action dsp-table-cell fa fa-calendar"></a>
+        <div class="input-group-append">
+            <button class="btn" type="button"><a class="fa fa-calendar"></a></button>
+        </div>
     </div>
     
                 <label class="error" *ngFor="let error of _formService.getErrors().startDate">{{error}}</label>
@@ -188,7 +183,7 @@
         </div>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_endDate">End Date</label>
     
@@ -197,14 +192,17 @@
     <div class="input-group js_dataPicker"
          [datePicker]="'endDate'"
          #dpk_endDate="" [control]="dpk_endDate">
-        <input [(ngModel)]="_formService.getObject().endDate"
+        <input type="text"
+               class="form-control"
+               placeholder="yyyy-mm-dd"
+               [(ngModel)]="_formService.getObject().endDate"
                formControlName = endDate
                name="form[endDate]"
-               required="required"               class="form-control"
-               [class.error]="_formService.getErrors()['endDate'] && (_formService.getErrors()['endDate'].length > 0)"
-               placeholder="yyyy-mm-dd"
+               required="required"               [class.error]="_formService.getErrors()['endDate'] && (_formService.getErrors()['endDate'].length > 0)"
                ngbDatepicker #dpk_endDate="ngbDatepicker">
-        <a class="input-group-addon action dsp-table-cell fa fa-calendar"></a>
+        <div class="input-group-append">
+            <button class="btn" type="button"><a class="fa fa-calendar"></a></button>
+        </div>
     </div>
     
                 <label class="error" *ngFor="let error of _formService.getErrors().endDate">{{error}}</label>
@@ -212,37 +210,36 @@
         </div>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_targetServiceObj">Target</label>
     
             <div class="col-sm-10">
-                                            <div [htmlSelect]="'targetServiceObj'"
-         class="html-select"
+                                                                        <div class="html-select"
+         [htmlSelect]="'targetServiceObj'"
                                >
-        <div class="form-control"
+        <div class="input-group-control"
              [class.error]="_formService.getErrors()['targetServiceObj'] && (_formService.getErrors()['targetServiceObj'].length > 0)">
-            <span class="control">
-                <span class="js_label"></span><a class="pull-right"><i class="fa fa-angle-down"></i></a>
-            </span>
+            <span class="js_label form-control"></span>
+            <a class="pull-right"><i class="fa fa-angle-down"></i></a>
         </div>
         <div class="choices js_choices">
-            <ul class="form-control-box">
-                                    <li data-value="7"><i class="fa fa-puzzle-piece"></i> Passeio BTT (7)</li>
-                                    <li data-value="8"><i class="fa fa-puzzle-piece"></i> Trekking Asturias (8)</li>
-                            </ul>
+            <ul class="form-control-box">        <ng-template ngFor let-choice [ngForOf]="_dataService.getFieldChoices('targetServiceObj')">
+            <li [attr.data-value]="choice['id']" [innerHtml]="choice['label']"></li>
+        </ng-template>
+    </ul>
         </div>
     </div>
     <input [(ngModel)]="_formService.getObject().targetServiceObj"
            formControlName = targetServiceObj
            name="form[targetServiceObj]"
                       type="hidden">
-                    <label class="error" *ngFor="let error of _formService.getErrors().targetServiceObj">{{error}}</label>
+                                <label class="error" *ngFor="let error of _formService.getErrors().targetServiceObj">{{error}}</label>
             </div>
         </div>
                                                     
 
-                <div class="form-group" *ngIf="_formService.getObject().insertTime">
+                <div class="row form-group" *ngIf="_formService.getObject().insertTime">
 
                         <label class="col-sm-2 control-label required" for="form_insertTime">Insert Time</label>
     
@@ -255,7 +252,7 @@
         </div>
                                                     
 
-                <div class="form-group" *ngIf="_formService.getObject().insertUser">
+                <div class="row form-group" *ngIf="_formService.getObject().insertUser">
 
                         <label class="col-sm-2 control-label required" for="form_insertUser">Insert User</label>
     
@@ -268,7 +265,7 @@
         </div>
                                                     
 
-                <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label">Enabled</label>
     
@@ -279,15 +276,18 @@
             </div>
         </div>
                             </div>
-                    <div class="ibox-footer hide-on-empty">    
-                    <div class="form-group">
-            <div class="col-sm-10 col-sm-offset-2">
-                                            <button                                     class="btn"
+    </div>
+</div>
+<div class="modal-footer hide-on-empty">
+        
+                    <div class="row">
+            <div class="col-auto ml-auto">
+                                            <button                                     class="btn btn-light"
                                     (click)="cancelAction($event)"
                                         id="form_cancel"
             name="form[cancel]"
             type="button"><i class="fa fa-times"></i>&nbsp;Cancel</button>
-                                                <button                                     class="btn"
+                                                <button                                     class="btn btn-light"
                                     (click)="resetAction($event)"
                                         id="form_reset"
             name="form[reset]"
@@ -304,10 +304,5 @@
             type="button"><i class="fa fa-times"></i>&nbsp;Save and Close</button>
                                 </div>
         </div>
-    </div>                        
-    <input type="hidden" id="form__token" name="form[_token]" value="3C4y9vpbwIb4-Q_Ejlec5n3gkCxYCLzkD3zDlOl5_Hg" /></form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    </div>    
+    <input type="hidden" id="form__token" name="form[_token]" value="sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo" /></form>

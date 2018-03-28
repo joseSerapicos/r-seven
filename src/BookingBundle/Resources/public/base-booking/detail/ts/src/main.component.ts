@@ -3,7 +3,7 @@ import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/da
 import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts/actions/actions.service';
 import {Helper} from '../../../../../../../AppBundle/Resources/public/ts/helper';
 import {ModalService} from '../../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {NavManagerService} from '../../../../../../../AppBundle/Resources/public/ts/nav-manager/nav-manager.service';
 import {WizardManagerService} from '../../../../../../../AppBundle/Resources/public/wizard/ts/src/wizard-manager.service';
 import {TabsExtComponent, ITabs, LazyLoadData, BaseProvider} from '../../../../../../../AppBundle/Resources/public/tabs/ts/src/tabs.ext-component';
@@ -154,6 +154,7 @@ export class MainComponent extends TabsExtComponent implements ITabs
 
                 providers = [
                     {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
+                    {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)},
                     {provide: 'Popups', useValue: {
                         'add': {
                             module: this._provider['modules']['bookingServiceAddStep1']['module'],
@@ -176,7 +177,6 @@ export class MainComponent extends TabsExtComponent implements ITabs
                             ]
                         }
                     }},
-                    {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)},
                     {provide: 'ParentDataService', useValue: this._dataService}
                 ];
                 break;
@@ -187,6 +187,7 @@ export class MainComponent extends TabsExtComponent implements ITabs
             case 3:
                 providers = [
                     {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
+                    {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)},
                     {provide: 'Popups', useValue: {
                         module: BookingObservationEditExtModule,
                         component: 'EditComponent',
@@ -200,6 +201,7 @@ export class MainComponent extends TabsExtComponent implements ITabs
             case 4:
                 providers = [
                     {provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data)},
+                    {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)},
                     {provide: 'Popups', useValue: {
                         module: BookingFileEditExtModule,
                         component: 'EditComponent',

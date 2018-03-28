@@ -7,7 +7,7 @@
     {% if (form and fields) %}
         {% for field in fields['form'] %}
             {% if field == 'durationType' %}
-                <div class="form-group">
+                <div class="row form-group">
                     {% include 'AppBundle:form:label.html.twig' with {
                         'formField': form[field],
                         'metadata': fields['metadata'][field]
@@ -30,7 +30,7 @@
                     </div></div>
                 </div>
             {% elseif field == 'quantityType' %}
-                <div class="form-group">
+                <div class="row form-group">
                     {% include 'AppBundle:form:label.html.twig' with {
                     'formField': form[field],
                     'metadata': fields['metadata'][field]

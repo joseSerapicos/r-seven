@@ -116,8 +116,7 @@ class ClientController extends BaseEntityTypeController
 
     /**
      * @Route("/entities/client/choices",
-     *     name="_entities__client__choices",
-     *     defaults={"id" = null},
+     *     name="_entities__client__choices"
      * )
      *
      * Action to get a list/array of objects to use as choices

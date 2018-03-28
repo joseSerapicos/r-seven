@@ -4,7 +4,7 @@
 
     
 
-                        <div class="form-group -multiple-field">
+                        <div class="row form-group -multiple-field">
                             <label class="col-sm-2 control-label" for="form_originalDocument_code">Original Doc.</label>
                     <div class="col-sm-10">
                                             <p id="form_originalDocumentType_name"
@@ -19,7 +19,7 @@
             </div>
                                             
 
-            <div class="form-group" *ngIf="_formService.getObject().document_code">
+                <div class="row form-group" *ngIf="_formService.getObject().document_code">
 
                         <label class="col-sm-2 control-label" for="form_supplierDocumentInvoiceDetailObj_document_code">Doc. Code</label>
     
@@ -30,7 +30,7 @@
                         <label class="error" *ngFor="let error of _formService.getErrors().document_code">{{error}}</label>
             </div>
         </div>
-                                                <div class="form-group -multiple-field">
+                                                <div class="row form-group -multiple-field">
                             <label class="col-sm-2 control-label" for="form_service_name">Service</label>
                     <div class="col-sm-10">
                                             <p id="form_service_icon"
@@ -45,7 +45,7 @@
             </div>
                                 
 
-            <div class="form-group" *ngIf="_formService.getObject().booking_code">
+                <div class="row form-group" *ngIf="_formService.getObject().booking_code">
 
                         <label class="col-sm-2 control-label" for="form_supplierDocumentInvoiceDetailObj_booking_code">Booking</label>
     
@@ -58,7 +58,7 @@
         </div>
                                     
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_supplierDocumentInvoiceDetailObj_description">Description</label>
     
@@ -69,7 +69,7 @@
         </div>
                                     
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label required" for="form_supplierDocumentInvoiceDetailObj_quantity">Quantity</label>
     
@@ -80,9 +80,9 @@
         </div>
                                                 
 
-                                        <input type="hidden" id="form_supplierDocumentInvoiceDetailObj_value" name="form[supplierDocumentInvoiceDetailObj][value]" [(ngModel)]="_formService.getObject().value" formControlName="value" [class.error]="_formService.getErrors().value &amp;&amp; _formService.getErrors().value.length &gt; 0" />
+                                            <input type="hidden" id="form_supplierDocumentInvoiceDetailObj_value" name="form[supplierDocumentInvoiceDetailObj][value]" [(ngModel)]="_formService.getObject().value" formControlName="value" [class.error]="_formService.getErrors().value &amp;&amp; _formService.getErrors().value.length &gt; 0" />
                 <label class="error" *ngFor="let error of _formService.getErrors().value">{{error}}</label>
-                                    <div class="form-group">
+                                    <div class="row form-group">
                             <label class="col-sm-2 control-label" for="form_supplierDocumentInvoiceDetailObj_user_value">Value</label>
                     <div class="col-sm-10"><div class="row">
                         <div class="col-sm-8">
@@ -98,7 +98,7 @@
             </div>
                                 
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_supplierDocumentInvoiceDetailObj_subTotal">Sub Total</label>
     
@@ -109,7 +109,7 @@
         </div>
                                     
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_supplierDocumentInvoiceDetailObj_totalVat">TAX</label>
     
@@ -120,7 +120,7 @@
         </div>
                                     
 
-            <div class="form-group" >
+                <div class="row form-group" >
 
                         <label class="col-sm-2 control-label" for="form_supplierDocumentInvoiceDetailObj_total">Total</label>
     
@@ -129,8 +129,20 @@
                 <label class="error" *ngFor="let error of _formService.getErrors().total">{{error}}</label>
             </div>
         </div>
+                                    
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label">Enabled</label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().isEnabled">{{error}}</label>
+            </div>
+        </div>
                 
 
     
 
-    <input type="hidden" id="form__token" name="form[_token]" value="M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso" /></form>
+    <input type="hidden" id="form__token" name="form[_token]" value="sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo" /></form>

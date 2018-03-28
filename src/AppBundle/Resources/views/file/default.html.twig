@@ -1,23 +1,22 @@
 {% extends 'AppBundle:data-box:base.html.twig' %}
 {% block body_container %}
-    <div class="table-responsive">
-        <div class="files">
-            <a class="files-item"
-               *ngFor="let obj of _dataService.getProviderAttr('objects'); let index = index"
+    <div class="row align-items-center files"
+         *ngFor="let obj of _dataService.getProviderAttr('objects'); let index = index">
+        <div class="col">
+            <a class="files-item text-secondary"
                href="{% verbatim %}{{getWebPath(obj['path'])}}{% endverbatim %}"
                target="_blank"
-               title="{% verbatim %}{{obj['name']}}{% endverbatim %}"><span>{% verbatim %}{{obj['name']}}{% endverbatim %}</span>
-                <div class="txt-align-r actions no-user-select"
-                     (click)="triggerAction($event)">
-                    <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
-                        <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
-                           [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
-                           class="fa"
-                           [attr.data-action]="action"
-                           [attr.data-value]="index"></a>
-                   </ng-template>
-                </div>
-            </a>
+               title="{% verbatim %}{{obj['name']}}{% endverbatim %}"><span>{% verbatim %}{{obj['name']}}{% endverbatim %}</span></a>
+        </div>
+        <div class="col-auto txt-align-r actions no-user-select text-secondary"
+             (click)="triggerAction($event)">
+            <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
+                <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                   [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
+                   class="fa"
+                   [attr.data-action]="action"
+                   [attr.data-value]="index"></a>
+            </ng-template>
         </div>
     </div>
 {% endblock %}

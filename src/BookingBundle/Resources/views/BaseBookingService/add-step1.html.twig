@@ -1,9 +1,9 @@
 {% extends 'AppBundle:wizard:form-popup.html.twig' %}
 
 {% block wizard_header %}
-<div *ngIf="getSelectedServiceAttr('id')" class="row m-b-sm">
+<div *ngIf="getSelectedServiceAttr('id')" class="row mb-1">
     <div class="col-sm-8">
-        <div class="widget gray-bg height104">
+        <div class="row no-gutters widget gray-bg height104">
             <div class="col-sm-3">
                 <div [innerHTML]="getSelectedServiceAttr('thumbnail')"></div>
             </div>
@@ -17,7 +17,7 @@
         </div>
     </div>
     <div class="col-sm-4">
-        <div class="widget navy-bg height104 text-center">
+        <div class="widget bg-success text-white height104 text-center">
             <h2 [innerHTML]="getSelectedServiceAttr('totalSell')"></h2>
             <div><span [innerHTML]="getSelectedServiceAttr('quantity')" class="font-bold"></span>&nbsp;Pax</div>
             <div><span [innerHTML]="getSelectedServiceAttr('durationDays')" class="font-bold"></span>&nbsp;Days</div>

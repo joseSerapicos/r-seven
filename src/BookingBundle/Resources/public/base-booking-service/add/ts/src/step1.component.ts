@@ -1,6 +1,6 @@
 import {Component, ElementRef, Inject, Injector, ReflectiveInjector, Renderer, QueryList, Optional, ViewChildren, ViewContainerRef, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {FormService} from '../../../../../../../AppBundle/Resources/public/ts/form/form.service';
+import {FormService} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
 import {Helper} from '../../../../../../../AppBundle/Resources/public/ts/helper';
 import {DataService} from "../../../../../../../AppBundle/Resources/public/ts/data-service/data.service";
 import {ActionsService} from '../../../../../../../AppBundle/Resources/public/ts/actions/actions.service';

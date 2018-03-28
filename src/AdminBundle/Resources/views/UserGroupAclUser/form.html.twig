@@ -1,15 +1,15 @@
 {% extends 'AppBundle:choices-box:default.html.twig' %}
 
 {% block body %}
-<div class="row">
-    <div class="col-md-4 pd-t-sm">
-        {% include 'AppBundle:form:form.html.twig' with {
+    <div class="row align-items-center">
+        <div class="col-12 col-md-4 py-3">
+            {% include 'AppBundle:form:form.html.twig' with {
             'form': _form,
             'fields': _conf['fields']
-        } %}
+            } %}
+        </div>
+        <div class="col-12 col-md-8 py-3 dyn-border-l">{{ parent() }}</div>
     </div>
-    <div class="col-md-8 pd-t-sm dyn-border-l"><div class="form-group">{{ parent() }}</div></div>
-</div>
 {% endblock %}
 
 {% block footer %}{% endblock %}

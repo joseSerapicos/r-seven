@@ -2,8 +2,8 @@ import {Component, ElementRef, Injector, Inject, Renderer, ViewContainerRef} fro
 import {DataService} from '../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
 import {Helper} from '../../../../../../AppBundle/Resources/public/ts/helper';
 import {ModalService} from '../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
-import {FormService, IForm} from '../../../../../../AppBundle/Resources/public/ts/form/form.service';
-import {TreeViewFormComponent, TreeViewProvider} from '../../../../../../AppBundle/Resources/public/tree-view/ts/tree-view-form.component';
+import {FormService, IForm} from '../../../../../../AppBundle/Resources/public/form/ts/form.service';
+import {TreeViewFormComponent, TreeViewProvider} from '../../../../../../AppBundle/Resources/public/tree-view/default/ts/tree-view-form.component';
 import {Actions, Popups, Popup} from '../../../../../../AppBundle/Resources/public/data-box/ts/src/data-box.component';
 
 

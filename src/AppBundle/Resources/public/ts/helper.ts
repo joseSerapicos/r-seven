@@ -1,10 +1,10 @@
 import {DataServiceProvider} from './data-service/data-service-provider';
-import {TreeViewProvider} from '../tree-view/ts/src/tree-view-provider';
+import {TreeViewProvider} from '../tree-view/default/ts/src/tree-view-provider';
 import {DataBoxProvider} from '../data-box/ts/src/data-box-provider';
 import {ImageProvider} from '../image/ts/src/image-provider';
 import {BaseProvider} from './base/base-provider';
 import {BoxProvider} from './box/box-provider';
-import {FormProvider} from './form/form-provider';
+import {FormProvider} from '../form/ts/form-provider';
 import {WizardPopupProvider} from '../wizard/ts/src/wizard-popup-provider';
 import {EntityDetailProvider} from '../entity-detail/ts/src/entity-detail-provider';
 import {ActionsServiceProvider} from './actions/actions-service-provider';
@@ -222,7 +222,6 @@ export class Helper {
     {
         return {
             fields: data.fields || null,
-            fieldsChoices: data.fieldsChoices || null,
             search: data.search || null,
             object: data.object || null,
             objects: data.objects || null,
@@ -342,7 +341,6 @@ export class Helper {
             {
                 object: data['object'] || null,
                 fields: data['fields'] || null,
-                fieldsChoices: data['fieldsChoices'] || null,
                 dependencies: data['dependencies'] || null
             }
         );

@@ -1,0 +1,19 @@
+/**
+ * Base default action
+ * Use default in output for action, to make fonts path compatible with all actions that uses the base sass file
+ */
+
+// Base
+@import "../../../../../../../AppBundle/Resources/public/scss/theme";
+@import "../../../../../../../AppBundle/Resources/public/scss/helper";
+@import "../../../../../../../AppBundle/Resources/public/scss/main-container";
+@import "../../../../../../../AppBundle/Resources/public/scss/left-sidebar";
+@import "../../../../../../../AppBundle/Resources/public/scss/top-sidebar";
+@import "../../../../../../../AppBundle/Resources/public/scss/styles";
+
+// Features/Components
+@import "../../../../modal/scss/modal";
+@import "../../../../legend/scss/src/main";
+@import "../../../../scss/search";
+@import "../../../../scss/expander";
+@import "../../../../scss/actions";

@@ -14,14 +14,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Icon extends BaseEntity {
     /**
-     * @ORM\Column(name="name", type="string", length=20, nullable=false, unique=true, options={"comment":"Name"})
+     * @ORM\Column(name="name", type="string", length=26, nullable=false, unique=true, options={"comment":"Name"})
      *
      * @Assert\NotBlank()
      */
     protected $name;
 
     /**
-     * @ORM\Column(name="icon", type="string", length=20, nullable=false, unique=true, options={"comment":"Icon"})
+     * @ORM\Column(name="icon", type="string", length=26, nullable=false, unique=true, options={"comment":"Icon"})
      *
      * @Assert\NotBlank()
      */
