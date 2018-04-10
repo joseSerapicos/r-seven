@@ -169,10 +169,10 @@ abstract class BaseEntityTypeController extends BaseEntityController
                 parent::setObjectDefaultValues_static($this, $entityObj);
                 $this->get('app.service.code_generator')
                     ->generateCode(
+                        $entityObj,
                         $this->getRepositoryService('Entity', 'EntitiesBundle'),
                         'EntitiesBundle:EntitySetting',
                         'EntitiesBundle:Entity',
-                        $entityObj,
                         array()
                     );
             }

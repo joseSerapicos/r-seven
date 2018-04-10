@@ -76,7 +76,7 @@
         </div>
     </div>
 
-    <div class="mt-2">
+    <div class="mt-2 mb-4">
         <span>Comments</span>
         <div class="border rounded document-comments">{% include 'AppBundle:form:input.html.twig' with {
             'field': 'comments',
@@ -137,7 +137,7 @@
                         } %}</td>
                 </tr>
                 <tr>
-                    <td><strong>TOTAL:</strong></td>
+                    <td><strong>Total:</strong></td>
                     <td>{% include 'AppBundle:form:input.html.twig' with {
                             'field': 'total',
                             'formField': documentForm['total'],
@@ -150,6 +150,6 @@
     </div>{% endblock %}
 
     <div *ngIf="_dataService.getLocalDataAttr('documentInfo') && _dataService.getLocalDataAttr('documentInfo')['footer']"
-         class="rounded mt-2 bg-light p-3"
+         class="mt-2 bg-light p-3"
          [innerHTML]="_dataService.getLocalDataAttr('documentInfo')['footer']"></div>
 {% endif %}

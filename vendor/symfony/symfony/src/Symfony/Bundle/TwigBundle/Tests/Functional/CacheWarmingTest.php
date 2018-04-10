@@ -9,15 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\TwigBundle\Tests;
+namespace Symfony\Bundle\TwigBundle\Tests\Functional;
 
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\TwigBundle\Tests\TestCase;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 
-class NewCacheWamingTest extends \PHPUnit_Framework_TestCase
+class CacheWarmingTest extends TestCase
 {
     public function testCacheIsProperlyWarmedWhenTemplatingIsAvailable()
     {
@@ -28,10 +29,10 @@ class NewCacheWamingTest extends \PHPUnit_Framework_TestCase
         $warmer->enableOptionalWarmers();
         $warmer->warmUp($kernel->getCacheDir());
 
-        $this->assertTrue(file_exists($kernel->getCacheDir().'/twig'));
+        $this->assertFileExists($kernel->getCacheDir().'/twig');
     }
 
-    public function testCacheIsNotWarmedWhenTemplatingIsDisabled()
+    public function testCacheIsProperlyWarmedWhenTemplatingIsDisabled()
     {
         $kernel = new CacheWarmingKernel(false);
         $kernel->boot();
@@ -40,7 +41,7 @@ class NewCacheWamingTest extends \PHPUnit_Framework_TestCase
         $warmer->enableOptionalWarmers();
         $warmer->warmUp($kernel->getCacheDir());
 
-        $this->assertFalse(file_exists($kernel->getCacheDir().'/twig'));
+        $this->assertFileExists($kernel->getCacheDir().'/twig');
     }
 
     protected function setUp()
@@ -72,7 +73,7 @@ class CacheWarmingKernel extends Kernel
     {
         $this->withTemplating = $withTemplating;
 
-        parent::__construct('dev', true);
+        parent::__construct(($withTemplating ? 'with' : 'without').'_templating', true);
     }
 
     public function getName()
@@ -90,6 +91,7 @@ class CacheWarmingKernel extends Kernel
         $loader->load(function ($container) {
             $container->loadFromExtension('framework', array(
                 'secret' => '$ecret',
+                'form' => array('enabled' => false),
             ));
         });
 
@@ -99,6 +101,7 @@ class CacheWarmingKernel extends Kernel
                     'secret' => '$ecret',
                     'templating' => array('engines' => array('twig')),
                     'router' => array('resource' => '%kernel.root_dir%/Resources/config/empty_routing.yml'),
+                    'form' => array('enabled' => false),
                 ));
             });
         }
@@ -106,7 +109,7 @@ class CacheWarmingKernel extends Kernel
 
     public function getCacheDir()
     {
-        return sys_get_temp_dir().'/'.Kernel::VERSION.'/CacheWarmingKernel/cache';
+        return sys_get_temp_dir().'/'.Kernel::VERSION.'/CacheWarmingKernel/cache/'.$this->environment;
     }
 
     public function getLogDir()

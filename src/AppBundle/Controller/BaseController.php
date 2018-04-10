@@ -4,10 +4,11 @@ namespace AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use AppBundle\Service\HelperService;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use AppBundle\Service\HelperService;
 
 abstract class BaseController extends Controller
 {
@@ -39,6 +40,7 @@ abstract class BaseController extends Controller
     // Response configuration to send after process request from controller to template/view (twig)
     protected $responseConf = array(
         'status' => 1, // [1: success, 0: error]
+        'hasStatus' => true, // Send status in response
         'errors' => array(),
         'flashMessages' => array(), // (error, warning, info and success messages)
         'hasConf' => false,
@@ -85,30 +87,13 @@ abstract class BaseController extends Controller
         $csrfTokenId = $this->container->getParameter('secret');
         HelperService::setGlobalVar('csrfTokenId', $csrfTokenId);
 
-        // Get request route
-        $requestRoute = $request->attributes->get('_route');
-
         /* Controller */
-        if($requestRoute) {
-            $routeSegments = explode('__', substr($requestRoute, 1));
-            if (count($routeSegments) > 1) {
-                $this->localConf['bundle'] = $routeSegments[0]; // snake_case
-                $this->localConf['Bundle'] = (HelperService::snakeCaseToCamelCase($routeSegments[0]) . 'Bundle'); // CamelCase
-                $this->localConf['controller'] = HelperService::snakeCaseToCamelCase($routeSegments[1]); // CamelCase
-            }
-        } else {
-            // Used in the case of fragments (no route available)
-            $routeSegments = explode(':', $request->attributes->get('_controller'));
-            if (count($routeSegments) > 1) {
-                // bundle: Removes the "Bundle" prefix and converts to snake_case
-                $this->localConf['bundle'] = HelperService::camelCaseToSnakeCase(substr($routeSegments[0], 0, -6));
-                $this->localConf['Bundle'] = $routeSegments[0]; // CamelCase
-                $this->localConf['controller'] = $routeSegments[1]; // CamelCase
-            }
-        }
-        if (count($routeSegments) < 2) {
-            throw new \Exception('Configuration cannot be set, missing arguments (route)!');
-        }
+        // (CamelCase)
+        $this->localConf['Bundle'] = HelperService::getBundleName($this);
+        // Removes "Bundle" (snake_case)
+        $this->localConf['bundle'] = HelperService::camelCaseToSnakeCase(substr($this->localConf['Bundle'], 0, -6));
+        // Removes "Controller" (CamelCase)
+        $this->localConf['controller'] = substr(HelperService::getClassName($this), 0, -10);
         /* /Controller */
 
         /* Debug mode */
@@ -187,11 +172,6 @@ abstract class BaseController extends Controller
             'service' => array() // Extra data for service like 'fields', etc.
         );
         /* /Extra data */
-
-        /* Response */
-        // Avoid to wrap data with status (in case of fragments originated by calls from twig)
-        $this->responseConf['hasStatus'] = !empty($requestRoute);
-        /* /Response */
 
         return $this;
     }
@@ -396,6 +376,16 @@ abstract class BaseController extends Controller
             '_conf' => $data,
             '_localData' => $this->responseConf['localData']
         );
+    }
+
+    /**
+     * Decode Json
+     * @param $data
+     * @return mixed
+     */
+    protected function jsonDecode($data) {
+        $jsonEncoder = new JsonEncoder();
+        return $jsonEncoder->decode($data, 'json');
     }
 
     /**

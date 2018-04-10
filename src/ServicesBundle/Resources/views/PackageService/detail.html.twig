@@ -20,7 +20,7 @@
 
     {% set packageServiceServiceData = render(controller(
         'ServicesBundle:PackageServiceService:dataChild',
-        {'parents': {'packageService': parentId}}
+        {'parents': {'packageService': parentId}, 'responseType': 'json'}
     )) %}
 
     <script>

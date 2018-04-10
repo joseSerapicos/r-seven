@@ -192,21 +192,22 @@ class SessionStorageService
             $object->setId($this->generateId());
         }
 
-        // Store object (at root of storage)
-        if (!isset($storage[$object->getId()])) {
-            // Store in parent object
-            $parentObj = (($parent && isset($storage[$parent])) ? $storage[$parent]['obj'] : null);
-            if ($parentObj) {
-                // Create index in parent
-                $childIndex = HelperService::getClassName($object);
-                if (!isset($storage[$parent]['childrenObj'][$childIndex])) {
-                    $storage[$parent]['childrenObj'][$childIndex] = array();
-                }
+        // Store in parent object
+        $parentObj = (($parent && isset($storage[$parent])) ? $storage[$parent]['obj'] : null);
 
-                // Add object to parent
-                $storage[$parent]['childrenObj'][$childIndex][$object->getId()] = $object;
+        if ($parentObj) {
+            // Create index in parent
+            $childIndex = HelperService::getClassName($object);
+            if (!isset($storage[$parent]['childrenObj'][$childIndex])) {
+                $storage[$parent]['childrenObj'][$childIndex] = array();
             }
 
+            // Add object to parent
+            $storage[$parent]['childrenObj'][$childIndex][$object->getId()] = $object;
+        }
+
+        // Store object (at root of storage)
+        if (!isset($storage[$object->getId()])) {
             $storage[$object->getId()] = array(
                 'obj' => null,
                 'childrenObj' => array(),

@@ -1,0 +1,84 @@
+{% set title = (title is defined ? title : (_localData['template']['title'] is defined ? _localData['template']['title'] : '')) %}
+{% set bottomClass = (bottomClass is defined ? bottomClass : '') %}
+
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>{{title}}</title>
+
+    <script>
+        function subst() {
+            var vars = {};
+            var query_strings_from_url = document.location.search.substring(1).split('&');
+            for (var query_string in query_strings_from_url) {
+                if (query_strings_from_url.hasOwnProperty(query_string)) {
+                    var temp_var = query_strings_from_url[query_string].split('=', 2);
+                    vars[temp_var[0]] = decodeURI(temp_var[1]);
+                }
+            }
+            var css_selector_classes = ['page', 'frompage', 'topage', 'webpage', 'section', 'subsection', 'date', 'isodate', 'time', 'title', 'doctitle', 'sitepage', 'sitepages'];
+            for (var css_class in css_selector_classes) {
+                if (css_selector_classes.hasOwnProperty(css_class)) {
+                    var element = document.getElementsByClassName(css_selector_classes[css_class]);
+                    for (var j = 0; j < element.length; ++j) {
+                        element[j].textContent = vars[css_selector_classes[css_class]];
+                    }
+                }
+            }
+        }
+
+        window.onload = function() {
+            subst(); // For pagination
+
+            {% block javascripts %}{% endblock %}
+        };
+    </script>
+
+    <style>
+        @media print {
+            tr {page-break-inside: avoid; }
+        }
+    </style>
+
+    {# Use to debug in browser #}
+    {#{% block stylesheets %}
+        {% stylesheets output="assets/app/pdf/default/css/local.css"
+        '@AppBundle/Resources/public/app-basics/default/scss/dist/styles.css'
+        %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+        {% endstylesheets %}
+    {% endblock %}
+
+    {% block vendor_stylesheets %}
+        {% stylesheets output="assets/app/pdf/default/css/vendor.css"
+        '@AppBundle/Resources/public/pdf/scss/dist/styles.css'
+        %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+        {% endstylesheets %}
+    {% endblock %}#}
+
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ web_path ~ '../src/AccountingBundle/Resources/public/base-document/index/scss/dist/styles.css' }}" />
+    {% endblock %}
+
+    {% block vendor_stylesheets %}
+        <link rel="stylesheet" href="{{ web_path ~ '../src/AppBundle/Resources/public/pdf/scss/dist/styles.css' }}" />
+    {% endblock %}
+</head>
+
+<body class="p-0 m-0"><div class="container d-inline-block">
+    {% block app_pdf_header %}{% endblock %}
+
+    {% block app_pdf_body %}{% endblock %}
+
+    {% block app_pdf_footer %}
+        <div class="row"><div class="col-print-12 text-right">
+            <div class="mt-4 border-bottom {{bottomClass}}">Page <span class="page"></span> of <span class="topage"></span></div>
+        </div></div>
+    {% endblock %}
+</div></body>
+</html>

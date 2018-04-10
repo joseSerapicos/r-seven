@@ -111,15 +111,4 @@ export class MainComponent extends TabsComponent implements ITabs
 
         return providers;
     }
-
-    /**
-     * Lifecycle callback
-     */
-    ngAfterViewInit()
-    {
-        super.ngAfterViewInit();
-
-        // Open the first tab
-        this._navManagerService.navTo(0);
-    }
 }

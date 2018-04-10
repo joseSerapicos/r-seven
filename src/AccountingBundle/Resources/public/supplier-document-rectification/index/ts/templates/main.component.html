@@ -31,7 +31,7 @@
     <div [hidden]="!(_isExpanded)" class="ibox-content hide-on-empty">    <ng-template [ngIf]="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">
         <div class="table-responsive m-t">
         <form>
-            <table class="table document-table">
+            <table class="table table-bordered">
                 <thead>
                 <tr>
                     <th *ngFor="let field of ['description', 'quantity', 'value', 'vatCode_name', 'total']">{{ _dataService.getFields('metadata')[field].label }}</th>
@@ -78,7 +78,9 @@
         class="text-center"
         *ngIf="!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">No results.</p>
 </div>
-    
+        <div class="ibox-footer"
+         *ngIf="_dataService.countObjects() > 0"><js_searchPagination></js_searchPagination></div>
+
 </div>
 
 <js_legend></js_legend>

@@ -2,7 +2,6 @@
 namespace AppBundle\Controller;
 
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -445,9 +444,6 @@ abstract class BaseEntityController extends BaseController
         $this->init($request);
 
         if(!empty($id)) {
-            // Process request
-            $this->getRequestData($request); // Token is not validate, because this action is called directly without data
-
             $object = $this->getObject($id);
 
             $this->responseConf['object'] = $this->normalizeObject($object);
@@ -720,16 +716,22 @@ abstract class BaseEntityController extends BaseController
      *
      * Action to get all data
      * @param Request $request
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      */
-    public function dataAction(Request $request)
+    public function dataAction(Request $request, $responseType = 'http')
     {
         // Set configuration
         $this->init($request);
+        if ($responseType == 'array') { // Get all objects @TODO change 'array' to 'jsonAllObjects'
+            $this->templateConf['search']['limit'] = null;
+        }
 
         // Config response
         $this->responseConf['hasConf'] = true;
         $this->responseConf['hasObjects'] = true;
+        $this->responseConf['hasStatus'] = ($responseType == 'http'); // Only has status in http responses
         return $this->getResponse(true);
     }
 
@@ -846,10 +848,10 @@ abstract class BaseEntityController extends BaseController
                     }
                     $this->get('app.service.code_generator')
                         ->generateCode(
+                            $objContainer,
                             $this->getLocalRepositoryService(),
                             ($settingBundle . ':' . $settingEntity),
                             ($localBundle . ':' . $localEntity),
-                            $objContainer,
                             (empty($setting['criteria']) ? array() : $setting['criteria'])
                         );
                 }

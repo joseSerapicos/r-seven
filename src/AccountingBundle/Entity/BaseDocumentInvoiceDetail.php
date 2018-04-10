@@ -309,7 +309,7 @@ abstract class BaseDocumentInvoiceDetail extends BaseEntity
     public function getTotal()
     {
         // For direct queries use "SUM()"
-        return round($this->subTotal + $this->totalVat, 2);
+        return number_format(round($this->subTotal + $this->totalVat, 2), 2, '.', '');
     }
 
 

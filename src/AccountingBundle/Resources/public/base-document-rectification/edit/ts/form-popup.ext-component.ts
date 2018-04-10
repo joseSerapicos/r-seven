@@ -50,14 +50,14 @@ export class FormPopupExtComponent extends FormPopupExtensionComponent
 
         this._dataService.runAction(
             (this._helperService.getAppVar('route')
-                + 'services/service/get-vat-code-percentage/'
+                + 'services/regular-service/get-vat-code-percentage/'
                 + value
             )
         ).then(
             data => {
                 if (data['localData']) {
                     that._formService.getObject()['vatCode_percentage']
-                        = (data['localData']['vatCodePercentage'] || null);
+                        = (data['localData']['data']['vatCodePercentage'] || null);
                     that.setTotals();
                 }
             },
@@ -173,5 +173,19 @@ export class FormPopupExtComponent extends FormPopupExtensionComponent
         ).toFixed(this.decimalConf.total.value);
 
         return this;
+    }
+
+    /**
+     * Lifecycle callback
+     */
+    ngOnDestroy()
+    {
+        // If is a '_isSessionStorage' object, the object is ignored, so we need to update manually all objects
+        // (occurs in add mode)
+        if (this._dataService.getObject()['_isSessionStorage']
+            && this._formService.getObject()['id']
+        ) {
+            this._dataService.refresh();
+        }
     }
 }

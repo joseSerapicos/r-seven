@@ -3,5 +3,5 @@
   "invoice-rectification-form-popup": "http://weboffice.whs.dev.com/app_dev.php/accounting/supplier-document/edit-invoice",
   "receipt-form-popup": "http://weboffice.whs.dev.com/app_dev.php/accounting/supplier-document/edit-receipt",
   "receipt-payment-form-popup": "http://weboffice.whs.dev.com/app_dev.php/accounting/supplier-document/edit-payment",
-  "receipt-settlement-form-popup": "http://weboffice.whs.dev.com/app_dev.php/accounting/supplier-document/edit-receipt-settlement"
+  "receipt-settlement-form-popup": "http://weboffice.whs.dev.com/app_dev.php/accounting/supplier-document/edit-settlement"
 }

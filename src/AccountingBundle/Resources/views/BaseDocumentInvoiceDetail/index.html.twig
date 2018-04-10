@@ -3,7 +3,7 @@
     {% set fields = (fields is defined ? fields : "'quantity', 'totalUnit', 'vatCode_name', 'total'") %}
     <div class="table-responsive m-t">
         <form>
-            <table class="table document-table">
+            <table class="table table-bordered">
                 <thead>
                 <tr>
                     <th *ngFor="let field of ['description', {{ fields|raw }}]">{% verbatim %}{{ _dataService.getFields('metadata')[field].label }}{% endverbatim %}</th>
@@ -15,8 +15,8 @@
                           (dblclick)="editAction($event, objIndex)">
                         <td class="txt-align-l"><div><strong><span
                             [innerHTML]="obj['service_icon']" class="mr-1"></span><span class="mr-1"
-                            [innerHTML]="obj['service_name']"></span>(<span
-                            [innerHTML]="obj['booking_code'] || ''">)</span></strong></div><small><span
+                            [innerHTML]="obj['service_name']"></span><span *ngIf="obj['booking_code']">(<span
+                            [innerHTML]="obj['booking_code']"></span>)</span></strong></div><small><span
                             [innerHTML]="obj['description']"></span></small></td>
                         <td *ngFor="let field of [{{ fields|raw }}]"
                             [ngClass]="getColAlign(field)"
@@ -51,5 +51,3 @@
         </form>
     </div>
 {% endblock %}
-
-{% block footer %}{% endblock %}

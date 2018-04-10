@@ -32,14 +32,14 @@ class CodeGeneratorService
 
     /**
      * Generate code
+     * @param $object
      * @param $repositoryService
      * @param $settingRepository
      * @param $entityRepository
-     * @param $object
      * @param $criteria (same format of "search")
      * @return $this
      */
-    public function generateCode($repositoryService, $settingRepository, $entityRepository, $object, $criteria = array())
+    public function generateCode($object, $repositoryService, $settingRepository, $entityRepository, $criteria = array())
     {
         if (method_exists($object, 'getCodeNumber') && empty($object->getCodeNumber())) {
             $store = $this->session->get('_app.store');
@@ -107,6 +107,14 @@ class CodeGeneratorService
         if ($store) {
             $surroundingObjects = array('prev' => null, 'next' => null);
 
+            // Criteria to get objects in the same series
+            $seriesCriteria = array();
+            if (!empty($criteria)) {
+                foreach ($criteria as $settingCriteria) {
+                    $seriesCriteria[$settingCriteria['field']] = $settingCriteria['value'];
+                }
+            }
+
             if (empty($object) || empty($object->getCodeNumber())) {
                 // Get last code
                 $settingObj = $this->getObjectSetting($repositoryService, $settingRepository, $store, $criteria);
@@ -115,13 +123,15 @@ class CodeGeneratorService
                     // Prefix of code
                     $prefix = $settingObj->getSeriesPrefix();
                     $prefix = ($prefix ? $prefix : '');
+                    $seriesCriteria['codePrefix'] = $prefix;
 
                     $number = ($settingObj->getSeriesNumber());
+                    $seriesCriteria['codeNumber'] = ($number - 1);
 
                     $prevObj = $repositoryService->setEntityRepository($entityRepository)
                         ->execute(
                             'findBy',
-                            array(array('codePrefix' => $prefix, 'codeNumber' => $number - 1))
+                            array($seriesCriteria)
                         );
                     $prevObj = reset($prevObj);
 
@@ -131,19 +141,23 @@ class CodeGeneratorService
                 }
             } else {
                 $prefix = $object->getCodePrefix();
+                $seriesCriteria['codePrefix'] = $prefix;
+
                 $number = $object->getCodeNumber();
 
+                $seriesCriteria['codeNumber'] = ($number - 1);
                 $prevObj = $repositoryService->setEntityRepository($entityRepository)
                     ->execute(
                         'findBy',
-                        array(array('codePrefix' => $prefix, 'codeNumber' => $number - 1))
+                        array($seriesCriteria)
                     );
                 $prevObj = reset($prevObj);
 
+                $seriesCriteria['codeNumber'] = ($number + 1);
                 $nextObj = $repositoryService->setEntityRepository($entityRepository)
                     ->execute(
                         'findBy',
-                        array(array('codePrefix' => $prefix, 'codeNumber' => $number + 1))
+                        array($seriesCriteria)
                     );
                 $nextObj = reset($nextObj);
 

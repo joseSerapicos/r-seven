@@ -29,9 +29,8 @@
 // Check out documentation: https://getbootstrap.com/docs/4.0/utilities/colors/
 
 // Base colors to merge with bootstrap
-$logoPrimaryColor: #02bcfa;
-
 // Use logo colors to personalize bootstrap
+$logoPrimaryColor: #02bcfa;
 $logoSecondaryColor: #fad102;
 $baseColor: #404447;
 $theme-colors: (
@@ -63,6 +62,8 @@ $secondaryLightColor: #8a959a; // Custom (used in legends)
 $secondaryColor: #6c757d; // Bootstrap base
 $secondaryDarkColor: #5a6268; // Bootstrap hover
 $secondaryDarkerColor: #545b62; // Bootstrap active (click)
+
+$successColor: #28a745; // Bootstrap base
 
 $warningLighterColor: #FBFFBC; // Custom (used in legends)
 $warningLightColor: #FFF99D; // Custom (used in legends)

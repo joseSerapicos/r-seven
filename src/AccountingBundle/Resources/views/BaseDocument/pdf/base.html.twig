@@ -1,0 +1,181 @@
+{% set dependenciesData = (((_localData['data']['dependencies'] is defined)) ? _localData['data']['dependencies'] : null) %}
+{% set localData = (localData is defined ? localData : (_conf['localData']['data'] is defined ? _conf['localData']['data'] : null)) %}
+{% set object = (object is defined ? object : (_conf['object'] is defined ? _conf['object'] : null)) %}
+
+{# Block to print [header, body, footer] #}
+{% set block = (block is defined ? block : (_localData['data']['block'] is defined ? _localData['data']['block'] : 'body')) %}
+
+{% if (dependenciesData and localData and object) %}
+
+    {% set storeColor = (app.session.get('_app.view.stores')[object['storeObj']]['color']) %}
+    {% set inputsClass = 'd-block w-100 rounded bg-light p-2' %}
+
+    {% extends 'AppBundle:pdf:default.html.twig' %}
+
+    {# Use to debug in browser #}
+    {#{% block stylesheets %}
+        {% stylesheets output="assets/accounting/base-document/pdf/css/local.css"
+        '@AccountingBundle/Resources/public/base-document/index/scss/dist/styles.css'
+        %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+        {% endstylesheets %}
+    {% endblock %}#}
+
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ web_path ~ '../src/AccountingBundle/Resources/public/base-document/index/scss/dist/styles.css' }}" />
+    {% endblock %}
+
+    {% block app_pdf_header %}
+        {% if (block == 'header') %}
+            <div class="row">
+                <div class="col-print-6">
+                    {% if (localData['storeLogo']) %}
+                        {% set storeLogo = (localData['storeLogo'] | split('/upload/', 2)[1] | split('.', 2)) %}
+                        <img height="96"
+                             alt="logo"
+                             class="m-b-md"
+                             src="{{ web_path ~ 'upload/' ~ storeLogo[0] ~ '.resize_96.' ~ storeLogo[1] }}">
+                    {% endif %}
+                    <address>
+                        <strong>{{object['storeLegalName']}}</strong><br>
+                        {% for field in ['storeStreet1', 'storeStreet2', 'storePostCode', 'storeRegion'] %}
+                            {% if (object[field]) %}
+                                <span>{{object[field]}}{% if (field == 'storePostCode') %} {{object['storeCity']}}{% endif %}</span><br>{% endif %}{% endfor %}
+                    </address>
+                    {% for field in localData['storeInfo'] %}
+                        <span>{{field | raw}}</span><br>{% endfor %}
+                    <p class="m-t-sm">Tax Number: {{object['storeTaxNumber']}}</p>
+                </div>
+                <div class="col-print-6">
+                    {% if (object['code']) %}
+                        <h3 class="document-number text-right">
+                            <span>{{object['documentType_name']}}:&nbsp;</span>
+                            <span class="store" style="background-color: {{storeColor}}">{{object['code']}}</span></h3>
+                    {% endif %}
+                    <table class="table document-dates">
+                        <tbody>
+                        <tr>
+                            <td><strong>Date:</strong></td>
+                            <td><span class="{{inputsClass}}">{{object['date']}}</span></td>
+                        </tr>
+                        {% block baseDocument_pdf_dueDate %}<tr>
+                            <td><strong>Due Date:</strong></td>
+                            <td><span class="{{inputsClass}}">{{object['dueDate']}}</span></td>
+                            </tr>{% endblock %}
+                        </tbody>
+                    </table>
+                    <div>
+                        <span class="">To:</span>
+                        <div class="document-entity mt-1">
+                            <address>
+                                <strong>{{object['entityLegalName']}}</strong><br>
+                                {% for field in ['entityStreet1', 'entityStreet2', 'entityPostCode', 'entityRegion'] %}
+                                    {% if (object[field]) %}
+                                        <span>{{object[field]}}{% if (field == 'entityPostCode') %} {{object['entityCity']}}{% endif %}</span><br>{% endif %}{% endfor %}
+                            </address>
+                        </div>
+                    </div>
+                    <p class="mt-2">Tax Number: {{object['entityTaxNumber']}}</p>
+                </div>
+            </div>
+            {% if (object['comments']) %}
+                <div class="row mt-2">
+                    <div class="col-print-12">
+                        <span>Comments</span>
+                        <div class="border rounded document-comments p-2">{{object['comments']}}</div>
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}{% endif %}
+    {% endblock %}
+
+    {% block app_pdf_body %}
+        {% if (block == 'body') %}
+            {% block baseDocument_pdf_body %}
+                {% for dependencyData in dependenciesData %}
+                    <div class="row"><div class="col-print-12">
+                            <h3 class="m-0">{{dependencyData['label']}}</h3>
+                            <table class="table table-bordered">
+                                <tr class="bg-light">
+                                    {% for field in dependencyData['search']['fields'] %}
+                                        <th>{{dependencyData['fields']['metadata'][field]['label']}}</th>
+                                    {% endfor %}
+                                </tr>
+                                {% for obj in dependencyData['objects'] %}
+                                    <tr>
+                                        {% for field in dependencyData['search']['fields'] %}
+                                            <td class="{{ get_col_align(dependencyData['fields']['metadata'][field]['type']) }}">{{obj[field]}}</td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div></div>
+                {% endfor %}
+            {% endblock %}
+        {% else %}{% endif %}
+    {% endblock %}
+
+    {% block app_pdf_footer %}
+        {% if (block == 'footer') %}
+            {% block baseDocument_pdf_total %}
+                <div class="row">
+                    <div class="col-print-8">
+                        {% if (localData['totalVatSplitByCode']) %}
+                            <span>TAX Resume</span>
+                            <div class="border rounded document-tax-resume">
+                                <table class="table">
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Percentage</th>
+                                        <th>Net</th>
+                                        <th>TAX</th>
+                                        <th>Total</th>
+                                    </tr>
+                                    {% for obj in localData['totalVatSplitByCode'] %}
+                                        <tr>
+                                            <td>{{ obj['name'] }}</td>
+                                            <td>{{ obj['description'] }}</td>
+                                            <td class="text-right">{{ obj['percentage'] }}%</td>
+                                            <td class="text-right">{{ obj['subTotal'] }}</td>
+                                            <td class="text-right">{{ obj['totalVat'] }}</td>
+                                            <td class="text-right">{{ obj['total'] }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        {% else %}
+                            <span class="d-block w-100">&nbsp;</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-print-4">
+                        <table class="table document-total">
+                            <tbody>
+                            <tr>
+                                <td><strong>Sub Total:</strong></td>
+                                <td><span class="{{inputsClass}}">{{ object['subTotal'] }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>TAX:</strong></td>
+                                <td><span class="{{inputsClass}}">{{ object['totalVat'] }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total:</strong></td>
+                                <td><span class="{{inputsClass}}">{{ object['total'] }}</span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endblock %}
+            {% if (localData['documentInfo'] and localData['documentInfo']['footer']) %}
+                <div class="row">
+                    <div class="col-print-12">
+                        <div class="mt-2 bg-light p-3">{{ localData['documentInfo']['footer'] }}</div>
+                    </div>
+                </div>
+            {% endif %}
+            {{ parent() }}
+        {% else %}{% endif %}
+    {% endblock %}
+{% endif %}

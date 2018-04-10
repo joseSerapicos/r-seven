@@ -29,6 +29,8 @@ import {MainComponent} from './main.component';
 import {FormPopupExtModule as ClientDocumentAddFormPopupExtModule} from '../../../add/ts/src/form-popup.ext-module';
 // Edit
 import {FormPopupExtModule as ClientDocumentEditFormPopupExtModule} from '../../../edit/ts/src/form-popup.ext-module';
+// Email
+import {EditExtModule as EmailEditExtModule} from '../../../../../../../CommonBundle/Resources/public/email/index/ts/src/edit.ext-module';
 
 
 // Auto-complete
@@ -141,8 +143,19 @@ formProvider['preventObjectOverride'] = false;
             edit: {
                 module: ClientDocumentEditFormPopupExtModule,
                 component: 'FormPopupComponent',
-                providers: [{provide: 'Provider', useValue: Helper.getFormProvider(_app.conf)}],
-                FormService
+                providers: [
+                    {provide: 'Provider', useValue: Helper.getFormProvider(_app.conf)},
+                    FormService
+                ]
+            },
+            email: {
+                module: EmailEditExtModule,
+                component: 'EditComponent',
+                providers: [ // Providers are provided in data-box
+                    {provide: 'DataService', useClass: DataService},
+                    FormService
+                ],
+                localData: {context: 'DOCUMENTS'}
             }
         }},
         {provide: 'AutoCompleteProviders', useValue: autoCompleteProviders},

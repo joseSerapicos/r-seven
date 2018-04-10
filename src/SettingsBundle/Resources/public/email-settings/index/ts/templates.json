@@ -1,0 +1,5 @@
+{
+  "main": "http://weboffice.whs.dev.com/app_dev.php/settings/email-settings/main-menus",
+  "email-template-edit": "http://weboffice.whs.dev.com/app_dev.php/settings/email-template/edit",
+  "email-template-default-edit": "http://weboffice.whs.dev.com/app_dev.php/settings/email-template-default/edit"
+}

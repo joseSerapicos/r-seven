@@ -112,7 +112,7 @@
                         <label class="col-sm-2 control-label">VAT included</label>
     
             <div class="col-sm-10">
-                                            <div class="checkbox">                                        <label><input type="checkbox" id="form_isVatIncluded" name="form[isVatIncluded]" (change)="onIsVatIncludedChange($event.target.checked)" [(ngModel)]="_formService.getObject().isVatIncluded" formControlName="isVatIncluded" [class.error]="_formService.getErrors().isVatIncluded &amp;&amp; _formService.getErrors().isVatIncluded.length &gt; 0" value="1" /> Is vat included</label>
+                                            <div class="checkbox">                                        <label for="form_isVatIncluded"><input type="checkbox" id="form_isVatIncluded" name="form[isVatIncluded]" (change)="onIsVatIncludedChange($event.target.checked)" [(ngModel)]="_formService.getObject().isVatIncluded" formControlName="isVatIncluded" [class.error]="_formService.getErrors().isVatIncluded &amp;&amp; _formService.getErrors().isVatIncluded.length &gt; 0" value="1" /> Is vat included</label>
     </div>
                 <label class="error" *ngFor="let error of _formService.getErrors().isVatIncluded">{{error}}</label>
             </div>
@@ -122,7 +122,7 @@
                         <div class="col-sm-10"><div class="row">
                         <div class="col-sm-4">
                                                                                 
-        <select id="form_costMethod" name="form[costMethod]" (change)="onCostMethodChange($event.target.value)" [(ngModel)]="_formService.getObject().costMethod" formControlName="costMethod" [class.error]="_formService.getErrors().costMethod &amp;&amp; _formService.getErrors().costMethod.length &gt; 0" class="form-control">            <option value="PERCENT" >Percentage</option>            <option value="FIXED" >Fixed</option></select>
+        <select id="form_costMethod" name="form[costMethod]" (change)="onCostMethodChange($event.target.value)" [(ngModel)]="_formService.getObject().costMethod" formControlName="costMethod" [class.error]="_formService.getErrors().costMethod &amp;&amp; _formService.getErrors().costMethod.length &gt; 0" class="form-control"><option value="PERCENT">Percentage</option><option value="FIXED">Fixed</option></select>
     <input [(ngModel)]="_formService.getObject().costMethod"
            formControlName = costMethod
            required="required"           type="hidden">
@@ -135,7 +135,7 @@
                         </div>
                         <div class="col-sm-4">
                                                                                 
-        <select id="form_costBaseValue" name="form[costBaseValue]" [(ngModel)]="_formService.getObject().costBaseValue" formControlName="costBaseValue" [class.error]="_formService.getErrors().costBaseValue &amp;&amp; _formService.getErrors().costBaseValue.length &gt; 0" class="form-control">            <option value=""  selected="selected"></option>            <option value="BASE_COST" >Over base cost</option></select>
+        <select id="form_costBaseValue" name="form[costBaseValue]" [(ngModel)]="_formService.getObject().costBaseValue" formControlName="costBaseValue" [class.error]="_formService.getErrors().costBaseValue &amp;&amp; _formService.getErrors().costBaseValue.length &gt; 0" class="form-control"><option value="" selected="selected"></option><option value="BASE_COST">Over base cost</option></select>
     <input [(ngModel)]="_formService.getObject().costBaseValue"
            formControlName = costBaseValue
                       type="hidden">
@@ -153,7 +153,7 @@
                         <div class="col-sm-10"><div class="row">
                         <div class="col-sm-4">
                                                                                 
-        <select id="form_marginMethod" name="form[marginMethod]" (change)="onMarginMethodChange($event.target.value)" [(ngModel)]="_formService.getObject().marginMethod" formControlName="marginMethod" [class.error]="_formService.getErrors().marginMethod &amp;&amp; _formService.getErrors().marginMethod.length &gt; 0" class="form-control">            <option value="MARGIN" >Margin</option>            <option value="MARKUP" >Markup</option>            <option value="FIXED" >Fixed</option>            <option value="PERCENT" >Percentage</option></select>
+        <select id="form_marginMethod" name="form[marginMethod]" (change)="onMarginMethodChange($event.target.value)" [(ngModel)]="_formService.getObject().marginMethod" formControlName="marginMethod" [class.error]="_formService.getErrors().marginMethod &amp;&amp; _formService.getErrors().marginMethod.length &gt; 0" class="form-control"><option value="MARGIN">Margin</option><option value="MARKUP">Markup</option><option value="FIXED">Fixed</option><option value="PERCENT">Percentage</option></select>
     <input [(ngModel)]="_formService.getObject().marginMethod"
            formControlName = marginMethod
            required="required"           type="hidden">
@@ -166,7 +166,7 @@
                         </div>
                         <div class="col-sm-4">
                                                                                 
-        <select id="form_marginBaseValue" name="form[marginBaseValue]" [(ngModel)]="_formService.getObject().marginBaseValue" formControlName="marginBaseValue" [class.error]="_formService.getErrors().marginBaseValue &amp;&amp; _formService.getErrors().marginBaseValue.length &gt; 0" class="form-control">            <option value=""  selected="selected"></option>            <option value="COST" >Over cost</option>            <option value="BASE_SELL" >Over base sell</option></select>
+        <select id="form_marginBaseValue" name="form[marginBaseValue]" [(ngModel)]="_formService.getObject().marginBaseValue" formControlName="marginBaseValue" [class.error]="_formService.getErrors().marginBaseValue &amp;&amp; _formService.getErrors().marginBaseValue.length &gt; 0" class="form-control"><option value="" selected="selected"></option><option value="COST">Over cost</option><option value="BASE_SELL">Over base sell</option></select>
     <input [(ngModel)]="_formService.getObject().marginBaseValue"
            formControlName = marginBaseValue
                       type="hidden">
@@ -186,7 +186,7 @@
                         <label class="col-sm-2 control-label">Enabled</label>
     
             <div class="col-sm-10">
-                                            <div class="checkbox">                                        <label><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
+                                            <div class="checkbox">                                        <label for="form_isEnabled"><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
     </div>
                 <label class="error" *ngFor="let error of _formService.getErrors().isEnabled">{{error}}</label>
             </div>
@@ -221,4 +221,4 @@
                                 </div>
         </div>
     </div>    
-    <input type="hidden" id="form__token" name="form[_token]" value="sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo" /></form>
+    <input type="hidden" id="form__token" name="form[_token]" value="Pyn_BcDiS9gJO25dJpE9EFTFCI4Haq4yNZSoquhdIAw" /></form>

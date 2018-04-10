@@ -20,37 +20,37 @@
 
     {% set serviceAvailabilityData = render(controller(
     'ServicesBundle:ServiceAvailability:dataChild',
-    {'parents': {'entity': parentId}}
+    {'parents': {'entity': parentId}, 'responseType': 'json'}
     )) %}
 
     {% set serviceAllotData = render(controller(
     'ServicesBundle:ServiceAllot:dataChild',
-    {'parents': {'entity': parentId}}
+    {'parents': {'entity': parentId}, 'responseType': 'json'}
     )) %}
 
     {% set servicePriceData = render(controller(
     'ServicesBundle:ServicePrice:dataChild',
-    {'parents': {'entity': parentId}}
+    {'parents': {'entity': parentId}, 'responseType': 'json'}
     )) %}
 
     {% set serviceFixedCostData = render(controller(
     'ServicesBundle:ServiceFixedCost:dataChild',
-    {'parents': {'entity': parentId}}
+    {'parents': {'entity': parentId}, 'responseType': 'json'}
     )) %}
 
     {% set serviceSupplementData = render(controller(
     'ServicesBundle:ServiceSupplement:dataChild',
-    {'parents': {'entity': parentId}}
+    {'parents': {'entity': parentId}, 'responseType': 'json'}
     )) %}
 
     {% set serviceDiscountData = render(controller(
     'ServicesBundle:ServiceDiscount:dataChild',
-    {'parents': {'entity': parentId}}
+    {'parents': {'entity': parentId}, 'responseType': 'json'}
     )) %}
 
     {% set serviceBonusData = render(controller(
     'ServicesBundle:ServiceBonus:dataChild',
-    {'parents': {'entity': parentId}}
+    {'parents': {'entity': parentId}, 'responseType': 'json'}
     )) %}
     <script>
         _app.dependency.serviceAvailability = {{ serviceAvailabilityData|raw }};

@@ -1,5 +1,5 @@
 {
-    "Version": "2.1.13.23",
+    "Version": "2.1.37.22",
     "Names": {
         "ARS": [
             "ARS",
@@ -69,6 +69,10 @@
             "INR",
             "roupie indienne"
         ],
+        "IRR": [
+            "IRR",
+            "rial iranien"
+        ],
         "JPY": [
             "¥",
             "yen japonais"
@@ -93,6 +97,14 @@
             "$ NZ",
             "dollar néo-zélandais"
         ],
+        "OMR": [
+            "OMR",
+            "rial omanais"
+        ],
+        "SAR": [
+            "SAR",
+            "rial saoudien"
+        ],
         "SBD": [
             "SBD",
             "dollar des îles Salomon"
@@ -101,9 +113,13 @@
             "$ SG",
             "dollar de Singapour"
         ],
-        "THB": [
-            "THB",
-            "baht thaïlandais"
+        "SRD": [
+            "SRD",
+            "dollar surinamais"
+        ],
+        "TOP": [
+            "TOP",
+            "pa’anga"
         ],
         "TTD": [
             "TTD",
@@ -132,6 +148,10 @@
         "XPF": [
             "XPF",
             "franc CFP"
+        ],
+        "YER": [
+            "YER",
+            "rial yéménite"
         ]
     }
 }

@@ -148,6 +148,11 @@ class BaseDocument extends BaseEntity {
      */
     protected $isAccessed;
 
+    /**
+     * @ORM\Column(name="isSent", type="boolean", nullable=false, unique=false, options={"default":0, "comment":"Determines if the document was sent (sent the PDF file)"})
+     */
+    protected $isSent;
+
 
     /**
      * Set codePrefix
@@ -721,7 +726,7 @@ class BaseDocument extends BaseEntity {
     public function getTotal()
     {
         // For direct queries use "SUM()"
-        return round($this->subTotal + $this->totalVat, 2);
+        return number_format(round($this->subTotal + $this->totalVat, 2), 2, '.', '');
     }
 
     /**
@@ -754,5 +759,25 @@ class BaseDocument extends BaseEntity {
     public function getIsAccessed()
     {
         return $this->isAccessed;
+    }
+
+    /**
+     * Set isSent
+     * @param boolean $isSent
+     * @return $this
+     */
+    public function setIsSent($isSent)
+    {
+        $this->isSent = $isSent;
+        return $this;
+    }
+
+    /**
+     * Get isSent
+     * @return boolean
+     */
+    public function getIsSent()
+    {
+        return $this->isSent;
     }
 }

@@ -189,11 +189,13 @@ class SupplierDocumentInvoiceRectificationController extends BaseDocumentInvoice
      * Overrides parent method
      * @param Request $request
      * @param $supplierDocument
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      */
-    public function dataLocalChildAction(Request $request, $supplierDocument)
+    public function dataLocalChildAction(Request $request, $supplierDocument, $responseType = 'http')
     {
-        return parent::dataChildAction($request, array($supplierDocument));
+        return parent::dataChildAction($request, array($supplierDocument), $responseType);
     }
 
     /**

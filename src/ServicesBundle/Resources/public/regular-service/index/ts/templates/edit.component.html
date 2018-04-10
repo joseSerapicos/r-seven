@@ -116,7 +116,7 @@
                         <label class="col-sm-2 control-label">Enable Availability</label>
     
             <div class="col-sm-10">
-                                            <div class="checkbox">                                        <label><input type="checkbox" id="form_serviceObj_isEnabledAvailability" name="form[serviceObj][isEnabledAvailability]" [(ngModel)]="_formService.getObject().isEnabledAvailability" formControlName="isEnabledAvailability" [class.error]="_formService.getErrors().isEnabledAvailability &amp;&amp; _formService.getErrors().isEnabledAvailability.length &gt; 0" value="1" /> Is enabled availability</label>
+                                            <div class="checkbox">                                        <label for="form_serviceObj_isEnabledAvailability"><input type="checkbox" id="form_serviceObj_isEnabledAvailability" name="form[serviceObj][isEnabledAvailability]" [(ngModel)]="_formService.getObject().isEnabledAvailability" formControlName="isEnabledAvailability" [class.error]="_formService.getErrors().isEnabledAvailability &amp;&amp; _formService.getErrors().isEnabledAvailability.length &gt; 0" value="1" /> Is enabled availability</label>
     </div>
                 <label class="error" *ngFor="let error of _formService.getErrors().isEnabledAvailability">{{error}}</label>
             </div>
@@ -128,7 +128,7 @@
                         <label class="col-sm-2 control-label">Enable Allot</label>
     
             <div class="col-sm-10">
-                                            <div class="checkbox">                                        <label><input type="checkbox" id="form_serviceObj_isEnabledAllot" name="form[serviceObj][isEnabledAllot]" [(ngModel)]="_formService.getObject().isEnabledAllot" formControlName="isEnabledAllot" [class.error]="_formService.getErrors().isEnabledAllot &amp;&amp; _formService.getErrors().isEnabledAllot.length &gt; 0" value="1" /> Is enabled allot</label>
+                                            <div class="checkbox">                                        <label for="form_serviceObj_isEnabledAllot"><input type="checkbox" id="form_serviceObj_isEnabledAllot" name="form[serviceObj][isEnabledAllot]" [(ngModel)]="_formService.getObject().isEnabledAllot" formControlName="isEnabledAllot" [class.error]="_formService.getErrors().isEnabledAllot &amp;&amp; _formService.getErrors().isEnabledAllot.length &gt; 0" value="1" /> Is enabled allot</label>
     </div>
                 <label class="error" *ngFor="let error of _formService.getErrors().isEnabledAllot">{{error}}</label>
             </div>
@@ -140,7 +140,7 @@
                         <label class="col-sm-2 control-label">Enable Price</label>
     
             <div class="col-sm-10">
-                                            <div class="checkbox">                                        <label><input type="checkbox" id="form_serviceObj_isEnabledPrice" name="form[serviceObj][isEnabledPrice]" [(ngModel)]="_formService.getObject().isEnabledPrice" formControlName="isEnabledPrice" [class.error]="_formService.getErrors().isEnabledPrice &amp;&amp; _formService.getErrors().isEnabledPrice.length &gt; 0" value="1" /> Is enabled price</label>
+                                            <div class="checkbox">                                        <label for="form_serviceObj_isEnabledPrice"><input type="checkbox" id="form_serviceObj_isEnabledPrice" name="form[serviceObj][isEnabledPrice]" [(ngModel)]="_formService.getObject().isEnabledPrice" formControlName="isEnabledPrice" [class.error]="_formService.getErrors().isEnabledPrice &amp;&amp; _formService.getErrors().isEnabledPrice.length &gt; 0" value="1" /> Is enabled price</label>
     </div>
                 <label class="error" *ngFor="let error of _formService.getErrors().isEnabledPrice">{{error}}</label>
             </div>
@@ -153,7 +153,7 @@
     
             <div class="col-sm-10">
                                                                     
-        <select id="form_type" name="form[type]" [(ngModel)]="_formService.getObject().type" formControlName="type" [class.error]="_formService.getErrors().type &amp;&amp; _formService.getErrors().type.length &gt; 0" class="form-control">            <option value=""  selected="selected">Regular</option>            <option value="TRAVEL" >Travel</option></select>
+        <select id="form_type" name="form[type]" [(ngModel)]="_formService.getObject().type" formControlName="type" [class.error]="_formService.getErrors().type &amp;&amp; _formService.getErrors().type.length &gt; 0" class="form-control"><option value="" selected="selected">Regular</option><option value="TRAVEL">Travel</option></select>
     <input [(ngModel)]="_formService.getObject().type"
            formControlName = type
                       type="hidden">
@@ -194,7 +194,7 @@
                         <label class="col-sm-2 control-label">Enabled</label>
     
             <div class="col-sm-10">
-                                            <div class="checkbox">                                        <label><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
+                                            <div class="checkbox">                                        <label for="form_isEnabled"><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
     </div>
                 <label class="error" *ngFor="let error of _formService.getErrors().isEnabled">{{error}}</label>
             </div>
@@ -229,4 +229,4 @@
                                 </div>
         </div>
     </div>    
-    <input type="hidden" id="form__token" name="form[_token]" value="sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo" /></form>
+    <input type="hidden" id="form__token" name="form[_token]" value="Pyn_BcDiS9gJO25dJpE9EFTFCI4Haq4yNZSoquhdIAw" /></form>

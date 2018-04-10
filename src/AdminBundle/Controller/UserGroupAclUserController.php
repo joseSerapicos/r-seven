@@ -141,11 +141,13 @@ class UserGroupAclUserController extends BaseEntityChildController
      * Overrides parent method
      * @param Request $request
      * @param $userGroupAcl
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      */
-    public function dataLocalChildAction(Request $request, $userGroupAcl)
+    public function dataLocalChildAction(Request $request, $userGroupAcl, $responseType = 'http')
     {
-        return parent::dataChildAction($request, array($userGroupAcl));
+        return parent::dataChildAction($request, array($userGroupAcl), $responseType);
     }
 
     /**

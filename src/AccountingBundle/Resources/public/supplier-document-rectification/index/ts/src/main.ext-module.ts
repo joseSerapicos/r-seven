@@ -7,6 +7,7 @@ import {SearchModule} from '../../../../../../../AppBundle/Resources/public/ts/s
 import {ExpanderModule} from '../../../../../../../AppBundle/Resources/public/ts/expander/expander.module';
 import {SearchPaginationModule} from '../../../../../../../AppBundle/Resources/public/ts/search/search-pagination.module';
 import {MainComponent} from './main.component';
+import {LegendExtModule} from "../../../../../../../AppBundle/Resources/public/legend/ts/src/legend.ext-module";
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import {MainComponent} from './main.component';
         ReactiveFormsModule,
         SearchModule,
         SearchPaginationModule,
-        ExpanderModule
+        ExpanderModule,
+        LegendExtModule
     ],
     declarations: [
         MainComponent

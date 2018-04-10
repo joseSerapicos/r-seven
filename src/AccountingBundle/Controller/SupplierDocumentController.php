@@ -83,6 +83,9 @@ class SupplierDocumentController extends BaseDocumentController
             ),
             'choices' => array(
                 'name' => '_accounting__supplier_document__choices'
+            ),
+            'pdf' => array(
+                'name' => '_accounting__supplier_document__pdf'
             )
         );
 
@@ -377,15 +380,33 @@ class SupplierDocumentController extends BaseDocumentController
     }
 
     /**
+     * @Route("/accounting/supplier-document/pdf/{id}",
+     *     name="_accounting__supplier_document__pdf",
+     *     defaults={"id" = null}
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function pdfAction(Request $request, $id)
+    {
+        return parent::pdfAction($request, $id);
+    }
+
+    /**
      * @Route("/accounting/supplier-document/data",
      *     name="_accounting__supplier_document__data"
      * )
      *
      * Overrides parent method
      * @param Request $request
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      */
-    public function dataAction(Request $request)
+    public function dataAction(Request $request, $responseType = 'http')
     {
         return parent::dataAction($request);
     }

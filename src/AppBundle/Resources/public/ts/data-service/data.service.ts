@@ -427,6 +427,25 @@ export class DataService {
     }
 
     /**
+     * Set object index
+     * @param index
+     */
+    public setObjectIndex(index: any)
+    {
+        let objectsProvider = (this._objectsProvider || this._provider.objects);
+
+        if(index && objectsProvider[index]) {
+            this._objectIndex = index;
+            // Set the object to emit the object change for any process pendent
+            this.setLocalObject(objectsProvider[index]);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Push to objects
      * @param objects
      * @param isFirst (determines if objects should be at first)
@@ -679,11 +698,11 @@ export class DataService {
                 // For "enum" type (key is the label, pattern of Symfony ChoiceType)
                 if (fieldsChoices && fieldsChoices[field] && fieldsChoices[field]['value']
                 ) {
-                    let enumObj = fieldsChoices[field]['value'];
+                    let enumChoices = fieldsChoices[field]['value'];
                     for (let obj of objects) {
-                        for (let enumKey in enumObj) {
-                            if (enumObj[enumKey] == obj[field]) {
-                                obj[field] = enumKey;
+                        for (let enumChoice of enumChoices) {
+                            if (enumChoice['id'] == obj[field]) {
+                                obj[field] = enumChoice['label'];
                             }
                         }
                     }
@@ -1176,6 +1195,27 @@ export class DataService {
         );
 
         return this;
+    }
+
+    /**
+     * Get pdf
+     * @param index
+     * @returns any
+     */
+    public pdf(index: any)
+    {
+        let objectsProvider = (this._objectsProvider || this._provider.objects),
+            object = (objectsProvider[index] || null);
+
+        if (object) {
+            // Update "isAccessed" value of object,
+            // in this case does not matter if object is really updated with success in database
+            if (object['__isAccessed'] !== undefined) {
+                object['__isAccessed'] = true;
+            }
+
+            return this.redirect('pdf', index);
+        }
     }
 
     /**

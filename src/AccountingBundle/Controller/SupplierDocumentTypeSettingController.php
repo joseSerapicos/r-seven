@@ -118,9 +118,11 @@ class SupplierDocumentTypeSettingController extends BaseEntityController
      *
      * Overrides parent method
      * @param Request $request
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      */
-    public function dataAction(Request $request)
+    public function dataAction(Request $request, $responseType = 'http')
     {
         return parent::dataAction($request);
     }

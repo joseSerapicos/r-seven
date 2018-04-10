@@ -12,7 +12,7 @@
     {{ parent() }}
     {% set entityGroupEntityData = render(controller(
         'EntitiesBundle:EntityGroupEntity:dataChild',
-        {'parents': {'entityGroup': _conf['object']['id']}}
+        {'parents': {'entityGroup': _conf['object']['id']}, 'responseType': 'json'}
     )) %}
     <script>
         _app.dependency.entityGroupEntity = {{ entityGroupEntityData|raw }};

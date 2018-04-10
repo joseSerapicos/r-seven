@@ -1,0 +1,10 @@
+{% extends 'AppBundle:form:form-popup.html.twig' %}
+
+{% block footer_container %}
+    <div class="row">
+        <div class="col-auto ml-auto">
+            <button type="button" class="btn-light btn" (click)="closeAction($event)">Cancel</button>
+            <button type="button" class="btn-primary btn" (click)="saveAndCloseAction($event)">Send</button>
+        </div>
+    </div>
+{% endblock %}

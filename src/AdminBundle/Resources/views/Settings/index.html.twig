@@ -4,15 +4,18 @@
     {{ parent() }}
 
     {% set entitySettingData = render(controller(
-        'EntitiesBundle:EntitySetting:data'
+        'EntitiesBundle:EntitySetting:data',
+        {'responseType': 'json'}
     )) %}
 
     {% set clientSettingData = render(controller(
-        'EntitiesBundle:ClientSetting:data'
+        'EntitiesBundle:ClientSetting:data',
+        {'responseType': 'json'}
     )) %}
 
     {% set supplierSettingData = render(controller(
-        'EntitiesBundle:SupplierSetting:data'
+        'EntitiesBundle:SupplierSetting:data',
+        {'responseType': 'json'}
     )) %}
     <script>
         _app.dependency.entitySetting = {{ entitySettingData|raw }};

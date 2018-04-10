@@ -245,7 +245,10 @@ export class FormService
         if (object && (object != this._originalObject)) {
             // Keep the original object from dataService
             this._originalObject = object;
-            this._tasksLoaderManagerService.delTask('SAVE_'+this._uniqueId); // Waiting mode for save process ends here, after update the original object.
+
+            // Waiting mode for save process ends here, after update the original object.
+            // Prevents the object being updated two times, by the "Form" "save" and the "DataService" object change emitter.
+            this._tasksLoaderManagerService.delTask('SAVE_'+this._uniqueId);
 
             // Normalize object to form
             this._originalNormalizedObject = Helper.cloneObject(this._originalObject, true);
@@ -262,6 +265,7 @@ export class FormService
 
             this._onObjectChangeEmitter.emit(this._object); // Object as changed to the original, notify subscribers
         }
+
         return this;
     }
 
@@ -338,6 +342,8 @@ export class FormService
      */
     public hasChanges(): boolean|Boolean
     {
+        // Compare the working object "this._object" that it's a clone of "this._originalNormalizedObject" with your
+        // original object of cloning "this._originalNormalizedObject"
         return (!this._helperService.isEqualObject(this._object, this._originalNormalizedObject));
     }
 
@@ -441,6 +447,8 @@ export class FormService
                         that._forceSubmit = false;
                         // Update form with updated object
                         that.setObject(object);
+                        // Task removed in "setObject" method to prevent multiple updates of it
+                        //that._tasksLoaderManagerService.delTask('SAVE_'+that._uniqueId);
                         return resolve(true);
                     },
                     errors => {

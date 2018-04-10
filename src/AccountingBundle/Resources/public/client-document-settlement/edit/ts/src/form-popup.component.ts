@@ -27,4 +27,18 @@ export class FormPopupComponent extends FormPopupExtensionComponent
             dataService
         );
     }
+
+    /**
+     * Lifecycle callback
+     */
+    ngOnDestroy()
+    {
+        // If is a '_isSessionStorage' object, the object is ignored, so we need to update manually all objects
+        // (occurs in add mode)
+        if (this._dataService.getObject()['_isSessionStorage']
+            && this._formService.getObject()['id']
+        ) {
+            this._dataService.refresh();
+        }
+    }
 }

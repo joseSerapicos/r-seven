@@ -56,9 +56,7 @@ class ModuleMenuRepository extends BaseEntityRepository
             'appModuleMenuObj' => array('label' => 'App Module Menu', 'type' => 'object', 'acl' => 'edit',
                 'typeDetail' => array(
                     'table' => 'app_moduleMenu', 'field' => 'id', 'bundle' => 'sysadmin', 'type' => 'none',
-                    'choices' => array(
-                        'autoRefresh' => true, 'hasSelfReference' => false
-                    )
+                    'choices' => array('hasSelfReference' => true)
                 ),
                 'form' => array('type' => 'radio')
             ),

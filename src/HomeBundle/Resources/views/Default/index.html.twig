@@ -12,7 +12,8 @@
 {% block head_javascripts %}
     {{ parent() }}
     {% set userCalendarData = render(controller(
-        'UserBundle:UserCalendar:dataForHome'
+        'UserBundle:UserCalendar:dataForHome',
+        {'responseType': 'json'}
     )) %}
     <script>
         _app.dependency.userCalendar = {{ userCalendarData|raw }};
@@ -43,21 +44,21 @@
 
 {% block javascripts %}
     {# if (asset_exists('@HomeBundle/Resources/public/default/index/ts/dist/vendor.bundle.js')) #}
-        {% javascripts output="assets/home/default/index/js/local.js"
-            '@HomeBundle/Resources/public/default/index/ts/dist/inline.bundle.js'
-            '@HomeBundle/Resources/public/default/index/ts/dist/polyfills.bundle.js'
-            '@HomeBundle/Resources/public/default/index/ts/dist/vendor.bundle.js'
-            '@HomeBundle/Resources/public/default/index/ts/dist/main.bundle.js'
-        %}
-            <script src="{{ asset_url }}"></script>
-        {% endjavascripts %}
-    {# else %}
-        {% javascripts output="assets/home/default/index/js/local.js"
-            '@HomeBundle/Resources/public/default/index/ts/dist/inline.bundle.js'
-            '@HomeBundle/Resources/public/default/index/ts/dist/polyfills.bundle.js'
-            '@HomeBundle/Resources/public/default/index/ts/dist/main.bundle.js'
-        %}
-            <script src="{{ asset_url }}"></script>
-        {% endjavascripts %}
-    {% endif #}
+    {% javascripts output="assets/home/default/index/js/local.js"
+        '@HomeBundle/Resources/public/default/index/ts/dist/inline.bundle.js'
+        '@HomeBundle/Resources/public/default/index/ts/dist/polyfills.bundle.js'
+        '@HomeBundle/Resources/public/default/index/ts/dist/vendor.bundle.js'
+        '@HomeBundle/Resources/public/default/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{# else %}
+    {% javascripts output="assets/home/default/index/js/local.js"
+        '@HomeBundle/Resources/public/default/index/ts/dist/inline.bundle.js'
+        '@HomeBundle/Resources/public/default/index/ts/dist/polyfills.bundle.js'
+        '@HomeBundle/Resources/public/default/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endif #}
 {% endblock %}

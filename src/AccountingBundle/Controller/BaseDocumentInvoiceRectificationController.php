@@ -496,21 +496,24 @@ abstract class BaseDocumentInvoiceRectificationController extends BaseEntityChil
      */
     protected function initForRectification(Request $request, $parents, $booking = null)
     {
-        $entityContext = $this->getEntityContext();
-
         // Set configuration only once
         if($this->isInitialized) { return $this; }
 
-        parent::initChild($request, $parents);
+        $entityContext = $this->getEntityContext();
+
+        $this->initChild($request, $parents);
 
         // Local conf
         array_pop($this->localConf['search']['criteria']); // Remove last criteria (the parent filter)
 
         // Actions
         $this->templateConf['actions'] = array(
-            'search' => true,
+            'search' => false,
             'checkAll' => true
         );
+
+        // Legend (disable cancel legend)
+        $this->templateConf['controls']['legend'] = array();
 
         // Route
         $this->templateConf['route'] = array(

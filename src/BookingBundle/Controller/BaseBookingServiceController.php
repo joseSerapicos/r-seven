@@ -535,11 +535,13 @@ abstract class BaseBookingServiceController extends BaseEntityChildController
      * Overrides parent method
      * @param Request $request
      * @param $booking
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      */
-    public function dataLocalChildAction(Request $request, $booking)
+    public function dataLocalChildAction(Request $request, $booking, $responseType = 'http')
     {
-        return parent::dataChildAction($request, array($booking));
+        return parent::dataChildAction($request, array($booking), $responseType);
     }
 
     /**

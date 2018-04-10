@@ -147,6 +147,7 @@ export class BaseReceiptDocumentFormPopupExtComponent extends BaseFormPopupExtCo
                         ActionsService,
                         {provide: 'DataServiceProvider', useValue: that._helperService.getDataServiceProvider(data)},
                         {provide: 'ActionsServiceProvider', useValue: that._helperService.getActionsServiceProvider(data)},
+                        {provide: 'LegendProvider', useValue: that._helperService.getLegendProvider(data)},
                         {provide: 'Provider', useValue: that._helperService.getDataBoxProvider(data)},
                         {provide: 'ParentDataService', useValue: this._dataService}
                     ],

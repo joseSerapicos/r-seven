@@ -140,7 +140,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 // Popup Types
 var PopupTypes = {
     edit: 'edit',
-    add: 'add'
+    add: 'add',
+    email: 'email'
 };
 // Component
 var DataBoxExtensionComponent = (function (_super) {
@@ -214,17 +215,26 @@ var DataBoxExtensionComponent = (function (_super) {
     /**
      * Get legend classes
      * @param object
+     * @param target (element target to check the legend)
+     * @param field (field on which the expression is checked,
+     *     if is not provided the field defined in legend provider is used)
      * @returns {string}
      */
-    DataBoxExtensionComponent.prototype.getLegendClasses = function (object) {
-        var legend = this._provider['controls']['legend'], hasClass;
+    DataBoxExtensionComponent.prototype.getLegendClasses = function (object, target, field) {
+        if (field === void 0) { field = null; }
+        var legend = this._provider['controls']['legend'];
         if (!object || !legend) {
             return '';
         }
         for (var _i = 0, legend_1 = legend; _i < legend_1.length; _i++) {
             var legendControl = legend_1[_i];
-            hasClass = false;
-            var field = legendControl['field'], expr = (legendControl['expr'] || 'notNull'), isExprNotNull = (expr == 'notNull'), 
+            field = (field || legendControl['field']);
+            var legendTarget = (legendControl['target'] || 'tr');
+            // Check target, if is not the same jump the loop
+            if ((legendTarget != target) || (!field) || (field == '')) {
+                continue;
+            }
+            var expr = (legendControl['expr'] || 'notNull'), isExprNotNull = (expr == 'notNull'), 
             // Check in original field first if defined
             fieldValue = ((object['__' + field] !== undefined) ? object['__' + field] : object[field]);
             // Normalize value
@@ -242,6 +252,27 @@ var DataBoxExtensionComponent = (function (_super) {
             }
         }
         return '';
+    };
+    /**
+     * Get actions legend classes
+     * @param object
+     * @param action (action to check the legend)
+     * @returns {string}
+     */
+    DataBoxExtensionComponent.prototype.getActionsLegendClasses = function (object, action) {
+        var field = null, classes = '';
+        switch (action) {
+            case 'pdf':
+                field = 'isAccessed';
+                break;
+            case 'email':
+                field = 'isSent';
+                break;
+        }
+        if (field) {
+            classes = this.getLegendClasses(object, 'actions', field);
+        }
+        return (classes == '') ? classes : (' ' + classes); // Add space to put legend classes after icon class
     };
     /**
      * Trigger action
@@ -411,6 +442,51 @@ var DataBoxExtensionComponent = (function (_super) {
             }, function (errors) {
                 console.log(errors);
             });
+        }
+    };
+    /**
+     * Pdf action.
+     * @param $event
+     * @param data
+     */
+    DataBoxExtensionComponent.prototype.pdfAction = function ($event, data) {
+        if ($event) {
+            $event.preventDefault();
+        }
+        this._dataService.pdf(data);
+    };
+    /**
+     * Email action.
+     * @param $event
+     * @param data
+     */
+    DataBoxExtensionComponent.prototype.emailAction = function ($event, data) {
+        if ($event) {
+            $event.preventDefault();
+        }
+        var that = this, popup = this._popups['email'], object = this._dataService.getObject(data);
+        if (!popup['injector']) {
+            // It's the firs time that popup is open, so we need to supply the providers
+            var context_1 = popup['localData']['context'], route = (this._helperService.getAppVar('route') + 'common/email/conf');
+            this._dataService.runAction(route).then(function (data) {
+                // Update route of "new" action
+                data['route']['new']['url'] = (data['route']['new']['url'] + '/' + context_1 + '/' + object['id']);
+                popup['providers'] = popup['providers'].concat([
+                    { provide: 'DataServiceProvider', useValue: that._helperService.getDataServiceProvider(data) },
+                    { provide: 'Provider', useValue: that._helperService.getFormProvider(data) }
+                ]);
+                var resolvedProviders = __WEBPACK_IMPORTED_MODULE_0__angular_core__["Q" /* ReflectiveInjector */].resolve(popup['providers']);
+                popup['injector'] = __WEBPACK_IMPORTED_MODULE_0__angular_core__["Q" /* ReflectiveInjector */].fromResolvedProviders(resolvedProviders, that._injector);
+                var emailDataService = popup['injector'].get('DataService');
+                emailDataService.newObject().then(function (data) { that.openPopup('email'); }, function (errors) { console.log(errors); });
+            }, function (errors) { console.log(errors); });
+        }
+        else {
+            // Update route of "new" action
+            var emailDataService = popup['injector'].get('DataService'), newEmailRoute = emailDataService.getRoute('new');
+            newEmailRoute = (newEmailRoute.substring(0, newEmailRoute.lastIndexOf("/")) + '/' + object['id']);
+            emailDataService.setRoute('new', newEmailRoute);
+            emailDataService.newObject().then(function (data) { that.openPopup('email'); }, function (errors) { console.log(errors); });
         }
     };
     /**
@@ -916,7 +992,9 @@ var FormService = (function () {
         if (object && (object != this._originalObject)) {
             // Keep the original object from dataService
             this._originalObject = object;
-            this._tasksLoaderManagerService.delTask('SAVE_' + this._uniqueId); // Waiting mode for save process ends here, after update the original object.
+            // Waiting mode for save process ends here, after update the original object.
+            // Prevents the object being updated two times, by the "Form" "save" and the "DataService" object change emitter.
+            this._tasksLoaderManagerService.delTask('SAVE_' + this._uniqueId);
             // Normalize object to form
             this._originalNormalizedObject = __WEBPACK_IMPORTED_MODULE_4__ts_helper__["a" /* Helper */].cloneObject(this._originalObject, true);
             this.normalizeObject(this._originalNormalizedObject);
@@ -993,6 +1071,8 @@ var FormService = (function () {
      * @returns {boolean|Boolean}
      */
     FormService.prototype.hasChanges = function () {
+        // Compare the working object "this._object" that it's a clone of "this._originalNormalizedObject" with your
+        // original object of cloning "this._originalNormalizedObject"
         return (!this._helperService.isEqualObject(this._object, this._originalNormalizedObject));
     };
     /**
@@ -1078,6 +1158,8 @@ var FormService = (function () {
                     that._forceSubmit = false;
                     // Update form with updated object
                     that.setObject(object);
+                    // Task removed in "setObject" method to prevent multiple updates of it
+                    //that._tasksLoaderManagerService.delTask('SAVE_'+that._uniqueId);
                     return resolve(true);
                 }, function (errors) {
                     if (errors) {
@@ -3275,12 +3357,13 @@ var DataService = (function () {
                 }
                 // For "enum" type (key is the label, pattern of Symfony ChoiceType)
                 if (fieldsChoices && fieldsChoices[field] && fieldsChoices[field]['value']) {
-                    var enumObj = fieldsChoices[field]['value'];
+                    var enumChoices = fieldsChoices[field]['value'];
                     for (var _b = 0, objects_3 = objects; _b < objects_3.length; _b++) {
                         var obj = objects_3[_b];
-                        for (var enumKey in enumObj) {
-                            if (enumObj[enumKey] == obj[field]) {
-                                obj[field] = enumKey;
+                        for (var _c = 0, enumChoices_1 = enumChoices; _c < enumChoices_1.length; _c++) {
+                            var enumChoice = enumChoices_1[_c];
+                            if (enumChoice['id'] == obj[field]) {
+                                obj[field] = enumChoice['label'];
                             }
                         }
                     }
@@ -3647,6 +3730,14 @@ var DataService = (function () {
             }
         }, function (errors) { console.log(errors); });
         return this;
+    };
+    /**
+     * Get pdf
+     * @param index
+     * @returns any
+     */
+    DataService.prototype.pdf = function (index) {
+        return this.redirect('pdf', index);
     };
     /**
      * Detail object.
@@ -5783,7 +5874,7 @@ Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* pl
 /***/ "../../../../../src/UserBundle/Resources/public/user-group/index/ts/templates/edit.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "    \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n<div class=\"modal-header\">\n    <div class=\"row align-items-center\">\n        <h3 class=\"col-auto mr-auto modal-title\">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>\n        <div class=\"col-auto text-right actions\"><a\n                class=\"-round fa fa-times\"\n                (click)=\"closeAction($event)\"></a></div>\n    </div>\n</div>\n<div class=\"modal-body\">\n    <div class=\"row\">\n        <div class=\"col-12\">    \n            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_name\">Name</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_name\" name=\"form[name]\" required=\"required\" maxlength=\"128\" [(ngModel)]=\"_formService.getObject().name\" formControlName=\"name\" [class.error]=\"_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Enabled</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n    </div>\n</div>\n<div class=\"modal-footer hide-on-empty\">\n        \n                    <div class=\"row\">\n            <div class=\"col-auto ml-auto\">\n                                            <button                                     class=\"btn btn-light\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn btn-light\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>    \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo\" /></form>\n"
+module.exports = "    \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n<div class=\"modal-header\">\n    <div class=\"row align-items-center\">\n        <h3 class=\"col-auto mr-auto modal-title\">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>\n        <div class=\"col-auto text-right actions\"><a\n                class=\"-round fa fa-times\"\n                (click)=\"closeAction($event)\"></a></div>\n    </div>\n</div>\n<div class=\"modal-body\">\n    <div class=\"row\">\n        <div class=\"col-12\">    \n            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_name\">Name</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_name\" name=\"form[name]\" required=\"required\" maxlength=\"128\" [(ngModel)]=\"_formService.getObject().name\" formControlName=\"name\" [class.error]=\"_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Enabled</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label for=\"form_isEnabled\"><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n    </div>\n</div>\n<div class=\"modal-footer hide-on-empty\">\n        \n                    <div class=\"row\">\n            <div class=\"col-auto ml-auto\">\n                                            <button                                     class=\"btn btn-light\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn btn-light\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>    \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"Pyn_BcDiS9gJO25dJpE9EFTFCI4Haq4yNZSoquhdIAw\" /></form>\n"
 
 /***/ }),
 

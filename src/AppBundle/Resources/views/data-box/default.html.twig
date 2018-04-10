@@ -21,7 +21,7 @@
             <tbody>
             <ng-template ngFor let-obj [ngForOf]="_dataService.getProviderAttr('objects')" let-objIndex="index">
             <tr {% if (dataBoxDefault_hasActions) %}(dblclick)="editAction($event, objIndex)"{% endif %}
-                [ngClass]="getLegendClasses(obj)">
+                [ngClass]="getLegendClasses(obj, 'tr')">
                 {% block dataBoxDefault_container %}
                     <td *ngFor="let searchField of _dataService.getSearch('fields')"
                         [ngClass]="getColAlign(searchField)"
@@ -44,7 +44,7 @@
                     <div class="pull-right actions no-user-select text-secondary" (click)="triggerAction($event)">
                         <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
                             <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
-                               [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
+                               [ngClass]="[_actionsService.getActionAttr(action, 'icon') + getActionsLegendClasses(obj, action)]"
                                class="fa"
                                [attr.data-action]="action"
                                [attr.data-value]="objIndex"></a>

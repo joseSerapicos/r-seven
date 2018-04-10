@@ -2,7 +2,7 @@
 {% block body_container %}
     <div class="table-responsive m-t">
         <form>
-            <table class="table document-table">
+            <table class="table table-bordered">
                 <thead>
                 <tr>
                     <th *ngFor="let field of ['description', 'quantity', 'value', 'vatCode_name', 'total']">{% verbatim %}{{ _dataService.getFields('metadata')[field].label }}{% endverbatim %}</th>
@@ -46,5 +46,3 @@
         </form>
     </div>
 {% endblock %}
-
-{% block footer %}{% endblock %}

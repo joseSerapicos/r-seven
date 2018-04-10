@@ -210,7 +210,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 // Popup Types
 var PopupTypes = {
     edit: 'edit',
-    add: 'add'
+    add: 'add',
+    email: 'email'
 };
 // Component
 var DataBoxExtensionComponent = (function (_super) {
@@ -284,17 +285,26 @@ var DataBoxExtensionComponent = (function (_super) {
     /**
      * Get legend classes
      * @param object
+     * @param target (element target to check the legend)
+     * @param field (field on which the expression is checked,
+     *     if is not provided the field defined in legend provider is used)
      * @returns {string}
      */
-    DataBoxExtensionComponent.prototype.getLegendClasses = function (object) {
-        var legend = this._provider['controls']['legend'], hasClass;
+    DataBoxExtensionComponent.prototype.getLegendClasses = function (object, target, field) {
+        if (field === void 0) { field = null; }
+        var legend = this._provider['controls']['legend'];
         if (!object || !legend) {
             return '';
         }
         for (var _i = 0, legend_1 = legend; _i < legend_1.length; _i++) {
             var legendControl = legend_1[_i];
-            hasClass = false;
-            var field = legendControl['field'], expr = (legendControl['expr'] || 'notNull'), isExprNotNull = (expr == 'notNull'), 
+            field = (field || legendControl['field']);
+            var legendTarget = (legendControl['target'] || 'tr');
+            // Check target, if is not the same jump the loop
+            if ((legendTarget != target) || (!field) || (field == '')) {
+                continue;
+            }
+            var expr = (legendControl['expr'] || 'notNull'), isExprNotNull = (expr == 'notNull'), 
             // Check in original field first if defined
             fieldValue = ((object['__' + field] !== undefined) ? object['__' + field] : object[field]);
             // Normalize value
@@ -312,6 +322,27 @@ var DataBoxExtensionComponent = (function (_super) {
             }
         }
         return '';
+    };
+    /**
+     * Get actions legend classes
+     * @param object
+     * @param action (action to check the legend)
+     * @returns {string}
+     */
+    DataBoxExtensionComponent.prototype.getActionsLegendClasses = function (object, action) {
+        var field = null, classes = '';
+        switch (action) {
+            case 'pdf':
+                field = 'isAccessed';
+                break;
+            case 'email':
+                field = 'isSent';
+                break;
+        }
+        if (field) {
+            classes = this.getLegendClasses(object, 'actions', field);
+        }
+        return (classes == '') ? classes : (' ' + classes); // Add space to put legend classes after icon class
     };
     /**
      * Trigger action
@@ -484,6 +515,51 @@ var DataBoxExtensionComponent = (function (_super) {
         }
     };
     /**
+     * Pdf action.
+     * @param $event
+     * @param data
+     */
+    DataBoxExtensionComponent.prototype.pdfAction = function ($event, data) {
+        if ($event) {
+            $event.preventDefault();
+        }
+        this._dataService.pdf(data);
+    };
+    /**
+     * Email action.
+     * @param $event
+     * @param data
+     */
+    DataBoxExtensionComponent.prototype.emailAction = function ($event, data) {
+        if ($event) {
+            $event.preventDefault();
+        }
+        var that = this, popup = this._popups['email'], object = this._dataService.getObject(data);
+        if (!popup['injector']) {
+            // It's the firs time that popup is open, so we need to supply the providers
+            var context_1 = popup['localData']['context'], route = (this._helperService.getAppVar('route') + 'common/email/conf');
+            this._dataService.runAction(route).then(function (data) {
+                // Update route of "new" action
+                data['route']['new']['url'] = (data['route']['new']['url'] + '/' + context_1 + '/' + object['id']);
+                popup['providers'] = popup['providers'].concat([
+                    { provide: 'DataServiceProvider', useValue: that._helperService.getDataServiceProvider(data) },
+                    { provide: 'Provider', useValue: that._helperService.getFormProvider(data) }
+                ]);
+                var resolvedProviders = __WEBPACK_IMPORTED_MODULE_0__angular_core__["Q" /* ReflectiveInjector */].resolve(popup['providers']);
+                popup['injector'] = __WEBPACK_IMPORTED_MODULE_0__angular_core__["Q" /* ReflectiveInjector */].fromResolvedProviders(resolvedProviders, that._injector);
+                var emailDataService = popup['injector'].get('DataService');
+                emailDataService.newObject().then(function (data) { that.openPopup('email'); }, function (errors) { console.log(errors); });
+            }, function (errors) { console.log(errors); });
+        }
+        else {
+            // Update route of "new" action
+            var emailDataService = popup['injector'].get('DataService'), newEmailRoute = emailDataService.getRoute('new');
+            newEmailRoute = (newEmailRoute.substring(0, newEmailRoute.lastIndexOf("/")) + '/' + object['id']);
+            emailDataService.setRoute('new', newEmailRoute);
+            emailDataService.newObject().then(function (data) { that.openPopup('email'); }, function (errors) { console.log(errors); });
+        }
+    };
+    /**
      * Submit choices
      * @param route (route to submit choices)
      * @param allowEmptySubmit (allow submit when data is empty,
@@ -580,7 +656,7 @@ var DataBoxExtensionComponent = (function (_super) {
 /***/ "../../../../../src/AppBundle/Resources/public/data-box/ts/templates/data-box.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "\n\n<div class=\"ibox\" >\n                        <div class=\"ibox-title\" *ngIf=\"!getProviderExtraDataAttr('hasMergeHeader')\">\n                <h5>\n                    <ng-template [ngIf]=\"getProviderAttr('controls')['expander']\"><js_expander\n                        [isExpanded]=\"_isExpanded || null\"\n                        [label]=\"getProviderAttr('label')\"\n                        (onChange)=\"expanderAction($event)\"></js_expander></ng-template>\n                    <ng-template [ngIf]=\"!getProviderAttr('controls')['expander']\">\n                        <span [innerHTML]=\"getProviderAttr('label')\"></span>\n                    </ng-template>\n                </h5>\n                <div *ngIf=\"_isExpanded\"\n                     class=\"txt-align-r hide-on-empty\">    <div class=\"row align-items-center\">\n        <div class=\"col ml-auto text-right actions no-user-select\">\n            <ng-template [ngIf]=\"_actionsService.getActionAttr('search', 'isEnabled')\"><js_search class=\"search\"></js_search></ng-template>\n            <div (click)=\"triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_actionsService.getHeadActions()\">\n                    <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n</div>\n            </div>\n            \n    <div [hidden]=\"!(_isExpanded)\" class=\"ibox-content hide-on-empty\">    <ng-template [ngIf]=\"(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">\n        <div class=\"table-responsive\">\n        <form>        <table class=\"data-table table table-hover dataTables-example table-bordered\">\n            <thead>\n            <tr>\n                <th *ngFor=\"let searchField of _dataService.getSearch('fields')\">{{ _dataService.getFields('metadata')[searchField].label }}</th>\n                <th>&nbsp;</th>\n            </tr>\n            </thead>            <tbody>\n            <ng-template ngFor let-obj [ngForOf]=\"_dataService.getProviderAttr('objects')\" let-objIndex=\"index\">\n            <tr (dblclick)=\"editAction($event, objIndex)\"                [ngClass]=\"getLegendClasses(obj)\">\n                                    <td *ngFor=\"let searchField of _dataService.getSearch('fields')\"\n                        [ngClass]=\"getColAlign(searchField)\"\n                        [innerHTML]=\"obj[searchField]\"></td>\n                                <td>\n                    <span *ngIf=\"obj['_isNew']\" class=\"badge badge-info\">New</span>\n                    <span *ngIf=\"obj['_isEdited']\" class=\"badge badge-info\">Edited</span>\n                    <input *ngIf=\"_actionsService.getActionAttr('radioChoice', 'isEnabled')\"\n                           class=\"pull-right action\"\n                           type=\"radio\"\n                           name=\"index[]\"\n                           value=\"{{objIndex}}\"/>\n                    <input *ngIf=\"_actionsService.getActionAttr('checkAll', 'isEnabled')\"\n                           class=\"pull-right action js_checkAll\"\n                           type=\"checkbox\"\n                           name=\"index[]\"\n                           value=\"{{objIndex}}\"\n                           [ngModel]=\"checkAll\"/>\n                    <div class=\"pull-right actions no-user-select text-secondary\" (click)=\"triggerAction($event)\">\n                        <ng-template ngFor let-action [ngForOf]=\"_actionsService.getDetailActions()\">\n                            <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                               [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                               class=\"fa\"\n                               [attr.data-action]=\"action\"\n                               [attr.data-value]=\"objIndex\"></a>\n                        </ng-template>\n                    </div>\n                </td>            </tr>\n            </ng-template>\n            </tbody>\n        </table>\n        </form>    </div>\n    </ng-template><p\n        class=\"text-center\"\n        *ngIf=\"!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">No results.</p>\n</div>\n        <div class=\"ibox-footer\"\n         *ngIf=\"_dataService.countObjects() > 0\"><js_searchPagination></js_searchPagination></div>\n\n</div>\n\n<js_legend></js_legend>"
+module.exports = "\n\n<div class=\"ibox\" >\n                        <div class=\"ibox-title\" *ngIf=\"!getProviderExtraDataAttr('hasMergeHeader')\">\n                <h5>\n                    <ng-template [ngIf]=\"getProviderAttr('controls')['expander']\"><js_expander\n                        [isExpanded]=\"_isExpanded || null\"\n                        [label]=\"getProviderAttr('label')\"\n                        (onChange)=\"expanderAction($event)\"></js_expander></ng-template>\n                    <ng-template [ngIf]=\"!getProviderAttr('controls')['expander']\">\n                        <span [innerHTML]=\"getProviderAttr('label')\"></span>\n                    </ng-template>\n                </h5>\n                <div *ngIf=\"_isExpanded\"\n                     class=\"txt-align-r hide-on-empty\">    <div class=\"row align-items-center\">\n        <div class=\"col ml-auto text-right actions no-user-select\">\n            <ng-template [ngIf]=\"_actionsService.getActionAttr('search', 'isEnabled')\"><js_search class=\"search\"></js_search></ng-template>\n            <div (click)=\"triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_actionsService.getHeadActions()\">\n                    <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n</div>\n            </div>\n            \n    <div [hidden]=\"!(_isExpanded)\" class=\"ibox-content hide-on-empty\">    <ng-template [ngIf]=\"(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">\n        <div class=\"table-responsive\">\n        <form>        <table class=\"data-table table table-hover dataTables-example table-bordered\">\n            <thead>\n            <tr>\n                <th *ngFor=\"let searchField of _dataService.getSearch('fields')\">{{ _dataService.getFields('metadata')[searchField].label }}</th>\n                <th>&nbsp;</th>\n            </tr>\n            </thead>            <tbody>\n            <ng-template ngFor let-obj [ngForOf]=\"_dataService.getProviderAttr('objects')\" let-objIndex=\"index\">\n            <tr (dblclick)=\"editAction($event, objIndex)\"                [ngClass]=\"getLegendClasses(obj, 'tr')\">\n                                    <td *ngFor=\"let searchField of _dataService.getSearch('fields')\"\n                        [ngClass]=\"getColAlign(searchField)\"\n                        [innerHTML]=\"obj[searchField]\"></td>\n                                <td>\n                    <span *ngIf=\"obj['_isNew']\" class=\"badge badge-info\">New</span>\n                    <span *ngIf=\"obj['_isEdited']\" class=\"badge badge-info\">Edited</span>\n                    <input *ngIf=\"_actionsService.getActionAttr('radioChoice', 'isEnabled')\"\n                           class=\"pull-right action\"\n                           type=\"radio\"\n                           name=\"index[]\"\n                           value=\"{{objIndex}}\"/>\n                    <input *ngIf=\"_actionsService.getActionAttr('checkAll', 'isEnabled')\"\n                           class=\"pull-right action js_checkAll\"\n                           type=\"checkbox\"\n                           name=\"index[]\"\n                           value=\"{{objIndex}}\"\n                           [ngModel]=\"checkAll\"/>\n                    <div class=\"pull-right actions no-user-select text-secondary\" (click)=\"triggerAction($event)\">\n                        <ng-template ngFor let-action [ngForOf]=\"_actionsService.getDetailActions()\">\n                            <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                               [ngClass]=\"[_actionsService.getActionAttr(action, 'icon') + getActionsLegendClasses(obj, 'actions', action)]\"\n                               class=\"fa\"\n                               [attr.data-action]=\"action\"\n                               [attr.data-value]=\"objIndex\"></a>\n                        </ng-template>\n                    </div>\n                </td>            </tr>\n            </ng-template>\n            </tbody>\n        </table>\n        </form>    </div>\n    </ng-template><p\n        class=\"text-center\"\n        *ngIf=\"!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">No results.</p>\n</div>\n        <div class=\"ibox-footer\"\n         *ngIf=\"_dataService.countObjects() > 0\"><js_searchPagination></js_searchPagination></div>\n\n</div>\n\n<js_legend></js_legend>"
 
 /***/ }),
 
@@ -904,7 +980,9 @@ var FormService = (function () {
         if (object && (object != this._originalObject)) {
             // Keep the original object from dataService
             this._originalObject = object;
-            this._tasksLoaderManagerService.delTask('SAVE_' + this._uniqueId); // Waiting mode for save process ends here, after update the original object.
+            // Waiting mode for save process ends here, after update the original object.
+            // Prevents the object being updated two times, by the "Form" "save" and the "DataService" object change emitter.
+            this._tasksLoaderManagerService.delTask('SAVE_' + this._uniqueId);
             // Normalize object to form
             this._originalNormalizedObject = __WEBPACK_IMPORTED_MODULE_4__ts_helper__["a" /* Helper */].cloneObject(this._originalObject, true);
             this.normalizeObject(this._originalNormalizedObject);
@@ -981,6 +1059,8 @@ var FormService = (function () {
      * @returns {boolean|Boolean}
      */
     FormService.prototype.hasChanges = function () {
+        // Compare the working object "this._object" that it's a clone of "this._originalNormalizedObject" with your
+        // original object of cloning "this._originalNormalizedObject"
         return (!this._helperService.isEqualObject(this._object, this._originalNormalizedObject));
     };
     /**
@@ -1066,6 +1146,8 @@ var FormService = (function () {
                     that._forceSubmit = false;
                     // Update form with updated object
                     that.setObject(object);
+                    // Task removed in "setObject" method to prevent multiple updates of it
+                    //that._tasksLoaderManagerService.delTask('SAVE_'+that._uniqueId);
                     return resolve(true);
                 }, function (errors) {
                     if (errors) {
@@ -2851,12 +2933,13 @@ var DataService = (function () {
                 }
                 // For "enum" type (key is the label, pattern of Symfony ChoiceType)
                 if (fieldsChoices && fieldsChoices[field] && fieldsChoices[field]['value']) {
-                    var enumObj = fieldsChoices[field]['value'];
+                    var enumChoices = fieldsChoices[field]['value'];
                     for (var _b = 0, objects_3 = objects; _b < objects_3.length; _b++) {
                         var obj = objects_3[_b];
-                        for (var enumKey in enumObj) {
-                            if (enumObj[enumKey] == obj[field]) {
-                                obj[field] = enumKey;
+                        for (var _c = 0, enumChoices_1 = enumChoices; _c < enumChoices_1.length; _c++) {
+                            var enumChoice = enumChoices_1[_c];
+                            if (enumChoice['id'] == obj[field]) {
+                                obj[field] = enumChoice['label'];
                             }
                         }
                     }
@@ -3223,6 +3306,14 @@ var DataService = (function () {
             }
         }, function (errors) { console.log(errors); });
         return this;
+    };
+    /**
+     * Get pdf
+     * @param index
+     * @returns any
+     */
+    DataService.prototype.pdf = function (index) {
+        return this.redirect('pdf', index);
     };
     /**
      * Detail object.
@@ -6136,14 +6227,14 @@ var AddUrlExtModule = (function () {
 /***/ "../../../../../src/EntitiesBundle/Resources/public/entity-video/index/ts/templates/add-file.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "\n\n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" class=\"dropzone form-horizontal\" ngNoForm=\"\">\n\n    \n\n\n    \n\n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo\" /></form>\n"
+module.exports = "\n\n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" class=\"dropzone form-horizontal\" ngNoForm=\"\">\n\n    \n\n\n    \n\n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"Pyn_BcDiS9gJO25dJpE9EFTFCI4Haq4yNZSoquhdIAw\" /></form>\n"
 
 /***/ }),
 
 /***/ "../../../../../src/EntitiesBundle/Resources/public/entity-video/index/ts/templates/add-url.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "\n\n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n\n    \n            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_name\">Name</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_name\" name=\"form[name]\" required=\"required\" maxlength=\"128\" [(ngModel)]=\"_formService.getObject().name\" formControlName=\"name\" [class.error]=\"_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_path\">Video Id</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_path\" name=\"form[path]\" required=\"required\" maxlength=\"256\" [(ngModel)]=\"_formService.getObject().path\" formControlName=\"path\" [class.error]=\"_formService.getErrors().path &amp;&amp; _formService.getErrors().path.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().path\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_thumbnail\">Thumbnail</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_thumbnail\" name=\"form[thumbnail]\" maxlength=\"256\" placeholder=\"Use default thumbnail\" [(ngModel)]=\"_formService.getObject().thumbnail\" formControlName=\"thumbnail\" [class.error]=\"_formService.getErrors().thumbnail &amp;&amp; _formService.getErrors().thumbnail.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().thumbnail\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n        \n\n    \n\n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo\" /></form>\n"
+module.exports = "\n\n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n\n    \n            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_name\">Name</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_name\" name=\"form[name]\" required=\"required\" maxlength=\"128\" [(ngModel)]=\"_formService.getObject().name\" formControlName=\"name\" [class.error]=\"_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_path\">Video Id</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_path\" name=\"form[path]\" required=\"required\" maxlength=\"256\" [(ngModel)]=\"_formService.getObject().path\" formControlName=\"path\" [class.error]=\"_formService.getErrors().path &amp;&amp; _formService.getErrors().path.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().path\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_thumbnail\">Thumbnail</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_thumbnail\" name=\"form[thumbnail]\" maxlength=\"256\" placeholder=\"Use default thumbnail\" [(ngModel)]=\"_formService.getObject().thumbnail\" formControlName=\"thumbnail\" [class.error]=\"_formService.getErrors().thumbnail &amp;&amp; _formService.getErrors().thumbnail.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().thumbnail\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n        \n\n    \n\n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"Pyn_BcDiS9gJO25dJpE9EFTFCI4Haq4yNZSoquhdIAw\" /></form>\n"
 
 /***/ }),
 

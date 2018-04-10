@@ -108,7 +108,10 @@ abstract class BaseDocumentRepository extends BaseEntityRepository
                 'normalizer' => array('method' => 'getSettlementStatus')
             ),
             'isAccessed' => array('label' => 'Accessed', 'type' => 'boolean', 'acl' => 'read',
-                'form' => array('type' => 'none')
+                'form' => array('type' => 'none'), 'view' => array('keepOriginalNormalizer' => true)
+            ),
+            'isSent' => array('label' => 'Sent', 'type' => 'boolean', 'acl' => 'read',
+                'form' => array('type' => 'none'), 'view' => array('keepOriginalNormalizer' => true)
             ),
             'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read', 'form' => array('type' => 'none')),
             'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),

@@ -23,22 +23,22 @@
 
     {% set entityAddressData = render(controller(
         'EntitiesBundle:EntityAddress:dataChild',
-        {'parents': {'entity': parentId}}
+        {'parents': {'entity': parentId}, 'responseType': 'json'}
     )) %}
 
     {% set entityPhoneData = render(controller(
         'EntitiesBundle:EntityPhone:dataChild',
-        {'parents': {'entity': parentId}}
+        {'parents': {'entity': parentId}, 'responseType': 'json'}
     )) %}
 
     {% set entityEmailData = render(controller(
         'EntitiesBundle:EntityEmail:dataChild',
-        {'parents': {'entity': parentId}}
+        {'parents': {'entity': parentId}, 'responseType': 'json'}
     )) %}
 
     {% set entityLinkData = render(controller(
         'EntitiesBundle:EntityLink:dataChild',
-        {'parents': {'entity': parentId}}
+        {'parents': {'entity': parentId}, 'responseType': 'json'}
     )) %}
     <script>
         _app.dependency.entityAddress = {{ entityAddressData|raw }};

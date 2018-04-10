@@ -128,11 +128,13 @@ class EntityPhoneController extends BaseEntityChildController
      * Overrides parent method
      * @param Request $request
      * @param $entity
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      */
-    public function dataLocalChildAction(Request $request, $entity)
+    public function dataLocalChildAction(Request $request, $entity, $responseType = 'http')
     {
-        return parent::dataChildAction($request, array($entity));
+        return parent::dataChildAction($request, array($entity), $responseType);
     }
 
     /**

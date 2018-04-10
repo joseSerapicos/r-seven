@@ -12,12 +12,12 @@
     {{ parent() }}
     {% set userGroupAclMenuData = render(controller(
         'AdminBundle:UserGroupAclMenu:dataChild',
-        {'parents': {'userGroupAcl': _conf['object']['id']}}
+        {'parents': {'userGroupAcl': _conf['object']['id']}, 'responseType': 'json'}
     )) %}
 
     {% set userGroupAclUserData = render(controller(
         'AdminBundle:UserGroupAclUser:dataChild',
-        {'parents': {'userGroupAcl': _conf['object']['id']}}
+        {'parents': {'userGroupAcl': _conf['object']['id']}, 'responseType': 'json'}
     )) %}
     <script>
         _app.dependency.userGroupAclMenu = {{ userGroupAclMenuData|raw }};

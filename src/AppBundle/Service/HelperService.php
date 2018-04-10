@@ -142,13 +142,36 @@ class HelperService
     }
 
     /**
-     * Convert string form CamelCase to snake_case
+     * Convert string from CamelCase to snake_case
      * @param $string
      * @return string
      */
     public static function camelCaseToSnakeCase($string)
     {
         return ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $string)), '_');
+    }
+
+    /**
+     * Normalize string to snake_case
+     * @param $string
+     * @return string
+     */
+    public static function normalizeToSnakeCase($string)
+    {
+        return strtolower(str_replace(' ', '_', $string));
+    }
+
+    /**
+     * Normalize Name
+     * @param $string
+     * @return string
+     */
+    public static function normalizeName($string)
+    {
+        $string = self::normalizeToSnakeCase($string);
+
+        // Removes special chars.
+        return preg_replace('/[^A-Za-z0-9\_]/', '', $string);
     }
 
     /**

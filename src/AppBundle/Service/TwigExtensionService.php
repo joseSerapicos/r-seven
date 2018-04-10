@@ -2,8 +2,7 @@
 
 namespace AppBundle\Service;
 
-use Sybio\Bundle\CoreBundle\Services\Extension\Twig_Filter_Function;
-use Sybio\Bundle\CoreBundle\Services\Extension\Twig_Filter_Method;
+use Sybio\Bundle\CoreBundle\Services\Extension\Twig_Function;
 
 /**
  * Load extension for twig
@@ -17,8 +16,8 @@ class TwigExtensionService extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            //'file_exists' => new \Twig_Function_Function('file_exists'),
-            'asset_exists' => new \Twig_Function_Method($this, 'asset_exists')
+            'asset_exists' => new \Twig_Function('asset_exists', array($this, 'asset_exists')),
+            'get_col_align' => new \Twig_Function('get_col_align', array($this, 'get_col_align'))
         );
     }
 
@@ -30,6 +29,29 @@ class TwigExtensionService extends \Twig_Extension
     public function asset_exists($path)
     {
         return file_exists(realpath($path));
+    }
+
+    /**
+     * Get Column Alignment
+     * @param $dataType
+     * @return string
+     */
+    public function get_col_align($dataType) {
+        switch ($dataType) {
+            case 'number':
+            case 'percentage':
+            case 'monetary':
+            case 'date':
+            case 'datetime':
+                return 'text-right';
+            case 'boolean':
+            case 'icon':
+            case 'img':
+            case 'status':
+                return 'text-center';
+            default:
+                return 'text-left';
+        }
     }
 
     /**

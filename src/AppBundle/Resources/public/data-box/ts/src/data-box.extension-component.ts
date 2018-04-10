@@ -12,7 +12,8 @@ export {Popup, DataBoxProvider};
 // Popup Types
 export var PopupTypes = {
     edit: 'edit',
-    add: 'add'
+    add: 'add',
+    email: 'email'
 };
 // Popups interface (array of popups)
 export interface Popups {
@@ -122,21 +123,29 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
     /**
      * Get legend classes
      * @param object
+     * @param target (element target to check the legend)
+     * @param field (field on which the expression is checked,
+     *     if is not provided the field defined in legend provider is used)
      * @returns {string}
      */
-    public getLegendClasses(object: any)
+    public getLegendClasses(object: any, target: string, field: string = null)
     {
-        let legend = this._provider['controls']['legend'],
-            hasClass: boolean;
+        let legend = this._provider['controls']['legend'];
 
         if (!object || !legend) {
             return '';
         }
 
         for (let legendControl of legend) {
-            hasClass = false;
-            let field = legendControl['field'],
-                expr = (legendControl['expr'] || 'notNull'),
+            field = (field || legendControl['field']);
+            let legendTarget = (legendControl['target'] || 'tr');
+
+            // Check target, if is not the same jump the loop
+            if ((legendTarget != target) || (!field) || (field == '')) {
+                continue;
+            }
+
+            let expr = (legendControl['expr'] || 'notNull'),
                 isExprNotNull = (expr == 'notNull'),
                 // Check in original field first if defined
                 fieldValue = ((object['__'+field] !== undefined) ? object['__'+field] : object[field]);
@@ -158,6 +167,33 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
         }
 
         return '';
+    }
+
+    /**
+     * Get actions legend classes
+     * @param object
+     * @param action (action to check the legend)
+     * @returns {string}
+     */
+    public getActionsLegendClasses(object: any, action: string)
+    {
+        let field = null,
+            classes = '';
+
+        switch (action) {
+            case 'pdf':
+                field = 'isAccessed';
+                break;
+            case 'email':
+                field = 'isSent';
+                break;
+        }
+
+        if (field) {
+            classes = this.getLegendClasses(object, 'actions', field);
+        }
+
+        return (classes == '') ? classes : (' ' + classes); // Add space to put legend classes after icon class
     }
 
     /**
@@ -356,6 +392,78 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
                 errors => {
                     console.log(errors);
                 }
+            );
+        }
+    }
+
+    /**
+     * Pdf action.
+     * @param $event
+     * @param data
+     */
+    public pdfAction($event: any, data: any): void
+    {
+        if ($event) { $event.preventDefault(); }
+        this._dataService.pdf(data);
+    }
+
+    /**
+     * Email action.
+     * @param $event
+     * @param data
+     */
+    public emailAction($event: any, data: any): void
+    {
+        if ($event) { $event.preventDefault(); }
+
+        // Select object index in DataService to update object after sent email
+        if (!this._dataService.setObjectIndex(data)) {
+            return;
+        }
+
+        let that = this,
+            popup: Popup = this._popups['email'],
+            object = this._dataService.getObject(data);
+
+        if (!popup['injector']) {
+            // It's the firs time that popup is open, so we need to supply the providers
+            let context = popup['localData']['context'],
+                route = (this._helperService.getAppVar('route') + 'common/email/conf');
+
+            this._dataService.runAction(route).then(
+                data => {
+                    // Update route of "new" action
+                    data['route']['new']['url']= (data['route']['new']['url'] + '/' + context + '/' + object['id']);
+
+                    popup['providers'] = popup['providers'].concat([
+                        {provide: 'DataServiceProvider', useValue: that._helperService.getDataServiceProvider(data)},
+                        {provide: 'Provider', useValue: that._helperService.getFormProvider(data)},
+                        {provide: 'ParentDataService', useValue: this._dataService}
+                    ]);
+
+                    let resolvedProviders = ReflectiveInjector.resolve(popup['providers']);
+                    popup['injector'] = ReflectiveInjector.fromResolvedProviders(resolvedProviders, that._injector);
+
+                    let emailDataService = popup['injector'].get('DataService');
+
+                    emailDataService.newObject().then(
+                        data => { that.openPopup('email'); },
+                        errors => { console.log(errors); }
+                    );
+                },
+                errors => { console.log(errors); }
+            );
+        } else {
+            // Update route of "new" action
+            let emailDataService = popup['injector'].get('DataService'),
+                newEmailRoute = emailDataService.getRoute('new');
+
+            newEmailRoute = (newEmailRoute.substring(0, newEmailRoute.lastIndexOf("/"))  + '/' + object['id']);
+            emailDataService.setRoute('new', newEmailRoute);
+
+            emailDataService.newObject().then(
+                data => { that.openPopup('email'); },
+                errors => { console.log(errors); }
             );
         }
     }

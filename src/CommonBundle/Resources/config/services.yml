@@ -1,4 +1,5 @@
+# src/CommonBundle/Resources/config/services.yml
 services:
-#    common.example:
-#        class: CommonBundle\Example
-#        arguments: ["@service_id", "plain_value", %parameter%]
+    common.service.repository:
+        class: CommonBundle\Service\RepositoryService
+        arguments: ["@doctrine.orm.local_database_entity_manager"]

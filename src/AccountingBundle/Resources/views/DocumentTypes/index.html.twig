@@ -4,11 +4,13 @@
     {{ parent() }}
 
     {% set clientDocumentTypeData = render(controller(
-        'AccountingBundle:ClientDocumentType:data'
+        'AccountingBundle:ClientDocumentType:data',
+        {'responseType': 'json'}
     )) %}
 
     {% set supplierDocumentTypeData = render(controller(
-        'AccountingBundle:SupplierDocumentType:data'
+        'AccountingBundle:SupplierDocumentType:data',
+        {'responseType': 'json'}
     )) %}
     <script>
         _app.dependency.clientDocumentType = {{ clientDocumentTypeData|raw }};

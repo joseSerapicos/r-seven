@@ -29,6 +29,7 @@ class AppKernel extends Kernel
             new AccountingBundle\AccountingBundle(),
             new BookingBundle\BookingBundle(),
             new UserBundle\UserBundle(),
+            new SettingsBundle\SettingsBundle(),
             new CommonBundle\CommonBundle(),
             new ManagementBundle\ManagementBundle(),
         ];

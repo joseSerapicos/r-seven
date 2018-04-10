@@ -117,7 +117,7 @@
                         <div class="col-sm-10"><div class="row">
                         <div class="col-sm-6">
                                                                                 
-        <select id="form_durationType" name="form[durationType]" [(ngModel)]="_formService.getObject().durationType" formControlName="durationType" [class.error]="_formService.getErrors().durationType &amp;&amp; _formService.getErrors().durationType.length &gt; 0" class="form-control">            <option value="END_DATE" >Until End</option>            <option value="FIXED" >Fixed Days</option></select>
+        <select id="form_durationType" name="form[durationType]" [(ngModel)]="_formService.getObject().durationType" formControlName="durationType" [class.error]="_formService.getErrors().durationType &amp;&amp; _formService.getErrors().durationType.length &gt; 0" class="form-control"><option value="END_DATE">Until End</option><option value="FIXED">Fixed Days</option></select>
     <input [(ngModel)]="_formService.getObject().durationType"
            formControlName = durationType
            required="required"           type="hidden">
@@ -135,7 +135,7 @@
                         <div class="col-sm-10"><div class="row">
                         <div class="col-sm-6">
                                                                                 
-        <select id="form_quantityType" name="form[quantityType]" [(ngModel)]="_formService.getObject().quantityType" formControlName="quantityType" [class.error]="_formService.getErrors().quantityType &amp;&amp; _formService.getErrors().quantityType.length &gt; 0" class="form-control">            <option value="PER_PAX" >Per Pax</option>            <option value="FIXED" >Fixed</option>            <option value="FREE" >Free</option></select>
+        <select id="form_quantityType" name="form[quantityType]" [(ngModel)]="_formService.getObject().quantityType" formControlName="quantityType" [class.error]="_formService.getErrors().quantityType &amp;&amp; _formService.getErrors().quantityType.length &gt; 0" class="form-control"><option value="PER_PAX">Per Pax</option><option value="FIXED">Fixed</option><option value="FREE">Free</option></select>
     <input [(ngModel)]="_formService.getObject().quantityType"
            formControlName = quantityType
            required="required"           type="hidden">
@@ -202,7 +202,7 @@
                         <label class="col-sm-2 control-label">Is Optional</label>
     
             <div class="col-sm-10">
-                                            <div class="checkbox">                                        <label><input type="checkbox" id="form_isOptional" name="form[isOptional]" [(ngModel)]="_formService.getObject().isOptional" formControlName="isOptional" [class.error]="_formService.getErrors().isOptional &amp;&amp; _formService.getErrors().isOptional.length &gt; 0" value="1" /> Is optional</label>
+                                            <div class="checkbox">                                        <label for="form_isOptional"><input type="checkbox" id="form_isOptional" name="form[isOptional]" [(ngModel)]="_formService.getObject().isOptional" formControlName="isOptional" [class.error]="_formService.getErrors().isOptional &amp;&amp; _formService.getErrors().isOptional.length &gt; 0" value="1" /> Is optional</label>
     </div>
                 <label class="error" *ngFor="let error of _formService.getErrors().isOptional">{{error}}</label>
             </div>
@@ -218,11 +218,11 @@
     <div class="form-control-box"
          [ngClass]="{'error': _formService.getErrors().availability && (_formService.getErrors().availability.length > 0)}"
          (click)="_formService.setFormFieldValue('availability', $event.target.value)">
-                    <div class="radio">                                                            <label class="required"><input type="radio" id="form_availability_0" name="form[availability]" required="required" [checked]="&#039;NONE&#039; == _formService.getObject().availability" value="NONE" /> None</label>
+                    <div class="radio">                                                            <label for="form_availability_0" class="required"><input type="radio" id="form_availability_0" name="form[availability]" required="required" [checked]="&#039;NONE&#039; == _formService.getObject().availability" value="NONE" /> None</label>
     </div>
-                    <div class="radio">                                                            <label class="required"><input type="radio" id="form_availability_1" name="form[availability]" required="required" [checked]="&#039;PACKAGE&#039; == _formService.getObject().availability" value="PACKAGE" /> Package</label>
+                    <div class="radio">                                                            <label for="form_availability_1" class="required"><input type="radio" id="form_availability_1" name="form[availability]" required="required" [checked]="&#039;PACKAGE&#039; == _formService.getObject().availability" value="PACKAGE" /> Package</label>
     </div>
-                    <div class="radio">                                                            <label class="required"><input type="radio" id="form_availability_2" name="form[availability]" required="required" [checked]="&#039;SERVICE&#039; == _formService.getObject().availability" value="SERVICE" /> Service</label>
+                    <div class="radio">                                                            <label for="form_availability_2" class="required"><input type="radio" id="form_availability_2" name="form[availability]" required="required" [checked]="&#039;SERVICE&#039; == _formService.getObject().availability" value="SERVICE" /> Service</label>
     </div>
             </div>
     <input [(ngModel)]="_formService.getObject().availability"
@@ -243,11 +243,11 @@
     <div class="form-control-box"
          [ngClass]="{'error': _formService.getErrors().price && (_formService.getErrors().price.length > 0)}"
          (click)="_formService.setFormFieldValue('price', $event.target.value)">
-                    <div class="radio">                                                            <label class="required"><input type="radio" id="form_price_0" name="form[price]" required="required" [checked]="&#039;NONE&#039; == _formService.getObject().price" value="NONE" /> None</label>
+                    <div class="radio">                                                            <label for="form_price_0" class="required"><input type="radio" id="form_price_0" name="form[price]" required="required" [checked]="&#039;NONE&#039; == _formService.getObject().price" value="NONE" /> None</label>
     </div>
-                    <div class="radio">                                                            <label class="required"><input type="radio" id="form_price_1" name="form[price]" required="required" [checked]="&#039;PACKAGE&#039; == _formService.getObject().price" value="PACKAGE" /> Package</label>
+                    <div class="radio">                                                            <label for="form_price_1" class="required"><input type="radio" id="form_price_1" name="form[price]" required="required" [checked]="&#039;PACKAGE&#039; == _formService.getObject().price" value="PACKAGE" /> Package</label>
     </div>
-                    <div class="radio">                                                            <label class="required"><input type="radio" id="form_price_2" name="form[price]" required="required" [checked]="&#039;SERVICE&#039; == _formService.getObject().price" value="SERVICE" /> Service</label>
+                    <div class="radio">                                                            <label for="form_price_2" class="required"><input type="radio" id="form_price_2" name="form[price]" required="required" [checked]="&#039;SERVICE&#039; == _formService.getObject().price" value="SERVICE" /> Service</label>
     </div>
             </div>
     <input [(ngModel)]="_formService.getObject().price"
@@ -268,11 +268,11 @@
     <div class="form-control-box"
          [ngClass]="{'error': _formService.getErrors().allot && (_formService.getErrors().allot.length > 0)}"
          (click)="_formService.setFormFieldValue('allot', $event.target.value)">
-                    <div class="radio">                                                            <label class="required"><input type="radio" id="form_allot_0" name="form[allot]" required="required" [checked]="&#039;NONE&#039; == _formService.getObject().allot" value="NONE" /> None</label>
+                    <div class="radio">                                                            <label for="form_allot_0" class="required"><input type="radio" id="form_allot_0" name="form[allot]" required="required" [checked]="&#039;NONE&#039; == _formService.getObject().allot" value="NONE" /> None</label>
     </div>
-                    <div class="radio">                                                            <label class="required"><input type="radio" id="form_allot_1" name="form[allot]" required="required" [checked]="&#039;PACKAGE&#039; == _formService.getObject().allot" value="PACKAGE" /> Package</label>
+                    <div class="radio">                                                            <label for="form_allot_1" class="required"><input type="radio" id="form_allot_1" name="form[allot]" required="required" [checked]="&#039;PACKAGE&#039; == _formService.getObject().allot" value="PACKAGE" /> Package</label>
     </div>
-                    <div class="radio">                                                            <label class="required"><input type="radio" id="form_allot_2" name="form[allot]" required="required" [checked]="&#039;SERVICE&#039; == _formService.getObject().allot" value="SERVICE" /> Service</label>
+                    <div class="radio">                                                            <label for="form_allot_2" class="required"><input type="radio" id="form_allot_2" name="form[allot]" required="required" [checked]="&#039;SERVICE&#039; == _formService.getObject().allot" value="SERVICE" /> Service</label>
     </div>
             </div>
     <input [(ngModel)]="_formService.getObject().allot"
@@ -315,7 +315,7 @@
                         <label class="col-sm-2 control-label">Enabled</label>
     
             <div class="col-sm-10">
-                                            <div class="checkbox">                                        <label><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
+                                            <div class="checkbox">                                        <label for="form_isEnabled"><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
     </div>
                 <label class="error" *ngFor="let error of _formService.getErrors().isEnabled">{{error}}</label>
             </div>
@@ -350,4 +350,4 @@
                                 </div>
         </div>
     </div>    
-    <input type="hidden" id="form__token" name="form[_token]" value="sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo" /></form>
+    <input type="hidden" id="form__token" name="form[_token]" value="Pyn_BcDiS9gJO25dJpE9EFTFCI4Haq4yNZSoquhdIAw" /></form>

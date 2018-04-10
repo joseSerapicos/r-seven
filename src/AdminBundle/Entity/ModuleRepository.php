@@ -54,9 +54,7 @@ class ModuleRepository extends BaseEntityRepository
             'appModuleObj' => array('label' => 'App Module', 'type' => 'object', 'acl' => 'edit',
                 'typeDetail' => array(
                     'table' => 'app_module', 'field' => 'id', 'bundle' => 'sysadmin', 'type' => 'none',
-                    'choices' => array(
-                        'autoRefresh' => true, 'hasSelfReference' => false
-                    )
+                    'choices' => array('hasSelfReference' => true) // To update choices in all interactions
                 ),
                 'form' => array('type' => 'radio')
             ),

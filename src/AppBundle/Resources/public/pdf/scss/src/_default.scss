@@ -1,0 +1,7 @@
+// print grid
+@for $i from 1 through 12 {
+    .col-print-#{$i} {
+        width: #{percentage(round($i*8.33)/100)};
+        float: left;
+    }
+}

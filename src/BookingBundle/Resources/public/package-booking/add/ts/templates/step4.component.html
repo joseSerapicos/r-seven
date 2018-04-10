@@ -7,7 +7,7 @@
         <form>        <table class="data-table table table-hover dataTables-example">
                         <tbody>
             <ng-template ngFor let-obj [ngForOf]="_dataService.getProviderAttr('objects')" let-objIndex="index">
-            <tr                 [ngClass]="getLegendClasses(obj)">
+            <tr                 [ngClass]="getLegendClasses(obj, 'tr')">
                     <td class="container-fluid">
         <div class="row form-group">
             <div class="col-12">

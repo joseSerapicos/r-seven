@@ -1,0 +1,30 @@
+    <nav>
+        <div class="nav nav-tabs" role="tablist">
+                            <a class="nav-item nav-link"
+                   role="tab"
+                   (click)="_navManagerService.navToAction(0)"
+                   [class.active]="0 == _navManagerService.getIndex()"
+                   [attr.data-index]="0"
+                   >Templates</a>
+                            <a class="nav-item nav-link"
+                   role="tab"
+                   (click)="_navManagerService.navToAction(1)"
+                   [class.active]="1 == _navManagerService.getIndex()"
+                   [attr.data-index]="1"
+                   >Default Templates</a>
+                    </div>
+    </nav>
+    <div class="tab-content">
+                    <div class="tab-pane p-3 fade js_lazyLoadContainer_0"
+                                  role="tabpanel"
+                 [class.show]="0 == _navManagerService.getIndex()"
+                 [class.active]="0 == _navManagerService.getIndex()">
+                <ng-template #js_lazyLoadContainer></ng-template>
+            </div>
+                    <div class="tab-pane p-3 fade js_lazyLoadContainer_1"
+                                  role="tabpanel"
+                 [class.show]="1 == _navManagerService.getIndex()"
+                 [class.active]="1 == _navManagerService.getIndex()">
+                <ng-template #js_lazyLoadContainer></ng-template>
+            </div>
+            </div>

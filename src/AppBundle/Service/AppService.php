@@ -168,7 +168,14 @@ class AppService
      */
     protected function getUser() {
         $userObj = $this->container->get('security.token_storage')->getToken()->getUser();
-        $userAvatar = $userObj->getEntityObj()->getAvatar();
+        $entityObj = $userObj->getEntityObj();
+        $userAvatar = $entityObj->getAvatar();
+        $userEmail = $this->container->get('entities.service.repository')
+            ->setEntityRepository('EntitiesBundle:EntityEmail')
+            ->execute(
+                'getDefaultEmail',
+                array($entityObj)
+            );
         if ($userAvatar) {
             $userAvatar = substr($userAvatar, strpos($userAvatar, '/upload/'));
         }
@@ -178,6 +185,7 @@ class AppService
             'language' => $userObj->getId(),
             'username' => $userObj->getUsername(),
             'name' => $userObj->getEntityObj()->getName(),
+            'email' => $userEmail,
             'avatar' => $userAvatar,
             'role' => $userObj->getRole(),
             'entity_id' => $userObj->getEntityObj()->getId()
@@ -248,7 +256,7 @@ class AppService
         $options = array(
             'fields' => array('id', 'name', 'appModuleObj',
                 'app_module.id AS module_id', 'IDENTITY(app_module.appModuleObj) AS parentModule_id', 'app_module.name AS module_name',
-                'app_icon.name AS module_icon', '8 AS acl', 'route'
+                'app_icon.icon AS module_icon', '8 AS acl', 'route'
             ),
             'criteria' => array(
                 array('field' => 'app_module.isEnabled', 'expr' => 'eq', 'value' => 1),
@@ -299,7 +307,7 @@ class AppService
             // "app_module.id" and "app_moduleMenu.id" are used to avoid id override between local and system db
             'fields' => array('app_moduleMenu.id', 'name', 'moduleObj',
                 'app_module.id AS module_id', 'IDENTITY(app_module.appModuleObj) AS parentModule_id', 'module.name AS module_name',
-                'app_icon.name AS module_icon', 'userGroupAclMenu.acl AS acl', 'app_moduleMenu.route AS route'
+                'app_icon.icon AS module_icon', 'userGroupAclMenu.acl AS acl', 'app_moduleMenu.route AS route'
             ),
             'criteria' => array(
                 array('field' => 'module.isEnabled', 'expr' => 'eq', 'value' => 1),

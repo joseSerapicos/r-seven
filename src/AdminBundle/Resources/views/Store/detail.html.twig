@@ -19,17 +19,17 @@
 
     {% set storePhoneData = render(controller(
         'AdminBundle:StorePhone:dataChild',
-        {'parents': {'store': parentId}}
+        {'parents': {'store': parentId}, 'responseType': 'json'}
     )) %}
 
     {% set storeEmailData = render(controller(
         'AdminBundle:StoreEmail:dataChild',
-        {'parents': {'store': parentId}}
+        {'parents': {'store': parentId}, 'responseType': 'json'}
     )) %}
 
     {% set storeLinkData = render(controller(
         'AdminBundle:StoreLink:dataChild',
-        {'parents': {'store': parentId}}
+        {'parents': {'store': parentId}, 'responseType': 'json'}
     )) %}
     <script>
         _app.dependency.storePhone = {{ storePhoneData|raw }};

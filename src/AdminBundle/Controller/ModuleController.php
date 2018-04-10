@@ -56,10 +56,7 @@ class ModuleController extends BaseEntityController
         $this->templateConf['actions'] = array_merge(
             $this->templateConf['actions'],
             array(
-                'add' => (
-                    $this->templateConf['acl']['add']
-                    && (count($this->templateConf['fields']['choices']['appModuleObj']['value']) > 0)
-                ),
+                'add' => $this->templateConf['acl']['add'],
                 'delete' => $this->templateConf['acl']['delete'],
                 'detail' => true
             )
@@ -285,8 +282,11 @@ class ModuleController extends BaseEntityController
         if (is_array($choices)) {
             $choices = array_map(
                 function($value) {
-                    $value['name'] = ('<i class="fa ' . $value['icon'] . '"></i> ' . $value['name']);
-                    return $value;
+                    return array(
+                        'id' => $value['id'],
+                        'label' => ('<i class="fa ' . $value['icon'] . '"></i> ' . $value['name']),
+                        'description' => $value['description']
+                    );
                 },
                 $choices
             );

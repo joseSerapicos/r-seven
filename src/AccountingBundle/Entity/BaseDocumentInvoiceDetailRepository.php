@@ -253,8 +253,8 @@ abstract class BaseDocumentInvoiceDetailRepository extends BaseEntityRepository
 
         // Set fields
         $options['fields'] = array(
-            'id', $documentObjField, 'service_icon', 'service_name', 'description',
-            'quantity', 'totalUnit', 'vatCode_percentage', 'vatCode_name', 'total',
+            'id', $documentObjField, $documentTypeObjField, 'service_icon', 'service_name', 'description',
+            'quantity', 'totalUnit', 'vatCode_percentage', 'vatCode_name',
             'document_code', // 'document_code' mandatory to use in search having clause (add document invoice rectification)
             'value', 'vatValue', "(".$localTable.".subTotal + ".$localTable.".totalVat) AS total",
             (
@@ -308,7 +308,7 @@ abstract class BaseDocumentInvoiceDetailRepository extends BaseEntityRepository
                     array (
                         array( // Enabled
                             'field' => ($documentTable . '.id'),
-                            'expr' => 'IN',
+                            'expr' => 'in',
                             'value' => $bookingDocumentsIdArr
                         )
                     )
@@ -330,21 +330,21 @@ abstract class BaseDocumentInvoiceDetailRepository extends BaseEntityRepository
             )
         );
 
-        // Get query builder
-        $qb = $this->queryBuilder($options, false);
-
         // Filter by document type operation
         if ($targetDocumentObj) {
             $getMethod = ('get' . $entityContextUC . 'DocumentTypeObj');
             $operation = $targetDocumentObj->$getMethod()->getOperation();
             $operation = (($operation == 'DEBIT') ? 'CREDIT' : 'DEBIT'); // Get inverse operation
 
-            $qb->innerJoin($documentTable . '.' . $documentTypeObjField,
-                $documentTypeTable,
-                'WITH',
-                ($documentTypeTable . ".operation = '" . $operation . "'")
+            $options['criteria'][] = array(
+                'field' => ($documentTypeTable . '.operation'),
+                'expr' => 'eq',
+                'value' => $operation
             );
         }
+
+        // Get query builder
+        $qb = $this->queryBuilder($options, false);
 
         // Rectification
         $qb->leftJoin('AccountingBundle\Entity\\' . ucfirst($documentInvoiceRectificationTable),

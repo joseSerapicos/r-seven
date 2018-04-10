@@ -14,7 +14,7 @@
 
     {% set bookingPaxData = render(controller(
         'BookingBundle:RegularBookingPax:dataChild',
-        {'parents': {'booking': _conf['object']['bookingObj']}}
+        {'parents': {'booking': _conf['object']['bookingObj']}, 'responseType': 'json'}
     )) %}
     <script>
         _app.dependency.bookingPax = {{ bookingPaxData|raw }};

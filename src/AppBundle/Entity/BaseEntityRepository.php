@@ -337,8 +337,11 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
 
             $select = array();
             foreach ($options['fields'] as $field) {
-                $this->queryBuilderAddSelect($qb, $field, $select, $options['fields'], $hasFields, $hasDependencyResolver);
-            }
+                // This verification is IMPORTANT to avoid some errors in the specification of controller conf
+                if (!empty($field)) {
+                    $this->queryBuilderAddSelect($qb, $field, $select, $options['fields'], $hasFields, $hasDependencyResolver);
+                }
+                }
             if ($hasFields) { $qb->select($select); }
         }
 

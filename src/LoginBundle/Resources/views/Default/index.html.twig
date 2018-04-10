@@ -36,13 +36,13 @@
                 <div>{{ error.messageKey|trans(error.messageData) }}</div>
             {% endif %}
             <form action="{{ path('_login__default__check') }}" method="post" class="m-t" role="form">
-                <div class="row form-group">
+                <div class="form-group">
                     <input type="text" name="_system" class="form-control" placeholder="System Id/Name" required="" value="{{ form.last_values._system }}">
                 </div>
-                <div class="row form-group">
+                <div class="form-group">
                     <input type="text" name="_username" class="form-control" placeholder="Username/Email" required="" value="{{ form.last_values._username }}">
                 </div>
-                <div class="row form-group">
+                <div class="form-group">
                     <input type="password" name="_password" class="form-control" placeholder="Password" required="">
                 </div>
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">

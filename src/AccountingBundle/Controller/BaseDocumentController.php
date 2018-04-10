@@ -3,6 +3,8 @@
 namespace AccountingBundle\Controller;
 
 use AppBundle\Controller\BaseEntityController;
+use AppBundle\Service\HelperService;
+use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use BookingBundle\Controller\BaseBookingController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -714,7 +716,6 @@ abstract class BaseDocumentController extends BaseEntityController
 
         // Check if is submitted
         if($form->isSubmitted()) {
-            if ($obj)
             // Validate dates
             if (!$this->validateDates($obj)) {
                 return $this->getResponse(true);
@@ -1001,6 +1002,136 @@ abstract class BaseDocumentController extends BaseEntityController
     }
 
     /**
+     * [SET ROUTE HERE]
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function pdfAction(Request $request, $id)
+    {
+        // Set necessary date in responseConf
+        $this->getAction($request, $id);
+
+        $object = $this->getObject($id);
+        $entityContext = $this->getEntityContext();
+        $entityContextUC = $this->getEntityContext(true);
+        $getMethod = ('get' . $entityContextUC . 'DocumentTypeObj');
+
+        $this->responseConf['hasConf'] = true;
+        $this->responseConf['localData']['template']['title'] =
+            ($object->$getMethod()->getName().' - '.$object->getCode());
+
+        // Get html
+        $view = 'AccountingBundle:BaseDocument:pdf/base.html.twig';
+        $dependenciesData = array();
+        switch ($object->$getMethod()->getType()) {
+            case 'INVOICE':
+            case 'RECTIFICATION':
+                $view = 'AccountingBundle:BaseDocument:pdf/invoice.html.twig';
+                $dependencyData = $this->forward('AccountingBundle:'.$entityContextUC.'DocumentInvoiceDetail:dataLocalChild',
+                    array(
+                        'request' => $request,
+                        ($entityContext.'Document') => $object->getId(),
+                        'responseType' => 'array'
+                    )
+                );
+                $dependencyData = $this->jsonDecode($dependencyData->getContent());
+                $dependenciesData[] = $dependencyData;
+                break;
+            case 'RECEIPT':
+                $view = 'AccountingBundle:BaseDocument:pdf/receipt.html.twig';
+                // Settlement
+                $dependencyData = $this->forward('AccountingBundle:'.$entityContextUC.'DocumentReceiptSettlement:dataLocalChild',
+                    array(
+                        'request' => $request,
+                        ($entityContext.'Document') => $object->getId(),
+                        'responseType' => 'array'
+                    )
+                );
+                // Is not necessary, the entity is always the same
+                $dependencyData = $this->jsonDecode($dependencyData->getContent());
+                if(($key = array_search('entity_avatar', $dependencyData['search']['fields'])) !== false) {
+                    unset($dependencyData['search']['fields'][$key]);
+                }
+                if(($key = array_search('entity_name', $dependencyData['search']['fields'])) !== false) {
+                    unset($dependencyData['search']['fields'][$key]);
+                }
+                $dependenciesData[] = $dependencyData;
+
+                // Payment
+                $dependencyData = $this->forward('AccountingBundle:'.$entityContextUC.'DocumentReceiptPayment:dataLocalChild',
+                    array(
+                        'request' => $request,
+                        ($entityContext.'Document') => $object->getId(),
+                        'responseType' => 'array'
+                    )
+                );
+                $dependencyData = $this->jsonDecode($dependencyData->getContent());
+                $dependenciesData[] = $dependencyData;
+                break;
+            case 'PAYMENT':
+                $view = 'AccountingBundle:BaseDocument:pdf/payment.html.twig';
+                $dependencyData = $this->forward('AccountingBundle:'.$entityContextUC.'DocumentReceiptPayment:dataLocalChild',
+                    array(
+                        'request' => $request,
+                        ($entityContext.'Document') => $object->getId(),
+                        'responseType' => 'array'
+                    )
+                );
+                $dependencyData = $this->jsonDecode($dependencyData->getContent());
+                $dependenciesData[] = $dependencyData;
+                break;
+            case 'SETTLEMENT':
+                $view = 'AccountingBundle:BaseDocument:pdf/settlement.html.twig';
+                $dependencyData = $this->forward('AccountingBundle:'.$entityContextUC.'DocumentReceiptSettlement:dataLocalChild',
+                    array(
+                        'request' => $request,
+                        ($entityContext.'Document') => $object->getId(),
+                        'responseType' => 'array'
+                    )
+                );
+                // Is not necessary, the entity is always the same
+                $dependencyData = $this->jsonDecode($dependencyData->getContent());
+                if(($key = array_search('entity_avatar', $dependencyData['search']['fields'])) !== false) {
+                    unset($dependencyData['search']['fields'][$key]);
+                }
+                if(($key = array_search('entity_name', $dependencyData['search']['fields'])) !== false) {
+                    unset($dependencyData['search']['fields'][$key]);
+                }
+                $dependenciesData[] = $dependencyData;
+                break;
+        }
+        $this->responseConf['localData']['data']['dependencies'] = $dependenciesData;
+        $data = $this->getResponse(false);
+        //$data['_localData']['data']['block'] = 'header';
+        //return $this->render($view, $data); // Use for debug in browser
+        $html = array();
+        foreach (array('header', 'body', 'footer') as $block) {
+            $data['_localData']['data']['block'] = $block;
+            $html[$block] = $this->renderView($view, $data);
+        }
+
+        // Set file name
+        $fileName = (HelperService::normalizeName($object->$getMethod()->getName()) . '_' . $object->getCode() . '.pdf');
+
+        // Mark document as accessed
+        $object->setIsAccessed(true);
+        parent::saveObject($object);
+
+        return new PdfResponse(
+            $this->get('knp_snappy.pdf')->getOutputFromHtml($html['body'], array(
+                'header-html' => $html['header'],
+                'footer-html' => $html['footer'],
+                'header-spacing' => '4',
+                'footer-spacing' => '4'
+            )),
+            $fileName
+        );
+    }
+
+    /**
      * Overrides parent method
      * @param $object
      * @return $this
@@ -1024,7 +1155,8 @@ abstract class BaseDocumentController extends BaseEntityController
             // Set totals
             $object->setSubTotal(0)
                 ->setTotalVat(0)
-                ->setIsAccessed(0);
+                ->setIsAccessed(false)
+                ->setIsSent(false);
         } else {
             $entityContextUC = $this->getEntityContext(true);
 
@@ -1110,11 +1242,15 @@ abstract class BaseDocumentController extends BaseEntityController
         // Limit dates between 'prev' and 'next' objects
         if ($surroundingObjects['prev'] && ($surroundingObjects['prev']->getDate() > $limitDateRange['min'])) {
             $limitDateRange['min'] = $surroundingObjects['prev']->getDate();
+        } else {
+            // No 'prev' available, no 'min' limit
+            $limitDateRange['min'] = $object->getDate();
         }
         if ($surroundingObjects['next']) {
             $limitDateRange['max'] = $surroundingObjects['next']->getDate();
 
-            // It's necessary when $surroundingObjects['prev'] is empty
+            // It's necessary when $surroundingObjects['prev'] is empty,
+            // because when empty 'prev' has not been previously validated (on save)
             if (empty($surroundingObjects['prev']) && ($surroundingObjects['next']->getDate() < $limitDateRange['min'])) {
                 $limitDateRange['min'] = $surroundingObjects['next']->getDate();
             }
@@ -1868,7 +2004,7 @@ abstract class BaseDocumentController extends BaseEntityController
             } else { // Can be edited, validate the acl target docs
                 $documentTypeAclTargetDocs = $documentTypeObj->getAclTargetDocs();
                 switch ($documentTypeAclTargetDocs) {
-                    case 'NOT_ACCESSED':
+                    case 'NOT_ACCESSED':break;
                         $documentIsAccessed = $documentObj->getIsAccessed();
                         if (!empty($documentIsAccessed)) {
                             $errorMessage = 'Document Type definition does not allow '.$aclContextConf['messageKey'].' to accessed documents.';
@@ -1997,6 +2133,9 @@ abstract class BaseDocumentController extends BaseEntityController
             'search' => true,
             'checkAll' => true
         );
+
+        // Legend (disable cancel legend)
+        $this->templateConf['controls']['legend'] = array();
 
         // Fields
         $this->templateConf['fields'] = array_merge(

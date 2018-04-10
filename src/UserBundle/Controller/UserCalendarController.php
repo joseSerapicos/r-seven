@@ -180,9 +180,11 @@ class UserCalendarController extends BaseEntityController
     /**
      * Action to get all data for home bundle
      * @param Request $request
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      */
-    public function dataForHomeAction(Request $request)
+    public function dataForHomeAction(Request $request, $responseType = 'http')
     {
         // Set configuration
         $this->init($request);
@@ -246,7 +248,7 @@ class UserCalendarController extends BaseEntityController
             $this->templateConf['label'] .= (' <span class="badge badge-info">' . $total . '</span>');
         }
 
-        return $this->dataAction($request);
+        return $this->dataAction($request, $responseType);
     }
 
     /**

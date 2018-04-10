@@ -6,6 +6,10 @@ common:
     resource: "@CommonBundle/Controller/"
     type:     annotation
 
+settings:
+    resource: "@SettingsBundle/Controller/"
+    type:     annotation
+
 user:
     resource: "@UserBundle/Controller/"
     type:     annotation

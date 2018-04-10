@@ -190,11 +190,13 @@ class PackageServiceServiceController extends BaseEntityChildController
      * Overrides parent method
      * @param Request $request
      * @param $packageService
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      */
-    public function dataLocalChildAction(Request $request, $packageService)
+    public function dataLocalChildAction(Request $request, $packageService, $responseType = 'http')
     {
-        return parent::dataChildAction($request, array($packageService));
+        return parent::dataChildAction($request, array($packageService), $responseType);
     }
 
     /**

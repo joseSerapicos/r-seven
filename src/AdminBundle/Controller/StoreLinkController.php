@@ -130,11 +130,13 @@ class StoreLinkController extends BaseEntityChildController
      * Overrides parent method
      * @param Request $request
      * @param $store
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      */
-    public function dataLocalChildAction(Request $request, $store)
+    public function dataLocalChildAction(Request $request, $store, $responseType = 'http')
     {
-        return parent::dataChildAction($request, array($store));
+        return parent::dataChildAction($request, array($store), $responseType);
     }
 
     /**

@@ -16,7 +16,8 @@ export interface Popup {
     // Used only by ModalService to avoid create new instances of classes (services, etc.)
     // and new injectors for the same component. Once created it is saved to use in the next few
     injector?: any,
-    size?: string
+    size?: string,
+    localData?: any // any local data necessary to some processes
 }
 
 

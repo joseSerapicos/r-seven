@@ -182,11 +182,13 @@ class BookingServicePriceController extends BaseEntityChildController
      * Overrides parent method
      * @param Request $request
      * @param $bookingService
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      */
-    public function dataLocalChildAction(Request $request, $bookingService)
+    public function dataLocalChildAction(Request $request, $bookingService, $responseType = 'http')
     {
-        return parent::dataChildAction($request, array($bookingService));
+        return parent::dataChildAction($request, array($bookingService), $responseType);
     }
 
     /**
@@ -618,6 +620,9 @@ class BookingServicePriceController extends BaseEntityChildController
             // Filter by booking
             $this->localConf['search']['conf'] = array('localData' => array('bookingId' => $booking));
         }
+
+        // Legend (disable cancel legend)
+        $this->templateConf['controls']['legend'] = array();
 
         return $this;
     }

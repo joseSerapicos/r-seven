@@ -63,4 +63,31 @@ class EntityEmailRepository extends BaseEntityRepository
             )
         ));
     }
+
+    /**
+     * Get default email
+     * @param $entityObj
+     * @return string
+     */
+    public function getDefaultEmail($entityObj)
+    {
+        $objects = $this->queryBuilder(array(
+            'fields' => array(
+                'email'
+            ),
+            'criteria' => array(
+                array('field' => 'isEnabled', 'expr' => 'eq', 'value' => 1),
+                array('field' => 'entityObj', 'expr' => 'eq', 'value' => $entityObj->getId())
+            ),
+            'orderBy' => array(
+                array('field' => 'isDefault', 'value' => 'DESC')
+            )
+        ));
+
+        if (is_array($objects) && (count($objects) > 0)) {
+            return reset($objects)['email'];
+        }
+
+        return '';
+    }
 }

@@ -220,11 +220,13 @@ class ClientDocumentInvoiceDetailController extends BaseDocumentInvoiceDetailCon
      * Overrides parent method
      * @param Request $request
      * @param $clientDocument
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      */
-    public function dataLocalChildAction(Request $request, $clientDocument)
+    public function dataLocalChildAction(Request $request, $clientDocument, $responseType = 'http')
     {
-        return parent::dataChildAction($request, array($clientDocument));
+        return parent::dataChildAction($request, array($clientDocument), $responseType);
     }
 
     /**

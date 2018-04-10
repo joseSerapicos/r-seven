@@ -69,10 +69,12 @@ abstract class BaseServiceController extends BaseEntityController
         // Set configuration
         $this->init($request);
 
-        $obj = $this->getObject($id);
+        // Get raw service, no the service type current context
+        $serviceObj = $this->getRepositoryService('Service', 'ServicesBundle')
+            ->execute('findOneById', array($id));
 
-        $this->responseConf['localData']['vatCodePercentage']
-            = ($obj->getVatCodeObj() ? $obj->getVatCodeObj()->getPercentage() : null);
+        $this->templateConf['localData']['data']['vatCodePercentage']
+            = (($serviceObj && $serviceObj->getVatCodeObj()) ? $serviceObj->getVatCodeObj()->getPercentage() : null);
 
         return $this->getResponse(true);
     }

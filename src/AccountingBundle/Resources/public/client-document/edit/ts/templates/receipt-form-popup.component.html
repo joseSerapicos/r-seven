@@ -99,7 +99,7 @@
         </div>
     </div>
 
-    <div class="mt-2">
+    <div class="mt-2 mb-4">
         <span>Comments</span>
         <div class="border rounded document-comments">                            <textarea id="form_comments" name="form[comments]" rows="3" [(ngModel)]="_formService.getObject().comments" formControlName="comments" [class.error]="_formService.getErrors().comments &amp;&amp; _formService.getErrors().comments.length &gt; 0" class="form-control"></textarea>
                 <label class="error" *ngFor="let error of _formService.getErrors().comments">{{error}}</label>
@@ -110,7 +110,7 @@
     <ng-template #js_lazyLoadContainer></ng-template>
     <ng-template #js_lazyLoadContainer></ng-template>
 </section>
-    <div class="row"><div class="col-sm-4 col-sm-offset-8">
+    <div class="row"><div class="col-md-4 offset-md-8">
     <table class="table document-total">
         <tbody>
         <tr>
@@ -123,7 +123,7 @@
     </table>
 </div></div>
     <div *ngIf="_dataService.getLocalDataAttr('documentInfo') && _dataService.getLocalDataAttr('documentInfo')['footer']"
-         class="rounded mt-2 bg-light p-3"
+         class="mt-2 bg-light p-3"
          [innerHTML]="_dataService.getLocalDataAttr('documentInfo')['footer']"></div>
 </div>
     </div>
@@ -155,4 +155,4 @@
                                 </div>
         </div>
     </div>    
-    <input type="hidden" id="form__token" name="form[_token]" value="sEeUTtNqE_lLiY0RIyodAt-zpCXEmA5IHyk5lwPbGSo" /></form>
+    <input type="hidden" id="form__token" name="form[_token]" value="Pyn_BcDiS9gJO25dJpE9EFTFCI4Haq4yNZSoquhdIAw" /></form>

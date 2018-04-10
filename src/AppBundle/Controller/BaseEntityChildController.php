@@ -38,6 +38,7 @@ abstract class BaseEntityChildController extends BaseEntityController
         /* Menu label (title) and ACL (selectedMenu) */
         $label = $this->getLabel();
         if ($label) { $this->templateConf['label'] = $label; }
+
         if (count($this->parentConf) < 1) {
             throw new \Exception('Configuration cannot be set, missing arguments (parent)!');
         }
@@ -97,6 +98,7 @@ abstract class BaseEntityChildController extends BaseEntityController
 
         foreach ($this->parentConf as $parentKey => $parentConf) {
             $routeSegments = explode('__', substr($parentConf['route'], 1));
+
             if (count($routeSegments) < 2) {
                 throw new \Exception('Configuration cannot be set, missing arguments (parent route)!');
             }
@@ -307,14 +309,16 @@ abstract class BaseEntityChildController extends BaseEntityController
      * Action to get all data
      * @param Request $request
      * @param $parents
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      * @throws \Exception
      */
-    public function dataChildAction(Request $request, $parents)
+    public function dataChildAction(Request $request, $parents, $responseType = 'http')
     {
         // Set configuration
         $this->initChild($request, $parents);
-        return parent::dataAction($request);
+        return parent::dataAction($request, $responseType);
     }
 
     /**

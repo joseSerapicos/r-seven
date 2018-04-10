@@ -139,11 +139,13 @@ class ServiceDiscountController extends BaseServicePriceExceptionController
      * Overrides parent method
      * @param Request $request
      * @param $service
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      */
-    public function dataLocalChildAction(Request $request, $service)
+    public function dataLocalChildAction(Request $request, $service, $responseType = 'http')
     {
-        return parent::dataChildAction($request, array($service));
+        return parent::dataChildAction($request, array($service), $responseType);
     }
 
     /**

@@ -65,10 +65,7 @@ class ModuleMenuController extends BaseEntityChildController
         $this->templateConf['actions'] = array_merge(
             $this->templateConf['actions'],
             array(
-                'add' => (
-                    $this->templateConf['acl']['add']
-                    && (count($this->templateConf['fields']['choices']['appModuleMenuObj']['value']) > 0)
-                ),
+                'add' => $this->templateConf['acl']['add'],
                 'delete' => $this->templateConf['acl']['delete']
             )
         );
@@ -267,7 +264,7 @@ class ModuleMenuController extends BaseEntityChildController
                 array(
                     'fields' => array(
                         'id',
-                        'name',
+                        'app_moduleMenu.name AS label',
                         'description',
                         'appModuleObj'
                     ),

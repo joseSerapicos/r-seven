@@ -8,10 +8,12 @@
     "image": { "bundle": "app", "controller": "image", "action": null },
     "video": { "bundle": "app", "controller": "video", "action": null },
     "entityDetail": { "bundle": "app", "controller": "entity-detail", "action": null },
+    "pdf": { "bundle": "app", "controller": "pdf", "action": null },
     "observation": { "bundle": "app", "controller": "observation", "action": null },
 
     "commonCountryIndex": { "bundle": "common", "controller": "country", "action": "index" },
     "commonPlaceIndex": { "bundle": "common", "controller": "place", "action": "index" },
+    "commonEmailEdit": { "bundle": "common", "controller": "email", "action": "index" },
 
     "loginDefaultIndex": { "bundle": "login", "controller": "default", "action": "index" },
 
@@ -133,5 +135,7 @@
     "accountingSupplierDocumentRectificationEdit": { "bundle": "accounting", "controller": "supplier-document-rectification", "action": "edit" },
     "accountingSupplierDocumentSettlementIndex": { "bundle": "accounting", "controller": "supplier-document-settlement", "action": "index" },
     "accountingSupplierDocumentSettlementAdd": { "bundle": "accounting", "controller": "supplier-document-settlement", "action": "add" },
-    "accountingSupplierDocumentSettlementEdit": { "bundle": "accounting", "controller": "supplier-document-settlement", "action": "edit" }
+    "accountingSupplierDocumentSettlementEdit": { "bundle": "accounting", "controller": "supplier-document-settlement", "action": "edit" },
+
+    "settingsEmailSettingsIndex": { "bundle": "settings", "controller": "email-settings", "action": "index" }
 }

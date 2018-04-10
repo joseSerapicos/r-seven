@@ -83,6 +83,9 @@ class ClientDocumentController extends BaseDocumentController
             ),
             'choices' => array(
                 'name' => '_accounting__client_document__choices'
+            ),
+            'pdf' => array(
+                'name' => '_accounting__client_document__pdf'
             )
         );
 
@@ -97,6 +100,14 @@ class ClientDocumentController extends BaseDocumentController
         $this->templateConf['search']['orderBy'] = array(
             array('field' => 'date', 'value' => 'DESC') // Last emission appears first
         );
+
+        /* Legend for template/view */
+        $this->localConf['search']['fields'][] = 'isAccessed'; // Needed field to show the legend
+        $this->localConf['search']['fields'][] = 'isSent'; // Needed field to show the legend
+        $this->templateConf['controls']['legend'][] = array(
+            'target' => 'actions', 'label' => 'Performed actions', 'class' => '-performed'
+        );
+        /* /Legend for template/view */
 
         // Actions for template/view
         unset($this->templateConf['actions']['delete']);
@@ -379,15 +390,33 @@ class ClientDocumentController extends BaseDocumentController
     }
 
     /**
+     * @Route("/accounting/client-document/pdf/{id}",
+     *     name="_accounting__client_document__pdf",
+     *     defaults={"id" = null}
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function pdfAction(Request $request, $id)
+    {
+        return parent::pdfAction($request, $id);
+    }
+
+    /**
      * @Route("/accounting/client-document/data",
      *     name="_accounting__client_document__data"
      * )
      *
      * Overrides parent method
      * @param Request $request
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
      * @return mixed
      */
-    public function dataAction(Request $request)
+    public function dataAction(Request $request, $responseType = 'http')
     {
         return parent::dataAction($request);
     }

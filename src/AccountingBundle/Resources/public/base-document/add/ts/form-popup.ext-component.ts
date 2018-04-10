@@ -172,6 +172,7 @@ export abstract class FormPopupExtComponent extends WizardFormPopupExtComponent 
                         return [
                             {provide: 'DataService', useClass: DataService},
                             {provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data)},
+                            {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)},
                             // Reset FormServiceProvider to use DataServiceProvider as default values
                             {provide: 'FormServiceProvider', useValue: {}},
                             FormService
@@ -187,6 +188,7 @@ export abstract class FormPopupExtComponent extends WizardFormPopupExtComponent 
                 return providers.concat([
                     ActionsService,
                     {provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data)},
+                    {provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data)},
                     {provide: 'Popups', useValue: null}
                 ]);
             case 2:
