@@ -1,0 +1,3 @@
+frt_services_homepage:
+    path:     /
+    defaults: { _controller: FrtServicesBundle:Default:index }

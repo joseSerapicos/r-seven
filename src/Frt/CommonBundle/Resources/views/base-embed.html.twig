@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% set _store = app.session.get('_app.store') %}
+    {% set _storeDetail = app.session.get('_app.stores')[_store] %}
+    {% set _settings = app.session.get('_app.settings') %}
+
+    <title>{% block title %}{{_settings['company']}}{% endblock %}</title>
+
+    {% block stylesheets %}
+        {# stylesheets output="assets/frt/common/base-embed/css/local.css"
+        '@Frt/MyBundle/Resources/public/my-controller/my-action/scss/dist/styles.css'
+        %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+        {% endstylesheets #}
+    {% endblock %}
+
+    {% block vendor_stylesheets %}
+        {#
+                '@metismenu_css'
+        '@AppBundle/Resources/public/scripts/plugins/gritter/jquery.gritter.css'
+        #}
+        {%  stylesheets output="assets/frt/common/base-embed/css/vendor.css"
+        '@toastr_css'
+        '@AppBundle/Resources/public/styles/animate.css'
+        %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+        {% endstylesheets %}
+    {% endblock %}
+
+    {% block custom_stylesheets %}
+        <style>
+            .header-bg-color,
+            .bg-primary,
+            .btn-primary {
+                background-color: {{_settings['headerBgColor']}} !important;
+                border-color: {{_settings['headerBgColor']}} !important;
+            }
+            .bg-color {
+                background-color: {{_settings['bgColor']}} !important;
+                border-color: {{_settings['bgColor']}} !important;
+            }
+            .header-txt-color {
+                color: {{_settings['headerTxtColor']}} !important;
+            }
+            .txt-color {
+                color: {{_settings['txtColor']}} !important;
+            }
+        </style>
+    {% endblock %}
+
+    {% image '@AppBundle/Resources/public/images/favicon.ico' output='favicon.ico' %}
+    <link rel="icon" type="image/x-icon" href="{{ asset_url }}" />
+    {% endimage %}
+
+    {% block head_javascripts %}
+        {% include 'AppBundle:partial:app-javascript-vars.html.twig' %}
+    {% endblock %}
+</head>
+<body class="bg-white">
+
+
+{% block before_header %}{% endblock %}
+{% block header %}
+<div class="row bg-primary"><div class="col"><div class="container position-relative">
+    <div class="row p-2">
+        <div class="col-12 text-center text-white align-self-center{% if (_storeDetail['logo']) %} col-sm-6 text-sm-right{% endif %}">
+            <h2>{{_settings['company']}}</h2>
+            {% if (_settings['slogan'] is not empty) %}
+                <small>{{_settings['slogan']}}</small>
+            {% endif %}
+        </div>
+        {% if (_storeDetail['logo']) %}
+            <div class="d-none d-sm-block col-sm-6 text-left">
+                <img height="96" alt="logo" src="{{_storeDetail['logo']}}">
+            </div>
+        {% endif %}
+    </div>
+    {% block login %}
+        <div class="main-login row align-items-center position-absolute bg-light rounded-bottom no-gutters p-1">
+            {% if (app.session.has('_app.user')) %}
+                {% set avatarUrl = (app.session.get('_app.user')['avatar'] ? app.session.get('_app.user')['avatar'] : '/assets/img/dummy-48x48.png') %}
+                <div class="col">
+                    <img alt="Avatar" class="img-circle" src="{{avatarUrl}}" width="48" height="48"/>
+                </div>
+                <div class="col pl-1">
+                    {% if false %}
+                    <div class="font-weight-bold txt-sm text-truncate main-login-name">{{app.session.get('_app.user')['name']}}</div>
+                    <div class="text-nowrap txt-xs"><i class="fa fa-user"></i> My Account</div>
+                    <div class="text-nowrap txt-xs"><i class="fa fa-sign-out"></i> Logout</div>
+                    {% else %}
+                    <div class="font-weight-bold txt-sm text-truncate main-login-name">{{app.session.get('_app.user')['username']}}</div>
+                    <div class="txt-xs text-truncate main-login-name">{{app.session.get('_app.user')['name']}}</div>
+                    <div class="txt-xs text-truncate main-login-name">{{app.session.get('_app.user')['surname']}}</div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="col txt-lg">Login</div>
+            {% endif %}
+        </div>
+    {% endblock %}
+</div></div></div>
+{% endblock %}
+{% block after_header %}{% endblock %}
+
+
+{% block before_body %}{% endblock %}
+{% block body %}
+    <div class="main-body-container container py-4">
+        <div class="row">
+            <div class="col-12">{% block body_container %}
+                <div class="js_appBasics"></div>
+                <div id="js_main"></div>
+            {% endblock %}</div>
+        </div>
+    </div>
+{% endblock %}
+{% block after_body %}{% endblock %}
+
+
+{% block before_footer %}{% endblock %}
+{% block footer %}
+    <div class="main-footer-container"><div class="row"><div class="col-12"><div class="container">{% block footer_container %}
+        <div class="row">
+            <div class="col-sm-6">
+                <ul class="links">
+                    <li>{{_settings['company']}}</li>
+                    {% if (_settings['contacts'] is defined) %}
+                        {% for key, value in _settings['contacts'] %}
+                            <li>{{ value|raw }}</li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="col-sm-6">
+                <ul>
+                    <li>Powered by <a href="http://tools.handsometravel.net" target="_blank">handsometravel.net tools</a></li>
+                    <li>2018</li>
+                </ul>
+                <div class="d-inline-block align-middle">Optimized to:</div>
+                <div class="d-inline-block">
+                    {% image '@AppBundle/Resources/public/img/browser-logos/src/chrome/chrome_16x16.png' output='assets/login/img/chrome_16x16.png' %}
+                    <img src="{{ asset_url }}" alt="logo" height="16" width="16"/>
+                    {% endimage %}
+                    {% image '@AppBundle/Resources/public/img/browser-logos/src/firefox/firefox_16x16.png' output='assets/login/img/firefox_16x16.png' %}
+                    <img src="{{ asset_url }}" alt="logo" height="16" width="16"/>
+                    {% endimage %}
+                </div>
+            </div>
+        </div>
+    {% endblock %}</div></div></div></div>
+{% endblock %}
+{% block after_footer %}{% endblock %}
+
+<div class="modal-backdrop snipped js_loader"></div>
+
+{% block vendor_javascripts %}
+    {#
+        '@jquery_lazy' for images lazy load
+    #}
+    {% javascripts output="assets/frt/common/base-embed/js/vendor.js"
+    '@jquery'
+    '@jquery_lazy'
+    '@FrtCommonBundle/Resources/public/js/app.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block javascripts %}
+    {# PUT HERE YOUR LOCAL JAVASCRIPT (ANGULAR APP/MODULE)
+    {% javascripts output="assets/frt/my-bundle/my-controller/my-action/js/local.js"
+        '@FrtMyBundle/Resources/public/my-controller/my-action/ts/dist/inline.bundle.js'
+        '@FrtMyBundle/Resources/public/my-controller/my-action/ts/dist/polyfills.bundle.js'
+        '@FrtMyBundle/Resources/public/my-controller/my-action/ts/dist/vendor.bundle.js'
+        '@FrtMyBundle/Resources/public/my-controller/my-action/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts #}
+{% endblock %}
+
+
+</body>
+</html>

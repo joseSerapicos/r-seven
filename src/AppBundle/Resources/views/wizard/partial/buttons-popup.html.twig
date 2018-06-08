@@ -1,0 +1,5 @@
+{% extends 'AppBundle:wizard:partial/buttons.html.twig' %}
+{% block wizard_buttons_container %}
+    <button type="button" class="btn-light btn" (click)="_wizardManagerService.cancelAction($event)">Cancel</button>
+    {{ parent() }}
+{% endblock %}

@@ -1,5 +1,5 @@
 <?php
-namespace BookingBundle\Form;
+namespace Bck\BookingBundle\Form;
 
 use AppBundle\Form\BaseType;
 

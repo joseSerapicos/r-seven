@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Service;
 
+use LoginBundle\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
 use AppBundle\Service\HelperService;
 
@@ -54,16 +55,17 @@ class AppService
         $session->getFlashBag()->clear();
 
         // Remove temporary session information
-        $session->remove('_tmp.user_request'); // Remove temporary variable to avoid redirect loop
+        $session->remove('_tmp.hasAuthenticationSubmit');
         $session->remove('_tmp.user_system');
-
-        // System (_app.system) was loaded in user_provider
 
         // Breadcrumb
         $session->set('_app.breadcrumb', array());
 
+        // System
+        $this->loadSystemSettings();
+
         // User
-        $session->set('_app.user', $this->getUser());
+        $session->set('_app.user', $this->getLoggedUser());
 
         // App modules
         $session->set('_app.modules', $this->getAppModules());
@@ -79,11 +81,17 @@ class AppService
         );
         $session->set('_app.stores', $stores); // All sores of user
         $session->set('_app.store', $defaultStore); // First store (@TODO get default store from user settings)
-        $session->set('_app.view.stores', $stores); // All stores for view context (without modules)
+
+        // Array with all information necessary in template,
+        // gathered in a single array to allow a quick and easy way to put it in templates with the least effort.
+        $session->set('_template', array(
+            'stores' => $stores
+        ));
 
         if ($defaultStore) {
             $this->setStoreModules();
             $this->setStoreAcl();
+            $this->setStoreLogo();
         }
 
         // Temporary storage (array with time as key, to clear storage correctly)
@@ -117,6 +125,7 @@ class AppService
 
             $this->setStoreModules();
             $this->setStoreAcl();
+            $this->setStoreLogo();
         }
 
         return $this;
@@ -145,7 +154,7 @@ class AppService
      * Set store acl (shared access form other stores)
      * @return $this
      */
-    private function setStoreAcl() {
+    public function setStoreAcl() {
         $session = $this->container->get('session');
         $store = $session->get('_app.store');
 
@@ -163,53 +172,116 @@ class AppService
     }
 
     /**
-     * Get user
+     * Set store logo
+     * @param $store
+     * @return $this
+     */
+    public function setStoreLogo($store = null) {
+        $session = $this->container->get('session');
+        if (!$store) {
+            $store = $session->get('_app.store');
+        }
+
+        $storeLogo = null;
+        if ($store && !isset($session->get('_app.stores')[$store]['logo'])) {
+            $storeLogoImageObj = $this->container->get('bck.admin.service.repository')
+                ->setEntityRepository('BckAdminBundle:StoreLogoImage')
+                ->execute(
+                    'findOneBy',
+                    array(array(
+                        'storeObj' => $store,
+                        'isEnabled' => true
+                    ))
+                );
+
+            $storeLogo = ($storeLogoImageObj ? $storeLogoImageObj->getPath() : null);
+            if ($storeLogo) {
+                $storeLogo = $storeLogoImageObj->normalizeUrl($storeLogo);
+                $extensionPosition = strripos($storeLogo, '.');
+                $storeLogo = (substr($storeLogo, 0, $extensionPosition)
+                    . '.resize_96' . substr($storeLogo, $extensionPosition)
+                );
+            }
+
+            // Update stores in session (with acl defined)
+            $stores = $session->get('_app.stores');
+            $stores[$store]['logo'] = $storeLogo;
+            $session->set('_app.stores', $stores);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get logged user
      * @return array
      */
-    protected function getUser() {
+    public function getLoggedUser() {
+        $session = $this->container->get('session');
+
+        // Check if user has been logged in
         $userObj = $this->container->get('security.token_storage')->getToken()->getUser();
+        if(!$userObj || !($userObj instanceof User)) {
+            // Redirect user to login page
+            return $this->container->redirectToRoute('_login__default__index');
+        }
+
+        $userUsername = $userObj->getUsername();
+        $userRole = $userObj->getRole();
+
         $entityObj = $userObj->getEntityObj();
         $userAvatar = $entityObj->getAvatar();
-        $userEmail = $this->container->get('entities.service.repository')
-            ->setEntityRepository('EntitiesBundle:EntityEmail')
+        $userEmail = $this->container->get('bck.entities.service.repository')
+            ->setEntityRepository('BckEntitiesBundle:EntityEmail')
             ->execute(
-                'getDefaultEmail',
-                array($entityObj)
+                'getDefaultEmailByEntity',
+                array($entityObj->getId(), true)
             );
         if ($userAvatar) {
-            $userAvatar = substr($userAvatar, strpos($userAvatar, '/upload/'));
+            $userAvatar = $entityObj->normalizeUrl($userAvatar);
+        }
+
+        // Set user language
+        $appLanguageObj = $userObj->getAppLanguageObj();
+        if ($appLanguageObj) {
+            $session->set('_app.user.language', array(
+                'systemPrefix' => $appLanguageObj->getSystemPrefix(),
+                'lcCode' => $appLanguageObj->getLcCode(),
+                'name' => $appLanguageObj->getName()
+            ));
+        } else {
+            $session->set('_app.user.language', $session->get('_app.system.language'));
         }
 
         return array (
             'id' => $userObj->getId(),
             'language' => $userObj->getId(),
-            'username' => $userObj->getUsername(),
+            'username' => $userUsername,
             'name' => $userObj->getEntityObj()->getName(),
+            'surname' => $userObj->getEntityObj()->getSurname(),
             'email' => $userEmail,
             'avatar' => $userAvatar,
-            'role' => $userObj->getRole(),
+            'role' => $userRole,
             'entity_id' => $userObj->getEntityObj()->getId()
         );
     }
 
     /**
      * Get stores
+     * @param $store (specific store to get, usually used by front-office)
      * @return array
      */
-    protected function getStores() {
-        $isAdmin = $this->container->get('security.authorization_checker')->isGranted('ROLE_ADMIN');
+    public function getStores($store = null) {
+        $stores = array();
 
-        // Get logged user id
-        $session = $this->container->get('session');
-        $loggedUserId = $session->get('_app.user')['id'];
-
-        $options = array(
+        $sqlOptions = array(
             'fields' => array(
                 'id',
                 'name',
-                'color'
+                'color',
+                'thumbnail'
             ),
-            'criteria' => array (
+            'criteria' => array(
                 array(
                     'field' => 'isEnabled',
                     'expr' => 'eq',
@@ -221,25 +293,93 @@ class AppService
             )
         );
 
-        $stores = $this->container->get('admin.service.repository')
-            ->setEntityRepository('AdminBundle:Store')
-            ->execute(
-                'getAllJoinWithUserGroupAclUser',
-                array(
-                    $options,
-                    $isAdmin,
-                    $loggedUserId
-                )
-            );
+        // Get a specific store
+        if ($store) {
+            $sqlOptions['criteria'][] = array('field' => 'id', 'expr' => 'eq', 'value' => $store);
 
-        // Set id as index for easy search
+            $stores = $this->container->get('bck.admin.service.repository')
+                ->setEntityRepository('BckAdminBundle:Store')
+                ->execute(
+                    'queryBuilder',
+                    array($sqlOptions)
+                );
+        }
+        // Get all stores according with the user
+        else {
+            $isAdmin = $this->container->get('security.authorization_checker')->isGranted('ROLE_ADMIN');
+
+            // Get logged user id
+            $session = $this->container->get('session');
+            $loggedUserId = $session->get('_app.user')['id'];
+
+            $stores = $this->container->get('bck.admin.service.repository')
+                ->setEntityRepository('BckAdminBundle:Store')
+                ->execute(
+                    'getAllJoinWithUserGroupAclUser',
+                    array(
+                        $sqlOptions,
+                        $isAdmin,
+                        $loggedUserId
+                    )
+                );
+        }
+
+        // Normalize stores array and set id as index for easy search
         if (is_array($stores) && (count($stores)> 0)) {
             $stores = array_combine(array_column($stores, 'id'), $stores);
+            foreach ($stores as $key => $store) {
+                if (!empty($store['thumbnail'])) {
+                    $stores[$key]['thumbnail'] = substr($store['thumbnail'], strpos($store['thumbnail'], '/upload/'));
+                }
+            }
         } else {
             $stores = null;
         }
 
         return $stores;
+    }
+
+    /**
+     * Load system settings
+     * @return $this
+     * @throws \Exception
+     */
+    public function loadSystemSettings()
+    {
+        $systemSettingsObj = $this->container->get('bck.admin.service.repository')
+            ->setEntityRepository('BckAdminBundle:SystemSetting')
+            ->execute('findAll', array());
+
+        if (count($systemSettingsObj) > 0) {
+            $systemSettingsObj = reset($systemSettingsObj);
+        } else {
+            throw new \Exception('System settings not found.');
+        }
+
+        $session = $this->container->get('session');
+        // (_app.system) was loaded in user_provider
+        $appLanguageObj = $systemSettingsObj->getAppLanguageObj();
+        $getMethod = 'getName'.ucfirst($appLanguageObj->getSystemPrefix());
+        $session->set('_app.system.language', array(
+            'systemPrefix' => $appLanguageObj->getSystemPrefix(),
+            'lcCode' => $appLanguageObj->getLcCode(),
+            'name' => $appLanguageObj->$getMethod()
+        ));
+        $appCountryObj = $systemSettingsObj->getAppCountryObj();
+        $session->set('_app.system.country', array(
+            'alpha2Code' => $appCountryObj->getAlpha2Code(),
+            'alpha3Code' => $appCountryObj->getAlpha3Code(),
+            'name' => $appCountryObj->$getMethod()
+        ));
+        $appCurrencyObj = $systemSettingsObj->getAppCurrencyObj();
+        $session->set('_app.system.currency', array(
+            'code' => $appCurrencyObj->getCode(),
+            'symbol' => $appCurrencyObj->getSymbol(),
+            'name' => $appCurrencyObj->$getMethod()
+        ));
+
+
+        return $this;
     }
 
     /**
@@ -269,8 +409,8 @@ class AppService
             )
         );
 
-        $moduleMenuArr = $this->container->get('sysadmin.service.repository')
-            ->setEntityRepository('SysadminBundle:ModuleMenu')
+        $moduleMenuArr = $this->container->get('bck.sysadmin.service.repository')
+            ->setEntityRepository('BckSysadminBundle:ModuleMenu')
             ->execute(
                 'getAllJoinWithIcon',
                 array(
@@ -319,8 +459,8 @@ class AppService
             )
         );
 
-        $moduleMenuArr = $this->container->get('admin.service.repository')
-            ->setEntityRepository('AdminBundle:ModuleMenu')
+        $moduleMenuArr = $this->container->get('bck.admin.service.repository')
+            ->setEntityRepository('BckAdminBundle:ModuleMenu')
             ->execute(
                 'getAllJoinWithUserGroupAclUser',
                 array(
@@ -350,8 +490,8 @@ class AppService
             return array();
         }
 
-        $acl = $this->container->get('admin.service.repository')
-            ->setEntityRepository('AdminBundle:Store')
+        $acl = $this->container->get('bck.admin.service.repository')
+            ->setEntityRepository('BckAdminBundle:Store')
             ->execute(
                 'getStoreAcl',
                 array(

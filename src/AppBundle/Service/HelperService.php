@@ -34,22 +34,78 @@ class HelperService
     }
 
     /**
+     * Get language key for server
+     * @param $key
+     * @return mixed
+     */
+    public static function getLangServer($key) {
+        $languageArr = self::getGlobalVar('languageArr');
+
+        if (!$key) {
+            // Return all keys
+            return ($languageArr ? $languageArr['server'] : array());
+        }
+
+        return (($languageArr && isset($languageArr['server'][$key])) ? $languageArr['server'][$key] : $key);
+    }
+
+    /**
+     * Get language key for client
+     * @param $key
+     * @return mixed
+     */
+    public static function getLangClient($key = null) {
+        $languageArr = self::getGlobalVar('languageArr');
+
+        if (!$key) {
+            // Return all keys
+            return ($languageArr ? $languageArr['client'] : array());
+        }
+
+        return (($languageArr && isset($languageArr['client'][$key])) ? $languageArr['client'][$key] : $key);
+    }
+
+    /**
      * Get class name without namespaces
      * @param $object
      * @return string
      */
     static function getClassName($object) {
-        return substr(strrchr(get_class($object), '\\'), 1);
+        if ($object) {
+            return substr(strrchr(get_class($object), '\\'), 1);
+        }
+        return null;
     }
 
     /**
-     * Get bundle name without namespaces
+     * Get bundle name with namespace split in an array
      * @param $object
      * @return string
      */
-    static function getBundleName($object) {
+    static function getBundleNameArr($object) {
+        $bundleNameArr = array('prefix' => '', 'bundle' => '');
+
         $fullClassName = get_class($object);
-        return substr($fullClassName, 0, strpos($fullClassName, '\\'));
+        $fullClassNameSplit = explode('\\', $fullClassName);
+
+        if (is_array($fullClassNameSplit) && (count($fullClassNameSplit) > 0)) {
+            $key = 'Bundle';
+            $keyLength = strlen($key);
+
+            foreach ($fullClassNameSplit as $fullClassNameFragment) {
+                // Check if the fragment are the key 'Bundle'
+                if (substr($fullClassNameFragment, -$keyLength) === $key) {
+                    // Key 'Bundle' are found, so we can return
+                    $bundleNameArr['bundle'] = $fullClassNameFragment;
+                    return $bundleNameArr;
+                }
+
+                // Key 'Bundle' not found, so the fragment is a prefix
+                $bundleNameArr['prefix'] = $fullClassNameFragment;
+            }
+        }
+
+        return $bundleNameArr;
     }
 
     /**
@@ -57,17 +113,32 @@ class HelperService
      * @param $array
      * @param $newArray
      * @param null $key
+     * @param $hasSplitNewArray (determined if the $array should be embed in the new array)
      * @return array
      */
-    static function pushIntoArray($array, $newArray, $key = null) {
-        // If index is not defined, last position is used by default.
-        $index = (($key == null) ? count($array) : (array_search($key, array_keys($array)) + 1));
+    static function pushIntoArray($array, $newArray, $key = null, $hasSplitNewArray = false) {
+        // Remove repeated entries in $array to avoid override them in $newArray
+        $array = array_diff_key($array, $newArray);
 
-        // Merge array into index
+        $splitArray = $hasSplitNewArray ? $newArray : $array; // Array to split
+        $embedArray = $hasSplitNewArray ? $array : $newArray; // Array to embed between split array parts
+
+        // If index is not defined, last position is used by default.
+        $index = (($key === null) ? null : (array_search($key, array_keys($splitArray)) + 1));
+
+        if ($index) {
+            // Merge array into index
+            return array_merge(
+                array_slice($splitArray, 0, $index),
+                $embedArray,
+                array_slice($splitArray, $index)
+            );
+        }
+
+        // Merge array
         return array_merge(
-            array_slice($array, 0, $index),
-            $newArray,
-            array_slice($array, $index)
+            $splitArray,
+            $embedArray
         );
     }
 
@@ -149,6 +220,19 @@ class HelperService
     public static function camelCaseToSnakeCase($string)
     {
         return ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $string)), '_');
+    }
+
+    /**
+     * Generates a random string
+     * @param int $length
+     * @return string
+     */
+    public static function generateRandomString($length = 10)
+    {
+        $availableChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $availableCharsLength = strlen($availableChars);
+
+        return substr(str_shuffle(str_repeat($availableChars, ceil($length/$availableCharsLength))), 1, $length);
     }
 
     /**

@@ -1,0 +1,3 @@
+management:
+    resource: "@BckManagementBundle/Controller/"
+    type:     annotation

@@ -1,7 +1,41 @@
 {% if (field is defined) and (formField is defined) %}
+    {% set staticChoices = staticChoices is defined ? staticChoices : null %}
+    {% set clickEvent = '' %}
     <div class="form-control-box"
          [ngClass]="{'error': _formService.getErrors().{{field}} && (_formService.getErrors().{{field}}.length > 0)}"
-         (click)="_formService.setFormFieldValue('{{field}}', $event.target.value)">
+         {% if (formField.vars.attr is defined) %}
+             {% for attr, value in formField.vars.attr %}
+                 {% if (attr == '(click)') %}
+                     {% set clickEvent = '; ' ~ value %}
+                 {% else %}
+                     {{attr}}="{{value}}"
+                 {% endif %}
+             {% endfor %}
+         {% endif %}
+         (click)="_formService.setFormFieldValue('{{field}}', $event.target.value){{clickEvent}}">
+        {% if (staticChoices) %}
+            {% for staticChoice in staticChoices %}
+                {% set staticChoice_id = ((staticChoice['id'] == 0) ? null : staticChoice['id']) %}
+                <div class="radio">
+                    <label {% if formField.vars.required %}class="required"{% endif %}><input
+                        type="radio"
+                        value="{{staticChoice_id ? staticChoice_id : ''}}"
+                        {% if (staticChoice_id) %}
+                            [checked]="_formService.getObject().{{field}} == {{staticChoice_id}}"
+                        {% else %}
+                            [checked]="!_formService.getObject().{{field}} || (_formService.getObject().{{field}} == '')"
+                        {% endif %}>&nbsp;<span>{{staticChoice['label']|raw}}</span></label>
+                    {% if (staticChoice['description'] is defined) %}
+                        <div class="tip-box"
+                             {% if (staticChoice_id) %}
+                                 *ngIf="(_formService.getObject().{{field}} == {{staticChoice_id}})"
+                             {% else %}
+                                 *ngIf="!_formService.getObject().{{field}} || (_formService.getObject().{{field}} == '')"
+                             {% endif %}><small class="pre-wrap">{{staticChoice['description']|raw}}</small></div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
         <div class="radio"
              *ngFor="let choice of _dataService.getFieldChoices('{{ field }}')">
             <label {% if formField.vars.required %}class="required"{% endif %}><input
@@ -9,7 +43,7 @@
                 value="{% verbatim %}{{choice['id']}}{% endverbatim %}"
                 [checked]="_formService.getObject().{{field}} == choice['id']">&nbsp;<span [innerHTML]="choice['label']"></span></label>
             <div class="tip-box"
-                 *ngIf="(_formService.getObject().{{field}} == choice['id']) && (choice['description'])"><small>{% verbatim %}{{choice['description']}}{% endverbatim %}</small></div>
+                 *ngIf="(_formService.getObject().{{field}} == choice['id']) && (choice['description'])"><small class="pre-wrap">{% verbatim %}{{choice['description']}}{% endverbatim %}</small></div>
         </div>
         <input [(ngModel)]="_formService.getObject().{{field}}"
                formControlName="{{field}}"

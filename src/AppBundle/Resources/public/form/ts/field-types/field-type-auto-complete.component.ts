@@ -1,10 +1,10 @@
-import {Component, Inject, Injector, ReflectiveInjector, Input, Output, Host, EventEmitter} from '@angular/core';
+import {Component, Inject, Injector, ElementRef, ReflectiveInjector, Input, Output, Host, EventEmitter} from '@angular/core';
 import {DataService} from '../../../ts/data-service/data.service';
 import {ModalService} from '../../../modal/ts/modal.service';
 import {PostService} from '../../../ts/post.service';
 import {FormService} from '../form.service';
 import {PopupTypes, Popups, Popup} from '../../../data-box/ts/src/data-box.component';
-import {TasksLoaderManagerService} from '../../../../../../AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service';
+import {TasksLoaderManagerService} from '../../../tasks-loader-manager/ts/tasks-loader-manager.service';
 
 
 /**
@@ -82,6 +82,8 @@ export class FieldTypeAutoCompleteComponent {
 
     @Output() onChange = new EventEmitter(); // When choice change or the data of current choice is edited
 
+    private _isInitialized: boolean = false; // Controls if the component was already initialized.
+
     private _onObjectChangeSubscription: any; // When the object change in main formService
     private _onChildObjectsChangeSubscription: any; // When the objects list change in choices dataService (pagination)
     private _onChildObjectChangeSubscription: any; // When the object change in popup dataService (edit)
@@ -111,7 +113,8 @@ export class FieldTypeAutoCompleteComponent {
         protected _formService: FormService,
         protected _injector: Injector,
         @Inject('AutoCompleteProviders') protected _autoCompleteProviders: any,
-        @Inject('HelperService') protected _helperService: any
+        @Inject('HelperService') protected _helperService: any,
+        protected _elementRef: ElementRef
     ) {
         // Object change event subscription
         this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
@@ -158,7 +161,12 @@ export class FieldTypeAutoCompleteComponent {
      */
     resetChoices(): FieldTypeAutoCompleteComponent
     {
-        this._choices = (this._childDataServiceChoices.getProviderAttr('objects') || []);
+        if (this._childDataServiceChoices) {
+            this._choices = (this._childDataServiceChoices.getProviderAttr('objects') || []);
+        } else {
+            this._choices = [];
+        }
+
         this._isHidden = !this.hasChoices();
 
         return this;
@@ -170,7 +178,9 @@ export class FieldTypeAutoCompleteComponent {
      */
     protected onDocumentClick($event): void
     {
-        this._isHidden = true;
+        if (!this._elementRef.nativeElement.contains($event.target)) {
+            this._isHidden = true;
+        }
     }
 
     /**
@@ -180,7 +190,6 @@ export class FieldTypeAutoCompleteComponent {
     protected onInputClick($event): void
     {
         $event.preventDefault();
-        $event.stopPropagation();
 
         this._object[this.field] = null;
         this._isHidden = !this.hasChoices();
@@ -192,35 +201,54 @@ export class FieldTypeAutoCompleteComponent {
      * On enter key (pagination)
      * @param $event
      */
-    protected onEnterKey($event) {
-        this._search.term = $event.target.value;
+    public onEnterKey($event) {
+        let that = this;
 
-        if ((this._search.term != this._search.lastTerm)
-            && (this._search.term.length % 3 === 0) // Only submit with multiples of three
-        ) {
-            this._childCandidateSearch['criteria'] = [{
-                'field': this._searchField,
-                'expr': 'lrlike',
-                'value': this._search.term
-            }];
-            this._childDataServiceChoices.choices();
-            this._search.lastTerm = this._search.term;
-        }
+        // Init component
+        this.init().then(
+            data => {
+                that._search.term = $event.target.value;
+
+                if ((that._search.term != that._search.lastTerm)
+                    && (that._search.term.length % 3 === 0) // Only submit with multiples of three
+                ) {
+                    that._childCandidateSearch['criteria'] = [{
+                        'field': that._searchField,
+                        'expr': 'lrlike',
+                        'value': that._search.term
+                    }];
+
+                    let route = that.getChoicesRoute();
+                    that._childDataServiceChoices.choices(route);
+
+                    that._search.lastTerm = that._search.term;
+                }
+            },
+            errors => { return; }
+        );
     }
 
     /**
      * onControlClick (arrow of select control)
      * @param $event
      */
-    protected onControlClick($event): void
+    public onControlClick($event): void
     {
         $event.preventDefault();
-        $event.stopPropagation();
+
+        let that = this;
 
         if (this.hasChoices()) {
             this._isHidden = !this._isHidden;
         } else {
-            this._childDataServiceChoices.choices();
+            // Init component
+            this.init().then(
+                data => {
+                    let route = that.getChoicesRoute();
+                    that._childDataServiceChoices.choices(route);
+                },
+                errors => { return; }
+            );
         }
     }
 
@@ -246,6 +274,9 @@ export class FieldTypeAutoCompleteComponent {
                 this.onChange.emit(choice['id']);
             }
         }
+
+        // After select, hide choices box
+        this._isHidden = true;
     }
 
     /**
@@ -254,8 +285,10 @@ export class FieldTypeAutoCompleteComponent {
      */
     protected getMoreObjects($event) {
         $event.preventDefault();
-        $event.stopPropagation();
-        this._childDataServiceChoices.choices();
+        $event.stopPropagation(); // Here the stop propagation can be used, because we click inside of choices box
+
+        let route = this.getChoicesRoute();
+        this._childDataServiceChoices.choices(route);
     }
 
     /**
@@ -272,7 +305,15 @@ export class FieldTypeAutoCompleteComponent {
                 break;
             case 'edit':
             case 'add':
-                this.openPopup(this._controlMode);
+                let that = this;
+
+                // Init component
+                this.init().then(
+                    data => {
+                        that.openPopup(that._controlMode);
+                    },
+                    errors => { return; }
+                );
                 break;
         }
     }
@@ -284,12 +325,13 @@ export class FieldTypeAutoCompleteComponent {
      */
     protected openPopup(popupType = PopupTypes.edit): FieldTypeAutoCompleteComponent
     {
-        let that = this;
+        let that = this,
+            fieldValue = this._object[this.field];
 
         // Inject object to edit in child DataService
-        if (this._lastSelectedChoice.id) {
+        if (fieldValue) {
             // Simulate object
-            let object = {id: this._lastSelectedChoice.id};
+            let object = {id: fieldValue};
 
             // Set object to null to avoid emit the event "_onChildObjectChangeSubscription"
             this._childDataServicePopup.setObject({}, null);
@@ -378,71 +420,89 @@ export class FieldTypeAutoCompleteComponent {
     }
 
     /**
-     * Lifecycle callback
+     * Get choices route
+     * Choices routes need to be set each time that route is called, because params can change dinamically
+     * (like occurs on "ClientPaymentRequest > Edit" )
+     * @returns string
      */
-    ngOnInit()
+    protected getChoicesRoute()
     {
-        // Enable load while component initializes, to avoid use the component before init has finished causing errors
-        this._tasksLoaderManagerService.addTask('INIT_AUTO_COMPLETE');
+        let route = this._childDataServiceChoices.getRoute('choices');
 
-        // Initialize values
-        this._provider = (this._autoCompleteProviders[this.field] || null);
-        if (this._provider.field) {
-            this._searchField = this._provider.field;
-        }
-        this._fieldInView = (this._dataService.getProviderAttr('fields')['metadata'][this.field]['fieldInView'] || null);
-        this.reset();
-
-        // Dependency conf previously saved in provider
-        if (this._provider.childInjector) {
-            this._childInjector = this._provider.childInjector;
-            this.init();
-            this._tasksLoaderManagerService.delTask('INIT_AUTO_COMPLETE');
-            return;
+        // Add parameter to action route
+        if (this._provider.urlChoicesParams) {
+            route += ('/' + this._provider.urlChoicesParams);
         }
 
-        // Dependency conf for first time
-        let that = this;
-        that._postService.post(
-            this._provider.urlConf,
-            null
-        ).then(
-            data => {
-                // Notice that both DataService share the same DataServiceProvider! It needs to be fixed.
-                let dataServiceProvider = that._helperService.getDataServiceProvider(data);
-                dataServiceProvider['pin'] = true;
-
-                // Set child injector
-                let resolvedProviders = ReflectiveInjector.resolve([
-                    {provide: 'DataServiceChoices', useClass: DataService},
-                    {provide: 'DataService', useClass: DataService},
-                    {provide: 'DataServiceProvider', useValue: dataServiceProvider},
-                    {provide: 'Provider', useValue: that._helperService.getDataBoxProvider(data)}
-                ]);
-                that._childInjector = ReflectiveInjector.fromResolvedProviders(resolvedProviders, that._injector);
-                // Save childInjector (check out the context in the provider definition)
-                that._provider.childInjector = that._childInjector;
-
-                that.init();
-
-                // Add parameter to action route
-                if (that._provider.urlChoicesParams) {
-                    that._childDataServiceChoices.setRoute(
-                        'choices',
-                        (that._childDataServiceChoices.getRoute('choices') + '/' + that._provider.urlChoicesParams)
-                    );
-                }
-                that._tasksLoaderManagerService.delTask('INIT_AUTO_COMPLETE');
-            },
-            errors => { console.log(errors); return; }
-        );
+        return route;
     }
 
     /**
      * Initialize variables and dependencies.
+     * @returns {Promise<boolean>}
+     */
+    protected init(): Promise<boolean>
+    {
+        let that = this;
+
+        return new Promise(function(resolve, reject) {
+            // Set configuration only once. Avoid to set configuration unnecessarily.
+            if (that._isInitialized) { return resolve(true); }
+
+            // Only init, if init is not yet running (avoid task duplication)
+            if (!that._tasksLoaderManagerService.addTask('INIT_AUTO_COMPLETE')) {
+                return reject(false);
+            }
+
+            // Dependency conf previously saved in provider
+            if (that._provider.childInjector) {
+                that._childInjector = that._provider.childInjector;
+                that.initVariables();
+                that._isInitialized = true;
+                that._tasksLoaderManagerService.delTask('INIT_AUTO_COMPLETE');
+                return resolve(true);
+            }
+
+            // Dependency conf for first time
+            return that._postService.post(
+                that._provider.urlConf,
+                null
+            ).then(
+                data => {
+                    // Notice that both DataService share the same DataServiceProvider! It needs to be fixed.
+                    let dataServiceProvider = that._helperService.getDataServiceProvider(data);
+                    dataServiceProvider['pin'] = true;
+
+                    // Set child injector
+                    let resolvedProviders = ReflectiveInjector.resolve([
+                        {provide: 'DataServiceChoices', useClass: DataService},
+                        {provide: 'DataService', useClass: DataService},
+                        {provide: 'DataServiceProvider', useValue: dataServiceProvider},
+                        {provide: 'Provider', useValue: that._helperService.getDataBoxProvider(data)}
+                    ]);
+                    that._childInjector = ReflectiveInjector.fromResolvedProviders(resolvedProviders, that._injector);
+                    // Save childInjector (check out the context in the provider definition)
+                    that._provider.childInjector = that._childInjector;
+
+                    that.initVariables();
+                    that._isInitialized = true;
+                    that._tasksLoaderManagerService.delTask('INIT_AUTO_COMPLETE');
+                    return resolve(true);
+                },
+                errors => {
+                    console.log(errors);
+                    that._tasksLoaderManagerService.delTask('INIT_AUTO_COMPLETE');
+                    return reject(false);
+                }
+            );
+        });
+    }
+
+    /**
+     * Initialize variables.
      * @returns {FieldTypeAutoCompleteComponent}
      */
-    protected init(): FieldTypeAutoCompleteComponent
+    protected initVariables(): FieldTypeAutoCompleteComponent
     {
         let that = this;
 
@@ -460,9 +520,24 @@ export class FieldTypeAutoCompleteComponent {
             .subscribe(object => this.resetChoices());
 
         this._childCandidateSearch = this._childDataServiceChoices.getCandidateSearch(); // To filter objects
-        // @TODO simplify fields to avoid inject default fields sent from controller to template, use only needed fields
+        // Reset criteria to avoid filter by default criteria (defined in php controller)
+        this._childCandidateSearch['criteria'] = [];
 
         return this;
+    }
+
+    /**
+     * Lifecycle callback
+     */
+    ngOnInit()
+    {
+        // Initialize values
+        this._provider = (this._autoCompleteProviders[this.field] || null);
+        if (this._provider.field) {
+            this._searchField = this._provider.field;
+        }
+        this._fieldInView = (this._dataService.getProviderAttr('fields')['metadata'][this.field]['fieldInView'] || null);
+        this.reset();
     }
 
     /**

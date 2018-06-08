@@ -11,6 +11,7 @@ namespace PackageVersions;
 final class Versions
 {
     const VERSIONS = array (
+  'braintree/braintree_php' => '3.31.0@617a8541c006d1feb2f381d9321f76a53fb6dc79',
   'composer/ca-bundle' => '1.1.1@d2c0a83b7533d6912e8d516756ebd34f893e9169',
   'doctrine/annotations' => 'v1.4.0@54cacc9b81758b14e3ce750f205a393d52339e97',
   'doctrine/cache' => 'v1.6.2@eb152c5100571c7a45470ff2a35095ab3f3b900b',
@@ -63,7 +64,7 @@ final class Versions
   'zendframework/zend-eventmanager' => '3.2.0@9d72db10ceb6e42fb92350c0cb54460da61bd79c',
   'sensio/generator-bundle' => 'v3.1.7@28cbaa244bd0816fd8908b93f90380bcd7b67a65',
   'symfony/phpunit-bridge' => 'v2.8.38@a110b329168654bc8069d129af022e6b8bbe9468',
-  'root/weboffice' => 'dev-b-seven@00f9e0e59d79418cc50a5c9893313413a58c8bb5',
+  'root/weboffice' => 'dev-b-seven@e9c21a706a7fb5aecafab1380783d3e124cdb5cd',
 );
 
     private function __construct()

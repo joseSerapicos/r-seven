@@ -1,9 +1,12 @@
 {% if ( (object is defined) and (fields is defined) ) %}
+    {% set entityDetail_status = (entityDetail_status is defined ? entityDetail_status : true) %}
     <div class="container-fluid py-3"><div class="row">
-        <div class="col col-md-9">
-            <div class="row">
-                <h2 class="col-12">{{ (object['code'] is defined) ? object['code'] : object['id'] }}{{ (object['name'] is defined) ? ('&nbsp;&nbsp;&commat;&nbsp;&nbsp;' ~ object['name'])|raw : '' }}</h2>
-            </div>
+        <div class="col col-md-{{entityDetail_status ? 9 : 12}}">
+            {% if ((object['code'] is defined) or (object['name'] is defined)) %}
+                <div class="row">
+                    <h2 class="col-12 valign-div-container">{{ (object['code'] is defined) ? object['code'] : '' }}{{ ((object['code'] is defined) and (object['name'] is defined)) ? '&nbsp;&nbsp;&commat;&nbsp;&nbsp;'|raw : '' }}{{ (object['name'] is defined) ? object['name'] : '' }}</h2>
+                </div>
+            {% endif %}
             <div class="row">
                 {% for field in fields['view']
                    if ((field not in ['id', 'code', 'name', 'isEnabled', 'insertTime', 'insertUser'])
@@ -34,16 +37,18 @@
                 {% endfor %}
             </div>
         </div>
-        <div class="col col-md-3">
-            <div class="card bg-light">
-                <div class="card-body">
-                    <p>{{ (object['isEnabled']
-                        ? '<i class="fa fa-check"></i>'
-                        : '<i class="fa fa-ban"></i>')|raw }}&nbsp;<strong>{{ fields['metadata']['isEnabled']['label'] }}</strong></p>
-                    <p><strong>{{ fields['metadata']['insertTime']['label'] }}</strong><br/>{{ object['insertTime'] }}</p>
-                    <p><strong>{{ fields['metadata']['insertUser']['label'] }}</strong><br/>{{ object['insertUser'] }}</p>
+        {% if entityDetail_status %}
+            <div class="col col-md-3">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <p>{{ (object['isEnabled']
+                            ? '<i class="fa fa-check"></i>'
+                            : '<i class="fa fa-ban"></i>')|raw }}&nbsp;<strong>{{ fields['metadata']['isEnabled']['label'] }}</strong></p>
+                        <p><strong>{{ fields['metadata']['insertTime']['label'] }}</strong><br/>{{ object['insertTime'] }}</p>
+                        <p><strong>{{ fields['metadata']['insertUser']['label'] }}</strong><br/>{{ object['insertUser'] }}</p>
+                    </div>
                 </div>
             </div>
-        </div>
+        {% endif %}
     </div></div>
 {% endif %}

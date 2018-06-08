@@ -15,7 +15,7 @@ export class AssetsLazyLoaderManagerService {
      */
     public load(): any
     {
-        $(this._selector).Lazy();
+        //$(this._selector).Lazy();
         return this;
     }
 }

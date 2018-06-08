@@ -1,0 +1,167 @@
+    
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12">        
+                        
+
+                <div class="row form-group" *ngIf="_formService.getObject().id">
+
+                        <label class="col-sm-2 control-label required" for="form_id">Id</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_id"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().id"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().id">{{error}}</label>
+            </div>
+        </div>
+                        
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_appPaymentMethodObj">Payment Method</label>
+    
+            <div class="col-sm-10">
+                                                                        <div class="html-select"
+         [htmlSelect]="'appPaymentMethodObj'"
+                      (onChange)="onPaymentMethodChange($event)"         >
+        <div class="input-group-control"
+             [class.error]="_formService.getErrors()['appPaymentMethodObj'] && (_formService.getErrors()['appPaymentMethodObj'].length > 0)">
+            <span class="js_label form-control"></span>
+            <a class="pull-right"><i class="fa fa-angle-down"></i></a>
+        </div>
+        <div class="choices js_choices">
+            <ul class="form-control-box">        <ng-template ngFor let-choice [ngForOf]="_dataService.getFieldChoices('appPaymentMethodObj')">
+            <li [attr.data-value]="choice['id']" [innerHtml]="choice['label']"></li>
+        </ng-template>
+    </ul>
+        </div>
+    </div>
+    <input [(ngModel)]="_formService.getObject().appPaymentMethodObj"
+           formControlName = appPaymentMethodObj
+           name="form[appPaymentMethodObj]"
+                      type="hidden">
+                                <label class="error" *ngFor="let error of _formService.getErrors().appPaymentMethodObj">{{error}}</label>
+            </div>
+        </div>
+                        
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_name">Name</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_name" name="form[name]" required="required" maxlength="64" [(ngModel)]="_formService.getObject().name" formControlName="name" [class.error]="_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().name">{{error}}</label>
+            </div>
+        </div>
+                        
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_description">Description</label>
+    
+            <div class="col-sm-10">
+                                            <textarea id="form_description" name="form[description]" required="required" rows="6" [(ngModel)]="_formService.getObject().description" formControlName="description" [class.error]="_formService.getErrors().description &amp;&amp; _formService.getErrors().description.length &gt; 0" class="form-control"></textarea>
+                <label class="error" *ngFor="let error of _formService.getErrors().description">{{error}}</label>
+            </div>
+        </div>
+                        
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" [innerHTML]="getLang('For Online Payment')"></label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label for="form_forOnlinePayment"><input type="checkbox" id="form_forOnlinePayment" name="form[forOnlinePayment]" [(ngModel)]="_formService.getObject().forOnlinePayment" formControlName="forOnlinePayment" [class.error]="_formService.getErrors().forOnlinePayment &amp;&amp; _formService.getErrors().forOnlinePayment.length &gt; 0" value="1" /> For online payment</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().forOnlinePayment">{{error}}</label>
+            </div>
+        </div>
+                        
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" [innerHTML]="getLang('Enabled')"></label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label for="form_isEnabled"><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().isEnabled">{{error}}</label>
+            </div>
+        </div>
+            
+        <ng-template [ngIf]="_dataService.getLocalDataAttr('paymentMethodDetail')
+                             && (_dataService.getLocalDataAttr('paymentMethodDetail').length > 0)">
+            <div class="row form-group">
+    <label class="col m-t-sm">Detail</label>
+    <div class="col-sm-12"><div class="form-control-box"
+                    [class.error]="_formService.getErrors().detail && (_formService.getErrors().detail.length > 0)"
+        >                    <div class="row m-3"
+                         *ngFor="let paymentMethodDetailObj of _dataService.getLocalDataAttr('paymentMethodDetail')">
+                        <label class="col-sm-2 control-label" [innerHtml]="paymentMethodDetailObj['label']"></label>
+                        <div class="col-sm-10">
+                            <ng-template [ngIf]="paymentMethodDetailObj['type'] == 'ENUM'">
+                                <select class="form-control"
+                                        [name]="'paymentMethodDetail[' + paymentMethodDetailObj['id'] + ']'"
+                                        required="required">
+                                    <option *ngFor="let choice of paymentMethodDetailObj['options']"
+                                            value="{{choice['id']}}"
+                                            [selected]="choice['id'] == paymentMethodDetailObj['value']"
+                                    >{{choice['label']}}</option>
+                                </select>
+                            </ng-template>
+                            <ng-template [ngIf]="paymentMethodDetailObj['type'] == 'TEXT'">
+                                <input class="form-control"
+                                       maxlength="128"
+                                       [name]="'paymentMethodDetail[' + paymentMethodDetailObj['id'] + ']'"
+                                       required="required"
+                                       type="text"
+                                       [value]="paymentMethodDetailObj['value']">
+                            </ng-template>
+                        </div>
+                    </div>
+                </div></div>
+            <label class="col-12 error"
+               *ngFor="let error of _formService.getErrors().detail">{{error}}</label>
+    </div>        </ng-template>
+    </div>
+    </div>
+</div>
+<div class="modal-footer hide-on-empty">
+        
+                    <div class="row">
+            <div class="col-auto ml-auto">
+                                            <button                                     class="btn btn-light"
+                                    (click)="cancelAction($event)"
+                                        id="form_cancel"
+            name="form[cancel]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                                                <button                                     class="btn btn-light"
+                                    (click)="resetAction($event)"
+                                        id="form_reset"
+            name="form[reset]"
+            type="button"><i class="fa fa-ban"></i>&nbsp;Reset</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAction($event)"
+                                        id="form_save"
+            name="form[save]"
+            type="button"><i class="fa fa-check"></i>&nbsp;Save</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAndCloseAction($event)"
+                                        id="form_saveAndClose"
+            name="form[saveAndClose]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Save and Close</button>
+                                </div>
+        </div>
+    </div>    
+    <input type="hidden" id="form__token" name="form[_token]" value="_yE5tsEMUvpURfWTW8W85WZk33Z7lJCsksOmBZnQ86Y" /></form>

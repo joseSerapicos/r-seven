@@ -1,4 +1,0 @@
-services:
-    accounting.service.repository:
-        class: AccountingBundle\Service\RepositoryService
-        arguments: ["@doctrine.orm.local_database_entity_manager"]

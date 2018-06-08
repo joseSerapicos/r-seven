@@ -5,7 +5,7 @@ import {ActionsService} from '../../../ts/actions/actions.service';
 import {Popups, Popup} from '../../../data-box/ts/src/data-box.component';
 import {ModalService} from '../../../modal/ts/modal.service';
 import {DataBoxComponent, DataBoxProvider} from '../../../data-box/ts/src/data-box.component';
-import {TasksLoaderManagerService} from '../../../../../../AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service';
+import {TasksLoaderManagerService} from '../../../tasks-loader-manager/ts/tasks-loader-manager.service';
 
 
 @Component({

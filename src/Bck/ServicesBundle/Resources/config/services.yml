@@ -1,0 +1,4 @@
+services:
+    bck.services.service.repository:
+        class: Bck\ServicesBundle\Service\RepositoryService
+        arguments: ["@doctrine.orm.local_database_entity_manager"]

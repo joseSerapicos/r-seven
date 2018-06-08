@@ -22,9 +22,13 @@ services:
         class: AppBundle\Service\AppService
         arguments: ["@service_container"]
 
+    app.service.frt:
+            class: AppBundle\Service\FrtService
+            arguments: ["@service_container"]
+
     app.service.session_storage:
         class: AppBundle\Service\SessionStorageService
-        arguments: ["@session", "@app.service.local_repository"]
+        arguments: ["@session", "@doctrine.orm.local_database_entity_manager", "@app.service.local_repository"]
 
     app.service.code_generator:
         class: AppBundle\Service\CodeGeneratorService

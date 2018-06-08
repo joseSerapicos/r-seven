@@ -41,22 +41,8 @@
     <link rel="icon" type="image/x-icon" href="{{ asset_url }}" />
     {% endimage %}
 
-    {% set flashMessages = app.session.flashbag.all() %}
     {% block head_javascripts %}
-        <script>
-            // Retrieving dependency defined from dependency views
-            var _dependency = (_app && _app.dependency) ? _app.dependency : {};
-            var _app = {
-                'userRole': '{{ app.session.get('_app.user')['role'] }}',
-                'isDebug': Boolean({{app.debug}}),
-                'csrfToken': '{{csrf_token(csrf_token_id)}}',
-                'stores': {{ app.session.get('_app.view.stores')|json_encode|raw }},
-                'route': '{{ url('_app__default__index') }}',
-                'flashMessages': {{ flashMessages['messages'] is defined ? flashMessages['messages']|json_encode|raw : 'null' }},
-                'conf': {{ _conf is defined ? _conf|json_encode|raw : 'null' }},
-                'dependency': _dependency
-            };
-        </script>
+        {% include 'AppBundle:partial:app-javascript-vars.html.twig' %}
     {% endblock %}
 </head>
 
@@ -102,13 +88,15 @@
 
 <div class="modal-backdrop snipped js_loader"></div>
 
-{#'@popper'
-        '@bootstrap'#}
 {% block vendor_javascripts %}
+    {#
+        '@jquery_lazy' for images lazy load
+        '@popper'
+        '@bootstrap'
+    #}
     {% javascripts output="assets/app/base/js/vendor.js"
     '@jquery'
     '@metismenu'
-    '@jquery_lazy'
 
     '@AppBundle/Resources/public/scripts/plugins/pace/pace.min.js'
 

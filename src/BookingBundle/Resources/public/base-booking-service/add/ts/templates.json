@@ -1,5 +1,0 @@
-{
-  "step1-service": "http://weboffice.whs.dev.com/app_dev.php/template/booking/base-booking-service/add-step1-service",
-  "step2-field-debug": "http://weboffice.whs.dev.com/app_dev.php/template/booking/base-booking-service/add-step2-field-debug",
-  "step4": "http://weboffice.whs.dev.com/app_dev.php/template/booking/base-booking-service/add-step4"
-}

@@ -1,0 +1,3 @@
+<td *ngFor="let searchField of _dataService.getSearch('fields')"
+    [ngClass]="getColAlign(searchField)"
+    [innerHTML]="obj[searchField]"></td>

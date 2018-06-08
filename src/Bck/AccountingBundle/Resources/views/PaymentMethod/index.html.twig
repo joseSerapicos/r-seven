@@ -1,0 +1,20 @@
+{% extends 'AppBundle:data-box:index.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets output="assets/accounting/payment-method/index/css/local.css"
+    '@BckAccountingBundle/Resources/public/payment-method/index/scss/dist/styles.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    {% javascripts output="assets/accounting/payment-method/index/js/local.js"
+    '@BckAccountingBundle/Resources/public/payment-method/index/ts/dist/inline.bundle.js'
+    '@BckAccountingBundle/Resources/public/payment-method/index/ts/dist/polyfills.bundle.js'
+    '@BckAccountingBundle/Resources/public/payment-method/index/ts/dist/vendor.bundle.js'
+    '@BckAccountingBundle/Resources/public/payment-method/index/ts/dist/main.bundle.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

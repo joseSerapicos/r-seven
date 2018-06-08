@@ -57,7 +57,7 @@ export class CostWithVatPopupComponent extends FormPopupExtensionComponent
 
         this._dataService.runAction(
             (this._helperService.getAppVar('route')
-                + 'accounting/vat-code/get-percentage/'
+                + 'bck/accounting/vat-code/get-percentage/'
                 + value
             )
         ).then(

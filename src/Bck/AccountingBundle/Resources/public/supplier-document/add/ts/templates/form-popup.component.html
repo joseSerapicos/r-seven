@@ -1,0 +1,105 @@
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12">    
+                        <ul class="row mb-3 no-gutters wizard-nav">
+                                    <li class="col-auto wizard-step"
+                        [class.step-active]="0 == _wizardManagerService.getIndex()">
+                        <span class="step-number">1</span>
+                        <span class="step-text">Document Type</span>
+                    </li>
+                                    <li class="col-auto wizard-step"
+                        [class.step-active]="1 == _wizardManagerService.getIndex()">
+                        <span class="step-number">2</span>
+                        <span class="step-text">Detail</span>
+                    </li>
+                                    <li class="col-auto wizard-step"
+                        [class.step-active]="2 == _wizardManagerService.getIndex()">
+                        <span class="step-number">3</span>
+                        <span class="step-text">Preview</span>
+                    </li>
+                            </ul>
+
+            
+                                                                        <section [hidden]="_wizardManagerService.getIndex() != 0">                    
+
+
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+
+    
+            
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_supplierDocumentTypeObj">Document Type</label>
+    
+            <div class="col-sm-10">
+                                                                            <select [(ngModel)]="_formService.getObject().supplierDocumentTypeObj"
+            formControlName = supplierDocumentTypeObj
+            class="form-control"
+            [class.error]="_formService.getErrors().supplierDocumentTypeObj && (_formService.getErrors().supplierDocumentTypeObj.length > 0)"
+            id="form_supplierDocumentTypeObj"
+            name="form[supplierDocumentTypeObj]"
+            required="required">
+        <option value=""></option>
+                    <option *ngFor="let choice of _dataService.getFieldChoices('supplierDocumentTypeObj')"
+                    value="{{choice['id']}}">{{choice['label']}}</option>
+            </select>
+                                <label class="error" *ngFor="let error of _formService.getErrors().supplierDocumentTypeObj">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_supplierObj">Supplier</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().supplierObj"
+           formControlName = supplierObj
+           name="form[supplierObj]"
+           required="required"           type="hidden">
+    <js_autoComplete [field]="'supplierObj'"
+                     [hasSelfReference]="_dataService.getFieldChoicesAttr('supplierObj', 'hasSelfReference')"
+                                                                       ></js_autoComplete>
+                    <label class="error" *ngFor="let error of _formService.getErrors().supplierObj">{{error}}</label>
+            </div>
+        </div>
+        
+
+    
+
+    <input type="hidden" id="form__token" name="form[_token]" value="_yE5tsEMUvpURfWTW8W85WZk33Z7lJCsksOmBZnQ86Y" /></form>
+
+                </section>                                            <section [hidden]="_wizardManagerService.getIndex() != 1"
+         class="js_lazyLoadContainer_1">
+    <ng-template #js_lazyLoadContainer></ng-template>
+</section>                                <section [hidden]="_wizardManagerService.getIndex() != 2"
+         class="js_lazyLoadContainer_2">
+    <ng-template #js_lazyLoadContainer></ng-template>
+</section>            
+            
+            
+    </div>
+    </div>
+</div>
+<div class="modal-footer hide-on-empty">
+        <div class="row justify-content-center">
+    <div class="col-auto">
+            <button type="button" class="btn-light btn" (click)="_wizardManagerService.cancelAction($event)">Cancel</button>
+                <button type="button" class="btn-primary btn" (click)="_wizardManagerService.prevAction($event)"
+                    *ngIf="0 < _wizardManagerService.getIndex()">Prev</button>
+            <button type="button" class="btn-primary btn" (click)="_wizardManagerService.nextAction($event)"
+                    *ngIf="2 > _wizardManagerService.getIndex()">Next</button>
+            <button type="button" class="btn-primary btn" (click)="_wizardManagerService.finishAction($event)"
+                    *ngIf="2 == _wizardManagerService.getIndex()">Finish</button>
+        
+    </div>
+</div></div>

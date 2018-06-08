@@ -1,0 +1,11 @@
+{% extends 'BckBookingBundle:BaseBookingService:add-step2.html.twig' %}
+
+{% block endDateManualField %}
+    <ng-template [ngIf]="!_formService.getObject()['hasFixedDuration']">
+        {% include 'AppBundle:form:field.html.twig' with {
+            'field': field,
+            'metadata': fields['metadata'][field],
+            'form': form
+        } %}
+    </ng-template>
+{% endblock %}

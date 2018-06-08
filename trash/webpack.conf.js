@@ -25,26 +25,26 @@ module.exports = function() {
         file: { bundle: 'app', controller: 'file', action: null, dependencies: ['app'] },
         image: { bundle: 'app', controller: 'image', action: null, dependencies: ['app'] },
         video: { bundle: 'app', controller: 'video', action: null, dependencies: ['app'] },
-        // HomeBundle
+        // BckHomeBundle
         home: { bundle: 'home', controller: 'default', action: 'index', dependencies: ['app'] },
-        // SysadminBundle
-        // AdminBundle
+        // BckSysadminBundle
+        // BckAdminBundle
         adminModuleIndex: { bundle: 'admin', controller: 'module', action: 'index', dependencies: ['app'] },
         adminUserIndex: { bundle: 'admin', controller: 'user', action: 'index', dependencies: ['app'] },
         adminUserProfile: { bundle: 'admin', controller: 'user', action: 'profile', dependencies: ['app'] },
         adminUserGroupAclDetail: { bundle: 'admin', controller: 'user-group-acl', action: 'detail', dependencies: ['app'] },
         adminStoreDetail: { bundle: 'admin', controller: 'store', action: 'detail', dependencies: ['app'] },
         adminSettingsIndex: { bundle: 'admin', controller: 'settings', action: 'index', dependencies: ['app'] },
-        // UserBundle
+        // BckUserBundle
         userUserGroupDetail: { bundle: 'user', controller: 'user-group', action: 'detail', dependencies: ['app'] },
-        // EntitiesBundle
+        // BckEntitiesBundle
         entitiesEntityDetail: { bundle: 'entities', controller: 'entity', action: 'detail', dependencies: ['app'] },
         entitiesClientIndex: { bundle: 'entities', controller: 'client', action: 'index', dependencies: ['app'] },
         entitiesSupplierIndex: { bundle: 'entities', controller: 'supplier', action: 'index', dependencies: ['app'] },
         entitiesEntityGroupDetail: { bundle: 'entities', controller: 'entity-group', action: 'detail', dependencies: ['app'] },
-        // ServicesBundle
+        // BckServicesBundle
         servicesRegularServiceDetail: { bundle: 'services', controller: 'regular-service', action: 'detail', dependencies: ['app'] },
-        // BookingBundle
+        // BckBookingBundle
         bookingBasicBookingIndex: { bundle: 'booking', controller: 'basic-booking', action: 'index', dependencies: ['app'] },
         bookingBasicBookingDetail: { bundle: 'booking', controller: 'basic-booking', action: 'detail', dependencies: ['app'] },
         bookingRegularBookingIndex: { bundle: 'booking', controller: 'regular-booking', action: 'index', dependencies: ['app'] },

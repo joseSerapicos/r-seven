@@ -75,11 +75,12 @@ body {
 //////////////////////////////////////////////
 .thumbnail {
   display: inline-block;
-  border: 1px solid $borderColor;
+  //border: 1px solid $border-color;
   border-radius: .25rem;
-  padding: .25rem;
+  //padding: .25rem;
+  padding: 0;
   margin: 0;
-  background-color: #fff;
+  //background-color: #fff;
 }
 
 
@@ -162,7 +163,7 @@ a.label, a.badge {
 /* General */
 // Containers
 .container-round {
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   border-radius: 4px;
   padding: 25px;
 
@@ -226,7 +227,8 @@ a.label, a.badge {
   border-width: 0 0 1px 0;
 }
 .form-control.error,
-.form-control-box.error {
+.form-control-box.error,
+.form-control-error.error {
   border: 1px solid #cc5965 !important;
 }
 .form-control-box {
@@ -360,14 +362,9 @@ form.dropzone {
     }
   }
 }
-.-merge-view {
+.-merge-view,
+.-merge-view-label {
   .ibox {
-    .ibox-title {
-      h5 {
-        display: none;
-      }
-    }
-
     .ibox-content {
       padding-top: 1px; // @TODO If 0 break the layout????
     }
@@ -384,7 +381,16 @@ form.dropzone {
     }
 
     .ibox-footer {
-      border-top: 1px solid $borderColor;
+      border-top: 1px solid $border-color;
+    }
+  }
+}
+.-merge-view {
+  .ibox {
+    .ibox-title {
+      h5 {
+        display: none;
+      }
     }
   }
 }
@@ -744,7 +750,7 @@ h5 {
 }
 .fc-button {
   color: inherit;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   cursor: pointer;
   display: inline-block;
   height: 1.9em;
@@ -766,7 +772,7 @@ h5 {
 }
 .fc-content .fc-widget-header,
 .fc-content .fc-widget-content {
-  border-color: $borderColor;
+  border-color: $border-color;
   font-weight: normal;
 }
 .fc-border-separate tbody {
@@ -877,7 +883,7 @@ a.list-group-item.active:focus {
 }
 .list-group-item {
   background-color: inherit;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   display: block;
   margin-bottom: -1px;
   padding: 10px 15px;
@@ -903,9 +909,9 @@ a.list-group-item.active:focus {
 .elements-list .list-group-item:hover {
   background: #f3f3f4;
   color: inherit;
-  border-color: $borderColor;
-  /*border-bottom: 1px solid $borderColor;*/
-  /*border-top: 1px solid $borderColor;*/
+  border-color: $border-color;
+  /*border-bottom: 1px solid $border-color;*/
+  /*border-top: 1px solid $border-color;*/
   border-radius: 0;
 }
 .elements-list li.active {
@@ -1009,7 +1015,7 @@ table.dataTable thead .sorting_desc_disabled {
   float: right;
 }
 .html5buttons a {
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   background: #fff;
   color: $baseColor;
   box-shadow: none;
@@ -1151,7 +1157,7 @@ div.dt-button-info {
 }
 .widget-text-box {
   padding: 20px;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   background: #ffffff;
 }
 .widget-head-color-box {
@@ -1196,8 +1202,8 @@ div.dt-button-info {
 }
 .todo-list > li {
   background: #f3f3f4;
-  border-left: 6px solid $borderColor;
-  border-right: 6px solid $borderColor;
+  border-left: 6px solid $border-color;
+  border-right: 6px solid $border-color;
   border-radius: 4px;
   color: inherit;
   margin-bottom: 2px;
@@ -1327,7 +1333,7 @@ div.dt-button-info {
   padding: 5px 10px;
   color: #333;
   text-decoration: none;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   background: #f5f5f5;
   -webkit-border-radius: 3px;
   border-radius: 3px;
@@ -1591,7 +1597,7 @@ a.forum-item-title:hover {
   float: right;
 }
 #vertical-timeline.light-timeline:before {
-  background: $borderColor;
+  background: $border-color;
 }
 .dark-timeline .vertical-timeline-content:before {
   border-color: transparent #f5f5f5 transparent transparent;
@@ -1794,7 +1800,7 @@ a.forum-item-title:hover {
   background: #ffffff;
   padding: 20px;
   margin-bottom: 25px;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
 }
 .payment-icon-big {
   font-size: 60px;
@@ -1804,7 +1810,7 @@ a.forum-item-title:hover {
 /* Select2 custom styles */
 .select2-container--default .select2-selection--single,
 .select2-container--default .select2-selection--multiple {
-  border-color: $borderColor;
+  border-color: $border-color;
 }
 
 /* Wizard step fix */
@@ -1866,7 +1872,7 @@ a:focus {
   text-decoration: none;
 }
 .border-bottom {
-  border-bottom: 1px solid $borderColor !important;
+  border-bottom: 1px solid $border-color !important;
 }
 .font-bold {
   font-weight: 600;
@@ -1878,17 +1884,17 @@ a:focus {
   text-transform: uppercase;
 }
 .b-r {
-  border-right: 1px solid $borderColor;
+  border-right: 1px solid $border-color;
 }
 .hr-line-dashed {
-  border-top: 1px dashed $borderColor;
+  border-top: 1px dashed $border-color;
   color: #ffffff;
   background-color: #ffffff;
   height: 1px;
   margin: 20px 0;
 }
 .hr-line-solid {
-  border-bottom: 1px solid $borderColor;
+  border-bottom: 1px solid $border-color;
   background-color: rgba(0, 0, 0, 0);
   border-style: solid !important;
   margin-top: 15px;
@@ -1999,7 +2005,7 @@ body.canvas-menu {
 .table > thead > tr > td,
 .table > tbody > tr > td,
 .table > tfoot > tr > td {
-  border-top: 1px solid $borderColor;
+  border-top: 1px solid $border-color;
   line-height: 1.42857;
   padding: 8px;
   vertical-align: top;
@@ -2028,20 +2034,20 @@ body.canvas-menu {
   padding-top: 15px;
 }
 .border-left-right {
-  border-left: 1px solid $borderColor;
-  border-right: 1px solid $borderColor;
+  border-left: 1px solid $border-color;
+  border-right: 1px solid $border-color;
   border-top: none;
   border-bottom: none;
 }
 .border-left {
-  border-left: 1px solid $borderColor;
+  border-left: 1px solid $border-color;
   border-right: none;
   border-top: none;
   border-bottom: none;
 }
 .border-right {
   border-left: none;
-  border-right: 1px solid $borderColor;
+  border-right: 1px solid $border-color;
   border-top: none;
   border-bottom: none;
 }
@@ -2135,7 +2141,7 @@ code {
   -moz-border-right-colors: none;
   -moz-border-top-colors: none;
   background-color: #ffffff;
-  border-color: $borderColor;
+  border-color: $border-color;
   border-image: none;
   border-style: solid solid none;
   border-width: 3px 0 0;
@@ -2148,14 +2154,14 @@ code {
   background-color: #ffffff;
   color: inherit;
   padding: 15px 20px 20px 20px;
-  border-color: $borderColor;
+  border-color: $border-color;
   border-image: none;
   border-style: solid solid none;
   border-width: 1px 0;
 }
 .ibox-footer {
   color: inherit;
-  border-top: 1px solid $borderColor;
+  border-top: 1px solid $border-color;
   font-size: 90%;
   background: #ffffff;
   padding: 10px 15px;
@@ -2322,7 +2328,7 @@ table.table-mail tr td {
 }
 .simple_tag {
   background-color: #f3f3f4;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   border-radius: 2px;
   color: inherit;
   font-size: 10px;
@@ -2691,7 +2697,7 @@ body.fullscreen-ibox-mode {
 /* CONTACTS */
 .contact-box {
   background-color: #ffffff;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   padding: 20px;
   margin-bottom: 20px;
 }
@@ -2699,7 +2705,7 @@ body.fullscreen-ibox-mode {
   color: inherit;
 }
 .contact-box.center-version {
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   padding: 0;
 }
 .contact-box.center-version > a {
@@ -2720,7 +2726,7 @@ body.fullscreen-ibox-mode {
 .contact-box .contact-box-footer {
   text-align: center;
   background-color: #ffffff;
-  border-top: 1px solid $borderColor;
+  border-top: 1px solid $border-color;
   padding: 15px 20px;
 }
 
@@ -2792,7 +2798,7 @@ body.fullscreen-ibox-mode {
   margin-right: 10px;
 }
 .list-group.clear-list .list-group-item {
-  border-top: 1px solid $borderColor;
+  border-top: 1px solid $border-color;
   border-bottom: 0;
   border-right: 0;
   border-left: 0;
@@ -2809,9 +2815,9 @@ ul.clear-list:first-child {
   padding: 5px;
   width: 30px;
   text-align: center;
-  border-top: 1px solid $borderColor;
-  border-bottom: 1px solid $borderColor;
-  border-left: 1px solid $borderColor;
+  border-top: 1px solid $border-color;
+  border-bottom: 1px solid $border-color;
+  border-left: 1px solid $border-color;
   background: #f8f8f8;
 }
 .timeline-item .date {
@@ -2821,8 +2827,8 @@ ul.clear-list:first-child {
   padding-top: 30px;
 }
 .timeline-item .content {
-  border-left: 1px solid $borderColor;
-  border-top: 1px solid $borderColor;
+  border-left: 1px solid $border-color;
+  border-top: 1px solid $border-color;
   padding-top: 10px;
   min-height: 100px;
 }
@@ -2848,7 +2854,7 @@ ul.clear-list:first-child {
   padding: 5px 0;
 }
 .folder-list li {
-  border-bottom: 1px solid $borderColor;
+  border-bottom: 1px solid $border-color;
   display: block;
 }
 .folder-list li i {
@@ -2894,13 +2900,13 @@ ul.clear-list:first-child {
   padding: 5px 12px;
   color: inherit;
   border-radius: 2px;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   margin-right: 5px;
   margin-top: 5px;
   display: block;
 }
 .file {
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   padding: 0;
   background-color: #ffffff;
   position: relative;
@@ -2934,7 +2940,7 @@ ul.clear-list:first-child {
 .file .file-name {
   padding: 10px;
   background-color: #f8f8f8;
-  border-top: 1px solid $borderColor;
+  border-top: 1px solid $border-color;
 }
 .file-name small {
   color: $baseColor;
@@ -2976,7 +2982,7 @@ a.compose-mail {
   margin-left: 120px;
 }
 .feed-activity-list .feed-element {
-  border-bottom: 1px solid $borderColor;
+  border-bottom: 1px solid $border-color;
 }
 .feed-element:first-child {
   margin-top: 0;
@@ -3001,7 +3007,7 @@ a.compose-mail {
   height: 38px;
 }
 .feed-element .well {
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   box-shadow: none;
   margin-top: 10px;
   margin-bottom: 5px;
@@ -3026,7 +3032,7 @@ a.compose-mail {
   padding: 5px 10px;
   font-size: 11px;
   border-radius: 2px;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   margin-bottom: 5px;
 }
 .file-list li a {
@@ -3044,14 +3050,14 @@ a.compose-mail {
 /* MAILBOX */
 .mail-box {
   background-color: #ffffff;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   border-top: 0;
   padding: 0;
   margin-bottom: 20px;
 }
 .mail-box-header {
   background-color: #ffffff;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   border-bottom: 0;
   padding: 30px 20px 20px 20px;
 }
@@ -3062,11 +3068,11 @@ a.compose-mail {
   background: #ffffff;
 }
 .mail-body {
-  border-top: 1px solid $borderColor;
+  border-top: 1px solid $border-color;
   padding: 20px;
 }
 .mail-text {
-  border-top: 1px solid $borderColor;
+  border-top: 1px solid $border-color;
 }
 .mail-text .note-toolbar {
   padding: 10px 15px;
@@ -3078,7 +3084,7 @@ a.compose-mail {
   background-color: #F9F8F8;
 }
 .mail-attachment {
-  border-top: 1px solid $borderColor;
+  border-top: 1px solid $border-color;
   padding: 20px;
   font-size: 12px;
 }
@@ -3120,7 +3126,7 @@ dd.project-people {
 }
 .project-list table tr td {
   border-top: none;
-  border-bottom: 1px solid $borderColor;
+  border-bottom: 1px solid $border-color;
   padding: 15px 10px;
   vertical-align: middle;
 }
@@ -3130,7 +3136,7 @@ dd.project-people {
   padding: 5px 12px;
   color: inherit;
   border-radius: 2px;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   margin-right: 5px;
   margin-top: 5px;
   display: block;
@@ -3159,7 +3165,7 @@ dd.project-people {
 .faq-answer {
   margin-top: 10px;
   background: #f3f3f4;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   border-radius: 3px;
   padding: 15px;
 }
@@ -3184,7 +3190,7 @@ dd.project-people {
 }
 .chat-user {
   padding: 8px 10px;
-  border-bottom: 1px solid $borderColor;
+  border-bottom: 1px solid $border-color;
 }
 .chat-user a {
   color: inherit;
@@ -3211,7 +3217,7 @@ dd.project-people {
 .message-avatar {
   height: 48px;
   width: 48px;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   border-radius: 4px;
   margin-top: 1px;
 }
@@ -3225,7 +3231,7 @@ dd.project-people {
 }
 .message {
   background-color: #fff;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   text-align: left;
   display: block;
   padding: 10px 20px;
@@ -3381,7 +3387,7 @@ table.issue-tracker tbody tr td {
 }
 .agile-list li {
   background: #FAFAFB;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   margin: 0 0 10px 0;
   padding: 10px;
   border-radius: 2px;
@@ -3417,7 +3423,7 @@ del {
 /* E-commerce */
 .product-box {
   padding: 0;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
 }
 .product-box:hover,
 .product-box.active {
@@ -3457,7 +3463,7 @@ del {
   color: #f8ac59;
 }
 .ecommerce .note-editor {
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
 }
 table.shoping-cart-table {
   margin-bottom: 0;
@@ -3519,7 +3525,7 @@ table.shoping-cart-table tr td:last-child {
 .social-feed-separated .social-avatar img {
   width: 52px;
   height: 52px;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
 }
 .social-feed-separated .social-feed-box .social-avatar {
   padding: 15px 15px 0 15px;
@@ -3527,7 +3533,7 @@ table.shoping-cart-table tr td:last-child {
 }
 .social-feed-box {
   /*padding: 15px;*/
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   background: #fff;
   margin-bottom: 15px;
 }
@@ -3537,7 +3543,7 @@ table.shoping-cart-table tr td:last-child {
 }
 .article .social-feed-box:last-child {
   margin-bottom: 0;
-  border-bottom: 1px solid $borderColor;
+  border-bottom: 1px solid $border-color;
 }
 .article .social-feed-box p {
   font-size: 13px;
@@ -3568,7 +3574,7 @@ table.shoping-cart-table tr td:last-child {
   margin-bottom: 10px;
 }
 .social-footer {
-  border-top: 1px solid $borderColor;
+  border-top: 1px solid $border-color;
   padding: 10px 15px;
   background: #f9f9f9;
 }
@@ -3589,10 +3595,10 @@ table.shoping-cart-table tr td:last-child {
 .vote-item {
   padding: 20px 25px;
   background: #ffffff;
-  border-top: 1px solid $borderColor;
+  border-top: 1px solid $border-color;
 }
 .vote-item:last-child {
-  border-bottom: 1px solid $borderColor;
+  border-bottom: 1px solid $border-color;
 }
 .vote-item:hover {
   background: #fbfbfb;
@@ -3672,7 +3678,7 @@ table.shoping-cart-table tr td:last-child {
   bottom: 20px;
   right: 75px;
   background: #fff;
-  border: 1px solid $borderColor;
+  border: 1px solid $border-color;
   width: 230px;
   height: 320px;
   border-radius: 4px;
@@ -4679,12 +4685,12 @@ table.shoping-cart-table tr td:last-child {
     padding: 5px;
     width: 30px;
     text-align: center;
-    border: 1px solid $borderColor;
+    border: 1px solid $border-color;
     background: #f8f8f8;
   }
   .timeline-item .content {
     border-left: none;
-    border-top: 1px solid $borderColor;
+    border-top: 1px solid $border-color;
     padding-top: 10px;
     min-height: 100px;
   }

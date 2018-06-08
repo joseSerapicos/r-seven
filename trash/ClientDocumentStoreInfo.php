@@ -1,11 +1,11 @@
 <?php
-namespace AccountingBundle\Entity;
+namespace Bck\AccountingBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 
 /**
- * @ORM\Entity(repositoryClass="AccountingBundle\Entity\ClientDocumentStoreInfoRepository")
+ * @ORM\Entity(repositoryClass="Bck\AccountingBundle\Entity\ClientDocumentStoreInfoRepository")
  * @ORM\Table(name="clientDocumentStoreInfo")
  */
 class ClientDocumentStoreInfo extends BaseDocumentStoreInfo {
@@ -18,10 +18,10 @@ class ClientDocumentStoreInfo extends BaseDocumentStoreInfo {
 
     /**
      * Set clientDocumentObj
-     * @param \AccountingBundle\Entity\ClientDocument $clientDocumentObj
+     * @param \Bck\AccountingBundle\Entity\ClientDocument $clientDocumentObj
      * @return $this
      */
-    public function setClientDocumentObj(\AccountingBundle\Entity\ClientDocument $clientDocumentObj)
+    public function setClientDocumentObj(\Bck\AccountingBundle\Entity\ClientDocument $clientDocumentObj)
     {
         $this->clientDocumentObj = $clientDocumentObj;
         return $this;
@@ -29,7 +29,7 @@ class ClientDocumentStoreInfo extends BaseDocumentStoreInfo {
 
     /**
      * Get clientDocumentObj
-     * @return \AccountingBundle\Entity\ClientDocument
+     * @return \Bck\AccountingBundle\Entity\ClientDocument
      */
     public function getClientDocumentObj()
     {

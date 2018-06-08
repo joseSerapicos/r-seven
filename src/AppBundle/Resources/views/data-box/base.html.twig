@@ -28,7 +28,8 @@
 {% endblock %}
 
 {% block footer %}
-    <div class="ibox-footer"
+    <div [hidden]="!(_isExpanded)"
+         class="ibox-footer"
          *ngIf="_dataService.countObjects() > 0"><js_searchPagination></js_searchPagination></div>
 {% endblock %}
 

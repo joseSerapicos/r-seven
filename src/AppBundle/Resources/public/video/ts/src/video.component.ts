@@ -4,7 +4,7 @@ import {DataService} from '../../../ts/data-service/data.service';
 import {ActionsService} from '../../../ts/actions/actions.service';
 import {DataBoxComponent, DataBoxProvider, Popups, Popup} from '../../../data-box/ts/src/data-box.component';
 import {VideoPlayerPopupExtModule} from './video-player-popup.ext-module';
-import {TasksLoaderManagerService} from '../../../../../../AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service';
+import {TasksLoaderManagerService} from '../../../tasks-loader-manager/ts/tasks-loader-manager.service';
 
 
 // Component

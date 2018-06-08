@@ -31,7 +31,8 @@
         "symfony/assetic-bundle": "^2.8",
         "liip/imagine-bundle": "^1.5",
         "leafo/scssphp": "^0.6.5",
-        "knplabs/knp-snappy-bundle": "^1.5"
+        "knplabs/knp-snappy-bundle": "^1.5",
+        "braintree/braintree_php" : "^3.31"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

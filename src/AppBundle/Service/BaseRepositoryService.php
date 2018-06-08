@@ -33,7 +33,6 @@ abstract class BaseRepositoryService
      */
     public function setEntityRepository($entityRepository) {
         $this->entityRepository = $entityRepository;
-
         return $this;
     }
 

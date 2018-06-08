@@ -1,0 +1,208 @@
+    
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12">    
+            
+
+                <div class="row form-group" *ngIf="_formService.getObject().id">
+
+                        <label class="col-sm-2 control-label required" for="form_id">Id</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_id"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().id"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().id">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_storeObj">Store</label>
+    
+            <div class="col-sm-10">
+                                                                            <select [(ngModel)]="_formService.getObject().storeObj"
+            formControlName = storeObj
+            class="form-control"
+            [class.error]="_formService.getErrors().storeObj && (_formService.getErrors().storeObj.length > 0)"
+            id="form_storeObj"
+            name="form[storeObj]"
+            >
+        <option value=""></option>
+                    <option *ngFor="let choice of _dataService.getFieldChoices('storeObj')"
+                    value="{{choice['id']}}">{{choice['label']}}</option>
+            </select>
+                                <label class="error" *ngFor="let error of _formService.getErrors().storeObj">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_slogan">Slogan</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_slogan" name="form[slogan]" maxlength="256" [(ngModel)]="_formService.getObject().slogan" formControlName="slogan" [class.error]="_formService.getErrors().slogan &amp;&amp; _formService.getErrors().slogan.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().slogan">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_baseUrl">Base Url</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_baseUrl" name="form[baseUrl]" maxlength="256" [(ngModel)]="_formService.getObject().baseUrl" formControlName="baseUrl" [class.error]="_formService.getErrors().baseUrl &amp;&amp; _formService.getErrors().baseUrl.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().baseUrl">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" [innerHTML]="getLang('Has Header')"></label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label for="form_hasHeader"><input type="checkbox" id="form_hasHeader" name="form[hasHeader]" [(ngModel)]="_formService.getObject().hasHeader" formControlName="hasHeader" [class.error]="_formService.getErrors().hasHeader &amp;&amp; _formService.getErrors().hasHeader.length &gt; 0" value="1" /> Has header</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().hasHeader">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" [innerHTML]="getLang('Has Footer')"></label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label for="form_hasFooter"><input type="checkbox" id="form_hasFooter" name="form[hasFooter]" [(ngModel)]="_formService.getObject().hasFooter" formControlName="hasFooter" [class.error]="_formService.getErrors().hasFooter &amp;&amp; _formService.getErrors().hasFooter.length &gt; 0" value="1" /> Has footer</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().hasFooter">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_headerBgColor">Header Background Color</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().headerBgColor"
+           formControlName = headerBgColor
+           class="form-control -color"
+           [class.error]="_formService.getErrors().headerBgColor && (_formService.getErrors().headerBgColor.length > 0)"
+           id="form_headerBgColor"
+           name="form[headerBgColor]"
+                      maxlength="7"
+           type="color">
+                    <label class="error" *ngFor="let error of _formService.getErrors().headerBgColor">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_bgColor">Background Color</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().bgColor"
+           formControlName = bgColor
+           class="form-control -color"
+           [class.error]="_formService.getErrors().bgColor && (_formService.getErrors().bgColor.length > 0)"
+           id="form_bgColor"
+           name="form[bgColor]"
+                      maxlength="7"
+           type="color">
+                    <label class="error" *ngFor="let error of _formService.getErrors().bgColor">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_headerTxtColor">Header Text Color</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().headerTxtColor"
+           formControlName = headerTxtColor
+           class="form-control -color"
+           [class.error]="_formService.getErrors().headerTxtColor && (_formService.getErrors().headerTxtColor.length > 0)"
+           id="form_headerTxtColor"
+           name="form[headerTxtColor]"
+                      maxlength="7"
+           type="color">
+                    <label class="error" *ngFor="let error of _formService.getErrors().headerTxtColor">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_txtColor">Text Color</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().txtColor"
+           formControlName = txtColor
+           class="form-control -color"
+           [class.error]="_formService.getErrors().txtColor && (_formService.getErrors().txtColor.length > 0)"
+           id="form_txtColor"
+           name="form[txtColor]"
+                      maxlength="7"
+           type="color">
+                    <label class="error" *ngFor="let error of _formService.getErrors().txtColor">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" [innerHTML]="getLang('Enabled')"></label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label for="form_isEnabled"><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().isEnabled">{{error}}</label>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer hide-on-empty">
+        
+                    <div class="row">
+            <div class="col-auto ml-auto">
+                                            <button                                     class="btn btn-light"
+                                    (click)="cancelAction($event)"
+                                        id="form_cancel"
+            name="form[cancel]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                                                <button                                     class="btn btn-light"
+                                    (click)="resetAction($event)"
+                                        id="form_reset"
+            name="form[reset]"
+            type="button"><i class="fa fa-ban"></i>&nbsp;Reset</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAction($event)"
+                                        id="form_save"
+            name="form[save]"
+            type="button"><i class="fa fa-check"></i>&nbsp;Save</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAndCloseAction($event)"
+                                        id="form_saveAndClose"
+            name="form[saveAndClose]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Save and Close</button>
+                                </div>
+        </div>
+    </div>    
+    <input type="hidden" id="form__token" name="form[_token]" value="_yE5tsEMUvpURfWTW8W85WZk33Z7lJCsksOmBZnQ86Y" /></form>

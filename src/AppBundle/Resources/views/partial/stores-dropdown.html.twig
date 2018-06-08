@@ -3,7 +3,7 @@
         <h6 class="dropdown-header font-weight-bold">Stores</h6>
         <div class="dropdown-divider"></div>
         {% for store in app.session.get('_app.stores') %}
-            <a class="dropdown-item" href="{{ path('_app__default__index', {'store': store['id']}) }}">{{store['name']}}</a>
+            <a class="dropdown-item" href="{{ path('_login__default__process', {'store': store['id']}) }}">{{store['name']}}</a>
         {% endfor %}
     {% else %}
         <h6 class="dropdown-header">No stores available</h6>

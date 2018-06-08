@@ -1,12 +1,12 @@
 <?php
 
-namespace AdminBundle\Controller;
+namespace Bck\AdminBundle\Controller;
 
 use AppBundle\Controller\BaseEntityController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use AdminBundle\Entity\StoreAddress;
+use Bck\AdminBundle\Entity\StoreAddress;
 
 class StoreContrdddoller extends BaseEntityController
 {
@@ -16,7 +16,7 @@ class StoreContrdddoller extends BaseEntityController
      * @return $this
      * @throws \Exception
      */
-    protected function init(Request $request)
+    public function init(Request $request)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
@@ -24,16 +24,16 @@ class StoreContrdddoller extends BaseEntityController
         // Route
         $this->templateConf['route'] = array(
             'get' => array(
-                'name' => '_admin__store__get'
+                'name' => '_bck__admin__store__get'
             ),
             'edit' => array(
-                'name' => '_admin__store__edit'
+                'name' => '_bck__admin__store__edit'
             ),
             'delete' => array(
-                'name' => '_admin__store__delete'
+                'name' => '_bck__admin__store__delete'
             ),
             'detail' => array(
-                'name' => '_admin__store__detail'
+                'name' => '_bck__admin__store__detail'
             )
         );
 
@@ -57,8 +57,8 @@ class StoreContrdddoller extends BaseEntityController
     }
 
     /**
-     * @Route("/admin/store",
-     *     name="_admin__store__index"
+     * @Route("/bck/admin/store",
+     *     name="_bck__admin__store__index"
      * )
      *
      * Index action
@@ -71,8 +71,8 @@ class StoreContrdddoller extends BaseEntityController
     }
 
     /**
-     * @Route("/admin/store/detail/{id}",
-     *     name="_admin__store__detail",
+     * @Route("/bck/admin/store/detail/{id}",
+     *     name="_bck__admin__store__detail",
      *     defaults={"id" = null},
      * )
      *
@@ -88,8 +88,8 @@ class StoreContrdddoller extends BaseEntityController
     }
 
     /**
-     * @Route("/admin/store/get/{id}",
-     *     name="_admin__store__get",
+     * @Route("/bck/admin/store/get/{id}",
+     *     name="_bck__admin__store__get",
      *     defaults={"id" = null},
      * )
      *
@@ -105,8 +105,8 @@ class StoreContrdddoller extends BaseEntityController
     }
 
     /**
-     * @Route("/admin/store/edit/{id}",
-     *     name="_admin__store__edit",
+     * @Route("/bck/admin/store/edit/{id}",
+     *     name="_bck__admin__store__edit",
      *     defaults={"id" = null},
      * )
      *
@@ -141,7 +141,7 @@ class StoreContrdddoller extends BaseEntityController
             }
 
             $this->saveForm($form, $obj);
-            return $this->getResponse(true);
+            return $this->getResponse();
         }
 
         return $this->render($this->localConf['templates']['edit'], array(
@@ -151,8 +151,8 @@ class StoreContrdddoller extends BaseEntityController
     }
 
     /**
-     * @Route("/admin/store/contacts",
-     *     name="_admin__store__contacts"
+     * @Route("/bck/admin/store/contacts",
+     *     name="_bck__admin__store__contacts"
      * )
      *
      * Action to get the base to display/edit contacts
@@ -178,8 +178,8 @@ class StoreContrdddoller extends BaseEntityController
     }
 
     /**
-     * @Route("/admin/store/delete/{id}",
-     *     name="_admin__store__delete",
+     * @Route("/bck/admin/store/delete/{id}",
+     *     name="_bck__admin__store__delete",
      *     defaults={"id" = null},
      * )
      *
@@ -194,8 +194,8 @@ class StoreContrdddoller extends BaseEntityController
     }
 
     /**
-     * @Route("/admin/store/detail-tabs",
-     *     name="_admin__store__detail_tabs")
+     * @Route("/bck/admin/store/detail-tabs",
+     *     name="_bck__admin__store__detail_tabs")
      *
      * Action to get the base to build the tabs in detail
      * @return mixed

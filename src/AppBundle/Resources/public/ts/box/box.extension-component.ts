@@ -34,6 +34,9 @@ export abstract class BoxExtensionComponent extends BaseExtensionComponent {
             renderer,
             provider
         );
+
+        let expanderControl = this.getProviderAttr('controls')['expander'];
+        this._isExpanded = (!expanderControl['isEnabled'] || expanderControl['isExpanded']);
     }
 
     /**

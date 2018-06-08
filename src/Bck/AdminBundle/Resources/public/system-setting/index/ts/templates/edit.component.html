@@ -1,0 +1,101 @@
+
+
+
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" class="m-3 form-horizontal" [formGroup]="_formService.getForm()">
+
+    
+            
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_appCountryObj">Country</label>
+    
+            <div class="col-sm-10">
+                                                                            <select [(ngModel)]="_formService.getObject().appCountryObj"
+            formControlName = appCountryObj
+            class="form-control"
+            [class.error]="_formService.getErrors().appCountryObj && (_formService.getErrors().appCountryObj.length > 0)"
+            id="form_appCountryObj"
+            name="form[appCountryObj]"
+            required="required">
+        <option value=""></option>
+                    <option *ngFor="let choice of _dataService.getFieldChoices('appCountryObj')"
+                    value="{{choice['id']}}">{{choice['label']}}</option>
+            </select>
+                                <label class="error" *ngFor="let error of _formService.getErrors().appCountryObj">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_appCurrencyObj">Currency</label>
+    
+            <div class="col-sm-10">
+                                                                            <select [(ngModel)]="_formService.getObject().appCurrencyObj"
+            formControlName = appCurrencyObj
+            class="form-control"
+            [class.error]="_formService.getErrors().appCurrencyObj && (_formService.getErrors().appCurrencyObj.length > 0)"
+            id="form_appCurrencyObj"
+            name="form[appCurrencyObj]"
+            required="required">
+        <option value=""></option>
+                    <option *ngFor="let choice of _dataService.getFieldChoices('appCurrencyObj')"
+                    value="{{choice['id']}}">{{choice['label']}}</option>
+            </select>
+                                <label class="error" *ngFor="let error of _formService.getErrors().appCurrencyObj">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_appLanguageObj">Language</label>
+    
+            <div class="col-sm-10">
+                                                                            <select [(ngModel)]="_formService.getObject().appLanguageObj"
+            formControlName = appLanguageObj
+            class="form-control"
+            [class.error]="_formService.getErrors().appLanguageObj && (_formService.getErrors().appLanguageObj.length > 0)"
+            id="form_appLanguageObj"
+            name="form[appLanguageObj]"
+            required="required">
+        <option value=""></option>
+                    <option *ngFor="let choice of _dataService.getFieldChoices('appLanguageObj')"
+                    value="{{choice['id']}}">{{choice['label']}}</option>
+            </select>
+                                <label class="error" *ngFor="let error of _formService.getErrors().appLanguageObj">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" [innerHTML]="getLang('Enabled')"></label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label for="form_isEnabled"><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().isEnabled">{{error}}</label>
+            </div>
+        </div>
+        
+
+                    <div class="row">
+            <div class="col-auto ml-auto">
+                                            <button                                     class="btn btn-light"
+                                    (click)="resetAction($event)"
+                                        id="form_reset"
+            name="form[reset]"
+            type="button"><i class="fa fa-ban"></i>&nbsp;Reset</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAction($event)"
+                                        id="form_save"
+            name="form[save]"
+            type="button"><i class="fa fa-check"></i>&nbsp;Save</button>
+                                </div>
+        </div>
+    
+
+    <input type="hidden" id="form__token" name="form[_token]" value="_yE5tsEMUvpURfWTW8W85WZk33Z7lJCsksOmBZnQ86Y" /></form>
+

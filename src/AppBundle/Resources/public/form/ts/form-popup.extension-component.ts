@@ -45,38 +45,6 @@ export abstract class FormPopupExtensionComponent extends FormExtensionComponent
     }
 
     /**
-     * Save object. Handle submit form.
-     * This override add a closePopup behavior.
-     * This method should be called from child component.
-     * @returns {Promise}
-     */
-    public save(): Promise<any>
-    {
-        let that = this;
-
-        return new Promise(function(resolve, reject) {
-            that._formService.save().then(
-                data => { return resolve(data); },
-                errors => { return reject(errors); }
-            );
-        });
-    }
-
-    /**
-     * Save action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    public saveAction($event: any = null): void
-    {
-        if ($event) { $event.preventDefault(); }
-        this.save().then(
-            data => { return; },
-            errors => { return; }
-        );
-    }
-
-    /**
      * Save and enter to detail action.
      * This method should be called from view/template.
      * @param $event
@@ -108,16 +76,6 @@ export abstract class FormPopupExtensionComponent extends FormExtensionComponent
             data => { this.closeAction(); return; },
             errors => { return; }
         );
-    }
-
-    /**
-     * Reset action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    public resetAction($event: any = null): void
-    {
-        this._formService.resetAction($event);
     }
 
     /**

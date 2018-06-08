@@ -1,0 +1,3 @@
+frt_accounting:
+    resource: "@FrtAccountingBundle/Controller/"
+    type:     annotation

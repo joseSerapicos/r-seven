@@ -1,0 +1,25 @@
+<script>
+    // _tmApp (dependency)
+    var _tmpApp = {
+        conf: {{ _conf is defined ? _conf|json_encode|raw : 'null' }},
+        flashMessages: {{ flashMessages['messages'] is defined ? flashMessages['messages']|json_encode|raw : 'null' }},
+        templates: {}
+    };
+
+    // Update _app with _tmpApp (dependency)
+    if(_app) {
+        if(_app.dependencies) {
+            _app.dependencies.storeEmail = _tmpApp;
+        } else {
+            _app.dependencies = {
+                storeEmail: _tmpApp
+            }
+        }
+    } else {
+        var _app = {
+            dependency: {
+                storeEmail: _tmpApp
+            }
+        }
+    }
+</script>

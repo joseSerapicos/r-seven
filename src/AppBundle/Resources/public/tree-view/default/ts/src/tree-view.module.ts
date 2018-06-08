@@ -6,7 +6,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {SearchModule} from '../../../../ts/search/search.module';
 import {SearchPaginationModule} from '../../../../ts/search/search-pagination.module';
 import {ExpanderModule} from '../../../../ts/expander/expander.module';
-import {LegendExtModule} from '../../../../../../../AppBundle/Resources/public/legend/ts/src/legend.ext-module';
+import {LegendExtModule} from '../../../../../../../../AppBundle/Resources/public/legend/ts/src/legend.ext-module';
 import {Helper} from '../../../../ts/helper';
 import {TasksLoaderManagerService} from '../../../../tasks-loader-manager/ts/tasks-loader-manager.service';
 import {PostService} from '../../../../ts/post.service';

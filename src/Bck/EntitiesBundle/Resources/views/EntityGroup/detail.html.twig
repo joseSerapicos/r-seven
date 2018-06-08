@@ -1,0 +1,38 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets output="assets/entities/entity-group/detail/css/local.css"
+    '@BckEntitiesBundle/Resources/public/entity-group/detail/scss/dist/styles.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block head_javascripts %}
+    {{ parent() }}
+    {% set entityGroupEntityData = render(controller(
+        'BckEntitiesBundle:EntityGroupEntity:dataChild',
+        {'parents': {'entityGroup': _conf['object']['id']}, 'responseType': 'json'}
+    )) %}
+    <script>
+        _app.dependencies.entityGroupEntity = {{ entityGroupEntityData|raw }};
+    </script>
+{% endblock %}
+
+{% block header_container %}
+    {% include 'AppBundle:partial:entity-detail.html.twig' with {
+        'object': _conf['object'],
+        'fields': _conf['fields']
+    } %}
+{% endblock %}
+
+{% block javascripts %}
+    {% javascripts output="assets/entities/entity-group-acl/detail/js/local.js"
+        '@BckEntitiesBundle/Resources/public/entity-group/detail/ts/dist/inline.bundle.js'
+        '@BckEntitiesBundle/Resources/public/entity-group/detail/ts/dist/polyfills.bundle.js'
+        '@BckEntitiesBundle/Resources/public/entity-group/detail/ts/dist/vendor.bundle.js'
+        '@BckEntitiesBundle/Resources/public/entity-group/detail/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

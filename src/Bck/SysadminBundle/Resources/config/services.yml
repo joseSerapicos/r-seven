@@ -1,0 +1,6 @@
+services:
+    bck.sysadmin.service.repository:
+        class: Bck\SysadminBundle\Service\RepositoryService
+        arguments: ["@doctrine.orm.app_database_entity_manager"]
+    bck.sysadmin.controller.payment_method:
+        class: Bck\SysadminBundle\Controller\PaymentMethodController

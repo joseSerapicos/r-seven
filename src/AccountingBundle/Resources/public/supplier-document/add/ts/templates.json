@@ -1,8 +1,0 @@
-{
-  "form-popup": "http://weboffice.whs.dev.com/app_dev.php/accounting/supplier-document/add-step1",
-  "step3-invoice": "http://weboffice.whs.dev.com/app_dev.php/accounting/supplier-document/add-step3-invoice",
-  "step3-rectification": "http://weboffice.whs.dev.com/app_dev.php/accounting/supplier-document/add-step3-invoice",
-  "step3-receipt": "http://weboffice.whs.dev.com/app_dev.php/accounting/supplier-document/add-step3-receipt",
-  "step3-payment": "http://weboffice.whs.dev.com/app_dev.php/accounting/supplier-document/add-step3-payment",
-  "step3-settlement": "http://weboffice.whs.dev.com/app_dev.php/accounting/supplier-document/add-step3-settlement"
-}

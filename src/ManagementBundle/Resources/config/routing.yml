@@ -1,3 +1,0 @@
-management:
-    resource: "@ManagementBundle/Controller/"
-    type:     annotation

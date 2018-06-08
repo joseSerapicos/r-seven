@@ -1,0 +1,3 @@
+booking:
+    resource: "@BckBookingBundle/Controller/"
+    type:     annotation

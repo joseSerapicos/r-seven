@@ -33,17 +33,5 @@
 {% endblock %}
 
 {% block footer_container %}
-    <div class="row justify-content-center">
-        <div class="col-auto">
-            <button type="button" class="btn-light btn" (click)="_wizardManagerService.cancelAction($event)">Cancel</button>
-            <button type="button" class="btn-primary btn" (click)="_wizardManagerService.prevAction($event)"
-                    *ngIf="0 < _wizardManagerService.getIndex()">Prev</button>
-            <button type="button" class="btn-primary btn" (click)="_wizardManagerService.nextAction($event)"
-                    *ngIf="{{(_containers|length) - 1}} > _wizardManagerService.getIndex()">Next</button>
-            {% block buttons %}
-                <button type="button" class="btn-primary btn" (click)="_wizardManagerService.finishAction($event)"
-                        *ngIf="{{(_containers|length) - 1}} == _wizardManagerService.getIndex()">Finish</button>
-            {% endblock %}
-        </div>
-    </div>
+    {% include 'AppBundle:wizard:partial/buttons-popup.html.twig' %}
 {% endblock %}

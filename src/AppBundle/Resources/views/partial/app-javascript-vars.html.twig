@@ -1,0 +1,20 @@
+{% set flashMessages = app.session.flashbag.all() %}
+<script>
+    // Retrieving dependency defined from dependency views
+    var _dependencies = Object.assign(
+            ((_app && _app.dependencies) ? _app.dependencies : {}),
+            ({{ _dependencies is defined ? _dependencies|json_encode|raw : '{}' }})
+    );
+    var _app = Object.assign(
+            ({{ app.session.has('_template') ? app.session.get('_template')|json_encode|raw : '{}' }}),
+            {
+                'userRole': '{{ app.session.get('_app.user')['role'] }}',
+                'isDebug': Boolean({{app.debug}}),
+                'csrfToken': '{{csrf_token(csrf_token_id)}}',
+                'route': '{{ url('_app__default__index') }}',
+                'flashMessages': {{ flashMessages['messages'] is defined ? flashMessages['messages']|json_encode|raw : 'null' }},
+                'conf': {{ _conf is defined ? _conf|json_encode|raw : 'null' }},
+                'dependencies': _dependencies
+            }
+    );
+</script>

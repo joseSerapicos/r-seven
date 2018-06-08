@@ -1,0 +1,16 @@
+{% set serviceField = "serviceObj" %}
+{% set serviceIdField = "serviceObj" %}
+{% extends 'BckBookingBundle:BaseBookingService:add-step1-service.html.twig' %}
+{% block bookingServiceAddStep1Service_container %}
+    <td [innerHTML]="obj['thumbnail']"></td>
+    <td>
+        <div [innerHTML]="obj['name']"></div>
+        <div [innerHTML]="obj['description']"></div>
+    </td>
+    <td>
+        <div>
+            <div *ngIf="_helperService.castToBoolean(obj['hasFixedDuration'])"><span [innerHTML]="obj['durationDays']"></span>&nbsp;Days</div>
+            <div>From&nbsp;<span [innerHTML]="obj['priceFrom']"></span></div>
+        </div>
+    </td>
+{% endblock %}

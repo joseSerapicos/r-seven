@@ -1,14 +1,23 @@
+/////////////////////////
 // Vendor
+//////////////////////////////
 @import "../../../../../node_modules/font-awesome-base64/_index.scss";
 
+// Bootstrap:
+// Custom styles to overrides default bootstrap variables
+// Check out documentation: https://getbootstrap.com/docs/4.0/getting-started/theming/
+// Variables definition: https://github.com/twbs/bootstrap/blob/v4-dev/scss/_variables.scss
+// Colors (disabled for now)
+/*$logoPrimaryColor: #02bcfa;
+$logoSecondaryColor: #fad102;
+$baseColor: #404447;
+$theme-colors: (
+        "base": $baseColor,
+        "primary": $logoPrimaryColor,
+        "warning": $logoSecondaryColor
+);*/
 @import "../../../../../node_modules/bootstrap/scss/bootstrap.scss";
 @import "../../../../../node_modules/bootstrap/scss/bootstrap-grid.scss";
-
-
-/////////////////////////
-// variables
-//////////////////////////////
-// Check out documentation: https://getbootstrap.com/docs/4.0/getting-started/theming/
 
 
 /////////////////////////
@@ -28,28 +37,65 @@
 //////////////////////////////
 // Check out documentation: https://getbootstrap.com/docs/4.0/utilities/colors/
 
-// Base colors to merge with bootstrap
-// Use logo colors to personalize bootstrap
+// DEFAULT BASE COLORS VARIABLES:
+/*
+$primary:       $blue !default;
+$secondary:     $gray-600 !default;
+$success:       $green !default;
+$info:          $cyan !default;
+$warning:       $yellow !default;
+$danger:        $red !default;
+$light:         $gray-100 !default;
+$dark:          $gray-800 !default;
+
+$white:    #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #adb5bd !default;
+$gray-600: #6c757d !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+$black:    #000 !default;
+
+$blue:    #007bff !default;
+$indigo:  #6610f2 !default;
+$purple:  #6f42c1 !default;
+$pink:    #e83e8c !default;
+$red:     #dc3545 !default;
+$orange:  #fd7e14 !default;
+$yellow:  #ffc107 !default;
+$green:   #28a745 !default;
+$teal:    #20c997 !default;
+$cyan:    #17a2b8 !default;
+*/
+
+// DEFAULT COLORS SCHEME:
+/*  $primary-base:              $brand-primary !default;
+  $primary-darker:            lighten($primary-base, 13.5%) !default;
+  $primary-dark:              lighten($primary-base, 20%) !default;
+  $primary:                   lighten($primary-base, 33.5%) !default;
+  $primary-light:             lighten($primary-base, 46.7%) !default;
+  $primary-lighter:           lighten($primary-base, 93.5%) !default;*/
+
+// Custom colors variables
 $logoPrimaryColor: #02bcfa;
 $logoSecondaryColor: #fad102;
 $baseColor: #404447;
-$theme-colors: (
-    "base": $baseColor,
-    "primary": $logoPrimaryColor,
-    "warning": $logoSecondaryColor
-);
+$light-bg: $gray-100;
+$border-color: $gray-300;
 
 
 $left-sidebar-bgcolor: #343a40; // bg-dark
 $left-sidebar-txtcolor: #adb5bd; //  // text-lighter
-$left-sidebar-active-bgcolor: #f8f9fa; // bg-light
 $left-sidebar-active-txtcolor: #343a40; // text-dark
 $left-sidebar-selected-bgcolor: #dadfe3; // bg-light:hover
 $left-sidebar-selected-txtcolor: #343a40; // text-dark
 
 
 $top-sidebar-active-bgcolor-hover: #dadfe3; // bg-light:hover
-$top-sidebar-active-bgcolor: #f8f9fa; // bg-light
 
 // general colors
 ////////////////////////////////////////////////
@@ -65,20 +111,15 @@ $secondaryDarkerColor: #545b62; // Bootstrap active (click)
 
 $successColor: #28a745; // Bootstrap base
 
-$warningLighterColor: #FBFFBC; // Custom (used in legends)
-$warningLightColor: #FFF99D; // Custom (used in legends)
+$warningLighterColor: #FBFFBC; // Custom (not used yet)
+$warningLightColor: #FFF99D; // Custom (not used yet)
 $warningColor: #ffc107; // Bootstrap base
 $warningDarkColor: #e0a800; // Bootstrap hover
 $warningDarkerColor: #d39e00; // Bootstrap active (click)
 
-$lightColor: #f8f9fa; // Bootstrap base
 $lightDarkColor: #e2e6ea; // Bootstrap hover
 $lightDarkerColor: #dae0e5; // Bootstrap active (click)
 
 $darkColor: #343a40; // Bootstrap base
 $darkDarkColor: #23272b; // Bootstrap hover
 $darkDarkerColor: #1d2124; // Bootstrap active (click)
-
-// specific colors
-////////////////////////////////////////////////
-$borderColor: #dee2e6;

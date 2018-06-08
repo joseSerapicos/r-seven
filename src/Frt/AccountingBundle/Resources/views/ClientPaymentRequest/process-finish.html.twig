@@ -1,0 +1,23 @@
+{% extends 'FrtCommonBundle::base-embed.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets output="assets/frt/accounting/client-payment-request/process/css/all.css"
+    '@FrtAccountingBundle/Resources/public/client-payment-request/process/scss/dist/styles.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block body_container %}
+    {% set isPaymentStatusYes = (_conf['object']['paymentStatus'] == 'YES') %}
+    <div class="alert alert-{{isPaymentStatusYes ? 'success' : 'danger'}}" role="alert">
+        <i class="fa fa-{{isPaymentStatusYes ? 'check' : 'times'}}"></i>&nbsp;The payment is{{isPaymentStatusYes ? '' : ' not'}} confirmed.
+    </div>
+    {% include 'AppBundle:partial:entity-detail.html.twig' with {
+        'object': _conf['object'],
+        'fields': _conf['fields'],
+        'entityDetail_status': false
+    } %}
+{% endblock %}
+
+{% block javascripts %}{% endblock %}

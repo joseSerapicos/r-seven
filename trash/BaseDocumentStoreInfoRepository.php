@@ -1,6 +1,6 @@
 <?php
 
-namespace AccountingBundle\Entity;
+namespace Bck\AccountingBundle\Entity;
 
 use AppBundle\Entity\BaseEntityRepository;
 
@@ -53,8 +53,8 @@ class BaseDocumentStoreInfoRepository extends BaseEntityRepository
             'id' => array('label' => 'Id', 'type' => 'number', 'acl' => 'read'),
             'description' => array('label' => 'Description', 'type' => 'text', 'acl' => 'edit'),
             'icon' => array('label' => 'Icon', 'type' => 'icon', 'acl' => 'edit'),
-            'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
-            'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
+            'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
             'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
                 'view' => array('keepOriginalNormalizer' => true)
             )

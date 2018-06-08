@@ -4,12 +4,12 @@
  */
 
 // Base
-@import "../../../../../../../AppBundle/Resources/public/scss/theme";
-@import "../../../../../../../AppBundle/Resources/public/scss/helper";
-@import "../../../../../../../AppBundle/Resources/public/scss/main-container";
-@import "../../../../../../../AppBundle/Resources/public/scss/left-sidebar";
-@import "../../../../../../../AppBundle/Resources/public/scss/top-sidebar";
-@import "../../../../../../../AppBundle/Resources/public/scss/styles";
+@import "../../../../scss/theme";
+@import "../../../../scss/helper";
+@import "../../../../scss/main-container";
+@import "../../../../scss/left-sidebar";
+@import "../../../../scss/top-sidebar";
+@import "../../../../scss/styles";
 
 // Features/Components
 @import "../../../../modal/scss/modal";

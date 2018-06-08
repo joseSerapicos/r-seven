@@ -1,7 +1,7 @@
 <?php
-// src/AdminBundle/Entity/Store.php
+// src/BckAdminBundle/Entity/Store.php
 
-namespace AdminBundle\Entity;
+namespace Bck\AdminBundle\Entity;
 
 use AppBundle\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
- * @ORM\Entity(repositoryClass="AdminBundle\Entity\StoreRepository")
+ * @ORM\Entity(repositoryClass="Bck\AdminBundle\Entity\StoreRepository")
  * @ORM\Table(name="store")
  */
 class Stoddre extends BaseEntity {
@@ -35,7 +35,7 @@ class Stoddre extends BaseEntity {
     protected $taxNumber;
 
     /**
-     * @ORM\ManyToOne(targetEntity="\AdminBundle\Entity\StoreAddress", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="Bck\AdminBundle\Entity\StoreAddress", cascade={"all"})
      * @ORM\JoinColumn(name="fk_storeAddress", referencedColumnName="id", nullable=false, unique=true, onDelete="CASCADE")
      *
      * @Assert\Valid()
@@ -44,10 +44,10 @@ class Stoddre extends BaseEntity {
 
     /**
      * Set storeObj
-     * @param \AdminBundle\Entity\Store $storeObj
+     * @param \Bck\AdminBundle\Entity\Store $storeObj
      * @return Store
      */
-    public function setStoreObj(\AdminBundle\Entity\Store $storeObj = null)
+    public function setStoreObj(\Bck\AdminBundle\Entity\Store $storeObj = null)
     {
         $this->storeObj = $storeObj;
         return $this;
@@ -55,7 +55,7 @@ class Stoddre extends BaseEntity {
 
     /**
      * Get storeObj
-     * @return \AdminBundle\Entity\Store
+     * @return \Bck\AdminBundle\Entity\Store
      */
     public function getStoreObj()
     {
@@ -124,10 +124,10 @@ class Stoddre extends BaseEntity {
 
     /**
      * Set storeAddressObj
-     * @param \AdminBundle\Entity\StoreAddress $storeAddressObj
+     * @param \Bck\AdminBundle\Entity\StoreAddress $storeAddressObj
      * @return Store
      */
-    public function setStoreAddressObj(\AdminBundle\Entity\StoreAddress $storeAddressObj)
+    public function setStoreAddressObj(\Bck\AdminBundle\Entity\StoreAddress $storeAddressObj)
     {
         $this->storeAddressObj = $storeAddressObj;
         return $this;
@@ -135,7 +135,7 @@ class Stoddre extends BaseEntity {
 
     /**
      * Get storeAddressObj
-     * @return \AdminBundle\Entity\StoreAddress
+     * @return \Bck\AdminBundle\Entity\StoreAddress
      */
     public function getStoreAddressObj()
     {

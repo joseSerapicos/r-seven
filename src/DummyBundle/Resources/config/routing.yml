@@ -1,3 +1,0 @@
-dummy:
-    resource: "@DummyBundle/Controller/"
-    type:     annotation

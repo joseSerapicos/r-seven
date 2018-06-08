@@ -40,10 +40,11 @@ interface AppInterface {
     object?: any,
     treeView?: any,
     extraData?: any,
-    localData: any
+    localData: any,
+    language ?: any
   },
   templates: any,
-  dependency: AppInterface
+  dependencies: AppInterface
 }
 
 // Global varibles (defined in template/view)
@@ -63,3 +64,6 @@ declare var module: NodeModule;
 interface NodeModule {
   id: string;
 }
+
+// Paypal
+declare var paypal: any;

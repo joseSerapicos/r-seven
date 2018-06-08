@@ -1,0 +1,197 @@
+    
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12">    
+            
+
+                <div class="row form-group" *ngIf="_formService.getObject().code">
+
+                        <label class="col-sm-2 control-label" for="form_code">Code</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_code"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().code"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().code">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_selectEntityObj">Entity</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().selectEntityObj"
+           formControlName = selectEntityObj
+           name="form[selectEntityObj]"
+                      type="hidden">
+    <js_autoComplete [field]="'selectEntityObj'"
+                     [hasSelfReference]="_dataService.getFieldChoicesAttr('selectEntityObj', 'hasSelfReference')"
+                                              (onChange)="'onEntityChange($event)'"[placeholder]="'Entity'"                         ></js_autoComplete>
+                    <label class="error" *ngFor="let error of _formService.getErrors().selectEntityObj">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" *ngIf="_formService.getObject().avatar">
+
+                        <label class="col-sm-2 control-label" for="form_entityObj_avatar">Avatar</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_entityObj_avatar"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().avatar"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().avatar">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_entityObj_title">Title</label>
+    
+            <div class="col-sm-10">
+                                                                    
+        <select id="form_entityObj_title" name="form[entityObj][title]" [(ngModel)]="_formService.getObject().title" formControlName="title" [class.error]="_formService.getErrors().title &amp;&amp; _formService.getErrors().title.length &gt; 0" class="form-control"><option value="Mr.">Mr.</option><option value="Ms.">Ms.</option></select>
+    <input [(ngModel)]="_formService.getObject().title"
+           formControlName = title
+           required="required"           type="hidden">
+
+                            <label class="error" *ngFor="let error of _formService.getErrors().title">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_entityObj_name">Name</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_entityObj_name" name="form[entityObj][name]" required="required" maxlength="64" [(ngModel)]="_formService.getObject().name" formControlName="name" [class.error]="_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().name">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_entityObj_surname">Surname</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_entityObj_surname" name="form[entityObj][surname]" required="required" maxlength="64" [(ngModel)]="_formService.getObject().surname" formControlName="surname" [class.error]="_formService.getErrors().surname &amp;&amp; _formService.getErrors().surname.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().surname">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_entityObj_legalName">Legal Name</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_entityObj_legalName" name="form[entityObj][legalName]" maxlength="128" [(ngModel)]="_formService.getObject().legalName" formControlName="legalName" [class.error]="_formService.getErrors().legalName &amp;&amp; _formService.getErrors().legalName.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().legalName">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_entityObj_birthDate">Birth Date</label>
+    
+            <div class="col-sm-10">
+                                        
+    <div class="input-group js_dataPicker"
+         [datePicker]="'birthDate'"
+         #dpk_birthDate="" [control]="dpk_birthDate">
+        <input type="text"
+               class="form-control"
+               placeholder="yyyy-mm-dd"
+               [(ngModel)]="_formService.getObject().birthDate"
+               formControlName = birthDate
+               name="form[entityObj][birthDate]"
+                              [class.error]="_formService.getErrors()['birthDate'] && (_formService.getErrors()['birthDate'].length > 0)"
+               ngbDatepicker #dpk_birthDate="ngbDatepicker">
+        <div class="input-group-append">
+            <button class="btn" type="button"><a class="fa fa-calendar"></a></button>
+        </div>
+    </div>
+    
+                <label class="error" *ngFor="let error of _formService.getErrors().birthDate">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_entityObj_identification">Identification / Passport</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_entityObj_identification" name="form[entityObj][identification]" required="required" maxlength="16" [(ngModel)]="_formService.getObject().identification" formControlName="identification" [class.error]="_formService.getErrors().identification &amp;&amp; _formService.getErrors().identification.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().identification">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_entityObj_taxNumber">Tax Number</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_entityObj_taxNumber" name="form[entityObj][taxNumber]" maxlength="16" [(ngModel)]="_formService.getObject().taxNumber" formControlName="taxNumber" [class.error]="_formService.getErrors().taxNumber &amp;&amp; _formService.getErrors().taxNumber.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().taxNumber">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" [innerHTML]="getLang('Enabled')"></label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label for="form_isEnabled"><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().isEnabled">{{error}}</label>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer hide-on-empty">
+        
+                    <div class="row">
+            <div class="col-auto ml-auto">
+                                            <button                                     class="btn btn-light"
+                                    (click)="cancelAction($event)"
+                                        id="form_cancel"
+            name="form[cancel]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                                                <button                                     class="btn btn-light"
+                                    (click)="resetAction($event)"
+                                        id="form_reset"
+            name="form[reset]"
+            type="button"><i class="fa fa-ban"></i>&nbsp;Reset</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAction($event)"
+                                        id="form_save"
+            name="form[save]"
+            type="button"><i class="fa fa-check"></i>&nbsp;Save</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAndCloseAction($event)"
+                                        id="form_saveAndClose"
+            name="form[saveAndClose]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Save and Close</button>
+                                </div>
+        </div>
+    </div>    
+    <input type="hidden" id="form__token" name="form[_token]" value="_yE5tsEMUvpURfWTW8W85WZk33Z7lJCsksOmBZnQ86Y" /></form>

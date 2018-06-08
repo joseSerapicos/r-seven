@@ -295,7 +295,7 @@ export class TreeViewDataService extends DataService
                 );
             } else {
                 // No indexes to submit
-                return resolve(null);
+                return resolve({});
             }
         });
     }

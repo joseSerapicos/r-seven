@@ -1,4 +1,0 @@
-services:
-    sysadmin.service.repository:
-        class: SysadminBundle\Service\RepositoryService
-        arguments: ["@doctrine.orm.app_database_entity_manager"]

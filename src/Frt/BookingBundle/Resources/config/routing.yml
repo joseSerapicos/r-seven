@@ -1,0 +1,3 @@
+frt_booking_homepage:
+    resource: "@FrtBookingBundle/Controller/"
+    type:     annotation

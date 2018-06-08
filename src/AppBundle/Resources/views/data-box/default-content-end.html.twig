@@ -1,0 +1,30 @@
+            {% if (dataBoxDefault_hasActions) %}<td>
+                <span *ngIf="obj['_isNew']" class="badge badge-info">New</span>
+                <span *ngIf="obj['_isEdited']" class="badge badge-info">Edited</span>
+                <input *ngIf="_actionsService.getActionAttr('radioChoice', 'isEnabled')"
+                       class="pull-right action"
+                       type="radio"
+                       name="index[]"
+                       value="{% verbatim %}{{objIndex}}{% endverbatim %}"/>
+                <input *ngIf="_actionsService.getActionAttr('checkAll', 'isEnabled')"
+                       class="pull-right action js_checkAll"
+                       type="checkbox"
+                       name="index[]"
+                       value="{% verbatim %}{{objIndex}}{% endverbatim %}"
+                       [ngModel]="checkAll"/>
+                <div class="pull-right actions no-user-select text-secondary" (click)="triggerAction($event)">
+                    <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
+                        <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                           [ngClass]="[_actionsService.getActionAttr(action, 'icon') + getActionsLegendClasses(obj, action)]"
+                           class="fa"
+                           [attr.data-action]="action"
+                           [attr.data-value]="objIndex"></a>
+                    </ng-template>
+                </div>
+            </td>{% endif %}
+        </tr>
+        </ng-template>
+        </tbody>
+    </table>
+    {% if (dataBoxDefault_hasForm) %}</form>{% endif %}
+</div>

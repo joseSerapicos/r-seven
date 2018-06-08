@@ -1,8 +1,0 @@
-{
-  "main": "http://weboffice.whs.dev.com/app_dev.php/entities/entity/detail-tabs",
-  "contacts": "http://weboffice.whs.dev.com/app_dev.php/entities/entity/contacts",
-  "entity-address-edit": "http://weboffice.whs.dev.com/app_dev.php/entities/entity-address/edit/0",
-  "entity-phone-edit": "http://weboffice.whs.dev.com/app_dev.php/entities/entity-phone/edit/0",
-  "entity-email-edit": "http://weboffice.whs.dev.com/app_dev.php/entities/entity-email/edit/0",
-  "entity-link-edit": "http://weboffice.whs.dev.com/app_dev.php/entities/entity-link/edit/0"
-}

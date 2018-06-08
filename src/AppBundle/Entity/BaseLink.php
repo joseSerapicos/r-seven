@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class BaseLink extends BaseEntity {
     /**
-     * @ORM\ManyToOne(targetEntity="\SysadminBundle\Entity\Icon")
+     * @ORM\ManyToOne(targetEntity="Bck\SysadminBundle\Entity\Icon")
      * @ORM\JoinColumn(name="fkApp_icon", referencedColumnName="id", nullable=true, unique=false, onDelete="SET NULL")
      */
     protected $appIconObj;

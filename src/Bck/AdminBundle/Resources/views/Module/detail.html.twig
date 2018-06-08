@@ -1,0 +1,35 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets output="assets/admin/module/detail/css/local.css"
+    '@BckAdminBundle/Resources/public/module/detail/scss/dist/styles.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block header_container %}
+    {% include 'AppBundle:partial:entity-detail.html.twig' with {
+        'object': _conf['object'],
+        'fields': _conf['fields']
+    } %}
+{% endblock %}
+
+{% block body_container %}
+    <div class="js_appBasics"></div>
+    {{ render(controller(
+        'BckAdminBundle:ModuleMenu:indexLocalChild',
+        { 'module': _conf['object']['id'] }
+    )) }}
+{% endblock %}
+
+{% block javascripts %}
+    {% javascripts output="assets/admin/module/detail/js/local.js"
+        '@BckAdminBundle/Resources/public/module/detail/ts/dist/inline.bundle.js'
+        '@BckAdminBundle/Resources/public/module/detail/ts/dist/polyfills.bundle.js'
+        '@BckAdminBundle/Resources/public/module/detail/ts/dist/vendor.bundle.js'
+        '@BckAdminBundle/Resources/public/module/detail/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

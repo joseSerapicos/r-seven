@@ -1,0 +1,48 @@
+{% extends 'AppBundle:form:form-popup.html.twig' %}
+
+{% block body %}
+    {% set form = (form is defined ? form : (_form is defined ? _form : null)) %}
+    {% set fields = (fields is defined ? fields : (_conf['fields'] is defined ? _conf['fields'] : null)) %}
+
+    {% if (form and fields) %}
+        {% for field in fields['form'] %}
+            {% include 'AppBundle:form:field.html.twig' with {
+            'field': field,
+            'metadata': fields['metadata'][field],
+            'form': form
+            } %}
+        {% endfor %}
+
+        <ng-template [ngIf]="_dataService.getLocalDataAttr('paymentMethodDetail')
+                             && (_dataService.getLocalDataAttr('paymentMethodDetail').length > 0)">
+            {% embed 'AppBundle:form:form-control-box.html.twig' with {'label': 'Detail', 'errorControl': 'detail'} %}
+                {% block container %}
+                    <div class="row m-3"
+                         *ngFor="let paymentMethodDetailObj of _dataService.getLocalDataAttr('paymentMethodDetail')">
+                        <label class="col-sm-2 control-label" [innerHtml]="paymentMethodDetailObj['label']"></label>
+                        <div class="col-sm-10">
+                            <ng-template [ngIf]="paymentMethodDetailObj['type'] == 'ENUM'">
+                                <select class="form-control"
+                                        [name]="'paymentMethodDetail[' + paymentMethodDetailObj['id'] + ']'"
+                                        required="required">
+                                    <option *ngFor="let choice of paymentMethodDetailObj['options']"
+                                            value="{% verbatim %}{{choice['id']}}{% endverbatim %}"
+                                            [selected]="choice['id'] == paymentMethodDetailObj['value']"
+                                    >{% verbatim %}{{choice['label']}}{% endverbatim %}</option>
+                                </select>
+                            </ng-template>
+                            <ng-template [ngIf]="paymentMethodDetailObj['type'] == 'TEXT'">
+                                <input class="form-control"
+                                       maxlength="128"
+                                       [name]="'paymentMethodDetail[' + paymentMethodDetailObj['id'] + ']'"
+                                       required="required"
+                                       type="text"
+                                       [value]="paymentMethodDetailObj['value']">
+                            </ng-template>
+                        </div>
+                    </div>
+                {% endblock %}
+            {% endembed %}
+        </ng-template>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,147 @@
+    
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12">    
+                        
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_clientDocumentObj">Client Document</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().clientDocumentObj"
+           formControlName = clientDocumentObj
+           name="form[clientDocumentObj]"
+                      type="hidden">
+    <js_autoComplete [field]="'clientDocumentObj'"
+                     [hasSelfReference]="_dataService.getFieldChoicesAttr('clientDocumentObj', 'hasSelfReference')"
+                                              (onChange)="onClientDocumentChange($event)"                         ></js_autoComplete>
+                    <label class="error" *ngFor="let error of _formService.getErrors().clientDocumentObj">{{error}}</label>
+            </div>
+        </div>
+                                    
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_reference">Reference</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_reference" name="form[reference]" maxlength="128" [(ngModel)]="_formService.getObject().reference" formControlName="reference" [class.error]="_formService.getErrors().reference &amp;&amp; _formService.getErrors().reference.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().reference">{{error}}</label>
+            </div>
+        </div>
+                                    
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_description">Description</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_description" name="form[description]" required="required" maxlength="256" [(ngModel)]="_formService.getObject().description" formControlName="description" [class.error]="_formService.getErrors().description &amp;&amp; _formService.getErrors().description.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().description">{{error}}</label>
+            </div>
+        </div>
+                                    
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_value">Value</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_value" name="form[value]" required="required" [(ngModel)]="_formService.getObject().value" formControlName="value" [class.error]="_formService.getErrors().value &amp;&amp; _formService.getErrors().value.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().value">{{error}}</label>
+            </div>
+        </div>
+                                                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label">Payment Method</label>
+    
+            <div class="col-sm-10">
+                                                                            <div class="form-control-box"
+         [ngClass]="{'error': _formService.getErrors().paymentMethodObj && (_formService.getErrors().paymentMethodObj.length > 0)}"
+         (click)="_formService.setFormFieldValue('paymentMethodObj', $event.target.value)">
+                                                    <div class="radio">
+                    <label ><input
+                        type="radio"
+                        value=""
+                                                    [checked]="!_formService.getObject().paymentMethodObj || (_formService.getObject().paymentMethodObj == '')"
+                        >&nbsp;<span>None</span></label>
+                                            <div class="tip-box"
+                                                              *ngIf="!_formService.getObject().paymentMethodObj || (_formService.getObject().paymentMethodObj == '')"
+                             ><small class="pre-wrap">The customer selects the desired payment method.</small></div>
+                                    </div>
+                            <div class="radio"
+             *ngFor="let choice of _dataService.getFieldChoices('paymentMethodObj')">
+            <label ><input
+                type="radio"
+                value="{{choice['id']}}"
+                [checked]="_formService.getObject().paymentMethodObj == choice['id']">&nbsp;<span [innerHTML]="choice['label']"></span></label>
+            <div class="tip-box"
+                 *ngIf="(_formService.getObject().paymentMethodObj == choice['id']) && (choice['description'])"><small class="pre-wrap">{{choice['description']}}</small></div>
+        </div>
+        <input [(ngModel)]="_formService.getObject().paymentMethodObj"
+               formControlName="paymentMethodObj"
+               name="form[paymentMethodObj]"
+                              type="hidden">
+    </div>
+                                <label class="error" *ngFor="let error of _formService.getErrors().paymentMethodObj">{{error}}</label>
+            </div>
+        </div>
+                                                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_paymentStatus">Payment Status</label>
+    
+            <div class="col-sm-10">
+                                                                    
+        <select id="form_paymentStatus" name="form[paymentStatus]" [(ngModel)]="_formService.getObject().paymentStatus" formControlName="paymentStatus" [class.error]="_formService.getErrors().paymentStatus &amp;&amp; _formService.getErrors().paymentStatus.length &gt; 0" class="form-control"><option value="NO" selected="selected">No</option><option value="YES">Yes</option></select>
+    <input [(ngModel)]="_formService.getObject().paymentStatus"
+           formControlName = paymentStatus
+           required="required"           type="hidden">
+
+                            <label class="error" *ngFor="let error of _formService.getErrors().paymentStatus">{{error}}</label>
+            </div>
+        </div>
+                </div>
+    </div>
+</div>
+<div class="modal-footer hide-on-empty">
+        
+                    <div class="row">
+            <div class="col-auto ml-auto">
+                                            <button                                     class="btn btn-light"
+                                    (click)="cancelAction($event)"
+                                        id="form_cancel"
+            name="form[cancel]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Cancel</button>
+                                                <button                                     class="btn btn-light"
+                                    (click)="resetAction($event)"
+                                        id="form_reset"
+            name="form[reset]"
+            type="button"><i class="fa fa-ban"></i>&nbsp;Reset</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAction($event)"
+                                        id="form_save"
+            name="form[save]"
+            type="button"><i class="fa fa-check"></i>&nbsp;Save</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAndCloseAction($event)"
+                                        id="form_saveAndClose"
+            name="form[saveAndClose]"
+            type="button"><i class="fa fa-times"></i>&nbsp;Save and Close</button>
+                                </div>
+        </div>
+    </div>    
+    <input type="hidden" id="form__token" name="form[_token]" value="0dCPHjV7owrVbsS-xNPX_MA3s803lsZiOEYghcCPuQw" /></form>

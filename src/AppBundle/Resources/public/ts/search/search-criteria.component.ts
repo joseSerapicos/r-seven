@@ -96,11 +96,16 @@ export class SearchCriteriaMap {
                     </ng-template>
                 </div>
                 <div class="actions">
-                    <a *ngIf="_criteriaArr.length > 1" class="fa fa-trash-o" (click)="del($event, i)"></a>
+                    <a class="fa fa-trash-o" (click)="del($event, i)"></a>
                     <a *ngIf="(i+1) == _criteriaArr.length" class="fa fa-plus" (click)="add($event)"></a>
                 </div>
             </div>
         </ng-template>
+        <div class="col controller"
+             *ngIf="_criteriaArr.length < 1">
+            <div class="actions">
+                <a class="fa fa-plus" (click)="add($event)"></a>
+            </div>
         </div>
     </div>
     `,

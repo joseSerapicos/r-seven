@@ -12,7 +12,7 @@ use AppBundle\Service\PriceService;
 class BaseCostWithVat extends BaseEntity
 {
     /**
-     * @ORM\ManyToOne(targetEntity="\AccountingBundle\Entity\VatCode")
+     * @ORM\ManyToOne(targetEntity="Bck\AccountingBundle\Entity\VatCode")
      * @ORM\JoinColumn(name="fk_vatCode", referencedColumnName="id", nullable=false, unique=false, onDelete="RESTRICT")
      *
      * VAT code needs to be defined, because fixed costs can be related to services with VAT codes completely different
@@ -83,10 +83,10 @@ class BaseCostWithVat extends BaseEntity
 
     /**
      * Set vatCodeObj
-     * @param \AccountingBundle\Entity\VatCode $vatCodeObj
+     * @param \Bck\AccountingBundle\Entity\VatCode $vatCodeObj
      * @return $this
      */
-    public function setVatCodeObj(\AccountingBundle\Entity\VatCode $vatCodeObj)
+    public function setVatCodeObj(\Bck\AccountingBundle\Entity\VatCode $vatCodeObj)
     {
         $this->vatCodeObj = $vatCodeObj;
         return $this;
@@ -95,7 +95,7 @@ class BaseCostWithVat extends BaseEntity
     /**
      * Get vatCodeObj
      *
-     * @return \AccountingBundle\Entity\VatCode
+     * @return \Bck\AccountingBundle\Entity\VatCode
      */
     public function getVatCodeObj()
     {

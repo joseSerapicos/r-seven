@@ -1,12 +1,12 @@
 <?php
-namespace AccountingBundle\Entity;
+namespace Bck\AccountingBundle\Entity;
 
 use AppBundle\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 
 /**
- * @ORM\MappedSuperclass(repositoryClass="AccountingBundle\Entity\BaseDocumentStoreInfoRepository")
+ * @ORM\MappedSuperclass(repositoryClass="Bck\AccountingBundle\Entity\BaseDocumentStoreInfoRepository")
  */
 class BaseDocumentStoreInfo extends BaseEntity
 {

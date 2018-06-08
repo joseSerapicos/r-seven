@@ -124,11 +124,11 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
      * Get legend classes
      * @param object
      * @param target (element target to check the legend)
-     * @param field (field on which the expression is checked,
-     *     if is not provided the field defined in legend provider is used)
+     * @param exprField (field on which the expression is checked,
+     *     it's used when the field is not provided in legend, like in actions legend)
      * @returns {string}
      */
-    public getLegendClasses(object: any, target: string, field: string = null)
+    public getLegendClasses(object: any, target: string, exprField: string = null)
     {
         let legend = this._provider['controls']['legend'];
 
@@ -137,22 +137,22 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
         }
 
         for (let legendControl of legend) {
-            field = (field || legendControl['field']);
-            let legendTarget = (legendControl['target'] || 'tr');
+            let legendExprField = (legendControl['field'] || exprField),
+                legendTarget = (legendControl['target'] || 'tr');
 
             // Check target, if is not the same jump the loop
-            if ((legendTarget != target) || (!field) || (field == '')) {
+            if ((legendTarget != target) || (!legendExprField) || (legendExprField == '')) {
                 continue;
             }
 
             let expr = (legendControl['expr'] || 'notNull'),
                 isExprNotNull = (expr == 'notNull'),
                 // Check in original field first if defined
-                fieldValue = ((object['__'+field] !== undefined) ? object['__'+field] : object[field]);
+                fieldValue = ((object['__'+legendExprField] !== undefined) ? object['__'+legendExprField] : object[legendExprField]);
 
             // Normalize value
-            if (this._dataService.getFields('metadata')[field]) { // In case of foreign objects, metadata can be not defined
-                switch (this._dataService.getFields('metadata')[field].type) {
+            if (this._dataService.getFields('metadata')[legendExprField]) { // In case of foreign objects, metadata can be not defined
+                switch (this._dataService.getFields('metadata')[legendExprField].type) {
                     case 'boolean':
                         fieldValue = this._helperService.castToBoolean(fieldValue);
                         break;
@@ -428,7 +428,7 @@ export abstract class DataBoxExtensionComponent extends BoxExtensionComponent {
         if (!popup['injector']) {
             // It's the firs time that popup is open, so we need to supply the providers
             let context = popup['localData']['context'],
-                route = (this._helperService.getAppVar('route') + 'common/email/conf');
+                route = (this._helperService.getAppVar('route') + 'bck/common/email/conf');
 
             this._dataService.runAction(route).then(
                 data => {

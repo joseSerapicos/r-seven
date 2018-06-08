@@ -1,0 +1,8 @@
+services:
+    bck.accounting.service.repository:
+        class: Bck\AccountingBundle\Service\RepositoryService
+        arguments: ["@doctrine.orm.local_database_entity_manager"]
+    bck.accounting.controller.client_document:
+      class: Bck\AccountingBundle\Controller\ClientDocumentController
+    bck.accounting.controller.client_document_invoice_detail:
+      class: Bck\AccountingBundle\Controller\ClientDocumentInvoiceDetailController

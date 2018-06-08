@@ -1,0 +1,21 @@
+{% extends 'AppBundle:form:form.html.twig' %}
+
+{% block before_form %}
+    <div class="row form-group">
+        <label class="col-sm-2 control-label">Payment Info</label>
+        <div class="col-sm-10">
+            <div class="form-control-box"><ng-template #js_entityDetailPreview></ng-template></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block fields %}
+    {% include 'AppBundle:form:fields.html.twig' with {
+    'form': form,
+    'fields': fields
+    } %}
+    <div [hidden]="appPaymentMethod_name != 'Paypal'" class="row">
+        <div id="paypal-button"
+             class="offset-sm-2 col-sm-8"></div>
+    </div>
+{% endblock %}

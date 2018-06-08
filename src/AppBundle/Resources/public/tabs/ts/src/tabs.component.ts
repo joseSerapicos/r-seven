@@ -30,16 +30,4 @@ export abstract class TabsComponent extends TabsExtComponent {
             navManagerService
         );
     }
-
-    /**
-     * Lifecycle callback
-     */
-    ngAfterViewInit()
-    {
-        // Initializes the children navigation manager service
-        this._navManagerService.init(this, this.lazyLoadViewContainerRefQL);
-
-        // Open the first tab
-        this._navManagerService.navTo(0);
-    }
 }

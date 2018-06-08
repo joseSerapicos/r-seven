@@ -24,9 +24,9 @@ abstract class BasePriceWithVatRepository extends BasePriceRepository
 
         $localMetadata = self::processMetadata(array(
             'vatCodeObj' => array('label' => 'VAT Code', 'type' => 'object', 'acl' => 'read',
-                'typeDetail' => array('table' => 'vatCode', 'bundle' => 'accounting', 'type' => 'none')
+                'typeDetail' => array('table' => 'vatCode', 'bundlePrefix' => 'bck', 'bundle' => 'accounting', 'type' => 'none')
             ),
-            'vatCode_percentage' => array('table' => 'vatCode', 'field' => 'percentage', 'label' => '', 'type' => 'percentage',
+            'vatCode_percentage' => array('table' => 'vatCode', 'field' => 'percentage', 'label' => 'VAT Percentage', 'type' => 'percentage',
                 'acl' => 'read', 'dependency' => 'vatCodeObj', 'form' => array('type' => 'none')),
             'vatCode_name' => array('table' => 'vatCode', 'field' => 'name', 'label' => 'VAT Code', 'type' => 'text',
                 'acl' => 'read', 'dependency' => 'vatCodeObj', 'form' => array('type' => 'none')),

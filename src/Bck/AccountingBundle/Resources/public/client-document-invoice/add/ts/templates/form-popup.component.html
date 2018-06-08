@@ -1,0 +1,51 @@
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12">    
+                        <ul class="row mb-3 no-gutters wizard-nav">
+                                    <li class="col-auto wizard-step"
+                        [class.step-active]="0 == _wizardManagerService.getIndex()">
+                        <span class="step-number">1</span>
+                        <span class="step-text">Booking Service</span>
+                    </li>
+                                    <li class="col-auto wizard-step"
+                        [class.step-active]="1 == _wizardManagerService.getIndex()">
+                        <span class="step-number">2</span>
+                        <span class="step-text">Preview</span>
+                    </li>
+                            </ul>
+
+            
+                <section [hidden]="_wizardManagerService.getIndex() != 0"
+         class="js_lazyLoadContainer_0">
+    <ng-template #js_lazyLoadContainer></ng-template>
+</section>
+    <section [hidden]="_wizardManagerService.getIndex() != 1"
+         class="js_lazyLoadContainer_1">
+    <ng-template #js_lazyLoadContainer></ng-template>
+</section>
+            
+            
+    </div>
+    </div>
+</div>
+<div class="modal-footer hide-on-empty">
+        <div class="row justify-content-center">
+    <div class="col-auto">
+            <button type="button" class="btn-light btn" (click)="_wizardManagerService.cancelAction($event)">Cancel</button>
+                <button type="button" class="btn-primary btn" (click)="_wizardManagerService.prevAction($event)"
+                    *ngIf="0 < _wizardManagerService.getIndex()">Prev</button>
+            <button type="button" class="btn-primary btn" (click)="_wizardManagerService.nextAction($event)"
+                    *ngIf="1 > _wizardManagerService.getIndex()">Next</button>
+            <button type="button" class="btn-primary btn" (click)="_wizardManagerService.finishAction($event)"
+                    *ngIf="1 == _wizardManagerService.getIndex()">Finish</button>
+        
+    </div>
+</div></div>

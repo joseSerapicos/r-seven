@@ -1,0 +1,62 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block head_javascripts %}
+    {{ parent() }}
+
+    {% set parentId = (_conf['object']['entityObj']) %}
+
+    {% set entityAddressData = render(controller(
+        'BckEntitiesBundle:EntityAddress:dataChild',
+        {'parents': {'entity': parentId}, 'responseType': 'json'}
+    )) %}
+
+    {% set entityPhoneData = render(controller(
+        'BckEntitiesBundle:EntityPhone:dataChild',
+        {'parents': {'entity': parentId}, 'responseType': 'json'}
+    )) %}
+
+    {% set entityEmailData = render(controller(
+        'BckEntitiesBundle:EntityEmail:dataChild',
+        {'parents': {'entity': parentId}, 'responseType': 'json'}
+    )) %}
+
+    {% set entityLinkData = render(controller(
+        'BckEntitiesBundle:EntityLink:dataChild',
+        {'parents': {'entity': parentId}, 'responseType': 'json'}
+    )) %}
+    <script>
+        _app.dependencies.entityAddress = {{ entityAddressData|raw }};
+        _app.dependencies.entityPhone = {{ entityPhoneData|raw }};
+        _app.dependencies.entityEmail = {{ entityEmailData|raw }};
+        _app.dependencies.entityLink = {{ entityLinkData|raw }};
+    </script>
+{% endblock %}
+
+
+{% block before_container %}
+    <div class="js_appBasics"></div>
+    <div id="js_main"></div>
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block stylesheets %}
+    {% stylesheets output="assets/admin/user/profile/css/local.css"
+    '@BckAdminBundle/Resources/public/user/profile/scss/dist/styles.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block body %}{% endblock %}
+
+{% block javascripts %}
+    {% javascripts output="assets/admin/user/profile/js/local.js"
+        '@BckAdminBundle/Resources/public/user/profile/ts/dist/inline.bundle.js'
+        '@BckAdminBundle/Resources/public/user/profile/ts/dist/polyfills.bundle.js'
+        '@BckAdminBundle/Resources/public/user/profile/ts/dist/vendor.bundle.js'
+        '@BckAdminBundle/Resources/public/user/profile/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

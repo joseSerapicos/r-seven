@@ -1,0 +1,12 @@
+{% extends 'BckEntitiesBundle:Entity:detail.html.twig' %}
+
+{%  block javascripts %}
+    {% javascripts output="assets/entities/client/detail/js/local.js"
+    '@BckEntitiesBundle/Resources/public/client/detail/ts/dist/inline.bundle.js'
+    '@BckEntitiesBundle/Resources/public/client/detail/ts/dist/polyfills.bundle.js'
+    '@BckEntitiesBundle/Resources/public/client/detail/ts/dist/vendor.bundle.js'
+    '@BckEntitiesBundle/Resources/public/client/detail/ts/dist/main.bundle.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

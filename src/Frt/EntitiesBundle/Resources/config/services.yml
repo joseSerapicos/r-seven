@@ -1,0 +1,3 @@
+services:
+    frt.entities.controller.client:
+        class: Frt\EntitiesBundle\Controller\ClientController

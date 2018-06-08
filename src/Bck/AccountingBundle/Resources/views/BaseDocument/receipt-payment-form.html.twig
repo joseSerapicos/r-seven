@@ -1,0 +1,10 @@
+{% extends 'BckAccountingBundle:BaseDocument:receipt-form.html.twig' %}
+{% block detail %}<section><ng-template #js_lazyLoadContainer></ng-template></section>{% endblock %}
+{% block total_container %}<tr>
+    <td><strong>Total:</strong></td>
+    <td>{% include 'AppBundle:form:input.html.twig' with {
+            'field': 'total',
+            'formField': documentForm['total'],
+            'metadata': fields['metadata']['total']
+        } %}</td>
+</tr>{% endblock %}

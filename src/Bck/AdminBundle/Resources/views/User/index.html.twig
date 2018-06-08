@@ -1,0 +1,27 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block header %}{% endblock %}
+
+{% block stylesheets %}
+    {% stylesheets output="assets/admin/user/index/css/local.css"
+    '@BckAdminBundle/Resources/public/user/index/scss/dist/styles.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block body_container %}
+    <div class="js_appBasics"></div>
+    <div class="js_dataBox"></div>
+{% endblock %}
+
+{% block javascripts %}
+    {% javascripts output="assets/admin/user/index/js/local.js"
+        '@BckAdminBundle/Resources/public/user/index/ts/dist/inline.bundle.js'
+        '@BckAdminBundle/Resources/public/user/index/ts/dist/polyfills.bundle.js'
+        '@BckAdminBundle/Resources/public/user/index/ts/dist/vendor.bundle.js'
+        '@BckAdminBundle/Resources/public/user/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

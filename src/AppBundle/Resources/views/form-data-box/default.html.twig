@@ -1,0 +1,8 @@
+{% extends 'AppBundle:form:form.html.twig' %}
+
+{% block before_form %}{% endblock %}
+
+{% block after_form %}
+    {% set dataBoxDefault_hasForm = false %}
+    <div class="row"><div class="col mt-4"><ng-template #js_dataBox></ng-template></div></div>
+{% endblock %}

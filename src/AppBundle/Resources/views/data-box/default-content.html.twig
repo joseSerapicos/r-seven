@@ -1,0 +1,7 @@
+{% set dataBoxDefault_hasHeader = (dataBoxDefault_hasHeader is defined ? dataBoxDefault_hasHeader : true) %}
+{% set dataBoxDefault_hasForm = (dataBoxDefault_hasForm is defined ? dataBoxDefault_hasForm : true) %}
+{% set dataBoxDefault_hasActions = (dataBoxDefault_hasActions is defined ? dataBoxDefault_hasActions : true) %}
+
+{% include 'AppBundle:data-box:default-content-start.html.twig' %}
+{% include 'AppBundle:data-box:default-content-container.html.twig' %}
+{% include 'AppBundle:data-box:default-content-end.html.twig' %}

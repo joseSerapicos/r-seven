@@ -1,0 +1,5 @@
+{
+  "main": "http://www.handsometravel.dev/app_dev.php/bck/settings/email-settings/main-menus",
+  "email-template-edit": "http://www.handsometravel.dev/app_dev.php/bck/settings/email-template/edit",
+  "email-template-default-edit": "http://www.handsometravel.dev/app_dev.php/bck/settings/email-template-default/edit"
+}

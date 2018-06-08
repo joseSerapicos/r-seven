@@ -1,53 +1,73 @@
-management:
-    resource: "@ManagementBundle/Controller/"
+frt_services:
+    resource: "@FrtServicesBundle/Controller/"
     type:     annotation
 
-common:
-    resource: "@CommonBundle/Controller/"
+frt_booking:
+    resource: "@FrtBookingBundle/Controller/"
     type:     annotation
 
-settings:
-    resource: "@SettingsBundle/Controller/"
+frt_entities:
+    resource: "@FrtEntitiesBundle/Controller/"
     type:     annotation
 
-user:
-    resource: "@UserBundle/Controller/"
+_frt_common:
+    resource: "@FrtCommonBundle/Controller/"
     type:     annotation
 
-booking:
-    resource: "@BookingBundle/Controller/"
+_frt_accounting:
+    resource: "@FrtAccountingBundle/Controller/"
     type:     annotation
 
-accounting:
-    resource: "@AccountingBundle/Controller/"
+_bck_management:
+    resource: "@BckManagementBundle/Controller/"
     type:     annotation
 
-services:
-    resource: "@ServicesBundle/Controller/"
+_bck_common:
+    resource: "@BckCommonBundle/Controller/"
     type:     annotation
 
-sysadmin:
-    resource: "@SysadminBundle/Controller/"
+_bck_settings:
+    resource: "@BckSettingsBundle/Controller/"
     type:     annotation
 
-admin:
-    resource: "@AdminBundle/Controller/"
+_bck_user:
+    resource: "@BckUserBundle/Controller/"
     type:     annotation
 
-login:
+_bck_booking:
+    resource: "@BckBookingBundle/Controller/"
+    type:     annotation
+
+_bck_accounting:
+    resource: "@BckAccountingBundle/Controller/"
+    type:     annotation
+
+_bck_services:
+    resource: "@BckServicesBundle/Controller/"
+    type:     annotation
+
+_bck_sysadmin:
+    resource: "@BckSysadminBundle/Controller/"
+    type:     annotation
+
+_bck_admin:
+    resource: "@BckAdminBundle/Controller/"
+    type:     annotation
+
+_login:
     resource: "@LoginBundle/Controller/"
     type:     annotation
 
-home:
-    resource: "@HomeBundle/Controller/"
+_bck_home:
+    resource: "@BckHomeBundle/Controller/"
     type:     annotation
 
-app:
+_app:
     resource: "@AppBundle/Controller/"
     type:     annotation
 
-entities:
-    resource: "@EntitiesBundle/Controller/"
+_bck_entities:
+    resource: "@BckEntitiesBundle/Controller/"
     type:     annotation
 
 _liip_imagine:

@@ -41,7 +41,8 @@ abstract class BaseType extends AbstractType
         $entityClass = str_replace("\\Form\\", "\\Entity\\", substr(get_class($this), 0 , -4)); // Removes the key "Type"
         $entityRepositoryClass = ($entityClass . 'Repository');
         // Necessary to get and persist object in the correct database
-        $entityDataBase = ((substr($entityClass, 0 , 8) == 'Sysadmin') ? 'app_database' : 'local_database');
+        $bundleNameArr = HelperService::getBundleNameArr($this);
+        $entityDataBase = (($bundleNameArr['bundle'] == 'SysadminBundle') ? 'app_database' : 'local_database');
 
         $this->conf = array(
             'entityClass' => $entityClass,
@@ -240,7 +241,7 @@ abstract class BaseType extends AbstractType
                 // If is mapped and not a fake field, use default case, so "nullables" can be guessed.
                 // In case of fake fields, there are no entity metadata to form guess the field type, so we need to
                 // determine the type by hand, otherwise the form would render the field as a simple input
-                // (like "paxIsClient" in "BookingBundle:Booking")
+                // (like "paxIsClient" in "BckBookingBundle:Booking")
                 if (!$isMapped || $isFakeField) {
                     $formBuilder->add($field, CheckboxType::class, $baseAttrArr);
                     break;

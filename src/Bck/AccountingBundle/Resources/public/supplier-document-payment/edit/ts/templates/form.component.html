@@ -1,0 +1,86 @@
+
+
+
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+
+    
+            
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_paymentMethodObj">Payment Method</label>
+    
+            <div class="col-sm-10">
+                                                                        <div class="html-select"
+         [htmlSelect]="'paymentMethodObj'"
+                               >
+        <div class="input-group-control"
+             [class.error]="_formService.getErrors()['paymentMethodObj'] && (_formService.getErrors()['paymentMethodObj'].length > 0)">
+            <span class="js_label form-control"></span>
+            <a class="pull-right"><i class="fa fa-angle-down"></i></a>
+        </div>
+        <div class="choices js_choices">
+            <ul class="form-control-box">        <ng-template ngFor let-choice [ngForOf]="_dataService.getFieldChoices('paymentMethodObj')">
+            <li [attr.data-value]="choice['id']" [innerHtml]="choice['label']"></li>
+        </ng-template>
+    </ul>
+        </div>
+    </div>
+    <input [(ngModel)]="_formService.getObject().paymentMethodObj"
+           formControlName = paymentMethodObj
+           name="form[paymentMethodObj]"
+           required="required"           type="hidden">
+                                <label class="error" *ngFor="let error of _formService.getErrors().paymentMethodObj">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_reference">Reference</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_reference" name="form[reference]" maxlength="64" [(ngModel)]="_formService.getObject().reference" formControlName="reference" [class.error]="_formService.getErrors().reference &amp;&amp; _formService.getErrors().reference.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().reference">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_description">Description</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_description" name="form[description]" maxlength="256" [(ngModel)]="_formService.getObject().description" formControlName="description" [class.error]="_formService.getErrors().description &amp;&amp; _formService.getErrors().description.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().description">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_value">Value</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_value" name="form[value]" required="required" [(ngModel)]="_formService.getObject().value" formControlName="value" [class.error]="_formService.getErrors().value &amp;&amp; _formService.getErrors().value.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().value">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" [innerHTML]="getLang('Enabled')"></label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label for="form_isEnabled"><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().isEnabled">{{error}}</label>
+            </div>
+        </div>
+        
+
+    
+
+    <input type="hidden" id="form__token" name="form[_token]" value="_yE5tsEMUvpURfWTW8W85WZk33Z7lJCsksOmBZnQ86Y" /></form>
+

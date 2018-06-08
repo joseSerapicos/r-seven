@@ -77,7 +77,20 @@ export abstract class BaseExtensionComponent {
      */
     protected getProviderAttr(attribute: string): any
     {
-        return this._provider[attribute] || null;
+        return ((this._provider[attribute] === undefined) ? null : this._provider[attribute]); // Can be zero
+    }
+
+    /**
+     * Get lang
+     * @param key
+     * @returns {any}
+     */
+    public getLang(key): any
+    {
+        return ((!this._provider['language'] || (this._provider['language'][key] === undefined))
+                ? key
+                : this._provider['language'][key] // Can be zero
+        );
     }
 
     /**
@@ -111,6 +124,6 @@ export abstract class BaseExtensionComponent {
     {
         // Start loading lazy images
         // @TODO: This method should be called from DataService each time that objects are updated
-        $(this._elementRef.nativeElement).find('.js_lazy').Lazy();
+        //$(this._elementRef.nativeElement).find('.js_lazy').Lazy();
     }
 }

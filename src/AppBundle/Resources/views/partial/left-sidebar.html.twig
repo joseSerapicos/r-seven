@@ -1,8 +1,8 @@
 <div class="container">
 <div class="row left-sidebar-user">
     <div class="col-12 text-left py-3">
-        <div><img alt="Avatar" class="img-circle" src="{{app.session.get('_app.user')['avatar']}}"/></div>
-        <div class="m-t-xs info text-white">{{app.session.get('_app.user')['name']}}</div>
+        <div><img alt="Avatar" class="img-circle" src="{{app.session.get('_app.user')['avatar']}}" width="48" height="48"/></div>
+        <div class="m-t-xs info text-white">{{app.session.get('_app.user')['name']}} ({{app.session.get('_app.user.language')['systemPrefix']}})</div>
         <div class="m-t-xs info">{% include 'AppBundle:partial:store-name.html.twig' %}</div>
     </div>
 </div>

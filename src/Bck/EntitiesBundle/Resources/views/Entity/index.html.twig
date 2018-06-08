@@ -1,0 +1,12 @@
+{% extends 'AppBundle:data-box:index.html.twig' %}
+
+{%  block javascripts %}
+    {% javascripts output="assets/entities/entity/index/js/local.js"
+        '@BckEntitiesBundle/Resources/public/entity/index/ts/dist/inline.bundle.js'
+        '@BckEntitiesBundle/Resources/public/entity/index/ts/dist/polyfills.bundle.js'
+        '@BckEntitiesBundle/Resources/public/entity/index/ts/dist/vendor.bundle.js'
+        '@BckEntitiesBundle/Resources/public/entity/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

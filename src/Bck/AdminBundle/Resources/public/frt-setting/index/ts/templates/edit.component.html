@@ -1,0 +1,153 @@
+
+
+
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" class="m-3 form-horizontal" [formGroup]="_formService.getForm()">
+
+    
+            
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_frtStoreObj">Front-Office Store</label>
+    
+            <div class="col-sm-10">
+                                                                            <select [(ngModel)]="_formService.getObject().frtStoreObj"
+            formControlName = frtStoreObj
+            class="form-control"
+            [class.error]="_formService.getErrors().frtStoreObj && (_formService.getErrors().frtStoreObj.length > 0)"
+            id="form_frtStoreObj"
+            name="form[frtStoreObj]"
+            required="required">
+        <option value=""></option>
+                    <option *ngFor="let choice of _dataService.getFieldChoices('frtStoreObj')"
+                    value="{{choice['id']}}">{{choice['label']}}</option>
+            </select>
+                                <label class="error" *ngFor="let error of _formService.getErrors().frtStoreObj">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_company">Company</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_company" name="form[company]" required="required" maxlength="32" [(ngModel)]="_formService.getObject().company" formControlName="company" [class.error]="_formService.getErrors().company &amp;&amp; _formService.getErrors().company.length &gt; 0" class="form-control" value="Travel Company" />
+                <label class="error" *ngFor="let error of _formService.getErrors().company">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_slogan">Slogan</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_slogan" name="form[slogan]" maxlength="256" [(ngModel)]="_formService.getObject().slogan" formControlName="slogan" [class.error]="_formService.getErrors().slogan &amp;&amp; _formService.getErrors().slogan.length &gt; 0" class="form-control" value="go ahaead" />
+                <label class="error" *ngFor="let error of _formService.getErrors().slogan">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_headerBgColor">Header Background Color</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().headerBgColor"
+           formControlName = headerBgColor
+           class="form-control -color"
+           [class.error]="_formService.getErrors().headerBgColor && (_formService.getErrors().headerBgColor.length > 0)"
+           id="form_headerBgColor"
+           name="form[headerBgColor]"
+                      maxlength="7"
+           type="color">
+                    <label class="error" *ngFor="let error of _formService.getErrors().headerBgColor">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_bgColor">Background Color</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().bgColor"
+           formControlName = bgColor
+           class="form-control -color"
+           [class.error]="_formService.getErrors().bgColor && (_formService.getErrors().bgColor.length > 0)"
+           id="form_bgColor"
+           name="form[bgColor]"
+                      maxlength="7"
+           type="color">
+                    <label class="error" *ngFor="let error of _formService.getErrors().bgColor">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_headerTxtColor">Header Text Color</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().headerTxtColor"
+           formControlName = headerTxtColor
+           class="form-control -color"
+           [class.error]="_formService.getErrors().headerTxtColor && (_formService.getErrors().headerTxtColor.length > 0)"
+           id="form_headerTxtColor"
+           name="form[headerTxtColor]"
+                      maxlength="7"
+           type="color">
+                    <label class="error" *ngFor="let error of _formService.getErrors().headerTxtColor">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_txtColor">Text Color</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().txtColor"
+           formControlName = txtColor
+           class="form-control -color"
+           [class.error]="_formService.getErrors().txtColor && (_formService.getErrors().txtColor.length > 0)"
+           id="form_txtColor"
+           name="form[txtColor]"
+                      maxlength="7"
+           type="color">
+                    <label class="error" *ngFor="let error of _formService.getErrors().txtColor">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" [innerHTML]="getLang('Enabled')"></label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label for="form_isEnabled"><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().isEnabled">{{error}}</label>
+            </div>
+        </div>
+        
+
+                    <div class="row">
+            <div class="col-auto ml-auto">
+                                            <button                                     class="btn btn-light"
+                                    (click)="resetAction($event)"
+                                        id="form_reset"
+            name="form[reset]"
+            type="button"><i class="fa fa-ban"></i>&nbsp;Reset</button>
+                                                <button                                     class="btn btn-primary"
+                                    (click)="saveAction($event)"
+                                        id="form_save"
+            name="form[save]"
+            type="button"><i class="fa fa-check"></i>&nbsp;Save</button>
+                                </div>
+        </div>
+    
+
+    <input type="hidden" id="form__token" name="form[_token]" value="_yE5tsEMUvpURfWTW8W85WZk33Z7lJCsksOmBZnQ86Y" /></form>
+

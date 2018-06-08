@@ -1,0 +1,20 @@
+{% extends 'AppBundle:data-box:index.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets output="assets/sysadmin/language/index/css/local.css"
+    '@BckSysadminBundle/Resources/public/language/index/scss/dist/styles.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    {% javascripts output="assets/sysadmin/language/index/js/local.js"
+        '@BckSysadminBundle/Resources/public/language/index/ts/dist/inline.bundle.js'
+        '@BckSysadminBundle/Resources/public/language/index/ts/dist/polyfills.bundle.js'
+        '@BckSysadminBundle/Resources/public/language/index/ts/dist/vendor.bundle.js'
+        '@BckSysadminBundle/Resources/public/language/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

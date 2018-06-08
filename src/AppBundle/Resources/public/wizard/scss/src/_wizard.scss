@@ -9,7 +9,7 @@
 .wizard-step {
     display: inline-block;
     position: relative;
-    background-color: $left-sidebar-active-bgcolor;
+    background-color: $light-bg;
     height: 50px;
     line-height: 50px;
     margin: 0 16px 1px 0;
@@ -24,8 +24,8 @@
     background: transparent;
     border: 20px solid transparent;
     border-width: 25px 13px 25px 13px;
-    border-top-color: $left-sidebar-active-bgcolor;
-    border-bottom-color: $left-sidebar-active-bgcolor;
+    border-top-color: $light-bg;
+    border-bottom-color: $light-bg;
 }
 .wizard-step:after {
     content: "";
@@ -37,7 +37,7 @@
     background: transparent;
     border: 20px solid transparent;
     border-width: 25px 13px 25px 13px;
-    border-left-color: $left-sidebar-active-bgcolor;
+    border-left-color: $light-bg;
 }
 
 .wizard-step span {

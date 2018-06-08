@@ -1,0 +1,5 @@
+{
+  "add": "http://www.handsometravel.dev/app_dev.php/bck/admin/user/edit",
+  "add-form-password": "http://www.handsometravel.dev/app_dev.php/bck/admin/user/edit-password/0",
+  "edit": "http://www.handsometravel.dev/app_dev.php/bck/admin/user/edit/0"
+}

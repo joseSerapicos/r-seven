@@ -17,7 +17,9 @@ class TwigExtensionService extends \Twig_Extension
     {
         return array(
             'asset_exists' => new \Twig_Function('asset_exists', array($this, 'asset_exists')),
-            'get_col_align' => new \Twig_Function('get_col_align', array($this, 'get_col_align'))
+            'get_col_align' => new \Twig_Function('get_col_align', array($this, 'get_col_align')),
+            'get_lang_server' => new \Twig_Function('get_lang_server', array($this, 'get_lang_server')),
+            'get_lang_client' => new \Twig_Function('get_lang_client', array($this, 'get_lang_client'))
         );
     }
 
@@ -52,6 +54,26 @@ class TwigExtensionService extends \Twig_Extension
             default:
                 return 'text-left';
         }
+    }
+
+    /**
+     * Get language key for server
+     * @param $key
+     * @return bool
+     */
+    public function get_lang_server($key)
+    {
+        return HelperService::getLangServer($key);
+    }
+
+    /**
+     * Get language key for client
+     * @param $key
+     * @return bool
+     */
+    public function get_lang_client($key)
+    {
+        return HelperService::getLangClient($key);
     }
 
     /**

@@ -1,0 +1,21 @@
+{% extends 'AppBundle:data-box:index.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets output="assets/accounting/client-payment-request/index/css/local.css"
+    '@BckAccountingBundle/Resources/public/client-payment-request/index/scss/dist/styles.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+    {% javascripts output="assets/accounting/client-payment-request/index/js/local.js"
+    '@BckAccountingBundle/Resources/public/client-payment-request/index/ts/dist/inline.bundle.js'
+    '@BckAccountingBundle/Resources/public/client-payment-request/index/ts/dist/polyfills.bundle.js'
+    '@BckAccountingBundle/Resources/public/client-payment-request/index/ts/dist/vendor.bundle.js'
+    '@BckAccountingBundle/Resources/public/client-payment-request/index/ts/dist/main.bundle.js'
+    %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

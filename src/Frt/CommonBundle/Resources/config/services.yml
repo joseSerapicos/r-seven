@@ -1,0 +1,4 @@
+services:
+    frt.common.service.repository:
+        class: Frt\CommonBundle\Service\RepositoryService
+        arguments: ["@doctrine.orm.local_database_entity_manager"]

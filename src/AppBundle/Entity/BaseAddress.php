@@ -204,4 +204,36 @@ class BaseAddress extends BaseEntity {
     {
         return $this->country;
     }
+
+    /**
+     * Overrides parent method.
+     * @return mixed
+     */
+    public function __toString()
+    {
+        return $this->__customToString();
+    }
+
+    /**
+     * Customizable string
+     * @param bool $hasName
+     * @param bool $hasAddress
+     * @return string
+     */
+    public function __customToString($hasName = true, $hasAddress = true)
+    {
+        $output = '';
+
+        if ($hasName && $this->name) {
+            $output .= $this->name;
+        }
+        if ($hasAddress) {
+            if ($hasName && $this->name) {
+                $output .= ': ';
+            }
+            $output .= $this->getStreet1();
+        }
+
+        return $output;
+    }
 }

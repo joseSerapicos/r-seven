@@ -1,0 +1,54 @@
+    
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" ngNoForm="" class="form-horizontal">
+
+
+<div class="ibox" >
+                        <div class="ibox-title" *ngIf="!getProviderExtraDataAttr('hasMergeHeader')">
+                <h5>
+                    <ng-template [ngIf]="getProviderAttr('controls')['expander']['isEnabled']"><js_expander
+                        [isExpanded]="_isExpanded || null"
+                        [label]="getLang(getProviderAttr('label'))"
+                        [labelCount]="getProviderAttr('labelCount')"
+                        [labelIcon]="getProviderAttr('labelIcon')"
+                        (onChange)="expanderAction($event)"></js_expander></ng-template>
+                    <ng-template [ngIf]="!getProviderAttr('controls')['expander']['isEnabled']">
+                        <span [innerHTML]="getProviderAttr('label')"></span>
+                    </ng-template>
+                </h5>
+                <div *ngIf="_isExpanded"
+                     class="txt-align-r hide-on-empty">    <div class="row align-items-center">
+        <div class="col ml-auto text-right actions no-user-select">
+            <ng-template [ngIf]="_actionsService.getActionAttr('search', 'isEnabled')"><js_search class="search"></js_search></ng-template>
+            <div (click)="triggerAction($event)">
+                <ng-template ngFor let-action [ngForOf]="_actionsService.getHeadActions()">
+                    <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
+                       [ngClass]="[_actionsService.getActionAttr(action, 'icon')]"
+                       class="-round fa"
+                       [attr.data-action]="action"></a>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+</div>
+            </div>
+            
+    <div [hidden]="!(_isExpanded)" class="ibox-content hide-on-empty">    <ng-template [ngIf]="(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">
+        <ul class="tree-view">
+        <js_treeViewNode [nodes]="getNodes(0)"
+                         [nodesIndex]="0"
+                         [parentTargetField]="_provider['parentTargetField']"
+                         [treeViewComponent]="_treeViewComponent"></js_treeViewNode>
+    </ul>
+    </ng-template><p
+        class="text-center"
+        *ngIf="!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])">No results.</p>
+</div>
+        <div class="modal-footer"><div class="row"><div class="col-auto ml-auto">
+                                    <button type="button" id="form_reset" name="form[reset]" class="btn btn-light btn" (click)="resetAction($event)">Reset</button>
+                                                    <button type="button" id="form_save" name="form[save]" class="btn btn-primary btn" (click)="saveAction($event)">Save</button>
+                            </div></div></div>
+
+</div>
+
+    
+    <input type="hidden" id="form__token" name="form[_token]" value="_yE5tsEMUvpURfWTW8W85WZk33Z7lJCsksOmBZnQ86Y" /></form>

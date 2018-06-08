@@ -1,0 +1,3 @@
+frt_entities_homepage:
+    resource: "@FrtEntitiesBundle/Controller/"
+    type:     annotation

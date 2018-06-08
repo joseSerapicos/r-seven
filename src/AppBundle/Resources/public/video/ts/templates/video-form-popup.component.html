@@ -55,14 +55,14 @@
 </div>
 <div class="modal-footer hide-on-empty">
         <div class="row justify-content-center">
-        <div class="col-auto">
+    <div class="col-auto">
             <button type="button" class="btn-light btn" (click)="_wizardManagerService.cancelAction($event)">Cancel</button>
-            <button type="button" class="btn-primary btn" (click)="_wizardManagerService.prevAction($event)"
+                <button type="button" class="btn-primary btn" (click)="_wizardManagerService.prevAction($event)"
                     *ngIf="0 < _wizardManagerService.getIndex()">Prev</button>
             <button type="button" class="btn-primary btn" (click)="_wizardManagerService.nextAction($event)"
                     *ngIf="1 > _wizardManagerService.getIndex()">Next</button>
-                            <button type="button" class="btn-primary btn" (click)="_wizardManagerService.finishAction($event)"
-                        *ngIf="1 == _wizardManagerService.getIndex()">Finish</button>
-                    </div>
+            <button type="button" class="btn-primary btn" (click)="_wizardManagerService.finishAction($event)"
+                    *ngIf="1 == _wizardManagerService.getIndex()">Finish</button>
+        
     </div>
-</div>
+</div></div>

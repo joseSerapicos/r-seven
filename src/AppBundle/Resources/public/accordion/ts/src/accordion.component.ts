@@ -1,5 +1,5 @@
 import {Component, ElementRef, Inject, Renderer, QueryList, ViewContainerRef, ViewChildren, Optional} from '@angular/core';
-import {BaseExtensionComponent, BaseProvider} from '../../../../../../AppBundle/Resources/public/ts/base/base.extension-component';
+import {BaseExtensionComponent, BaseProvider} from '../../../ts/base/base.extension-component';
 import {NavManagerService, INavManager as IAccordion, LazyLoadData} from '../../../ts/nav-manager/nav-manager.service';
 
 // Reexports

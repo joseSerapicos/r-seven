@@ -1,0 +1,172 @@
+<?php
+namespace Bck\BookingBundle\Controller;
+
+use AppBundle\Controller\BaseEntityController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
+
+class BookingSettingController extends BaseEntityController
+{
+    /**
+     * Overrides parent method
+     * @param Request $request
+     * @return $this
+     * @throws \Exception
+     */
+    public function init(Request $request)
+    {
+        // Set configuration only once
+        if($this->isInitialized) { return $this; }
+
+        // Flags
+        $this->flags['handleStore'] = false; // Store is handled by user
+
+        // Configured as sub-menu, a dependency into view.
+        $this->templateConf['label'] = 'Booking Series';
+        $this->templateConf['selectedMenu']['route'] = '_bck__admin__settings__index';
+
+        // Route
+        $this->templateConf['route'] = array(
+            'get' => array(
+                'name' => '_bck__booking__booking_setting__get'
+            ),
+            'edit' => array(
+                'name' => '_bck__booking__booking_setting__edit',
+            ),
+            'delete' => array(
+                'name' => '_bck__booking__booking_setting__delete',
+            )
+        );
+
+        parent::init($request);
+        
+        // Search
+        $this->templateConf['search']['fields'] = $this->templateConf['fields']['view'];
+        $this->templateConf['search']['orderBy'] = array(array('field' => 'storeObj', 'value' => 'desc'));
+        // Empty criteria to be able to see all registers because "search" action is disabled.
+        $this->templateConf['search']['criteria'] = array();
+
+        // Actions for template/view
+        $this->templateConf['actions'] = array_merge(
+            $this->templateConf['actions'],
+            array(
+                'copy' => $this->templateConf['acl']['add']
+            )
+        );
+
+        // Extra data
+        $this->templateConf['extraData']['template'] = array(
+            'class' => '-merge-view'
+        );
+
+        return $this;
+    }
+
+    /**
+     * @Route("/bck/booking/booking-setting/get/{id}",
+     *     name="_bck__booking__booking_setting__get",
+     *     defaults={"id" = null}
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function getAction(Request $request, $id)
+    {
+        return parent::getAction($request, $id);
+    }
+
+    /**
+     * @Route("/bck/booking/booking-setting/edit/{id}",
+     *     name="_bck__booking__booking_setting__edit",
+     *     defaults={"id" = null}
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function editAction(Request $request, $id)
+    {
+        return parent::editAction($request, $id);
+    }
+
+    /**
+     * @Route("/bck/booking/booking-setting/delete/{id}",
+     *     name="_bck__booking__booking_setting__delete",
+     *     defaults={"id" = null}
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function deleteAction(Request $request, $id)
+    {
+        return parent::deleteAction($request, $id);
+    }
+
+    /**
+     * @Route("/bck/booking/booking-setting/data",
+     *     name="_bck__booking__booking_setting__data"
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
+     * @return mixed
+     */
+    public function dataAction(Request $request, $responseType = 'http')
+    {
+        return parent::dataAction($request);
+    }
+
+    /**
+     * Overrides parent function
+     * @param $object
+     * @param $data (usually the form data)
+     * @return bool
+     */
+    protected function preSaveObject(&$object, $data) {
+        $prefix = $object->getSeriesPrefix();
+        $prefix = ($prefix ? $prefix : '');
+        $number = ($object->getSeriesNumber());
+
+        $results = $this->getRepositoryService("Booking", 'BookingBundle', 'Bck')
+            ->execute(
+                'queryBuilder',
+                array(
+                    array(
+                        'fields' => array(
+                            'id'
+                        ),
+                        'criteria' => array(
+                            array('field' => 'booking.codePrefix', 'expr' => 'eq', 'value' => $prefix),
+                            // There can not be a greater number than $number, otherwise $number can reach the greater
+                            // number and shuffle the series
+                            array('field' => 'booking.codeNumber', 'expr' => 'gt', 'value' => $number)
+                        ),
+                        'limit' => 1
+                    )
+                )
+            );
+
+        if (empty($results)) {
+            return true;
+        }
+
+        $this->responseConf['status'] = 0;
+        $this->addFlashMessage(
+            'This series is already in use.',
+            'Data not persisted',
+            'error'
+        );
+
+        return false;
+    }
+}

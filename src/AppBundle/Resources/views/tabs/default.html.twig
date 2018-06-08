@@ -7,7 +7,8 @@
                    (click)="_navManagerService.navToAction({{key}})"
                    [class.active]="{{key}} == _navManagerService.getIndex()"
                    [attr.data-index]="{{key}}"
-                   {# href="#tab{{key}}"#}>{{value['label']}}</a>
+                   [innerHTML]="getLang('{{value['label']}}')"
+                   {# href="#tab{{key}}"#}></a>
             {% endfor %}
         </div>
     </nav>

@@ -1,0 +1,12 @@
+{% extends 'AppBundle:data-box:index.html.twig' %}
+
+{%  block javascripts %}
+    {% javascripts output="assets/accounting/vat-code/index/js/local.js"
+        '@BckAccountingBundle/Resources/public/vat-code/index/ts/dist/inline.bundle.js'
+        '@BckAccountingBundle/Resources/public/vat-code/index/ts/dist/polyfills.bundle.js'
+        '@BckAccountingBundle/Resources/public/vat-code/index/ts/dist/vendor.bundle.js'
+        '@BckAccountingBundle/Resources/public/vat-code/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

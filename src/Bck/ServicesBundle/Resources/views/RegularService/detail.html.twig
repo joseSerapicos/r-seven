@@ -1,0 +1,85 @@
+{% extends 'BckServicesBundle:BaseService:detail.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets output="assets/services/regular-service/detail/css/local.css"
+    '@BckServicesBundle/Resources/public/regular-service/detail/scss/dist/styles.css'
+    '@dropzone_css'
+    '@cropper_css'
+    '@videojs_css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+
+    <link rel="stylesheet" href="{{ asset('assets/vendor/blueimp-gallery/css/blueimp-gallery.min.css') }}" />
+{% endblock %}
+
+{% block head_javascripts %}
+    {{ parent() }}
+
+    {% set parentId = _conf['object']['serviceObj'] %}
+
+    {% set serviceAvailabilityData = render(controller(
+    'BckServicesBundle:ServiceAvailability:dataChild',
+    {'parents': {'entity': parentId}, 'responseType': 'json'}
+    )) %}
+
+    {% set serviceAllotData = render(controller(
+    'BckServicesBundle:ServiceAllot:dataChild',
+    {'parents': {'entity': parentId}, 'responseType': 'json'}
+    )) %}
+
+    {% set servicePriceData = render(controller(
+    'BckServicesBundle:ServicePrice:dataChild',
+    {'parents': {'entity': parentId}, 'responseType': 'json'}
+    )) %}
+
+    {% set serviceFixedCostData = render(controller(
+    'BckServicesBundle:ServiceFixedCost:dataChild',
+    {'parents': {'entity': parentId}, 'responseType': 'json'}
+    )) %}
+
+    {% set serviceSupplementData = render(controller(
+    'BckServicesBundle:ServiceSupplement:dataChild',
+    {'parents': {'entity': parentId}, 'responseType': 'json'}
+    )) %}
+
+    {% set serviceDiscountData = render(controller(
+    'BckServicesBundle:ServiceDiscount:dataChild',
+    {'parents': {'entity': parentId}, 'responseType': 'json'}
+    )) %}
+
+    {% set serviceBonusData = render(controller(
+    'BckServicesBundle:ServiceBonus:dataChild',
+    {'parents': {'entity': parentId}, 'responseType': 'json'}
+    )) %}
+    <script>
+        _app.dependencies.serviceAvailability = {{ serviceAvailabilityData|raw }};
+        _app.dependencies.serviceAllot = {{ serviceAllotData|raw }};
+        _app.dependencies.servicePrice = {{ servicePriceData|raw }};
+        _app.dependencies.serviceFixedCost = {{ serviceFixedCostData|raw }};
+        _app.dependencies.serviceSupplement = {{ serviceSupplementData|raw }};
+        _app.dependencies.serviceDiscount = {{ serviceDiscountData|raw }};
+        _app.dependencies.serviceBonus = {{ serviceBonusData|raw }};
+    </script>
+{% endblock %}
+
+{% block vendor_javascripts %}
+    {{ parent() }}
+
+    {% javascripts output="assets/services/regular-service/detail/js/vendor.js"
+        '@cropper_js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block javascripts %}
+    {% javascripts output="assets/services/regular-service/detail/js/local.js"
+        '@BckServicesBundle/Resources/public/regular-service/detail/ts/dist/inline.bundle.js'
+        '@BckServicesBundle/Resources/public/regular-service/detail/ts/dist/polyfills.bundle.js'
+        '@BckServicesBundle/Resources/public/regular-service/detail/ts/dist/vendor.bundle.js'
+        '@BckServicesBundle/Resources/public/regular-service/detail/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class BasePriceWithVat extends BasePrice
 {
     /**
-     * @ORM\ManyToOne(targetEntity="\AccountingBundle\Entity\VatCode")
+     * @ORM\ManyToOne(targetEntity="Bck\AccountingBundle\Entity\VatCode")
      * @ORM\JoinColumn(name="fk_vatCode", referencedColumnName="id", nullable=false, unique=false, onDelete="RESTRICT")
      *
      * VAT code needs to be saved on create this object,
@@ -60,10 +60,10 @@ class BasePriceWithVat extends BasePrice
 
     /**
      * Set vatCodeObj
-     * @param \AccountingBundle\Entity\VatCode $vatCodeObj
+     * @param \Bck\AccountingBundle\Entity\VatCode $vatCodeObj
      * @return $this
      */
-    public function setVatCodeObj(\AccountingBundle\Entity\VatCode $vatCodeObj)
+    public function setVatCodeObj(\Bck\AccountingBundle\Entity\VatCode $vatCodeObj)
     {
         $this->vatCodeObj = $vatCodeObj;
         return $this;
@@ -72,7 +72,7 @@ class BasePriceWithVat extends BasePrice
     /**
      * Get vatCodeObj
      *
-     * @return \AccountingBundle\Entity\VatCode
+     * @return \Bck\AccountingBundle\Entity\VatCode
      */
     public function getVatCodeObj()
     {
@@ -288,7 +288,7 @@ class BasePriceWithVat extends BasePrice
      * Get user_sellValue
      * @return float
      */
-    public function getUser_sellValue()
+    public function getUserSellValue()
     {
         // Value, according with the "getIsVatIncluded" returned value
         if ($this->getIsVatIncluded()) {

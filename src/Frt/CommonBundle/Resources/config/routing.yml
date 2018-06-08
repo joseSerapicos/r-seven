@@ -1,0 +1,3 @@
+frt_common:
+    resource: "@FrtCommonBundle/Controller/"
+    type:     annotation

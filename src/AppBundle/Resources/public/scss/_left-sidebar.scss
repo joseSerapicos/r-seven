@@ -1,6 +1,5 @@
 $left-sidebar-bgcolor: #343a40; // bg-dark
 $left-sidebar-txtcolor: #adb5bd; //  // text-lighter
-$left-sidebar-active-bgcolor: #f8f9fa; // bg-light
 $left-sidebar-active-txtcolor: #343a40; // text-dark
 $left-sidebar-selected-bgcolor: #dadfe3; // bg-light:hover
 $left-sidebar-selected-txtcolor: #343a40; // text-dark
@@ -116,7 +115,7 @@ $primaryColor: #007bff;
     .metismenu a:focus,
     .metismenu a:active {
       color: $left-sidebar-active-txtcolor;
-      background: $left-sidebar-active-bgcolor;
+      background: $light-bg;
       text-decoration: none;
     }
   }

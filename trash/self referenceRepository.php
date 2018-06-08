@@ -1,6 +1,6 @@
 <?php
 
-namespace AdminBundle\Entity;
+namespace Bck\AdminBundle\Entity;
 
 use AppBundle\Entity\BaseEntityRepository;
 
@@ -54,7 +54,7 @@ class StoreRepositddddory extends BaseEntityRepository
             'name' => array('label' => 'Name', 'type' => 'text', 'acl' => 'edit'),
             'storeObj' => array('label' => 'Inherit from', 'type' => 'object', 'acl' => 'edit', 'isRequired' => false,
                 'typeDetail' => array(
-                    'bundle' => 'admin', 'table' => 'store', 'field' => 'name', 'type' => 'text',
+                    'bundlePrefix' => 'bck', 'bundle' => 'admin', 'table' => 'store', 'field' => 'name', 'type' => 'text',
                     'choices' => array(
                         'autoRefresh' => true, 'hasSelfReference' => true
                     )
@@ -65,13 +65,13 @@ class StoreRepositddddory extends BaseEntityRepository
             'taxNumber' => array('label' => 'Tax Number', 'type' => 'text', 'acl' => 'edit'),
             'storeAddressObj' => array('label' => 'Address', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array(
-                    'table' => 'storeAddress', 'field' => 'id', 'bundle' => 'admin', 'type' => 'none',
+                    'table' => 'storeAddress', 'field' => 'id', 'bundlePrefix' => 'bck', 'bundle' => 'admin', 'type' => 'none',
                     'metadata' => array('method' => 'merge', 'pushAfterField' => 'id')
                 ),
                 'form' => array('type' => 'embed')
             ),
-            'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read'),
-            'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read'),
+            'insertTime' => array('label' => 'Insert Time', 'type' => 'datetime', 'acl' => 'read', 'form' => array('type' => 'none')),
+            'insertUser' => array('label' => 'Insert User', 'type' => 'text', 'acl' => 'read', 'form' => array('type' => 'none')),
             'isEnabled' => array('label' => 'Enabled', 'type' => 'boolean', 'acl' => 'edit', 'default' => true,
                 'view' => array('keepOriginalNormalizer' => true)
             )
@@ -94,13 +94,13 @@ class StoreRepositddddory extends BaseEntityRepository
         if (!$isAdmin)
         {
             // Get groups of logged user
-            $qb->innerJoin('AdminBundle\Entity\UserGroupAclUser',
+            $qb->innerJoin('Bck\AdminBundle\Entity\UserGroupAclUser',
                 'userGroupAclUser_loggedUser',
                 'WITH',
                 ('userGroupAclUser_loggedUser.userObj = ' . $loggedUserId)
             );
             // Filter stores by groups of logged user
-            $qb->innerJoin('AdminBundle\Entity\UserGroupAcl',
+            $qb->innerJoin('Bck\AdminBundle\Entity\UserGroupAcl',
                 'userGroupAcl_loggedUser',
                 'WITH',
                 ('userGroupAcl_loggedUser.id = userGroupAclUser_loggedUser.userGroupAclObj AND userGroupAcl_loggedUser.isEnabled = 1 AND userGroupAcl_loggedUser.storeObj = store.id')

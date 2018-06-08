@@ -1,15 +1,15 @@
 import {Component, ElementRef, Injector, Inject, Renderer, ViewContainerRef} from '@angular/core';
-import {DataService} from '../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
-import {Helper} from '../../../../../../AppBundle/Resources/public/ts/helper';
-import {ModalService} from '../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
-import {FormService, IForm} from '../../../../../../AppBundle/Resources/public/form/ts/form.service';
-import {TreeViewFormComponent, TreeViewProvider} from '../../../../../../AppBundle/Resources/public/tree-view/default/ts/tree-view-form.component';
-import {Actions, Popups, Popup} from '../../../../../../AppBundle/Resources/public/data-box/ts/src/data-box.component';
+import {DataService} from '../../../../../../../AppBundle/Resources/public/ts/data-service/data.service';
+import {Helper} from '../../../../../../../AppBundle/Resources/public/ts/helper';
+import {ModalService} from '../../../../../../../AppBundle/Resources/public/modal/ts/modal.service';
+import {FormService, IForm} from '../../../../../../../AppBundle/Resources/public/form/ts/form.service';
+import {TreeViewFormComponent, TreeViewProvider} from '../../../../../../../AppBundle/Resources/public/tree-view/default/ts/tree-view-form.component';
+import {Actions, Popups, Popup} from '../../../../../../../AppBundle/Resources/public/data-box/ts/src/data-box.component';
 
 
 @Component({
     selector: '#js_main',
-    templateUrl: Helper.getAppVar('route') + 'admin/user-group-acl-menu/edit/0/0'
+    templateUrl: Helper.getAppVar('route') + 'bck/admin/user-group-acl-menu/edit/0/0'
 })
 export class MainComponent extends TreeViewFormComponent implements IForm
 {

@@ -1,6 +1,7 @@
 <?php
 namespace AppBundle\Entity;
 
+use AppBundle\Service\HelperService;
 use Doctrine\ORM\Mapping as ORM;
 
 
@@ -21,7 +22,7 @@ abstract class BaseEntity {
     protected $insertTime;
 
     /**
-     * @ORM\Column(name="insertUser", type="string", length=32, nullable=false, unique=false, options={"comment":"User insertion"})
+     * @ORM\Column(name="insertUser", type="string", length=64, nullable=false, unique=false, options={"comment":"User insertion"})
      */
     protected $insertUser;
 
@@ -29,6 +30,7 @@ abstract class BaseEntity {
      * @ORM\Column(name="isEnabled", type="boolean", nullable=false, unique=false, options={"default":0, "comment":"Determines whether the registry is enabled"})
      */
     protected $isEnabled;
+
 
     /**
      * Set id
@@ -111,17 +113,22 @@ abstract class BaseEntity {
         return $this->isEnabled;
     }
 
+
+    /* MAGIC METHODS */
+
+
     /**
      * Representation of object for dropdown (name/label for object)
      * @return mixed
      */
     public function __toString()
     {
-        $identifier = (method_exists($this, 'getCode') ? $this->getCode() : $this->getId());
+        $code = (method_exists($this, 'getCode') ? $this->getCode() : null);
+        $name = (method_exists($this, 'getName') ? $this->getName() : null);
 
-        return (method_exists($this, 'getName')
-            ? ($this->getName() . ' (' . $identifier . ')')
-            : ('' . $identifier) // The return needs to be a string, otherwise we eill get an error
+        return (
+            ($name ? $name : '')
+            . ($code ? (' (' . $code . ')') : '')
         );
     }
 
@@ -131,28 +138,6 @@ abstract class BaseEntity {
     public function __clone()
     {
         $this->id = null;
-    }
-
-    /**
-     * Check password changes
-     * @param $newPassword
-     * @param $oldPassword
-     * @return bool
-     */
-    protected function checkPasswordChanges($newPassword, $oldPassword)
-    {
-        if (
-            // In some cases password can be null
-            empty($newPassword)
-            // Password is different even it's composed by "*" (not secure, but we don't restrict)
-            || (strlen($newPassword) != strlen($oldPassword))
-            // It's a dummy password (same length as original composed by "*")
-            || (substr_count($newPassword, '*') !== strlen($newPassword))
-        ) {
-            return true;
-        }
-
-        return false;
     }
 
 
@@ -169,6 +154,16 @@ abstract class BaseEntity {
         return $date instanceof \DateTime
             ? $date->format('Y-m-d')
             : $date;
+    }
+
+    /**
+     * Normalize url
+     * @param $url
+     * @return string
+     */
+    public function normalizeUrl($url)
+    {
+        return substr($url, strpos($url, '/upload/'));
     }
 
     /**
@@ -210,5 +205,63 @@ abstract class BaseEntity {
     public function normalizePassword($password)
     {
         return str_repeat('*', strlen($password));
+    }
+
+
+    /* LANGUAGE METHODS */
+
+
+    /**
+     * Returns the name when the object is defined in multiple languages.
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->getAttrByLang();
+    }
+
+    /**
+     * Returns the attribute when the object is defined in multiple languages.
+     * @param $attributeUC (attribute to get in upper case)
+     * @return mixed
+     */
+    public function getAttrByLang($attributeUC = 'Name')
+    {
+        // "en" it's used as reference to check if multiple languages is defined
+        if (method_exists($this, 'get'.$attributeUC.'En')) {
+            $langPrefix = HelperService::getGlobalVar('langPrefix');
+            if (!empty($langPrefix)) { // Avoid infinity loop calling the original method if prefix is not defined
+                $getMethodName = 'get' . $attributeUC . ucfirst($langPrefix);
+                return $this->$getMethodName();
+            }
+        }
+
+        return null;
+    }
+
+
+    /* COMMON METHODS */
+
+
+    /**
+     * Check password changes
+     * @param $newPassword
+     * @param $oldPassword
+     * @return bool
+     */
+    protected function checkPasswordChanges($newPassword, $oldPassword)
+    {
+        if (
+            // In some cases password can be null
+            empty($newPassword)
+            // Password is different even it's composed by "*" (not secure, but we don't restrict)
+            || (strlen($newPassword) != strlen($oldPassword))
+            // It's a dummy password (same length as original composed by "*")
+            || (substr_count($newPassword, '*') !== strlen($newPassword))
+        ) {
+            return true;
+        }
+
+        return false;
     }
 }

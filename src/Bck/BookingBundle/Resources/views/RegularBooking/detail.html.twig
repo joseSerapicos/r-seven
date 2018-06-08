@@ -1,0 +1,41 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets output="assets/booking/regular-booking/detail/css/local.css"
+    '@BckBookingBundle/Resources/public/regular-booking/detail/scss/dist/styles.css'
+    '@dropzone_css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block head_javascripts %}
+    {{ parent() }}
+
+    {% set bookingPaxData = render(controller(
+        'BckBookingBundle:RegularBookingPax:dataChild',
+        {'parents': {'booking': _conf['object']['bookingObj']}, 'responseType': 'json'}
+    )) %}
+    <script>
+        _app.dependencies.bookingPax = {{ bookingPaxData|raw }};
+    </script>
+{% endblock %}
+
+{% block before_container %}
+    <div class="js_appBasics"></div>
+    <div class="js_app"></div>
+{% endblock %}
+
+{% block header %}{% endblock %}
+{% block body %}{% endblock %}
+
+{% block javascripts %}
+    {% javascripts output="assets/booking/regular-booking/detail/js/local.js"
+        '@BckBookingBundle/Resources/public/regular-booking/detail/ts/dist/inline.bundle.js'
+        '@BckBookingBundle/Resources/public/regular-booking/detail/ts/dist/polyfills.bundle.js'
+        '@BckBookingBundle/Resources/public/regular-booking/detail/ts/dist/vendor.bundle.js'
+        '@BckBookingBundle/Resources/public/regular-booking/detail/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

@@ -1,11 +1,10 @@
 import {Component, Inject, ElementRef, Renderer, ReflectiveInjector, Injector, ViewContainerRef} from '@angular/core';
 import {DataService} from '../../../ts/data-service/data.service';
-import {ModalService} from '../../../modal/ts/modal.service';
+import {ModalService, Popup} from '../../../modal/ts/modal.service';
 import {BaseExtensionComponent} from '../../../ts/base/base.extension-component';
 import {EntityDetailProvider} from './entity-detail-provider';
 import {ActionsService} from '../../../ts/actions/actions.service';
-import {TasksLoaderManagerService} from '../../../../../../AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service';
-
+import {TasksLoaderManagerService} from '../../../tasks-loader-manager/ts/tasks-loader-manager.service';
 
 // Reexports
 export {EntityDetailProvider};
@@ -17,6 +16,7 @@ export {EntityDetailProvider};
 })
 export class EntityDetailComponent extends BaseExtensionComponent
 {
+    protected hasInsertInfo: boolean = true;
     protected _object: any;
     protected _fields: any;
     protected _onObjectChangeSubscription: any; // To get notify about changes on object over the service
@@ -25,6 +25,7 @@ export class EntityDetailComponent extends BaseExtensionComponent
         protected _viewContainerRef: ViewContainerRef,
         renderer: Renderer,
         @Inject('EntityDetailProvider') provider: EntityDetailProvider,
+        @Inject('Popup') protected _popup: Popup,
         @Inject('DataService') protected _dataService: any,
         protected _tasksLoaderManagerService: TasksLoaderManagerService,
         protected _actionsService: ActionsService,
@@ -44,11 +45,13 @@ export class EntityDetailComponent extends BaseExtensionComponent
         // Get fields from DataService
         this._fields = (this._dataService.getProviderAttr('fields') || {});
 
-        this._dataService.setObject(this._dataService.getProviderAttr('object'));
-
         this._onObjectChangeSubscription = this._dataService.getOnObjectChangeEmitter()
             .subscribe(object => this.refresh());
-        
+
+        if (this._provider['hasInsertInfo'] !== undefined) {
+            this.hasInsertInfo = this._provider['hasInsertInfo'];
+        }
+
         this.refresh();
     }
 
@@ -81,14 +84,12 @@ export class EntityDetailComponent extends BaseExtensionComponent
     {
         if ($event) { $event.preventDefault(); }
 
-        let popup = this.getProviderAttr('popup');
-
-        if (!popup) {
+        if (!this._popup) {
             return;
         }
 
         // Open popup
-        this._modalService.popup(popup, this._injector).then(
+        this._modalService.popup(this._popup, this._injector).then(
             data => { return; },
             errors => { console.log(errors); return; }
         );

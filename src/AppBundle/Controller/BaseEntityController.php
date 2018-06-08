@@ -16,7 +16,7 @@ abstract class BaseEntityController extends BaseController
      * @return $this
      * @throws \Exception
      */
-    protected function init(Request $request)
+    public function init(Request $request)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
@@ -34,6 +34,8 @@ abstract class BaseEntityController extends BaseController
 
         /* Response */
         $this->responseConf['hasObjects'] = false;
+        // Add labelCount (to show to the user easily the number of entries)
+        $this->responseConf['hasLabelCount'] = true;
         $this->responseConf['objects'] = null;
         $this->responseConf['hasObject'] = true;
         $this->responseConf['object'] = null;
@@ -44,6 +46,14 @@ abstract class BaseEntityController extends BaseController
         /* /Response */
 
         return $this;
+    }
+    /** Allow bypass over child init classes override,
+     * so we can access the base init function without call intermediate override methods
+     * @param Request $request
+     * @return BaseEntityController
+     */
+    protected function baseEntityInit(Request $request) {
+        return self::init($request);
     }
 
     /**
@@ -72,8 +82,9 @@ abstract class BaseEntityController extends BaseController
         if (empty($this->localConf['entity'])) {
             $this->localConf['entity'] = $this->localConf['controller']; // CamelCase
         }
-        $this->localConf['entityClass'] = ($this->localConf['Bundle'].'\Entity\\'.$this->localConf['entity']);
+        $this->localConf['entityClass'] = ($this->localConf['BundlePath'].'\Entity\\'.$this->localConf['entity']);
         if (empty($this->localConf['entityFields'])) { // Can be initialized and handled in child controller
+
             $this->localConf['entityFields'] = $this->getLocalRepositoryService()->execute('getMetadata');
         }
         $this->localConf['entityTable'] = ((($this->localConf['bundle'] == 'sysadmin')
@@ -87,7 +98,7 @@ abstract class BaseEntityController extends BaseController
         /* /Entity */
 
         /* Form */
-        $this->localConf['formTypeClass'] = ($this->localConf['Bundle'].'\Form\\'.$this->localConf['entity'].'Type');
+        $this->localConf['formTypeClass'] = ($this->localConf['BundlePath'].'\Form\\'.$this->localConf['entity'].'Type');
         /* /Form */
 
         /* General repository functions. Default function to be called in main method, can be override after "init()" */
@@ -97,7 +108,7 @@ abstract class BaseEntityController extends BaseController
         /* /Functions */
 
         /* Templates: Default view/template for action */
-        $this->localConf['templatesPath'] = ($this->localConf['Bundle'].':'.$this->localConf['entity'].':');
+        $this->localConf['templatesPath'] = ($this->localConf['BundleNamespace'].':'.$this->localConf['entity'].':');
         $this->localConf['templates'] = array(
             'index' => ($this->localConf['templatesPath'] . 'index.html.twig'),
             'detail' => ($this->localConf['templatesPath'] . 'detail.html.twig'),
@@ -177,7 +188,7 @@ abstract class BaseEntityController extends BaseController
         /* /Search */
 
         /* Controls */
-        $this->templateConf['controls']['expander'] = false;
+        $this->templateConf['controls']['expander']['isEnabled'] = false;
         /* /Controls */
 
         return $this;
@@ -217,6 +228,7 @@ abstract class BaseEntityController extends BaseController
             'type' => null,
             'hasSelfReference' => false,
             'query' => null,
+            'fields' => null,
             'value' => null
         );
 
@@ -342,14 +354,14 @@ abstract class BaseEntityController extends BaseController
      * @return mixed
      */
     public function indexAction(Request $request) {
-        // Set configuration
-        $this->init($request);
-        // Update breadcrumb
-        $this->updateBreadcrumb($request);
+        $this->init($request); // Set configuration
+        $this->loadLanguageFileByAction('index'); // Load action language file
+        $this->updateBreadcrumb($request); // Update breadcrumb
 
         // Config response
         $this->responseConf['hasConf'] = true;
         $this->responseConf['hasObjects'] = true;
+        $this->responseConf['type'] = "ARRAY";
         return $this->render($this->localConf['templates']['index'], $this->getResponse());
     }
 
@@ -375,7 +387,7 @@ abstract class BaseEntityController extends BaseController
         $session = $this->get('session');
         $loggedUserId = $session->get('_app.user')['id'];
         $this->responseConf['object'] = $this->normalizeObject($this->getObject($loggedUserId));
-
+        $this->responseConf['type'] = "ARRAY";
         return $this->render($this->localConf['templatesPath'].'profile.html.twig', $this->getResponse());
     }
 
@@ -390,12 +402,12 @@ abstract class BaseEntityController extends BaseController
      */
     public function detailAction(Request $request, $id)
     {
-        // Set configuration
-        $this->init($request);
-        $this->templateConf['label'] = ($this->templateConf['label'] . ' Detail'); // Override label
+        $this->init($request); // Set configuration
+        $this->loadLanguageFileByAction('detail'); // Load action language file
 
-        // Update breadcrumb
-        $this->updateBreadcrumb($request);
+        $this->templateConf['label'] = ($this->templateConf['label'] . ' ' . HelperService::getLangServer('Detail')); // Override label
+
+        $this->updateBreadcrumb($request); // Update breadcrumb
 
         // Get and validate object
         $obj = $this->getObject($id);
@@ -406,6 +418,7 @@ abstract class BaseEntityController extends BaseController
         // Config response
         $this->responseConf['object'] = $this->normalizeObject($obj);
         $this->responseConf['hasConf'] = true;
+        $this->responseConf['type'] = "ARRAY";
         return $this->render($this->localConf['templates']['detail'], $this->getResponse());
     }
 
@@ -426,7 +439,7 @@ abstract class BaseEntityController extends BaseController
         $newObj = $this->newObject();
         $this->saveObjectToSS($newObj, true);
 
-        return $this->getResponse(true);
+        return $this->getResponse();
     }
 
     /**
@@ -447,7 +460,7 @@ abstract class BaseEntityController extends BaseController
             $object = $this->getObject($id);
 
             $this->responseConf['object'] = $this->normalizeObject($object);
-            return $this->getResponse(true);
+            return $this->getResponse();
         }
         
         // Process request
@@ -460,7 +473,7 @@ abstract class BaseEntityController extends BaseController
             'Success',
             'success'
         );
-        return $this->getResponse(true);
+        return $this->getResponse();
     }
 
     /**
@@ -491,6 +504,13 @@ abstract class BaseEntityController extends BaseController
         if (!empty($options['limit'])) { // Pagination enabled
             $options['limit']++; // Used to control the pagination
         }
+
+        // Disable fields, because we will get the complete object,
+        // so we can filter by "custom" fields using "WHERE" (like "CONCAT")
+        if (!isset($options['conf'])) {
+            $options['conf'] = array();
+        }
+        $options['conf']['hasFields'] = false;
 
         // Get objects
         $choices = $this->getLocalRepositoryService()
@@ -527,7 +547,7 @@ abstract class BaseEntityController extends BaseController
         // Config response
         $this->responseConf['hasObjects'] = true;
         $this->responseConf['objects'] = $choices;
-        return $this->getResponse(true);
+        return $this->getResponse();
     }
 
     /**
@@ -563,7 +583,7 @@ abstract class BaseEntityController extends BaseController
             // This method is executed independent of the success in save
             // (check the $response['status'] if you need this information)
             $this->postSaveObject($obj, $data['form']);
-            return $this->getResponse(true);
+            return $this->getResponse();
         }
 
         // Render form
@@ -604,7 +624,7 @@ abstract class BaseEntityController extends BaseController
                 'success'
             );
         }
-        return $this->getResponse(true);
+        return $this->getResponse();
     }
 
     /**
@@ -627,8 +647,8 @@ abstract class BaseEntityController extends BaseController
         $ids = array();
         if(!empty($id)) {
             $ids[] = $id;
-        } else if(!empty($data['data']['id']) && is_array($data['data']['id'])) {
-            $ids = $data['data']['id'];
+        } else if(!empty($data['id']) && is_array($data['id'])) {
+            $ids = $data['id'];
         }
         
         // Delete object/objects
@@ -643,7 +663,7 @@ abstract class BaseEntityController extends BaseController
 
             // Return in case of error
             if ($this->responseConf['status'] !== 1) {
-                return $this->getResponse(true);
+                return $this->getResponse();
             }
         }
 
@@ -655,7 +675,7 @@ abstract class BaseEntityController extends BaseController
             'Success',
             'success'
         );
-        return $this->getResponse(true);
+        return $this->getResponse();
     }
 
     /**
@@ -708,7 +728,31 @@ abstract class BaseEntityController extends BaseController
             );
         }
 
-        return $this->getResponse(true);
+        return $this->getResponse();
+    }
+
+    /**
+     * DEFINE ROUTE HERE
+     * CALL PARENT: parent::confAction()
+     *
+     * Action to get configuration
+     * @param Request $request
+     * @param $id (return the target id object with the conf, it's used to avoid to make another server request
+     *     to get the object when we need the object with the conf, like in flat forms, entity detail, etc.)
+     * @return mixed
+     */
+    public function confAction(Request $request, $id = null)
+    {
+        // Set configuration
+        $this->init($request);
+
+        if ($id && ($obj = $this->getObject($id))) {
+            $this->responseConf['object'] = $this->normalizeObject($obj);
+            $this->responseConf['hasObject'] = true;
+        }
+
+        $this->responseConf['hasConf'] = true;
+        return $this->getResponse();
     }
 
     /**
@@ -732,7 +776,8 @@ abstract class BaseEntityController extends BaseController
         $this->responseConf['hasConf'] = true;
         $this->responseConf['hasObjects'] = true;
         $this->responseConf['hasStatus'] = ($responseType == 'http'); // Only has status in http responses
-        return $this->getResponse(true);
+
+        return $this->getResponse();
     }
 
     /**
@@ -800,6 +845,23 @@ abstract class BaseEntityController extends BaseController
     }
 
     /**
+     * Save object to session storage to parent
+     * @param $object
+     * @param $parent (parent id where the object will be associated as child)
+     * @param $addToResponse (determines if object should be added to response)
+     * @return $this
+     */
+    protected function saveObjectToSSToParent(&$object, $parent, $addToResponse = false)
+    {
+        $localParent = $this->flags['parent'];
+        $this->flags['parent'] = $parent;
+        $this->saveObjectToSS($object, $addToResponse);
+        $this->flags['parent'] = $localParent; // Restore to local parent
+
+        return $this;
+    }
+
+    /**
      * Save object to database
      * @param $object
      * @param $hasFlush (it determines if should be executed the flush method to persist data in database)
@@ -836,13 +898,17 @@ abstract class BaseEntityController extends BaseController
                 );
                 if (method_exists($objContainer, 'getCodeNumber') && empty($objContainer->getCodeNumber())) {
                     $setting = (empty($this->flags['setting']) ? array() : $this->flags['setting']);
+                    $settingBundlePrefix = (empty($setting['BundlePrefix']) ? $this->localConf['BundlePrefix'] : $setting['BundlePrefix']);
                     $settingBundle = (empty($setting['Bundle']) ? $this->localConf['Bundle'] : $setting['Bundle']);
                     $settingEntity = (empty($setting['entity']) ? ($this->localConf['entity'] . 'Setting') : $setting['entity']);
+                    $localBundlePrefix = '';
                     $localBundle = $localEntity = null;
                     if ($dependency && isset($this->localConf['entityFields'][$dependency]['typeDetail'])) {
+                        $localBundlePrefix = $this->localConf['entityFields'][$dependency]['typeDetail']['BundlePrefix'];
                         $localBundle = $this->localConf['entityFields'][$dependency]['typeDetail']['Bundle'];
                         $localEntity = $this->localConf['entityFields'][$dependency]['typeDetail']['entity'];
                     } else {
+                        $localBundlePrefix = $this->localConf['BundlePrefix'];
                         $localBundle = $this->localConf['Bundle'];
                         $localEntity = $this->localConf['entity'];
                     }
@@ -850,8 +916,8 @@ abstract class BaseEntityController extends BaseController
                         ->generateCode(
                             $objContainer,
                             $this->getLocalRepositoryService(),
-                            ($settingBundle . ':' . $settingEntity),
-                            ($localBundle . ':' . $localEntity),
+                            ($settingBundlePrefix.$settingBundle . ':' . $settingEntity),
+                            ($localBundlePrefix.$localBundle . ':' . $localEntity),
                             (empty($setting['criteria']) ? array() : $setting['criteria'])
                         );
                 }
@@ -894,13 +960,17 @@ abstract class BaseEntityController extends BaseController
 
             if (method_exists($entityClass, 'getCode')) {
                 $setting = (empty($this->flags['setting']) ? array() : $this->flags['setting']);
+                $settingBundlePrefix = (empty($setting['BundlePrefix']) ? $this->localConf['BundlePrefix'] : $setting['BundlePrefix']);
                 $settingBundle = (empty($setting['Bundle']) ? $this->localConf['Bundle'] : $setting['Bundle']);
                 $settingEntity = (empty($setting['entity']) ? ($this->localConf['entity'] . 'Setting') : $setting['entity']);
+                $localBundlePrefix = '';
                 $localBundle = $localEntity = null;
                 if ($dependency && isset($this->localConf['entityFields'][$dependency]['typeDetail'])) {
+                    $localBundlePrefix = $this->localConf['entityFields'][$dependency]['typeDetail']['BundlePrefix'];
                     $localBundle = $this->localConf['entityFields'][$dependency]['typeDetail']['Bundle'];
                     $localEntity = $this->localConf['entityFields'][$dependency]['typeDetail']['entity'];
                 } else {
+                    $localBundlePrefix = $this->localConf['BundlePrefix'];
                     $localBundle = $this->localConf['Bundle'];
                     $localEntity = $this->localConf['entity'];
                 }
@@ -909,8 +979,8 @@ abstract class BaseEntityController extends BaseController
                     ->getSurroundingObjects(
                         $object,
                         $this->getLocalRepositoryService(),
-                        ($settingBundle . ':' . $settingEntity),
-                        ($localBundle . ':' . $localEntity),
+                        ($settingBundlePrefix.$settingBundle . ':' . $settingEntity),
+                        ($localBundlePrefix.$localBundle . ':' . $localEntity),
                         (empty($setting['criteria']) ? array() : $setting['criteria'])
                     );
             }
@@ -950,18 +1020,12 @@ abstract class BaseEntityController extends BaseController
     /**
      * Delete object from session storage
      * @param $objectId
-     * @param $objectId
      * @return $this
      */
-    protected function deleteObjectFromSS($objectId, $parentId = null)
+    protected function deleteObjectFromSS($objectId)
     {
-        $parentId = ($parentId ? $parentId :
-            (isset($this->flags['parent']) ? $this->flags['parent'] : null)
-        );
-
-        // Delete object from session
         if (!empty($objectId)) {
-            $this->container->get('app.service.session_storage')->delete($objectId, $parentId);
+            $this->get('app.service.session_storage')->delete($objectId);
         }
 
         return $this;
@@ -1031,10 +1095,13 @@ abstract class BaseEntityController extends BaseController
     {
         // Only set default values if is a new object (without id)
         if (empty($object->getId())) {
+            $session = $controller->get('session');
+
             // Set default data
             $object->setInsertTime(new \DateTime());
-            $object->setInsertUser($controller->get('session')
-                ->get('_app.user')['username']
+            $object->setInsertUser($session->has('_app.user') ?
+                $session->get('_app.user')['username'] :
+                ''
             );
 
             if ($object->getIsEnabled() === null) {
@@ -1048,7 +1115,7 @@ abstract class BaseEntityController extends BaseController
             if (method_exists($object, 'setStoreObj') && $controller->flags['handleStore']) {
                 $store = $controller->getStoreAttr('id');
                 if ($store) {
-                    $storeObj = $controller->getRepositoryService('Store', 'AdminBundle')
+                    $storeObj = $controller->getRepositoryService('Store', 'AdminBundle', 'Bck')
                         ->execute(
                             'findOneById',
                             array($store)
@@ -1087,7 +1154,7 @@ abstract class BaseEntityController extends BaseController
                 $message = 'Fail to persist object: Please check if object already exists.';
                 break;
             case 1451: // Referenced row (foreign key constraint)
-                $message = 'Fail to delete object: Please check if object is in use.</br>Consider disable it only.';
+                $message = 'Fail to delete object: Please check if object is in use by another, or if it content dependencies inside.</br>Consider disable it only.';
                 break;
             default:
                 $message = 'Fail to persist object.';
@@ -1358,7 +1425,7 @@ abstract class BaseEntityController extends BaseController
             $fieldName = $this->getFieldMetadata($field, 'field');
             $methodName = (isset($normalizerConf['method'])
                 ? $normalizerConf['method'] // Specific method (used by UserGroupUser to get the correct name)
-                : ('get' . ucfirst($fieldName)) // General method
+                : ('get' . HelperService::snakeCaseToCamelCase($fieldName)) // General method
             );
 
             // If method doesn't exists, the field it's a foreign field and should be ignored
@@ -1419,20 +1486,25 @@ abstract class BaseEntityController extends BaseController
     /**
      * Normalize Foreign Object
      * @param $object
-     * @param $entity (Uppercase)
-     * @param $bundle (Uppercase)
      * @return mixed
      */
-    protected function normalizeForeignObject($object, $entity, $bundle)
+    protected function normalizeForeignObject($object)
     {
         // Save local entity conf to be replaced after get all objects
         $localEntityClass = $this->localConf['entityClass'];
         $localEntityFields = $this->localConf['entityFields'];
 
         // Set foreign object configuration
-        $this->localConf['entityClass'] = ($bundle.'Bundle\Entity\\'.$entity);
-        $this->localConf['entityFields'] =
-            $this->getRepositoryService($entity, $bundle.'Bundle')->execute('getMetadata');
+        $foreignObjBundleNameArr = HelperService::getBundleNameArr($object);
+        $foreignObjEntity = HelperService::getClassName($object);
+
+        $this->localConf['entityClass'] = (
+            $foreignObjBundleNameArr['prefix'].'\\'.$foreignObjBundleNameArr['bundle'].'\Entity\\'.$foreignObjEntity
+        );
+
+        $this->localConf['entityFields'] = $this->getRepositoryService(
+            $foreignObjEntity, $foreignObjBundleNameArr['bundle'], $foreignObjBundleNameArr['prefix']
+        )->execute('getMetadata');
 
         $normalizedObj = $this->normalizeObject($object);
 
@@ -1455,7 +1527,7 @@ abstract class BaseEntityController extends BaseController
             (isset($this->flags['parent']) ? $this->flags['parent'] : null)
         );
 
-        $childObjects = $this->container->get('app.service.session_storage')->getChildObjects(
+        $childObjects = $this->get('app.service.session_storage')->getChildObjects(
             $parentId,
             $childKey
         );
@@ -1465,7 +1537,7 @@ abstract class BaseEntityController extends BaseController
             foreach ($childObjects as $childObj) {
                 $childObj = $this->getObjectFromSS($childObj->getId()); // Update object getting all foreign objects yet
                 // @TODO: you need to call normalizeForeignObject and pass all objects to avoid reset the conf for each object
-                $childObjectsNormalized[] = $this->normalizeObject($childObj);
+                $childObjectsNormalized[] = $this->normalizeForeignObject($childObj);
             }
             return $childObjectsNormalized;
         }
@@ -1602,11 +1674,14 @@ abstract class BaseEntityController extends BaseController
     protected function getFieldChoicesFromDb($field)
     {
         $choices = array();
+        $choicesConf = $this->templateConf['fields']['choices'][$field];
 
         // Query to get choices in repository
-        $query = $this->getFieldMetadata($field, 'query'); // Specific defined in metadata
+        $query = $choicesConf['query']; //$this->getFieldMetadata($field, 'query'); // Specific defined in metadata
+        $customFields = $choicesConf['fields']; // Specific defined in metadata
         if (empty($query)) { $query = 'getChoices'; } // Default
 
+        $BundlePrefix = $this->getFieldMetadata($field, 'BundlePrefix');
         $entity = $this->getFieldMetadata($field, 'entity');
         $Bundle = $this->getFieldMetadata($field, 'Bundle');
         $formType = $this->getFieldMetadata($field, 'type', 'form');
@@ -1615,7 +1690,7 @@ abstract class BaseEntityController extends BaseController
             // Repository needs to be redefined to the field entity repository,
             // however local repository service is used to use the local entity manager
             // (local database is injected in the constructor of the repository service)
-            ->setEntityRepository($Bundle . ':' . $entity)
+            ->setEntityRepository($BundlePrefix.$Bundle . ':' . $entity)
             ->execute($query);
 
         // Normalize choices
@@ -1653,9 +1728,40 @@ abstract class BaseEntityController extends BaseController
                     };
                     $getRecursiveNodes(0, '', array());
                     break;
+                case 'radio':
+                    if (is_array($objects) && (count($objects) > 0)) {
+                        // Define variables here to avoid redefine them in each foreach iteraction
+                        $hasDescription = method_exists($objects[0], 'getDescription');
+                        $customFields_getMethods = array();
+                        if (is_array($customFields) && (count($customFields) > 0)) {
+                            foreach ($customFields as $customField) {
+                                $getMethod = ('get' . ucfirst($customField));
+                                if (method_exists($objects[0], $getMethod)) {
+                                    $customFields_getMethods[$customField] = $getMethod;
+                                }
+                            }
+                        }
+
+                        foreach ($objects as $object) {
+                            $choice = array('id' => $object->getId(), 'label' => $object->__toString());
+                            if ($hasDescription) {
+                                $choice['description'] = $object->getDescription();
+                            }
+                            if (count($customFields_getMethods) > 0) {
+                                foreach ($customFields_getMethods as $customField => $customField_getMethod) {
+                                    $choice[$customField] = $object->$customField_getMethod();
+                                }
+                            }
+
+                            $choices[] = $choice;
+                        }
+                    }
+                    break;
                 default:
-                    foreach ($objects as $object) {
-                        $choices[] = array('id' => $object->getId(), 'label' => $object->__toString());
+                    if (is_array($objects) && (count($objects) > 0)) {
+                        foreach ($objects as $object) {
+                            $choices[] = array('id' => $object->getId(), 'label' => $object->__toString());
+                        }
                     }
             }
         }
@@ -1696,14 +1802,21 @@ abstract class BaseEntityController extends BaseController
 
     /**
      * Get repository service
-     * @param null $entity
-     * @param null $Bundle (CamelCase with "Bundle" prefix at the end)
+     * @param $entity
+     * @param $Bundle (CamelCase with "Bundle" prefix at the end)
+     * @param $BundlePrefix (CamelCase)
      * @return mixed
      */
-    protected function getRepositoryService($entity, $Bundle)
+    protected function getRepositoryService($entity, $Bundle, $BundlePrefix = '')
     {
-        return $this->get(HelperService::camelCaseToSnakeCase(substr($Bundle, 0, -6)).'.service.repository')
-            ->setEntityRepository($Bundle.':'.$entity);
+        $serviceName_bundlePrefix = (empty($BundlePrefix) ?
+            '' :
+            (HelperService::camelCaseToSnakeCase($BundlePrefix) . '.')
+        );
+        $serviceName_bundle = HelperService::camelCaseToSnakeCase(substr($Bundle, 0, -6));
+
+        return $this->get($serviceName_bundlePrefix.$serviceName_bundle.'.service.repository')
+            ->setEntityRepository($BundlePrefix.$Bundle.':'.$entity);
     }
 
     /**
@@ -1715,8 +1828,9 @@ abstract class BaseEntityController extends BaseController
     {
         $entity = $this->localConf['entity'];
         $Bundle = $this->localConf['Bundle'];
+        $BundlePrefix = $this->localConf['BundlePrefix'];
 
-        return $this->getRepositoryService($entity, $Bundle);
+        return $this->getRepositoryService($entity, $Bundle, $BundlePrefix);
     }
 
     /**
@@ -1868,11 +1982,12 @@ abstract class BaseEntityController extends BaseController
      * @param Request $request
      * @param bool $checkCsrfToken
      * @param bool $hasSearch
+     * @param bool $hasDataNormalization (normalize data to return only the request custom data)
      * @return mixed
      */
-    protected function getAndProcessRequestData(Request $request, $checkCsrfToken = true, $hasSearch = true)
+    protected function getAndProcessRequestData(Request $request, $checkCsrfToken = true, $hasSearch = true, $hasDataNormalization = true)
     {
-        $data = parent::getAndProcessRequestData($request, $checkCsrfToken);
+        $data = parent::getAndProcessRequestData($request, $checkCsrfToken, false);
 
         // Process search
         if ($hasSearch && !empty($data['search'])) {
@@ -1885,17 +2000,19 @@ abstract class BaseEntityController extends BaseController
             unset($data['search']);
         }
 
-        return $data;
+        return ($hasDataNormalization ?
+            (isset($data['data']) ? $data['data'] : array()) :
+            $data
+        );
     }
 
     /**
      * Normalize and get the response for user
-     * @param bool $isJson (is a json response)
      * @param array $extraData (extra data to merge into response)
      * @param $hasSymfonyResponse (wrap the response in a Symfony response)
      * @return array
      */
-    protected function getResponse($isJson = false, $extraData = array(), $hasSymfonyResponse = true)
+    protected function getResponse($extraData = array(), $hasSymfonyResponse = true)
     {
         $data = array();
 
@@ -1911,13 +2028,21 @@ abstract class BaseEntityController extends BaseController
             if (!$this->responseConf['hasConf']) {
                 $data['search']['hasMore'] = $this->templateConf['search']['hasMore'];
             }
+
+            // Add labelCount (is automatic when the expander is enabled,
+            // to show to the user easily the number of entries)
+            if ($this->templateConf['controls']['expander']['isEnabled'] && $this->responseConf['hasLabelCount']) {
+                $data['labelCount'] = count($data['objects']);
+            }
         }
-        
+
         // Add object
         if ($this->responseConf['hasObject'] && $this->responseConf['object']) {
             $data['object'] = $this->responseConf['object'];
             // Set session storage object flag to be handled by template
-            if ($this->responseConf['addObjectSessionStorageFlag'] && ($this->flags['storage'] == 'session')) {
+            if ($this->responseConf['addObjectSessionStorageFlag']
+                && ($this->flags['storage'] == 'session')
+            ) {
                 $data['object']['_isSessionStorage'] = true;
             }
         }
@@ -1934,7 +2059,7 @@ abstract class BaseEntityController extends BaseController
             }
         }
 
-        return parent::getResponse($isJson, array_merge($data, $extraData), $hasSymfonyResponse);
+        return parent::getResponse(array_merge($data, $extraData), $hasSymfonyResponse);
     }
 
     /**
@@ -1988,7 +2113,8 @@ abstract class BaseEntityController extends BaseController
      * @param $data (usually the form data)
      * @return $this
      */
-    protected function postSaveObject($object, $data = null) {
+    protected function postSaveObject($object, $data = null)
+    {
         return $this;
     }
 
@@ -2005,10 +2131,10 @@ abstract class BaseEntityController extends BaseController
     /**
      * Post (after) delete object event. Use this function to handle event.
      * @param $object
-     * @param $context (context to help to determine actions)
      * @return $this
      */
-    protected function postDeleteObject($object, $context = null) {
+    protected function postDeleteObject($object)
+    {
         return $this;
     }
 
@@ -2027,6 +2153,64 @@ abstract class BaseEntityController extends BaseController
      * @return $this
      */
     protected function postCancelObject($object) {
+        return $this;
+    }
+
+    /**
+     * Set boolean field true value as unique
+     * @param $object (object to set boolean field true value as unique)
+     * @param $field (boolean field to set true value as unique)
+     * @param bool $hasFlush
+     * @return $this
+     */
+    protected function setBoolFieldTrueValueUnique($object, $field, $hasFlush = true)
+    {
+        $fieldUC = ucfirst($field); // Upper Case
+
+        $enabledBoolFieldObjArr = $this->getLocalRepositoryService()->execute('findBy'.$fieldUC, array(true));
+        if (count($enabledBoolFieldObjArr) > 0) {
+            $setMethod = 'set' . $fieldUC;
+            foreach ($enabledBoolFieldObjArr as $enabledBoolFieldObj) {
+                $enabledBoolFieldObj->$setMethod(false);
+            }
+        }
+
+        $object->$setMethod(true);
+
+        if ($hasFlush) {
+            $this->flushEm();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set Language Prefix
+     * @param string $context (<'USER', 'SYSTEM', 'CUSTOMER'>)
+     * @param null $entity
+     * @return $this
+     */
+    protected function setLangPrefix($context = 'USER', $entity = null)
+    {
+        $langPrefix = null;
+
+        switch ($context) {
+            case 'USER':
+                // Display the interface
+                $langPrefix = HelperService::getGlobalVar('userLangPrefix');
+                break;
+            case 'CUSTOMER':
+                // Customer processes (like email send, payment requests, etc).
+                $langPrefix = $this->getRepositoryService('User', 'LoginBundle', '')
+                    ->execute('getLangPrefixByEntity', array($entity));
+                break;
+            default: // 'SYSTEM'
+                // Legal processes (like current account documents)
+                $langPrefix = HelperService::getGlobalVar('systemLangPrefix');
+        }
+
+        HelperService::setGlobalVar('langPrefix', $langPrefix);
+
         return $this;
     }
 }

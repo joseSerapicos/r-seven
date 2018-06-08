@@ -1,0 +1,63 @@
+
+
+
+    <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+
+    
+            
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_entityAddressObj">Address</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().entityAddressObj"
+           formControlName = entityAddressObj
+           name="form[entityAddressObj]"
+           required="required"           type="hidden">
+    <js_autoComplete [field]="'entityAddressObj'"
+                     [hasSelfReference]="_dataService.getFieldChoicesAttr('entityAddressObj', 'hasSelfReference')"
+                                              (onChange)="'onEntityAddressChange($event)'"[placeholder]="'Address'"                         ></js_autoComplete>
+                    <label class="error" *ngFor="let error of _formService.getErrors().entityAddressObj">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_entityPhoneObj">Phone</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().entityPhoneObj"
+           formControlName = entityPhoneObj
+           name="form[entityPhoneObj]"
+           required="required"           type="hidden">
+    <js_autoComplete [field]="'entityPhoneObj'"
+                     [hasSelfReference]="_dataService.getFieldChoicesAttr('entityPhoneObj', 'hasSelfReference')"
+                                              (onChange)="'onEntityPhoneChange($event)'"[placeholder]="'Phone'"                         ></js_autoComplete>
+                    <label class="error" *ngFor="let error of _formService.getErrors().entityPhoneObj">{{error}}</label>
+            </div>
+        </div>
+                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_entityEmailObj">Email</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().entityEmailObj"
+           formControlName = entityEmailObj
+           name="form[entityEmailObj]"
+           required="required"           type="hidden">
+    <js_autoComplete [field]="'entityEmailObj'"
+                     [hasSelfReference]="_dataService.getFieldChoicesAttr('entityEmailObj', 'hasSelfReference')"
+                                              (onChange)="'onEntityEmailChange($event)'"[placeholder]="'Email'"                         ></js_autoComplete>
+                    <label class="error" *ngFor="let error of _formService.getErrors().entityEmailObj">{{error}}</label>
+            </div>
+        </div>
+        
+
+    
+
+    <input type="hidden" id="form__token" name="form[_token]" value="_yE5tsEMUvpURfWTW8W85WZk33Z7lJCsksOmBZnQ86Y" /></form>
+

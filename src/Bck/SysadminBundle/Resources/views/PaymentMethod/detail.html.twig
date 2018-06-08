@@ -1,0 +1,39 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block head_javascripts %}
+    {{ parent() }}
+
+    {% set parentId = _conf['object']['id'] %}
+
+    {% set paymentMethodDetailData = render(controller(
+    'BckSysadminBundle:PaymentMethodDetail:dataChild',
+    {'parents': {'paymentMethod': parentId}, 'responseType': 'json'}
+    )) %}
+
+    <script>
+        _app.dependencies.paymentMethodDetail = {{ paymentMethodDetailData|raw }};
+    </script>
+{% endblock %}
+
+{% block header_container %}
+    {% include 'AppBundle:partial:entity-detail.html.twig' with {
+        'object': _conf['object'],
+        'fields': _conf['fields']
+    } %}
+{% endblock %}
+
+{% block body_container %}
+    <div class="js_appBasics"></div>
+    <div class="js_dataBox"></div>
+{% endblock %}
+
+{% block javascripts %}
+    {% javascripts output="assets/sysadmin/payment-method/detail/js/local.js"
+        '@BckSysadminBundle/Resources/public/payment-method/detail/ts/dist/inline.bundle.js'
+        '@BckSysadminBundle/Resources/public/payment-method/detail/ts/dist/polyfills.bundle.js'
+        '@BckSysadminBundle/Resources/public/payment-method/detail/ts/dist/vendor.bundle.js'
+        '@BckSysadminBundle/Resources/public/payment-method/detail/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

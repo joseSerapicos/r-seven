@@ -44,7 +44,7 @@ export class PriceFormPopupComponent extends FormPopupExtensionComponent
     protected onIsVatIncludedChange(value: any): void
     {
         this._formService.getObject()['isVatIncluded'] = value;
-        this.setSellValue();
+        this.setPriceValue();
     }
 
     /**
@@ -54,7 +54,7 @@ export class PriceFormPopupComponent extends FormPopupExtensionComponent
     protected onMarginMethodChange(value: string): void
     {
         this._formService.getObject()['marginMethod'] = value;
-        this.setSellValue();
+        this.setPriceValue();
     }
 
     /**
@@ -64,7 +64,7 @@ export class PriceFormPopupComponent extends FormPopupExtensionComponent
     protected onMarginValueEnterKey(value: any): void
     {
         this._formService.getObject()['marginValue'] = value;
-        this.setSellValue();
+        this.setPriceValue();
     }
 
     /**
@@ -74,7 +74,7 @@ export class PriceFormPopupComponent extends FormPopupExtensionComponent
     protected onCostValueEnterKey(value: any): void
     {
         this._formService.getObject()['user_costValue'] = value;
-        this.setSellValue();
+        this.setPriceValue('COST');
     }
 
     /**
@@ -84,25 +84,7 @@ export class PriceFormPopupComponent extends FormPopupExtensionComponent
     protected onSellValueEnterKey(value: any): void
     {
         this._formService.getObject()['user_sellValue'] = value;
-        this.setCostValue();
-    }
-
-    /**
-     * Set cost price
-     * @returns any
-     */
-    protected setCostValue(): any
-    {
-        return this.setPriceValue('SELL');
-    }
-
-    /**
-     * Set cost price
-     * @returns any
-     */
-    protected setSellValue(): any
-    {
-        return this.setPriceValue('COST');
+        this.setPriceValue('SELL');
     }
 
     /**
@@ -110,11 +92,18 @@ export class PriceFormPopupComponent extends FormPopupExtensionComponent
      * @param baseField ([COST, SELL])
      * @returns any
      */
-    protected setPriceValue(baseField = 'COST'): any
+    protected setPriceValue(baseField = null): any
     {
-        if (!this._helperService.inArray(baseField, ['COST', 'SELL'])) {
-            console.log('Invalid base field to set price!');
-            return;
+        let obj = this._formService.getObject();
+
+        // Determine base field if is not provided
+        if (!baseField) {
+            // Try to set 'COST' by default
+            if (parseFloat(obj['user_costValue'] || '0') > 0) {
+                baseField = 'COST';
+            } else {
+                baseField = 'SELL';
+            }
         }
 
         let fields = {
@@ -122,7 +111,6 @@ export class PriceFormPopupComponent extends FormPopupExtensionComponent
                 SELL: {user_value: 'user_sellValue', value: 'sellValue'}
             },
             fieldToSet = ((baseField == 'COST') ? 'SELL' : 'COST'),
-            obj = this._formService.getObject(),
             marginMethod = obj['marginMethod'],
             isVatIncluded = obj['isVatIncluded'],
             vatPercentage = parseFloat(obj['vatCode_percentage'] || '0'),
@@ -146,14 +134,12 @@ export class PriceFormPopupComponent extends FormPopupExtensionComponent
         obj['userFieldTyped'] = baseField;
 
         // Calc base value without VAT
-        if (vatPercentage > 0) {
-            if (isVatIncluded) {
-                user_baseValue = parseFloat((Math.round(
-                            (user_baseValue / (1 + (vatPercentage / 100)))
-                            * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
-                    ).toFixed(this.decimalConf.unit.value)
-                );
-            }
+        if ((vatPercentage > 0) && isVatIncluded) {
+            user_baseValue = parseFloat((Math.round(
+                        (user_baseValue / (1 + (vatPercentage / 100)))
+                        * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                ).toFixed(this.decimalConf.unit.value)
+            );
         }
 
         // Set real value (unit value without VAT)
@@ -161,77 +147,108 @@ export class PriceFormPopupComponent extends FormPopupExtensionComponent
                 user_baseValue * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
         ).toFixed(this.decimalConf.unit.value);
 
+        // Note: Value to set is determined from base value without VAT
+        switch (marginMethod) {
+            case 'MARGIN':
+                // Avoid that margin exceed the limit (100)
+                marginValue = ((marginValue < 100) ? marginValue : 99.9999); // Avoid division by zero
+                if (baseField == 'COST') {
+                    user_valueToSet = parseFloat((Math.round(
+                                (user_baseValue / (1 - (marginValue / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                        ).toFixed(this.decimalConf.unit.value)
+                    );
+                } else {
+                    user_valueToSet = parseFloat((Math.round(
+                                (user_baseValue * (1 - (marginValue / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                        ).toFixed(this.decimalConf.unit.value)
+                    );
+                }
+                break;
+            case 'MARKUP':
+                if (baseField == 'COST') {
+                    user_valueToSet = parseFloat((Math.round(
+                                (user_baseValue * (1 + (marginValue / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                        ).toFixed(this.decimalConf.unit.value)
+                    );
+                } else {
+                    user_valueToSet = parseFloat((Math.round(
+                                (user_baseValue / (1 + (marginValue / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                        ).toFixed(this.decimalConf.unit.value)
+                    );
+                }
+                break;
+            case 'FIXED':
+                if (baseField == 'COST') {
+                    user_valueToSet = parseFloat((Math.round(
+                                (user_baseValue + marginValue) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                        ).toFixed(this.decimalConf.unit.value)
+                    );
+                } else {
+                    user_valueToSet = parseFloat((Math.round(
+                                (user_baseValue - marginValue) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                        ).toFixed(this.decimalConf.unit.value)
+                    );
+                }
+                break;
+            default: // No margin was defined, so calculate the value to set only based on VAT
+                user_valueToSet = parseFloat(obj[fields[fieldToSet]['user_value']] || '0');
 
-        // Only determine the values to set if margin is defined
-        if (marginMethod) {
-            // Note: Value to set is determined from base value without VAT
-            switch (marginMethod) {
-                case 'MARGIN':
-                    // Avoid that margin exceed the limit (100)
-                    marginValue = ((marginValue < 100) ? marginValue : 99.9999); // Avoid division by zero
-                    if (baseField == 'COST') {
-                        user_valueToSet = parseFloat((Math.round(
-                                    (user_baseValue / (1 - (marginValue / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
-                            ).toFixed(this.decimalConf.unit.value)
-                        );
-                    } else {
-                        user_valueToSet = parseFloat((Math.round(
-                                    (user_baseValue * (1 - (marginValue / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
-                            ).toFixed(this.decimalConf.unit.value)
-                        );
-                    }
-                    break;
-                case 'MARKUP':
-                    if (baseField == 'COST') {
-                        user_valueToSet = parseFloat((Math.round(
-                                    (user_baseValue * (1 + (marginValue / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
-                            ).toFixed(this.decimalConf.unit.value)
-                        );
-                    } else {
-                        user_valueToSet = parseFloat((Math.round(
-                                    (user_baseValue / (1 + (marginValue / 100))) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
-                            ).toFixed(this.decimalConf.unit.value)
-                        );
-                    }
-                    break;
-                case 'FIXED':
-                    if (baseField == 'COST') {
-                        user_valueToSet = parseFloat((Math.round(
-                                    (user_baseValue + marginValue) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
-                            ).toFixed(this.decimalConf.unit.value)
-                        );
-                    } else {
-                        user_valueToSet = parseFloat((Math.round(
-                                    (user_baseValue - marginValue) * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
-                            ).toFixed(this.decimalConf.unit.value)
-                        );
-                    }
-                    break;
-            }
+                // Normalize decimals and update inputs with rounded values (with or without VAT, according with user preferences)
+                // @TODO update only when the user leaves the input,
+                // otherwise user can not fill the input with more that one digit at a time (commented bellow).
+                user_valueToSet = parseFloat(/*obj[fields[fieldToSet]['user_value']] = */  (Math.round(
+                            user_valueToSet * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                    ).toFixed(this.decimalConf.unit.value)
+                );
 
-            // Set real value (unit value without VAT)
-            obj[fields[fieldToSet]['value']] = (Math.round(
-                    user_valueToSet * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
-            ).toFixed(this.decimalConf.unit.value);
-
-            // Calc value to set VAT
-            if (vatPercentage > 0) {
-                if (isVatIncluded) {
-                    vatValueToSet = parseFloat((Math.round(
-                                (user_valueToSet * (vatPercentage / 100))
+                // Calc base value without VAT
+                if ((vatPercentage > 0) && isVatIncluded) {
+                    user_valueToSet = parseFloat((Math.round(
+                                (user_valueToSet / (1 + (vatPercentage / 100)))
                                 * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
                         ).toFixed(this.decimalConf.unit.value)
                     );
                 }
-            }
-
-            // Update inputs with rounded values (with or without VAT, according with user preferences)
-            obj[fields[fieldToSet]['user_value']] = (Math.round(
-                    (user_valueToSet + vatValueToSet)
-                    * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
-            ).toFixed(this.decimalConf.unit.value);
         }
 
+        // Set real value (unit value without VAT)
+        obj[fields[fieldToSet]['value']] = (Math.round(
+                user_valueToSet * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+        ).toFixed(this.decimalConf.unit.value);
+
+        // Calc value to set VAT
+        if((vatPercentage > 0) && isVatIncluded) {
+            vatValueToSet = parseFloat((Math.round(
+                        (user_valueToSet * (vatPercentage / 100))
+                        * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+                ).toFixed(this.decimalConf.unit.value)
+            );
+        }
+
+        // Update inputs with rounded values (with or without VAT, according with user preferences)
+        obj[fields[fieldToSet]['user_value']] = (Math.round(
+                (user_valueToSet + vatValueToSet)
+                * this.decimalConf.unit.iterator) / this.decimalConf.unit.iterator
+        ).toFixed(this.decimalConf.unit.value);
+
+        // Callback
+        this.postPriceUpdate();
+
+        return this;
+    }
+
+
+    ////////
+    // Events/Callbacks
+    ////////////////////////////////
+
+
+    /**
+     * Post (after) price update event. Use this function to handle event.
+     * @return any
+     */
+    protected postPriceUpdate()
+    {
         return this;
     }
 }

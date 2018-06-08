@@ -1,9 +1,0 @@
-{
-  "step1": "http://weboffice.whs.dev.com/app_dev.php/booking/package-booking/add-step1",
-  "step2": "http://weboffice.whs.dev.com/app_dev.php/booking/package-booking-service/add-step2-for-booking/0",
-  "step2-service": "http://weboffice.whs.dev.com/app_dev.php/template/booking/package-booking/add-step2-service",
-  "step3": "http://weboffice.whs.dev.com/app_dev.php/booking/package-booking-service/add-step3-for-booking/0",
-  "step4": "http://weboffice.whs.dev.com/app_dev.php/template/booking/package-booking/add-step4",
-  "step5": "http://weboffice.whs.dev.com/app_dev.php/booking/package-booking-service/add-step5-for-booking/0",
-  "step6": "http://weboffice.whs.dev.com/app_dev.php/template/booking/package-booking/add-step6"
-}

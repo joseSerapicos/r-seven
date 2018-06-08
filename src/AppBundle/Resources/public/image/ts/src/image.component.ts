@@ -4,7 +4,7 @@ import {ActionsService} from '../../../ts/actions/actions.service';
 import {DataBoxComponent, Popups, Popup} from '../../../data-box/ts/src/data-box.component';
 import {ModalService} from '../../../modal/ts/modal.service';
 import {ImageProvider} from './image-provider';
-import {TasksLoaderManagerService} from '../../../../../../AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service';
+import {TasksLoaderManagerService} from '../../../tasks-loader-manager/ts/tasks-loader-manager.service';
 
 
 // Reexports

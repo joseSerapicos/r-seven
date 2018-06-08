@@ -9,9 +9,9 @@ use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\HttpFoundation\RequestStack;
 use AppBundle\Service\DatabaseService;
-use SysadminBundle\Service\RepositoryService as SysadminRepositoryService;
+use Bck\SysadminBundle\Service\RepositoryService as SysadminRepositoryService;
 use LoginBundle\Service\RepositoryService as LoginRepositoryService;
-use SysadminBundle\Entity\System;
+use Bck\SysadminBundle\Entity\System;
 use LoginBundle\Entity\User;
 use Symfony\Component\HttpFoundation\Session\Session;
 
@@ -74,24 +74,24 @@ class UserProviderService implements UserProviderInterface
     }
 
     /**
-     * Load user system and set database connection
+     * Load system and set database connection
      *
      * @param $system
      * @return mixed
      * @throws UsernameNotFoundException
      */
-    protected function loadUserSystem($system)
+    public function loadSystem($system)
     {
         if(!empty($system)) {
             $systemObj = $this->sysAdminRepositoryService
-                ->setEntityRepository('SysadminBundle:System')
+                ->setEntityRepository('BckSysadminBundle:System')
                 ->execute(
                     'findOneByLogin',
                     array(
                         $system
                     )
                 );
-            
+
             if ($systemObj instanceof System) {
                 $this->databaseService->switchConnection(
                     'local_database',
@@ -122,21 +122,28 @@ class UserProviderService implements UserProviderInterface
      */
     public function loadUserByUsername($username)
     {
-        // Get system from the form post
         $request = $this->requestStack->getCurrentRequest();
+
+        // Temporary variable to controls if the user has submitted the login form,
+        // or is the first call to get the login form,
+        // or is the Symfony relogin call (Symfony calls two times the authentication methods).
+        // If $request->get('_username') is filled, so the user did submit on the login page.
+        $hasAuthenticationSubmit = ($request->get('_username') ? true : false);
+        $this->session->set('_tmp.hasAuthenticationSubmit', $hasAuthenticationSubmit);
+
+        // Get system from the form post
         $system = $request->get('_system');
         if(!empty($system)) {
-            // Save the first request from user to redirect after success login
-            $this->session->set('_tmp.user_request', $this->session->get('_security.default.target_path'));
-            $this->session->set('_tmp.user_system', $system); // To retrieve back to login form if user login fail
+            // To retrieve back to login form if user login fail
+            $this->session->set('_tmp.user_system', $system);
         }
+        // Get system from the session
         else {
-            // Get system from the session
             $system = $this->session->get('_app.system')['id'];
         }
 
         // Load user system and set database connection
-        $this->loadUserSystem($system);
+        $this->loadSystem($system);
 
         // Get user
         $userObj = $this->loginRepositoryService

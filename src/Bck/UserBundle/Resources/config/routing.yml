@@ -1,0 +1,3 @@
+user:
+    resource: "@BckUserBundle/Controller/"
+    type:     annotation

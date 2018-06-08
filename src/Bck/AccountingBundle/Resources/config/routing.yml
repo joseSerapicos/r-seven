@@ -1,0 +1,3 @@
+accounting:
+    resource: "@BckAccountingBundle/Controller/"
+    type:     annotation

@@ -1,21 +1,21 @@
 <?php
-// src/AdminBundle/Entity/ModuleMenuSetting.php
+// src/BckAdminBundle/Entity/ModuleMenuSetting.php
 
-namespace AdminBundle\Entity;
+namespace Bck\AdminBundle\Entity;
 
 use AppBundle\Entity\BaseEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 
 /**
- * @ORM\Entity(repositoryClass="AdminBundle\Entity\ModuleMenuSettingRepository")
+ * @ORM\Entity(repositoryClass="Bck\AdminBundle\Entity\ModuleMenuSettingRepository")
  * @ORM\Table(name="moduleMenuSetting",
  *     uniqueConstraints={@ORM\UniqueConstraint(name="unq_moduleMenuSetting_value", columns={"fkApp_moduleMenuSetting", "fk_store", "fk_user"})},
  *     indexes={@ORM\Index(name="idx_module_menu_setting_value", columns={"fk_moduleMenu", "fk_store", "fk_user"})})
  */
 class ModuleMenuSetting extends BaseEntity {
     /**
-     * @ORM\ManyToOne(targetEntity="\SysadminBundle\Entity\ModuleMenuSetting")
+     * @ORM\ManyToOne(targetEntity="Bck\SysadminBundle\Entity\ModuleMenuSetting")
      * @ORM\JoinColumn(name="fkApp_moduleMenuSetting", referencedColumnName="id", nullable=false, unique=false, onDelete="CASCADE")
      */
     protected $appModuleMenuSettingObj;
@@ -33,7 +33,7 @@ class ModuleMenuSetting extends BaseEntity {
     protected $storeObj;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="\LoginBundle\Entity\User")
      * @ORM\JoinColumn(name="fk_user", referencedColumnName="id", nullable=true, unique=false, onDelete="CASCADE")
      */
     protected $userObj;

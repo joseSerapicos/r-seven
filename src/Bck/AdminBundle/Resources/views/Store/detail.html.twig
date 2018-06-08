@@ -1,0 +1,84 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets output="assets/admin/store/detail/css/local.css"
+    '@BckAdminBundle/Resources/public/store/detail/scss/dist/styles.css'
+    '@dropzone_css'
+    '@cropper_css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+
+    <link rel="stylesheet" href="{{ asset('assets/vendor/blueimp-gallery/css/blueimp-gallery.min.css') }}" />
+{% endblock %}
+
+{% block head_javascripts %}
+    {{ parent() }}
+
+    {% set parentId = _conf['object']['id'] %}
+
+    {% set storePhoneData = render(controller(
+        'BckAdminBundle:StorePhone:dataChild',
+        {'parents': {'store': parentId}, 'responseType': 'json'}
+    )) %}
+
+    {% set storeEmailData = render(controller(
+        'BckAdminBundle:StoreEmail:dataChild',
+        {'parents': {'store': parentId}, 'responseType': 'json'}
+    )) %}
+
+    {% set storeLinkData = render(controller(
+        'BckAdminBundle:StoreLink:dataChild',
+        {'parents': {'store': parentId}, 'responseType': 'json'}
+    )) %}
+    <script>
+        _app.dependencies.storePhone = {{ storePhoneData|raw }};
+        _app.dependencies.storeEmail = {{ storeEmailData|raw }};
+        _app.dependencies.storeLink = {{ storeLinkData|raw }};
+    </script>
+{% endblock %}
+
+{% block header_container %}
+    {% include 'AppBundle:partial:entity-detail.html.twig' with {
+        'object': _conf['object'],
+        'fields': _conf['fields']
+    } %}
+{% endblock %}
+
+{% block body_container %}
+    <div class="js_appBasics"></div>
+    <div id="js_main"></div>
+{% endblock %}
+
+{% block after_container %}
+    <div id="blueimp-gallery" class="blueimp-gallery">
+        <div class="slides"></div>
+        <h3 class="title"></h3>
+        <a class="prev">‹</a>
+        <a class="next">›</a>
+        <a class="close">×</a>
+        <a class="play-pause"></a>
+        <ol class="indicator"></ol>
+    </div>
+{% endblock %}
+
+{% block vendor_javascripts %}
+    {{ parent() }}
+
+    {% javascripts output="assets/services/package-service/detail/js/vendor.js"
+        '@cropper_js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{%  block javascripts %}
+    {% javascripts output="assets/admin/store/detail/js/local.js"
+        '@BckAdminBundle/Resources/public/store/detail/ts/dist/inline.bundle.js'
+        '@BckAdminBundle/Resources/public/store/detail/ts/dist/polyfills.bundle.js'
+        '@BckAdminBundle/Resources/public/store/detail/ts/dist/vendor.bundle.js'
+        '@BckAdminBundle/Resources/public/store/detail/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

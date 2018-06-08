@@ -1,62 +1,19 @@
 {% extends 'AppBundle:data-box:base.html.twig' %}
 
-{% set dataBoxDefault_hasHeader = (dataBoxDefault_hasHeader is defined ? dataBoxDefault_hasHeader : true) %}
-{% set dataBoxDefault_hasForm = (dataBoxDefault_hasForm is defined ? dataBoxDefault_hasForm : true) %}
-{% set dataBoxDefault_hasActions = (dataBoxDefault_hasActions is defined ? dataBoxDefault_hasActions : true) %}
-
 {% block before_container %}{% endblock %}
 
 {% block header_container %}{{ parent() }}{% endblock %}
 
 {% block body_container %}
-    <div class="table-responsive">
-        {% if (dataBoxDefault_hasForm) %}<form>{% endif %}
-        <table class="data-table table table-hover dataTables-example{{dataBoxDefault_hasHeader ? ' table-bordered' : ''}}">
-            {% if (dataBoxDefault_hasHeader) %}<thead>
-            <tr>
-                <th *ngFor="let searchField of _dataService.getSearch('fields')">{% verbatim %}{{ _dataService.getFields('metadata')[searchField].label }}{% endverbatim %}</th>
-                <th>&nbsp;</th>
-            </tr>
-            </thead>{% endif %}
-            <tbody>
-            <ng-template ngFor let-obj [ngForOf]="_dataService.getProviderAttr('objects')" let-objIndex="index">
-            <tr {% if (dataBoxDefault_hasActions) %}(dblclick)="editAction($event, objIndex)"{% endif %}
-                [ngClass]="getLegendClasses(obj, 'tr')">
-                {% block dataBoxDefault_container %}
-                    <td *ngFor="let searchField of _dataService.getSearch('fields')"
-                        [ngClass]="getColAlign(searchField)"
-                        [innerHTML]="obj[searchField]"></td>
-                {% endblock %}
-                {% if (dataBoxDefault_hasActions) %}<td>
-                    <span *ngIf="obj['_isNew']" class="badge badge-info">New</span>
-                    <span *ngIf="obj['_isEdited']" class="badge badge-info">Edited</span>
-                    <input *ngIf="_actionsService.getActionAttr('radioChoice', 'isEnabled')"
-                           class="pull-right action"
-                           type="radio"
-                           name="index[]"
-                           value="{% verbatim %}{{objIndex}}{% endverbatim %}"/>
-                    <input *ngIf="_actionsService.getActionAttr('checkAll', 'isEnabled')"
-                           class="pull-right action js_checkAll"
-                           type="checkbox"
-                           name="index[]"
-                           value="{% verbatim %}{{objIndex}}{% endverbatim %}"
-                           [ngModel]="checkAll"/>
-                    <div class="pull-right actions no-user-select text-secondary" (click)="triggerAction($event)">
-                        <ng-template ngFor let-action [ngForOf]="_actionsService.getDetailActions()">
-                            <a *ngIf="_actionsService.getActionAttr(action, 'isEnabled')"
-                               [ngClass]="[_actionsService.getActionAttr(action, 'icon') + getActionsLegendClasses(obj, action)]"
-                               class="fa"
-                               [attr.data-action]="action"
-                               [attr.data-value]="objIndex"></a>
-                        </ng-template>
-                    </div>
-                </td>{% endif %}
-            </tr>
-            </ng-template>
-            </tbody>
-        </table>
-        {% if (dataBoxDefault_hasForm) %}</form>{% endif %}
-    </div>
+    {% set dataBoxDefault_hasHeader = (dataBoxDefault_hasHeader is defined ? dataBoxDefault_hasHeader : true) %}
+    {% set dataBoxDefault_hasForm = (dataBoxDefault_hasForm is defined ? dataBoxDefault_hasForm : true) %}
+    {% set dataBoxDefault_hasActions = (dataBoxDefault_hasActions is defined ? dataBoxDefault_hasActions : true) %}
+
+    {% include 'AppBundle:data-box:default-content-start.html.twig' %}
+        {% block dataBoxDefault_container %}
+            {% include 'AppBundle:data-box:default-content-container.html.twig' %}
+        {% endblock %}
+    {% include 'AppBundle:data-box:default-content-end.html.twig' %}
 {% endblock %}
 
 {% block footer %}{{ parent() }}{% endblock %}

@@ -1,0 +1,227 @@
+<div class="modal-header">
+    <div class="row align-items-center">
+        <h3 class="col-auto mr-auto modal-title">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>
+        <div class="col-auto text-right actions"><a
+                class="-round fa fa-times"
+                (click)="closeAction($event)"></a></div>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12">    
+                        <ul class="row mb-3 no-gutters wizard-nav">
+                                    <li class="col-auto wizard-step"
+                        [class.step-active]="0 == _wizardManagerService.getIndex()">
+                        <span class="step-number">1</span>
+                        <span class="step-text">Client</span>
+                    </li>
+                                    <li class="col-auto wizard-step"
+                        [class.step-active]="1 == _wizardManagerService.getIndex()">
+                        <span class="step-number">2</span>
+                        <span class="step-text">Payment</span>
+                    </li>
+                            </ul>
+
+                <form name="form" method="post" (ngSubmit)="saveAction($event)" [formGroup]="_formService.getForm()" class="form-horizontal">
+
+                    
+    <section [hidden]="_wizardManagerService.getIndex() != 0">    
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_clientObj">Client</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().clientObj"
+           formControlName = clientObj
+           name="form[clientObj]"
+           required="required"           type="hidden">
+    <js_autoComplete [field]="'clientObj'"
+                     [hasSelfReference]="_dataService.getFieldChoicesAttr('clientObj', 'hasSelfReference')"
+                                              (onChange)="onEntityChange($event)"                         ></js_autoComplete>
+                    <label class="error" *ngFor="let error of _formService.getErrors().clientObj">{{error}}</label>
+            </div>
+        </div>
+        </section>
+    <section [hidden]="_wizardManagerService.getIndex() != 1">                        
+
+                <div class="row form-group" *ngIf="_formService.getObject().id">
+
+                        <label class="col-sm-2 control-label required" for="form_id">Id</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_id"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().id"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().id">{{error}}</label>
+            </div>
+        </div>
+                                    
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_clientDocumentObj">Client Document</label>
+    
+            <div class="col-sm-10">
+                                            <input [(ngModel)]="_formService.getObject().clientDocumentObj"
+           formControlName = clientDocumentObj
+           name="form[clientDocumentObj]"
+                      type="hidden">
+    <js_autoComplete [field]="'clientDocumentObj'"
+                     [hasSelfReference]="_dataService.getFieldChoicesAttr('clientDocumentObj', 'hasSelfReference')"
+                                              (onChange)="onClientDocumentChange($event)"                         ></js_autoComplete>
+                    <label class="error" *ngFor="let error of _formService.getErrors().clientDocumentObj">{{error}}</label>
+            </div>
+        </div>
+                                    
+
+                <div class="row form-group" *ngIf="_formService.getObject().clientDocument_code">
+
+                        <label class="col-sm-2 control-label" for="form_clientDocument_code">Doc. Code</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_clientDocument_code"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().clientDocument_code"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().clientDocument_code">{{error}}</label>
+            </div>
+        </div>
+                                    
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label" for="form_reference">Reference</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_reference" name="form[reference]" maxlength="128" [(ngModel)]="_formService.getObject().reference" formControlName="reference" [class.error]="_formService.getErrors().reference &amp;&amp; _formService.getErrors().reference.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().reference">{{error}}</label>
+            </div>
+        </div>
+                                    
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_description">Description</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_description" name="form[description]" required="required" maxlength="256" [(ngModel)]="_formService.getObject().description" formControlName="description" [class.error]="_formService.getErrors().description &amp;&amp; _formService.getErrors().description.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().description">{{error}}</label>
+            </div>
+        </div>
+                                    
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required" for="form_value">Value</label>
+    
+            <div class="col-sm-10">
+                                            <input type="text" id="form_value" name="form[value]" required="required" [(ngModel)]="_formService.getObject().value" formControlName="value" [class.error]="_formService.getErrors().value &amp;&amp; _formService.getErrors().value.length &gt; 0" class="form-control" />
+                <label class="error" *ngFor="let error of _formService.getErrors().value">{{error}}</label>
+            </div>
+        </div>
+                                                
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label required">Payment Method</label>
+    
+            <div class="col-sm-10">
+                                                                            <div class="form-control-box"
+         [ngClass]="{'error': _formService.getErrors().paymentMethodObj && (_formService.getErrors().paymentMethodObj.length > 0)}"
+         (click)="_formService.setFormFieldValue('paymentMethodObj', $event.target.value)">
+                                    <div class="radio">
+                    <label class="required"><input
+                                type="radio"
+                                value="0"
+                                [checked]="_formService.getObject().paymentMethodObj == 0">&nbsp;<span>All</span></label>
+                                            <div class="tip-box"
+                             *ngIf="(_formService.getObject().paymentMethodObj == 0)"><small class="pre-wrap">Allows the customer to use any payment method.</small></div>
+                                    </div>
+                            <div class="radio"
+             *ngFor="let choice of _dataService.getFieldChoices('paymentMethodObj')">
+            <label class="required"><input
+                type="radio"
+                value="{{choice['id']}}"
+                [checked]="_formService.getObject().paymentMethodObj == choice['id']">&nbsp;<span [innerHTML]="choice['label']"></span></label>
+            <div class="tip-box"
+                 *ngIf="(_formService.getObject().paymentMethodObj == choice['id']) && (choice['description'])"><small class="pre-wrap">{{choice['description']}}</small></div>
+        </div>
+        <input [(ngModel)]="_formService.getObject().paymentMethodObj"
+               formControlName="paymentMethodObj"
+               name="form[paymentMethodObj]"
+               required="required"               type="hidden">
+    </div>
+                                <label class="error" *ngFor="let error of _formService.getErrors().paymentMethodObj">{{error}}</label>
+            </div>
+        </div>
+                                                
+
+                <div class="row form-group" *ngIf="_formService.getObject().paymentStatus">
+
+                        <label class="col-sm-2 control-label required" for="form_paymentStatus">Payment Status</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_paymentStatus"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().paymentStatus"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().paymentStatus">{{error}}</label>
+            </div>
+        </div>
+                                    
+
+                <div class="row form-group" *ngIf="_formService.getObject().insertTime">
+
+                        <label class="col-sm-2 control-label required" for="form_insertTime">Insert Time</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_insertTime"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().insertTime"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().insertTime">{{error}}</label>
+            </div>
+        </div>
+                                    
+
+                <div class="row form-group" *ngIf="_formService.getObject().insertUser">
+
+                        <label class="col-sm-2 control-label required" for="form_insertUser">Insert User</label>
+    
+            <div class="col-sm-10">
+                                        <p id="form_insertUser"
+               class="form-control-static"
+               [innerHTML]="_formService.getViewObject().insertUser"></p>
+                        <label class="error" *ngFor="let error of _formService.getErrors().insertUser">{{error}}</label>
+            </div>
+        </div>
+                                    
+
+                <div class="row form-group" >
+
+                        <label class="col-sm-2 control-label">Enabled</label>
+    
+            <div class="col-sm-10">
+                                            <div class="checkbox">                                        <label for="form_isEnabled"><input type="checkbox" id="form_isEnabled" name="form[isEnabled]" [(ngModel)]="_formService.getObject().isEnabled" formControlName="isEnabled" [class.error]="_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0" value="1" checked="checked" /> Is enabled</label>
+    </div>
+                <label class="error" *ngFor="let error of _formService.getErrors().isEnabled">{{error}}</label>
+            </div>
+        </div>
+                    </section>
+                <div class="form-group"><button type="button" id="form_reset" name="form[reset]" class="btn btn-light btn" (click)="resetAction($event)">Reset</button></div><div class="form-group"><button type="button" id="form_save" name="form[save]" class="btn btn-primary btn" (click)="saveAction($event)">Save</button></div><div class="form-group"><button type="button" id="form_cancel" name="form[cancel]" class="btn btn-light btn" (click)="cancelAction($event)">Cancel</button></div><div class="form-group"><button type="button" id="form_saveAndClose" name="form[saveAndClose]" class="btn btn-primary btn" (click)="saveAndCloseAction($event)">Save and Close</button></div><input type="hidden" id="form__token" name="form[_token]" value="Pyn_BcDiS9gJO25dJpE9EFTFCI4Haq4yNZSoquhdIAw" /></form>
+
+            
+    </div>
+    </div>
+</div>
+<div class="modal-footer hide-on-empty">
+        <div class="row justify-content-center">
+        <div class="col-auto">
+            <button type="button" class="btn-light btn" (click)="_wizardManagerService.cancelAction($event)">Cancel</button>
+            <button type="button" class="btn-primary btn" (click)="_wizardManagerService.prevAction($event)"
+                    *ngIf="0 < _wizardManagerService.getIndex()">Prev</button>
+            <button type="button" class="btn-primary btn" (click)="_wizardManagerService.nextAction($event)"
+                    *ngIf="1 > _wizardManagerService.getIndex()">Next</button>
+                            <button type="button" class="btn-primary btn" (click)="_wizardManagerService.finishAction($event)"
+                        *ngIf="1 == _wizardManagerService.getIndex()">Finish</button>
+                    </div>
+    </div>
+</div>

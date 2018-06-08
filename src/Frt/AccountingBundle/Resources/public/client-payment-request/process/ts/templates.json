@@ -1,0 +1,4 @@
+{
+  "main": "http://www.handsometravel.dev/app_dev.php/accounting/client-payment-request/process-step1",
+  "step2": "http://www.handsometravel.dev/app_dev.php/accounting/client-payment-request/process-step2"
+}

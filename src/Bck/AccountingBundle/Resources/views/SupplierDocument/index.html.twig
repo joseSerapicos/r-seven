@@ -1,0 +1,12 @@
+{% extends 'BckAccountingBundle:BaseDocument:index.html.twig' %}
+
+{%  block javascripts %}
+    {% javascripts output="assets/accounting/supplier-document/index/js/local.js"
+        '@BckAccountingBundle/Resources/public/supplier-document/index/ts/dist/inline.bundle.js'
+        '@BckAccountingBundle/Resources/public/supplier-document/index/ts/dist/polyfills.bundle.js'
+        '@BckAccountingBundle/Resources/public/supplier-document/index/ts/dist/vendor.bundle.js'
+        '@BckAccountingBundle/Resources/public/supplier-document/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

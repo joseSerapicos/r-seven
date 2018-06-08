@@ -60,6 +60,11 @@ export class DataService {
 
         this.setObjects(this._provider.objects || []);
 
+        // If object is defined, then set the object (used by dynamic entity detail and login flat form)
+        if (this._provider.object) {
+            this.setLocalObject(this._provider.object);
+        }
+
         // Initialize the search
         this.initSearch();
     }
@@ -232,7 +237,7 @@ export class DataService {
 
                         // Object
                         that._objectIndex = index; // The index of original object that was selected
-                        that.setLocalObject(data.object);
+                        that.setLocalObject(data.object, false);
 
                         // Now object has all of fields with the values, is not limited to the search selected field,
                         // so we need normalize the object, because now it can has new values.
@@ -257,9 +262,7 @@ export class DataService {
     public setObject(object: any, index: any = null): any
     {
         if (object) {
-            // Normalize object to template
-            this._normalizedObject = this._helperService.cloneObject(object, true);
-            this.normalizeObjectsToTemplate([this._normalizedObject]);
+            this.setLocalObject(object);
 
             // Objects stored in session does not be considered really objects.
             if (object['id'] && !object['_isSessionStorage']) {
@@ -281,8 +284,6 @@ export class DataService {
                     this._newObjectsIds.push(object['id']); // New object added
                 }
             }
-
-            this.setLocalObject(object);
         }
 
         return this;
@@ -317,12 +318,20 @@ export class DataService {
      * Set local object (when the object is changed based in the objects array from _provider,
      * always is an internal order)
      * @param object
+     * @param hasTemplateNormalization
      * @returns {DataService}
      */
-    protected setLocalObject(object: any): DataService
+    protected setLocalObject(object: any, hasTemplateNormalization = true): DataService
     {
+        if (hasTemplateNormalization) {
+            // Normalize object to template
+            this._normalizedObject = this._helperService.cloneObject(object, true);
+            this.normalizeObjectsToTemplate([this._normalizedObject]);
+        }
+
         this._object = object;
         this._onObjectChangeEmitter.emit(this._object);
+
         return this;
     }
 
@@ -437,7 +446,7 @@ export class DataService {
         if(index && objectsProvider[index]) {
             this._objectIndex = index;
             // Set the object to emit the object change for any process pendent
-            this.setLocalObject(objectsProvider[index]);
+            this.setLocalObject(objectsProvider[index], false);
 
             return true;
         }
@@ -780,35 +789,47 @@ export class DataService {
                 case 'monetary':
                     return (value + '€');
                 case 'icon':
-                    return ('<i class="fa ' + value + '"></i>');
+                    let iconText = (fieldMetadata['fieldInView'] && object[fieldMetadata['fieldInView']]
+                            ? ' <span>'+object[fieldMetadata['fieldInView']]+'</span>'
+                            : ''
+                    );
+
+                    return ('<i class="fa ' + value + '"></i>' + iconText);
                 case 'link':
                     return ('<a href="' + value + '" target="_blank" class="text-base">' + value + '</a>');
                 case 'img':
                 case 'avatar':
-                    let extraClass = ((fieldMetadata['type'] == 'avatar') ? 'img-circle' : 'thumbnail');
+                    let extraClass = ((fieldMetadata['type'] == 'avatar') ? 'img-circle' : 'thumbnail'),
+                        imageLabel = (fieldMetadata['fieldInView'] && object[fieldMetadata['fieldInView']]
+                                ? '<div><small>'+object[fieldMetadata['fieldInView']]+'</small></div>'
+                                : ''
+                        );
 
                     // No image is provided
                     if (!value) {
                         return (
                             '<img alt="' + fieldMetadata['label'] + '" class="' + extraClass
-                            + '" src="/assets/img/dummy-48x48.png">'
+                            + '" src="/assets/img/dummy-48x48.png" width="48" height="48">' + imageLabel
                         );
                     }
 
+                    // @TODO NOTE: Image lazy load is disabled, needs to be checked later
                     // Regular load
-                    if (!this._hasAssetsLazyLoader) {
+                    //if (!this._hasAssetsLazyLoader) {
                         return (
                             '<img alt="' + fieldMetadata['label'] + '" class="' + extraClass
-                            + '" src="' + (this._helperService.getUploadWebPath(value) || value) + '">'
+                            + '" src="' + (this._helperService.getUploadWebPath(value) || value)
+                            + '" width="48" height="48">' + imageLabel
                         );
-                    }
+                    //}
 
                     // Use lazy loader
-                    return this._sanitizer.bypassSecurityTrustHtml(
+                    /*return this._sanitizer.bypassSecurityTrustHtml(
                         '<img alt="' + fieldMetadata['label'] + '" class="js_lazy ' + extraClass
                         + '" src="/assets/img/dummy-48x48.png" data-src="'
-                        + (this._helperService.getUploadWebPath(value) || value) + '">'
-                    );
+                        + (this._helperService.getUploadWebPath(value) || value)
+                        + '" width="48" height="48">' + imageLabel
+                    );*/
 
                 case 'status':
                     let statusMap = {'NO': 'danger', 'PARTIAL': 'warning', 'YES': 'primary'};
@@ -900,10 +921,6 @@ export class DataService {
      * @returns {DataService}
      */
     protected setNewObject(object: any) {
-        // Normalize object to template
-        this._normalizedObject = this._helperService.cloneObject(object, true);
-        this.normalizeObjectsToTemplate([this._normalizedObject]);
-
         // Set object
         this._objectIndex = null;
         this.setLocalObject(object);
@@ -1016,9 +1033,10 @@ export class DataService {
 
     /**
      * Get choices of entity based on search configuration (for select, auto-complete, etc.)
+     * @param route
      * @returns {DataService}
      */
-    public choices(): DataService
+    public choices(route: string = null): DataService
     {
         let that = this,
             noReset = true;
@@ -1027,9 +1045,6 @@ export class DataService {
         if (!this._helperService.isEqualObject(this._provider['search']['criteria'], this._candidateSearch['criteria'])) {
             // Update search
             this._provider['search']['criteria'] = this._candidateSearch['criteria'].slice(0);
-
-            console.log(this._provider['search']['criteria']);
-            console.log(this._candidateSearch['criteria']);
 
             // Reset pagination for new search
             this.resetPagination();
@@ -1040,8 +1055,9 @@ export class DataService {
         // No field is necessary, is returned the choices pattern (minimizes data sent)
         this._provider['search']['fields'] = [];
 
+        route = (route || this._provider.route['choices']['url']);
         this._postService.post(
-            this._provider.route['choices']['url'],
+            route,
             this.getRequestData(null, noReset)
         ).then(
             data => {
@@ -1234,11 +1250,20 @@ export class DataService {
      */
     public redirect(route: string, index: any = null): void
     {
-        index = ((index == null) ? this._objectIndex : index);
-        let objectsProvider = (this._objectsProvider || this._provider.objects),
+        let objectId = null,
             idField = (this._provider.route[route]['idField'] || 'id');
 
-        location.href = (this._provider.route[route]['url'] + '/' + objectsProvider[index][idField]);
+        // Get index from last selected object if not defined
+        index = ((index == null) ? this._objectIndex : index);
+        if (index !== null) {
+            let objectsProvider = (this._objectsProvider || this._provider.objects);
+            objectId = objectsProvider[index][idField];
+        } else if (this._object) {
+            // Id from provider object (defined on constructor)
+            objectId = this._object[idField]
+        }
+
+        location.href = (this._provider.route[route]['url'] + (objectId ? ('/' + objectId) : ''));
         return;
     }
 
@@ -1302,7 +1327,7 @@ export class DataService {
                 );
             } else {
                 // No indexes to submit
-                return resolve(null);
+                return resolve({});
             }
         });
     }
@@ -1357,7 +1382,7 @@ export class DataService {
      * Set local data
      * @param localData
      */
-    protected setLocalData(localData: any)
+    public setLocalData(localData: any)
     {
         // Local data (do not override, merge data)
         if (localData) {

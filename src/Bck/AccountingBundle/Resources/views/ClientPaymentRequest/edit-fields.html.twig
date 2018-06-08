@@ -1,0 +1,22 @@
+{% set form = (form is defined ? form : (_form is defined ? _form : null)) %}
+{% set fields = (fields is defined ? fields : (_conf['fields'] is defined ? _conf['fields'] : null)) %}
+
+{% if (form and fields) %}
+    {% for field in fields['form'] %}
+        {% if field == 'paymentMethodObj' %}
+            {% set staticChoices = [{'id': 0, 'label': 'None', 'description': 'This request will be sent to the customer, who selects the desired payment method.'}] %}
+            {% include 'AppBundle:form:field.html.twig' with {
+            'field': field,
+            'metadata': fields['metadata'][field],
+            'form': form
+            } %}
+            {% set staticChoices = null %}
+        {% else %}
+            {% include 'AppBundle:form:field.html.twig' with {
+            'field': field,
+            'metadata': fields['metadata'][field],
+            'form': form
+            } %}
+        {% endif %}
+    {% endfor %}
+{% endif %}

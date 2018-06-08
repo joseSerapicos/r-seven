@@ -1,0 +1,4 @@
+services:
+#    frt_accounting.example:
+#        class: Frt\AccountingBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]

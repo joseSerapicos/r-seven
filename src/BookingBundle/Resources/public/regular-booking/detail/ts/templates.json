@@ -1,5 +1,0 @@
-{
-  "main": "http://weboffice.whs.dev.com/app_dev.php/booking/regular-booking/detail-content",
-  "booking-pax-edit": "http://weboffice.whs.dev.com/app_dev.php/booking/regular-booking-pax/edit/0",
-  "current-accounts": "http://weboffice.whs.dev.com/app_dev.php/booking/regular-booking/current-accounts-menus"
-}

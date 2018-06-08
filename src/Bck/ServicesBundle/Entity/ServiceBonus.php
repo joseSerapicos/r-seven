@@ -1,0 +1,153 @@
+<?php
+namespace Bck\ServicesBundle\Entity;
+
+use AppBundle\Entity\BaseBonus;
+use AppBundle\Service\PriceService;
+use Doctrine\ORM\Mapping as ORM;
+
+
+/**
+ * @ORM\Entity(repositoryClass="Bck\ServicesBundle\Entity\ServiceBonusRepository")
+ * @ORM\Table(name="serviceBonus",
+ *     indexes={@ORM\Index(name="idx_serviceBonus__date", columns={"startDate", "endDate", "fk_targetService"})}
+ * )
+ *
+ * This class does not saves the VAT values like others (BookingServicePrice, DocumentInvoiceDetail), because the
+ * VAT values are always calculated at runtime, we only can get the current valid VAT of service at runtime, so does
+ * not make sense save it.
+ */
+class ServiceBonus extends BaseBonus {
+    /**
+     * @ORM\ManyToOne(targetEntity="Service")
+     * @ORM\JoinColumn(name="fk_service", referencedColumnName="id", nullable=false, unique=false, onDelete="CASCADE")
+     */
+    protected $serviceObj;
+
+    /**
+     * @ORM\Column(name="isVatIncluded", type="boolean", nullable=true, unique=false, options={"default":0, "comment":"Controls how to show the fake field user_..."})
+     */
+    protected $isVatIncluded;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Service")
+     * @ORM\JoinColumn(name="fk_service_bonus", referencedColumnName="id", nullable=false, unique=false, onDelete="CASCADE")
+     */
+    protected $bonusServiceObj;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Service")
+     * @ORM\JoinColumn(name="fk_targetService", referencedColumnName="id", nullable=true, unique=false, onDelete="CASCADE")
+     *
+     * Determines the target of the entry, if targetServiceObj is defined, the entry is specific for the
+     * targetServiceObj (generally a package), else the entry is for the service itself
+     */
+    protected $targetServiceObj;
+
+
+    /**
+     * Set serviceObj
+     * @param \Bck\ServicesBundle\Entity\Service $serviceObj
+     * @return $this
+     */
+    public function setServiceObj(\Bck\ServicesBundle\Entity\Service $serviceObj)
+    {
+        $this->serviceObj = $serviceObj;
+        return $this;
+    }
+
+    /**
+     * Get serviceObj
+     * @return \Bck\ServicesBundle\Entity\Service
+     */
+    public function getServiceObj()
+    {
+        return $this->serviceObj;
+    }
+
+    /**
+     * Set isVatIncluded
+     * @param $isVatIncluded
+     * @return $this
+     */
+    public function setIsVatIncluded($isVatIncluded)
+    {
+        $this->isVatIncluded = $isVatIncluded;
+        return $this;
+    }
+
+    /**
+     * Get isVatIncluded
+     * @return \DateTime
+     */
+    public function getIsVatIncluded()
+    {
+        return $this->isVatIncluded;
+    }
+
+    /**
+     * Set bonusServiceObj
+     * @param \Bck\ServicesBundle\Entity\Service $bonusServiceObj
+     * @return $this
+     */
+    public function setBonusServiceObj(\Bck\ServicesBundle\Entity\Service $bonusServiceObj)
+    {
+        $this->bonusServiceObj = $bonusServiceObj;
+        return $this;
+    }
+
+    /**
+     * Get bonusServiceObj
+     * @return \Bck\ServicesBundle\Entity\Service
+     */
+    public function getBonusServiceObj()
+    {
+        return $this->bonusServiceObj;
+    }
+
+    /**
+     * Set targetServiceObj
+     * @param \Bck\ServicesBundle\Entity\Service $targetServiceObj
+     * @return $this
+     */
+    public function setTargetServiceObj(\Bck\ServicesBundle\Entity\Service $targetServiceObj)
+    {
+        $this->targetServiceObj = $targetServiceObj;
+        return $this;
+    }
+
+    /**
+     * Get targetServiceObj
+     * @return \Bck\ServicesBundle\Entity\Service
+     */
+    public function getTargetServiceObj()
+    {
+        return $this->targetServiceObj;
+    }
+
+
+    ////////
+    // Fake methods to keep default values
+    ////////////////////////////////
+
+    /**
+     * Get user_costValue
+     * @return float
+     */
+    public function getUser_bonusValue()
+    {
+        // If used method is "FIXED", then the value represents the bonus value
+        // (the others methods are percentages not values),
+        // so we need to calc the value according with isVatIncluded user preferences.
+        if ($this->getIsVatIncluded() && ($this->getBonusMethod() == 'FIXED')) {
+            $splitPrice = PriceService::getTotalUnitDetail(
+                $this->getBonusValue(),
+                $this->getBonusServiceObj()->getVatCodeObj()->getPercentage(),
+                false
+            );
+
+            return ($splitPrice['totalUnit']);
+        }
+
+        return $this->getBonusValue();
+    }
+}

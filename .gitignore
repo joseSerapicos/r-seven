@@ -1,6 +1,6 @@
 # Configuration files
-/app/config/parameters.yml
-/app/config/config.yml
+app/config/parameters.yml
+app/config/config.yml
 
 # Cache
 /var

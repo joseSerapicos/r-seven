@@ -1,5 +1,0 @@
-# src/AdminBundle/Resources/config/services.yml
-services:
-    admin.service.repository:
-        class: AdminBundle\Service\RepositoryService
-        arguments: ["@doctrine.orm.local_database_entity_manager"]

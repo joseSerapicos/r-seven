@@ -1,0 +1,5 @@
+{
+  "add-step1": "http://www.handsometravel.dev/app_dev.php/bck/accounting/client-payment-request/add-step1",
+  "add-step2": "http://www.handsometravel.dev/app_dev.php/bck/accounting/client-payment-request/add-step2",
+  "edit": "http://www.handsometravel.dev/app_dev.php/bck/accounting/client-payment-request/edit"
+}

@@ -32,7 +32,6 @@ export class WizardPopupExtComponent extends BaseModalPopupExt
             renderer,
             provider
         );
-
         this._wizardManagerService = wizardManagerService;
     }
 

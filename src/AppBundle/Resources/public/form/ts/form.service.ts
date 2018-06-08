@@ -246,10 +246,6 @@ export class FormService
             // Keep the original object from dataService
             this._originalObject = object;
 
-            // Waiting mode for save process ends here, after update the original object.
-            // Prevents the object being updated two times, by the "Form" "save" and the "DataService" object change emitter.
-            this._tasksLoaderManagerService.delTask('SAVE_'+this._uniqueId);
-
             // Normalize object to form
             this._originalNormalizedObject = Helper.cloneObject(this._originalObject, true);
             this.normalizeObject(this._originalNormalizedObject);
@@ -265,6 +261,10 @@ export class FormService
 
             this._onObjectChangeEmitter.emit(this._object); // Object as changed to the original, notify subscribers
         }
+
+        // Waiting mode for save process ends here, after update the original object.
+        // Prevents the object being updated two times, by the "Form" "save" and the "DataService" object change emitter.
+        this._tasksLoaderManagerService.delTask('SAVE_'+this._uniqueId);
 
         return this;
     }
@@ -383,7 +383,13 @@ export class FormService
      */
     public setFormFieldValue(field: string, value: any): void
     {
-        if (value && (field in this._object)) {
+        if (value === undefined) {
+            return; // Possible wrong element of the click event
+        }
+
+        // Accept null values to set null some fields, like not mandatory fields
+        value = (value || null);
+        if (field in this._object) {
             this._object[field] = value;
         }
     }
@@ -395,6 +401,23 @@ export class FormService
     public getViewObject(): any
     {
         return (this._dataService.getNormalizedObject() || {});
+    }
+
+    /**
+     * Validate form
+     * @returns {boolean}
+     */
+    public validate()
+    {
+        this._errors = {};
+
+        for (let control in this._form.controls) {
+            if (!this._form.controls[control].valid) {
+                this._errors[control] = ['Required'];
+            }
+        }
+
+        return !(this._helperService.objectLength(this._errors) > 0);
     }
 
     /**
@@ -418,19 +441,9 @@ export class FormService
             // Note: Objects in session storage enables the "_forceSubmit" by default
             if(that._forceSubmit || !that._object['id'] || that.hasChanges()) {
                 // Validate form
-                if (hasValidation) {
-                    that._errors = {};
-
-                    for (let control in that._form.controls) {
-                        if (!that._form.controls[control].valid) {
-                            that._errors[control] = ['Required'];
-                        }
-                    }
-
-                    if (that._helperService.objectLength(that._errors) > 0) {
-                        that._tasksLoaderManagerService.delTask('SAVE_'+that._uniqueId); // Cancel save, form has errors
-                        return reject(false);
-                    }
+                if (hasValidation && !that.validate()) {
+                    that._tasksLoaderManagerService.delTask('SAVE_'+that._uniqueId); // Cancel save, form has errors
+                    return reject(false);
                 }
 
                 // Set the valid token

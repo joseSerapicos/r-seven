@@ -1,0 +1,32 @@
+{% extends 'AppBundle::base.html.twig' %}
+
+{% block head_javascripts %}
+    {{ parent() }}
+
+    {% set clientDocumentTypeData = render(controller(
+        'BckAccountingBundle:ClientDocumentType:data',
+        {'responseType': 'json'}
+    )) %}
+
+    {% set supplierDocumentTypeData = render(controller(
+        'BckAccountingBundle:SupplierDocumentType:data',
+        {'responseType': 'json'}
+    )) %}
+    <script>
+        _app.dependencies.clientDocumentType = {{ clientDocumentTypeData|raw }};
+        _app.dependencies.supplierDocumentType = {{ supplierDocumentTypeData|raw }};
+    </script>
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{%  block javascripts %}
+    {% javascripts output="assets/accounting/document-types/index/js/local.js"
+        '@BckAccountingBundle/Resources/public/document-types/index/ts/dist/inline.bundle.js'
+        '@BckAccountingBundle/Resources/public/document-types/index/ts/dist/polyfills.bundle.js'
+        '@BckAccountingBundle/Resources/public/document-types/index/ts/dist/vendor.bundle.js'
+        '@BckAccountingBundle/Resources/public/document-types/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

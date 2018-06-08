@@ -1,0 +1,12 @@
+{% extends 'AppBundle:tree-view:index.html.twig' %}
+
+{% block javascripts %}
+    {% javascripts output="assets/user/user-group/index/js/local.js"
+        '@BckUserBundle/Resources/public/user-group/index/ts/dist/inline.bundle.js'
+        '@BckUserBundle/Resources/public/user-group/index/ts/dist/polyfills.bundle.js'
+        '@BckUserBundle/Resources/public/user-group/index/ts/dist/vendor.bundle.js'
+        '@BckUserBundle/Resources/public/user-group/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

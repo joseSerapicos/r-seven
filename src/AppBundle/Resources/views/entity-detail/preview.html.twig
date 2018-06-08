@@ -5,7 +5,7 @@
 
 {% block afterContainer %}
     <div class="table-responsive" *ngFor="let dependency of _dependenciesArr">
-        <h5 class="m-t-md" [innerHTML]="_dependencies[dependency].label"></h5>
+        <h5 class="m-t-md" [innerHTML]="getLang(_dependencies[dependency].label)"></h5>
         <table class="data-table table table-striped table-hover dataTables-example table-bordered">
             <thead>
             <tr>

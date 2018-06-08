@@ -46,5 +46,8 @@ export abstract class TabsExtComponent extends BaseExtensionComponent {
     {
         // Initializes the children navigation manager service
         this._navManagerService.init(this, this.lazyLoadViewContainerRefQL);
+
+        // Open the first tab
+        this._navManagerService.navTo(0);
     }
 }

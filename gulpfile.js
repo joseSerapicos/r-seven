@@ -83,7 +83,7 @@ gulp.task('buildNgApp', 'Build angular app/module in DEV mode.', function() {
     },
     {
         options: {
-            'app=[string]': 'Specify app by key "bundleControllerAction".',
+            'app=[string]': 'Specify app by key "bundlePrefixBundleControllerAction".',
             '[noBuild]': 'Do not build app, only generates the config file.',
             '[watch]': 'Set watch mode.'
         }
@@ -97,7 +97,7 @@ gulp.task('deployNgApp', 'Build angular app/module in PROD mode.', function() {
     },
     {
         options: {
-            'app=[string]': 'Specify app by key "bundleControllerAction".'
+            'app=[string]': 'Specify app by key "bundlePrefixBundleControllerAction".'
         }
     }
 );
@@ -108,18 +108,24 @@ gulp.task('buildTemplate', 'Build/generate template for angular component.', fun
         // Check parameters
         var defaultParameters = require(__dirname + '/angular_cli_conf/gulp_parameters.default.json'),
             app = (argv['app'] || currentAppName), // Use currentApp if "buildAll" was called
-            component = (argv['component'] || defaultParameters['component']),
-            phpSessId = (argv['phpsessid'] || defaultParameters['phpsessid']);
+            component = (argv['component'] || defaultParameters['component']);
 
-        if (!app || !component || !phpSessId) {
-            console.log('[Error] "app", "component" and "phpsessid" arguments are mandatory!');
+        if (!app || !component) {
+            console.log('[Error] "app" and "component" arguments are mandatory!');
             return null;
         }
 
         // Set variables
         var AppsModule = require(__dirname + '/angular_cli_conf/apps.module'),
             appsModule = new AppsModule(),
-            appPaths = appsModule.getAppPaths(app);
+            appPaths = appsModule.getAppPaths(app),
+            bundlePrefix = (appsModule.getAppBundlePrefix(app) || 'bck'), // 'bck' is used by default
+            phpSessId = (argv['phpsessid'] || defaultParameters[bundlePrefix + '_phpsessid']);
+
+        if (!phpSessId) {
+            console.log('[Error] "phpsessid" not defined. Please supply this argument through the cli or the "gulp_parameters" file!');
+            return null;
+        }
 
         // Check if app is correctly configured.
         var ngInFile = (appPaths['rootDir'] + "templates.json");
@@ -157,7 +163,7 @@ gulp.task('buildTemplate', 'Build/generate template for angular component.', fun
                         // Print feedback
                         console.log(
                             '\n[Component ' + (currentComponentIndex + 1) + '/' + totalComponents + '] '
-                            + componentName + '...\n'
+                            + componentName + ': ' + templates[componentName] + '\n'
                         );
 
                         var taskTarget = gulp.src('') // No source is necessary
@@ -204,7 +210,7 @@ gulp.task('buildTemplate', 'Build/generate template for angular component.', fun
     },
     {
         options: {
-            'app=[string]': 'Specify app by key "bundleControllerAction".',
+            'app=[string]': 'Specify app by key "bundlePrefixBundleControllerAction".',
             'component=[string]': 'Specify component name or "all" for all components.',
             'phpsessid=[string]': 'Specify the php session id of login.',
             '[watch]': 'Set watch mode (only used when a specific component is provided).'
@@ -248,7 +254,7 @@ gulp.task('buildSass', 'Build/generate css file from sass files.', function() {
     },
     {
         options: {
-            'app=[string]': 'Specify app by key "bundleControllerAction".',
+            'app=[string]': 'Specify app by key "bundlePrefixBundleControllerAction".',
             '[watch]': 'Set watch mode.'
         }
     }

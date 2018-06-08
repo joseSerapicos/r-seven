@@ -1,5 +1,13 @@
 {% set label = (label is defined ? label : "") %}
+{% set errorControl = (errorControl is defined ? errorControl : null) %}
 <div class="row form-group">
-    <label class="col-sm-12 m-t-sm">{{ label }}</label>
-    <div class="col-sm-12"><div class="form-control-box">{% block container %}{% endblock %}</div></div>
+    <label class="col m-t-sm">{{ label }}</label>
+    <div class="col-sm-12"><div class="form-control-box"
+        {% if (errorControl) %}
+            [class.error]="_formService.getErrors().{{errorControl}} && (_formService.getErrors().{{errorControl}}.length > 0)"
+        {% endif %}>{% block container %}{% endblock %}</div></div>
+    {% if (errorControl) %}
+        <label class="col-12 error"
+               *ngFor="let error of _formService.getErrors().{{errorControl}}">{% verbatim %}{{error}}{% endverbatim %}</label>
+    {% endif %}
 </div>

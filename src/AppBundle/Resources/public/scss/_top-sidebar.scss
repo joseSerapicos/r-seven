@@ -1,5 +1,4 @@
 $top-sidebar-active-bgcolor-hover: #dadfe3; // bg-light:hover
-$top-sidebar-active-bgcolor: #f8f9fa; // bg-light
 
 .minimalize-styl-2 {
   padding: 4px 12px;
@@ -24,7 +23,7 @@ $top-sidebar-active-bgcolor: #f8f9fa; // bg-light
     .dropdown-menu a:hover,
     .dropdown-menu a:focus {
       color: $baseColor;
-      background: $top-sidebar-active-bgcolor;
+      background: $light-bg;
       text-decoration: none;
     }
 

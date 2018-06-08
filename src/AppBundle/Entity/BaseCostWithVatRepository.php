@@ -30,11 +30,11 @@ abstract class BaseCostWithVatRepository extends BaseEntityRepository
         return self::processMetadata(array(
             'id' => array('label' => 'Id', 'type' => 'none', 'acl' => 'read'),
             'vatCodeObj' => array('label' => 'VAT Code', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(
-                'table' => 'vatCode', 'bundle' => 'accounting', 'type' => 'none'),
+                'table' => 'vatCode', 'bundlePrefix' => 'bck', 'bundle' => 'accounting', 'type' => 'none'),
                 'attr' => array('(change)' => 'onVatCodeChange($event.target.value)'),
                 'form' => array('type' => 'select')
             ),
-            'vatCode_percentage' => array('table' => 'vatCode', 'field' => 'percentage', 'label' => '', 'type' => 'percentage',
+            'vatCode_percentage' => array('table' => 'vatCode', 'field' => 'percentage', 'label' => 'VAT Percentage', 'type' => 'percentage',
                 'acl' => 'read', 'dependency' => 'vatCodeObj', 'form' => array('type' => 'none')),
             'vatCode_name' => array('table' => 'vatCode', 'field' => 'name', 'label' => 'VAT Code', 'type' => 'text',
                 'acl' => 'read', 'dependency' => 'vatCodeObj', 'form' => array('type' => 'none')),

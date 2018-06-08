@@ -1,0 +1,9 @@
+{
+  "service-availability-edit": "http://www.handsometravel.dev/app_dev.php/bck/services/service-availability/edit/0",
+  "service-allot-edit": "http://www.handsometravel.dev/app_dev.php/bck/services/service-allot/edit/0",
+  "service-price-edit": "http://www.handsometravel.dev/app_dev.php/bck/services/service-price/edit/0",
+  "service-fixed-cost-edit": "http://www.handsometravel.dev/app_dev.php/bck/services/service-fixed-cost/edit/0",
+  "service-supplement-edit": "http://www.handsometravel.dev/app_dev.php/bck/services/service-supplement/edit/0",
+  "service-discount-edit": "http://www.handsometravel.dev/app_dev.php/bck/services/service-discount/edit/0",
+  "service-bonus-edit": "http://www.handsometravel.dev/app_dev.php/bck/services/service-bonus/edit/0"
+}

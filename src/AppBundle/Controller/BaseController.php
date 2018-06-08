@@ -9,9 +9,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use AppBundle\Service\HelperService;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 abstract class BaseController extends Controller
 {
+    // Controls if controller has been initialized
+    protected $isInitialized = false;
+
     // Very important flags that changes the way how controller is initialized.
     // It should be defined before call the init() method.
     protected $flags = array(
@@ -39,17 +43,17 @@ abstract class BaseController extends Controller
 
     // Response configuration to send after process request from controller to template/view (twig)
     protected $responseConf = array(
-        'status' => 1, // [1: success, 0: error]
+        // Type of response to return <JSON, ARRAY, RAW_JSON, RAW_ARRAY>
+        'type' => 'JSON',
+        'status' => 1, // <1: success, 0: error>
         'hasStatus' => true, // Send status in response
         'errors' => array(),
         'flashMessages' => array(), // (error, warning, info and success messages)
         'hasConf' => false,
         // Local specific custom data of controller to sent to template/view (twig)
         'localData' => array('template' => array(), 'data' => array()),
+        'dependencies' => array() // Dependencies of other resources/objects (children)
     );
-
-    // Controls if controller has been initialized
-    protected $isInitialized = false;
 
 
     /**
@@ -58,7 +62,7 @@ abstract class BaseController extends Controller
      * @return $this
      * @throws \Exception
      */
-    protected function init(Request $request)
+    public function init(Request $request)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
@@ -73,11 +77,26 @@ abstract class BaseController extends Controller
         }
         //////////////////////////////////////////////////////////////////////////////////////////
 
+        $session = $this->get('session');
 
         // Set global vars in HelperService (to be accessed from entity, repository, formType, etc.)
-        HelperService::setGlobalVar('filesRepository', $this->get('session')->get('_app.system')['filesRepository']);
+        $systemLangPrefix = $session->get('_app.system.language')['systemPrefix'];
+        HelperService::setGlobalVar('systemLangPrefix', $systemLangPrefix);
+        $userLangPrefix = $session->get('_app.user.language')['systemPrefix'];
+        HelperService::setGlobalVar('userLangPrefix', $userLangPrefix);
+        // This is the variable used by all processes.
+        // By default initializes with user language.
+        // User language is used to display the interface,
+        // for legal processes change this variable to system language (like current account documents),
+        // and for customer processes change this variable to the customer language (like email send, payment requests, etc)
+        // Call: HelperService::setGlobalVar('langPrefix', HelperService::getGlobalVar('systemLangPrefix'));
+        // Or: $this->setLangPrefix($context = 'USER', $entity = null); (in BaseEntityController)
+        HelperService::setGlobalVar('langPrefix', $userLangPrefix);
+        HelperService::setGlobalVar('filesRepository', $session->get('_app.system')['filesRepository']);
+        HelperService::setGlobalVar('baseUrl', $this->generateUrl('_app__default__index', array(), UrlGeneratorInterface::ABSOLUTE_URL));
+        HelperService::setGlobalVar('systemName', $session->get('_app.system')['name']);
         HelperService::setGlobalVar('isAdmin', $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN'));
-        HelperService::setGlobalVar('loggedUserId', $this->get('session')->get('_app.user')['id']);
+        HelperService::setGlobalVar('loggedUserId', $session->get('_app.user')['id']);
         // This parameter is used to generate the token. We need to use the same parameter value in forms,
         // controllers and views, in order to generate always the same token regardless of the context
         // (because static views).
@@ -88,10 +107,30 @@ abstract class BaseController extends Controller
         HelperService::setGlobalVar('csrfTokenId', $csrfTokenId);
 
         /* Controller */
+        $bundleNameArr = HelperService::getBundleNameArr($this);
         // (CamelCase)
-        $this->localConf['Bundle'] = HelperService::getBundleName($this);
+        // BundlePrefix can be pre-filled in case of controllers that uses a different entity,
+        // like front-office controllers that uses back-office entities.
+        if (!isset($this->localConf['BundlePrefix'])) {
+            $this->localConf['BundlePrefix'] = $bundleNameArr['prefix'];
+        }
+        // (snake_case)
+        $this->localConf['bundlePrefix'] = HelperService::camelCaseToSnakeCase($this->localConf['BundlePrefix']);
+        // (CamelCase)
+        // Bundle can be pre-filled in case of controllers that uses a different entity,
+        // like Bck/AdminBundle/Controller/UserController.
+        if (!isset($this->localConf['Bundle'])) {
+            $this->localConf['Bundle'] = $bundleNameArr['bundle'];
+        }
         // Removes "Bundle" (snake_case)
         $this->localConf['bundle'] = HelperService::camelCaseToSnakeCase(substr($this->localConf['Bundle'], 0, -6));
+        // (CamelCase)
+        $this->localConf['BundleNamespace'] = ($this->localConf['BundlePrefix'].$this->localConf['Bundle']);
+        // (CamelCase separated with '\')
+        $this->localConf['BundlePath'] = (
+            (empty($this->localConf['BundlePrefix']) ? '' : ($this->localConf['BundlePrefix'] . '\\'))
+            . $this->localConf['Bundle']
+        );
         // Removes "Controller" (CamelCase)
         $this->localConf['controller'] = substr(HelperService::getClassName($this), 0, -10);
         /* /Controller */
@@ -100,55 +139,83 @@ abstract class BaseController extends Controller
         $this->templateConf['isDebug'] = $this->get('kernel')->isDebug();
         /* Debug mode */
 
-        /* Selected Menu and ACL */
-        if (empty($this->templateConf['selectedMenu']['route'])) {
-            // Build the route following the pattern ('_' . bundle . '__' . controller . '__' . action)
-            // "index" action to select the correct menu in template/view
-            $this->templateConf['selectedMenu']['route'] = (
-                '_'
-                . $this->localConf['bundle'] . '__'
-                . HelperService::camelCaseToSnakeCase($this->localConf['controller'])
-                . '__index'
-            );
-        }
+        /* Base paths */
+        $this->localConf['paths'] = array(
+            'root' => ($this->get('kernel')->getRootDir() . '/../'),
+            'language' => ($this->get('kernel')->getRootDir() . '/../src/'
+                . (empty($this->localConf['BundlePrefix']) ? '' : ($this->localConf['BundlePrefix'] . '/'))
+                . $this->localConf['Bundle'] . '/Resources/language/'.$this->localConf['controller'] . '/'
+            )
+        );
+        /* /Base paths */
 
-        // Find the module and menu by route (by session is faster than query database)
-        $session = $this->get('session');
-        $store = $this->getStoreAttr('id');
-        $modules = ($store ? $session->get('_app.stores')[$store]['modules'] : $session->get('_app.modules'));
-        foreach ($modules as $childModules) { // First level module in tree view
-            foreach ($childModules as $module) { // Second level module in tree view
-                foreach ($module['menus'] as $menu) {
-                    if ($menu['route'] == $this->templateConf['selectedMenu']['route']) {
-                        $this->templateConf['selectedMenu']['module'] = array(
-                            (empty($module['parent']) ? $module['id'] : $module['parent']), // First level of tree view module
-                            $module['id'] // Second level of tree view module
-                        );
-                        $this->templateConf['selectedMenu']['menu'] = $menu['id'];
-                        $this->templateConf['selectedMenu']['acl'] = $menu['acl'];
-                        if (empty($this->templateConf['label'])) {
-                            $this->templateConf['label'] = $menu['name'];
+        /* System language file */
+        $systemLanguagePath = ($this->localConf['paths']['root']
+            . 'src/AppBundle/Resources/language/base/' . $systemLangPrefix . '.php'
+        );
+        $this->loadLanguageFileByAction(null, $systemLanguagePath, false); // First load, no merge is needed (false)
+        /* /System language file */
+
+        /* Selected Menu and ACL */
+        if ($session->get('_app.isBckContext')) { // Front-office context does not have menus nor ACL control
+            if (empty($this->templateConf['selectedMenu']['route'])) {
+                // Build the route following the pattern ('_' . bundle . '__' . controller . '__' . action)
+                // "index" action to select the correct menu in template/view
+                $this->templateConf['selectedMenu']['route'] = (
+                    '_'
+                    . (empty($this->localConf['bundlePrefix']) ? '' : ($this->localConf['bundlePrefix'] . '__'))
+                    . $this->localConf['bundle'] . '__'
+                    . HelperService::camelCaseToSnakeCase($this->localConf['controller'])
+                    . '__index'
+                );
+            }
+
+            // Find the module and menu by route (by session is faster than query database)
+            $store = $this->getStoreAttr('id');
+            $modules = ($store ? $session->get('_app.stores')[$store]['modules'] : $session->get('_app.modules'));
+            foreach ($modules as $childModules) { // First level module in tree view
+                foreach ($childModules as $module) { // Second level module in tree view
+                    foreach ($module['menus'] as $menu) {
+                        if ($menu['route'] == $this->templateConf['selectedMenu']['route']) {
+                            $this->templateConf['selectedMenu']['module'] = array(
+                                (empty($module['parent']) ? $module['id'] : $module['parent']), // First level of tree view module
+                                $module['id'] // Second level of tree view module
+                            );
+                            $this->templateConf['selectedMenu']['menu'] = $menu['id'];
+                            $this->templateConf['selectedMenu']['acl'] = $menu['acl'];
+                            if (empty($this->templateConf['label'])) {
+                                $this->templateConf['label'] = $menu['name'];
+                            }
+                            break 2;
                         }
-                        break 2;
                     }
                 }
             }
-        }
-        $isAdmin = $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN');
-        if ($isAdmin) { $this->templateConf['selectedMenu']['acl'] = 8; } // No restrictions
-        /* Selected Menu and ACL */
+            $isAdmin = $this->get('security.authorization_checker')->isGranted('ROLE_ADMIN');
+            if ($isAdmin) {
+                $this->templateConf['selectedMenu']['acl'] = 8;
+            } // No restrictions
+            /* Selected Menu and ACL */
 
-        /* Access control list */
-        if (empty($this->templateConf['selectedMenu']['acl'])) { // Logged user cannot be here
-            throw $this->createNotFoundException('Requested page not found!');
+            /* Access control list */
+            if (empty($this->templateConf['selectedMenu']['acl'])) { // Logged user cannot be here
+                throw $this->createNotFoundException('Requested page not found!');
+            }
+            $this->templateConf['acl'] = array(
+                'read' => ($this->templateConf['selectedMenu']['acl'] > 0), // 1
+                'edit' => ($this->templateConf['selectedMenu']['acl'] > 1), // 2
+                'add' => ($this->templateConf['selectedMenu']['acl'] > 3), // 4
+                'delete' => ($this->templateConf['selectedMenu']['acl'] > 7) // 8
+            );
+            /* / Access control list */
+        } else {
+            $this->templateConf['acl'] = array(
+                'read' => true,
+                'edit' => false,
+                'add' => false,
+                'delete' => false
+            );
         }
-        $this->templateConf['acl'] = array(
-            'read' => ($this->templateConf['selectedMenu']['acl'] > 0), // 1
-            'edit' => ($this->templateConf['selectedMenu']['acl'] > 1), // 2
-            'add' => ($this->templateConf['selectedMenu']['acl'] > 3), // 4
-            'delete' => ($this->templateConf['selectedMenu']['acl'] > 7) // 8
-        );
-        /* / Access control list */
 
         /* Actions for template/view */
         $this->templateConf['actions'] = array(
@@ -160,6 +227,7 @@ abstract class BaseController extends Controller
 
         /* Controls for template/view */
         $this->templateConf['controls'] = array(
+            'expander' => array('isEnabled' => false, 'isExpanded' => false),
             'legend' => array(
                 array('label' => 'Canceled', 'class' => 'legend-canceled', 'field' => 'isEnabled', 'expr' => 'null')
             )
@@ -190,7 +258,7 @@ abstract class BaseController extends Controller
         $this->init($request);
 
         $this->responseConf['hasConf'] = true;
-        return $this->getResponse(true);
+        return $this->getResponse();
     }
 
     /**
@@ -309,73 +377,96 @@ abstract class BaseController extends Controller
      * Get and process request data
      * @param Request $request
      * @param bool $checkCsrfToken
+     * @param bool $hasDataNormalization (normalize data to return only the request custom data)
      * @return null
      */
-    protected function getAndProcessRequestData(Request $request, $checkCsrfToken = true)
+    protected function getAndProcessRequestData(Request $request, $checkCsrfToken = true, $hasDataNormalization = true)
     {
         $data = $this->getRequestData($request);
 
         if ($checkCsrfToken) {
             $csrfToken = (isset($data['csrfToken']) ? $data['csrfToken'] : null);
             $this->checkCsrfToken($csrfToken);
-            unset($data['csrfToken']);
         }
-        return $data;
+
+        return ($hasDataNormalization ?
+            (isset($data['data']) ? $data['data'] : array()) :
+            $data
+        );
     }
 
     /**
      * Normalize and get the response for user
-     * @param bool $isJson (is a json response)
      * @param array $extraData (extra data to merge into response)
      * @param $hasSymfonyResponse (wrap the response in a Symfony response)
-     * @return array
+     * @return mixed
      */
-    protected function getResponse($isJson = false, $extraData = array(), $hasSymfonyResponse = true)
+    protected function getResponse($extraData = array(), $hasSymfonyResponse = true)
     {
         $data = (is_array($extraData) ? $extraData : array());
 
-        // Add conf
+        // If conf is configured to sent, add all data
         if ($this->responseConf['hasConf']) {
             $data = array_merge($data, $this->templateConf);
+            // Get conf language file
+            $this->loadLanguageFileByAction('conf');
+            $data['language'] = HelperService::getLangClient();
         } else {
-            // Add mandatory conf if is not configured to send
+            // If conf is not configured to sent, add some mandatory data
             $data['localData'] = $this->templateConf['localData'];
         }
 
-        // Return json response
-        if ($isJson) {
-            // Wrap data with status
-            if ($this->responseConf['hasStatus']) {
-                $data = array(
-                    'status' => $this->responseConf['status'],
-                    'data' => array_merge($data, $extraData)
-                );
+        // Response
+        switch ($this->responseConf['type']) {
+            case 'JSON': // Used in json requests from the browser
+                // Wrap data with status (if enabled)
+                if ($this->responseConf['hasStatus']) {
+                    $data = array(
+                        'status' => $this->responseConf['status'],
+                        'data' => $data
+                    );
 
-                // Add errors
-                if (!empty($this->responseConf['errors'])) {
-                    $data['errors'] = $this->responseConf['errors'];
+                    // Add errors
+                    if (!empty($this->responseConf['errors'])) {
+                        $data['errors'] = $this->responseConf['errors'];
+                    }
+
+                    // Add flash messages
+                    if (!empty($this->responseConf['flashMessages'])) {
+                        $data['flashMessages'] = $this->responseConf['flashMessages'];
+                    }
+                }
+            case 'RAW_JSON': // Used in calls directly from templates (twig)
+                if (!$hasSymfonyResponse) {
+                    return $data;
                 }
 
-                // Add flash messages
-                if (!empty($this->responseConf['flashMessages'])) {
-                    $data['flashMessages'] = $this->responseConf['flashMessages'];
-                }
-            }
-
-            if (!$hasSymfonyResponse) {
+                // Create a json response
+                $response = new JsonResponse();
+                return $response->setData($data);
+                break;
+            case 'RAW_ARRAY': // Used in calls directly from controllers
                 return $data;
-            }
-
-            // Create a json response
-            $response = new JsonResponse();
-            return $response->setData($data);
+                break;
+            default: // ('ARRAY') Regular type to sent to render a regular view
+                return array(
+                    '_conf' => $data,
+                    '_dependencies' => $this->responseConf['dependencies'],
+                    '_localData' => $this->responseConf['localData']
+                );
         }
+    }
 
-        // Return array
-        return array(
-            '_conf' => $data,
-            '_localData' => $this->responseConf['localData']
-        );
+    /**
+     * Set response conf attribute (to be called from out of this controller)
+     * @param $attr
+     * @param $value
+     * @return $this
+     */
+    public function setResponseConfAttr($attr, $value)
+    {
+        $this->responseConf[$attr] = $value;
+        return $this;
     }
 
     /**
@@ -396,7 +487,7 @@ abstract class BaseController extends Controller
      */
     protected function handleExit($message = 'An error has occurred', $hasJson = false) {
         if ($hasJson) {
-            $jsonResponse = $this->getResponse(true, array(), false);
+            $jsonResponse = $this->getResponse(array(), false);
             $response = new Response(json_encode($jsonResponse));
             $response->headers->set('Content-Type', 'application/json');
             $response->send();
@@ -436,7 +527,10 @@ abstract class BaseController extends Controller
             'Page Redirect',
             'warning'
         );
-        return $this->redirectToRoute('_home__default__index');
+
+        $isBckContext = $session->get('_app.isBckContext');
+        $route = ($isBckContext ? '_bck__home__default__index' : '_home__default__index');
+        return $this->redirectToRoute($route);
     }
 
     /**
@@ -493,5 +587,47 @@ abstract class BaseController extends Controller
         }
 
         return $storeAcl;
+    }
+
+    /**
+     * Load language file by action
+     * @param $action
+     * @param $languageFilePath
+     * @param bool $hasMerge
+     * @return $this
+     */
+    protected function loadLanguageFileByAction($action, $languageFilePath = null, $hasMerge = true)
+    {
+        if (!$languageFilePath) {
+            $languageFilePath = ($this->localConf['paths']['language']
+                . $action . '/'
+                . HelperService::getGlobalVar('userLangPrefix') . '.php'
+            );
+        }
+
+        if (file_exists($languageFilePath)) {
+            $languageArr = include $languageFilePath;
+
+            // Normalize array
+            $languageArr = array_merge(
+                array('client' => array(), 'server' => array()),
+                $languageArr
+            );
+
+            // In case of include error $languageArr is not set
+            if ($languageArr) {
+                // If merged is enabled, so merge with previous loads
+                if ($hasMerge) {
+                    $prevLanguageArr = HelperService::getGlobalVar('languageArr');
+                    if ($prevLanguageArr) {
+                        $languageArr['client'] = array_merge($prevLanguageArr['client'], $languageArr['client']);
+                        $languageArr['server'] = array_merge($prevLanguageArr['server'], $languageArr['server']);
+                    }
+                }
+                HelperService::setGlobalVar('languageArr', $languageArr);
+            }
+        }
+
+        return $this;
     }
 }

@@ -1,13 +1,13 @@
 <?php
 
-namespace EntitiesBundle\Controller;
+namespace Bck\EntitiesBundle\Controller;
 
 use AppBundle\Controller\BaseEntityChildController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use EntitiesBundle\Entity\Entity;
-use EntitiesBundle\Entity\EntityGroupEntity;
+use Bck\EntitiesBundle\Entity\Entity;
+use Bck\EntitiesBundle\Entity\EntityGroupEntity;
 
 class EntityGroupEntityControllerbbbbbb extends BaseEntityChildController
 {
@@ -23,34 +23,34 @@ class EntityGroupEntityControllerbbbbbb extends BaseEntityChildController
      * @param $parents
      * @return $this
      */
-    protected function initChild(Request $request, $parents)
+    public function init(Request $request, $parents = null)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
 
         // Parent route
         $this->parentConf = array(
-            'entityGroup' => array('route' => '_entities__entity_group__index')
+            'entityGroup' => array('route' => '_bck__entities__entity_group__index')
         );
 
         // Route
         $this->templateConf['route'] = array(
             'get' => array(
-                'name' => '_entities__entity_group_entity__get'
+                'name' => '_bck__entities__entity_group_entity__get'
             ),
             'edit' => array(
-                'name' => '_entities__entity_group_entity__edit',
+                'name' => '_bck__entities__entity_group_entity__edit',
             ),
             'delete' => array(
-                'name' => '_entities__entity_group_entity__edit',
+                'name' => '_bck__entities__entity_group_entity__edit',
             )
         );
 
-        parent::initChild($request, $parents);
+        parent::init($request, $parents);
 
         // Variables
         $this->localConf['form']['buttons'] = 'none';
-        $this->localConf['templates']['edit'] = 'EntitiesBundle:EntityGroupEntity:form.html.twig';
+        $this->localConf['templates']['edit'] = 'BckEntitiesBundle:EntityGroupEntity:form.html.twig';
 
         // Search
         $this->templateConf['search']['fields'] = $this->templateConf['fields']['view'];
@@ -71,8 +71,8 @@ class EntityGroupEntityControllerbbbbbb extends BaseEntityChildController
     }
 
     /**
-     * @Route("/entities/entity-group-entity/get/{entityGroup}/{id}",
-     *     name="_entities__entity_group_entity__get",
+     * @Route("/bck/entities/entity-group-entity/get/{entityGroup}/{id}",
+     *     name="_bck__entities__entity_group_entity__get",
      *     defaults={"id" = null}
      * )
      *
@@ -88,8 +88,8 @@ class EntityGroupEntityControllerbbbbbb extends BaseEntityChildController
     }
 
     /**
-     * @Route("/entities/entity-group-entity/edit/{entityGroup}/{id}",
-     *     name="_entities__entity_group_entity__edit",
+     * @Route("/bck/entities/entity-group-entity/edit/{entityGroup}/{id}",
+     *     name="_bck__entities__entity_group_entity__edit",
      *     defaults={"id" = null}
      * )
      *
@@ -103,7 +103,7 @@ class EntityGroupEntityControllerbbbbbb extends BaseEntityChildController
     {
         // Set configuration
         $this->flags['hasForm'] = true;
-        $this->initChild($request, array($entityGroup));
+        $this->init($request, array($entityGroup));
 
         // Get object
         $obj = $this->getObject($id);
@@ -117,7 +117,7 @@ class EntityGroupEntityControllerbbbbbb extends BaseEntityChildController
         // Check if is submitted
         if($form->isSubmitted()) {
             if (!$this->validateForm($form)) {
-                return $this->getResponse(true);
+                return $this->getResponse();
             }
 
             // Process request
@@ -138,13 +138,13 @@ class EntityGroupEntityControllerbbbbbb extends BaseEntityChildController
                     'Warning',
                     'warning'
                 );
-                return $this->getResponse(true);
+                return $this->getResponse();
             }
 
             // Delete objects
             foreach($idsToDelete as $id) {
-                $entityGroupObj = $this->get('entities.service.repository')
-                    ->setEntityRepository('EntitiesBundle:EntityGroup')
+                $entityGroupObj = $this->get('bck.entities.service.repository')
+                    ->setEntityRepository('BckEntitiesBundle:EntityGroup')
                     ->execute(
                         'findOneById',
                         array(
@@ -169,8 +169,8 @@ class EntityGroupEntityControllerbbbbbb extends BaseEntityChildController
             if ($this->responseConf['status'] === 1) {
                 foreach ($idsToAdd as $id) {
                     $obj = $this->newObject();
-                    $entityGroupObj = $this->get('entities.service.repository')
-                        ->setEntityRepository('EntitiesBundle:EntityGroup')
+                    $entityGroupObj = $this->get('bck.entities.service.repository')
+                        ->setEntityRepository('BckEntitiesBundle:EntityGroup')
                         ->execute(
                             'findOneById',
                             array(
@@ -195,7 +195,7 @@ class EntityGroupEntityControllerbbbbbb extends BaseEntityChildController
                     'success'
                 );
             }
-            return $this->getResponse(true);
+            return $this->getResponse();
         }
 
         // Render form
@@ -206,8 +206,8 @@ class EntityGroupEntityControllerbbbbbb extends BaseEntityChildController
     }
 
     /**
-     * @Route("/entities/entity-group-entity/data/{entityGroup}",
-     *     name="_entities__entity_group_entity__data"
+     * @Route("/bck/entities/entity-group-entity/data/{entityGroup}",
+     *     name="_bck__entities__entity_group_entity__data"
      * )
      *
      * Overrides parent method
@@ -223,18 +223,21 @@ class EntityGroupEntityControllerbbbbbb extends BaseEntityChildController
     }
 
     /**
-     * @Route("/entities/entity-group-entity/conf/{entityGroup}",
-     *     name="_entities__entity_group_entity__conf"
+     * @Route("/bck/entities/entity-group-entity/conf/{entityGroup}/{id}",
+     *     name="_bck__entities__entity_group_entity__conf",
+     *     defaults={"id" = null}
      * )
      *
      * Overrides parent method
      * @param Request $request
      * @param $entityGroup
+     * @param $id (return the target id object with the conf, it's used to avoid to make another server request
+     *     to get the object when we need the object with the conf, like in flat forms, entity detail, etc.)
      * @return mixed
      */
-    public function confLocalChildAction(Request $request, $entityGroup)
+    public function confLocalChildAction(Request $request, $entityGroup, $id = null)
     {
-        return parent::confChildAction($request, array($entityGroup));
+        return parent::confChildAction($request, array($entityGroup), $id);
     }
 
     /**
@@ -242,8 +245,8 @@ class EntityGroupEntityControllerbbbbbb extends BaseEntityChildController
      * @return null
      */
     protected function getObjectsBySearch() {
-        $choices = $this->get('entities.service.repository')
-            ->setEntityRepository('EntitiesBundle:EntityGroup')
+        $choices = $this->get('bck.entities.service.repository')
+            ->setEntityRepository('BckEntitiesBundle:EntityGroup')
             ->execute(
                 'getAllJoinWithEntity',
                 array(

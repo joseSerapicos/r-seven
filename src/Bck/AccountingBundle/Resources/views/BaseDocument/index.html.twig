@@ -1,0 +1,11 @@
+{% extends 'AppBundle:data-box:index.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets output="assets/accounting/base-document/index/css/local.css"
+    '@BckAccountingBundle/Resources/public/base-document/index/scss/dist/styles.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{# block javascripts %}{% endblock #}

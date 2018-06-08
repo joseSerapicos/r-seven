@@ -1,0 +1,3 @@
+entities:
+    resource: "@BckEntitiesBundle/Controller/"
+    type:     annotation

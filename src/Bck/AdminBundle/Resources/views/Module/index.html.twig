@@ -1,0 +1,22 @@
+{% extends 'AppBundle:tree-view:index.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {% stylesheets output="assets/admin/module/index/css/local.css"
+    '@BckAdminBundle/Resources/public/module/index/scss/dist/styles.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    {% javascripts output="assets/admin/module/index/js/local.js"
+        '@BckAdminBundle/Resources/public/module/index/ts/dist/inline.bundle.js'
+        '@BckAdminBundle/Resources/public/module/index/ts/dist/polyfills.bundle.js'
+        '@BckAdminBundle/Resources/public/module/index/ts/dist/vendor.bundle.js'
+        '@BckAdminBundle/Resources/public/module/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

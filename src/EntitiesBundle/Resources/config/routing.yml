@@ -1,3 +1,0 @@
-entities:
-    resource: "@EntitiesBundle/Controller/"
-    type:     annotation

@@ -1,0 +1,52 @@
+{% extends 'AppBundle:form:form-popup.html.twig' %}
+
+{% block body %}
+    {% set form = (form is defined ? form : (_form is defined ? _form : null)) %}
+    {% set fields = (fields is defined ? fields : (_conf['fields'] is defined ? _conf['fields'] : null)) %}
+
+    {% if (form and fields) %}
+        {% for field in fields['form'] %}
+            {% if field == 'text' %}
+                <div class="row form-group">
+                    {% include 'AppBundle:form:label.html.twig' with {
+                    'formField': form[field],
+                    'metadata': fields['metadata'][field]
+                    } %}
+                    <div class="col-sm-10"><div class="row">
+                            <div class="col-12">
+                                <div class="input-group mb-3">
+                                    <select class="custom-select js_addKey">
+                                        <option value="" selected>Keys...</option>
+                                        <option value="name">Name</option>
+                                        <option value="surname">Surname</option>
+                                        <option value="full_name">Full Name</option>
+                                        <option value="document_code">Document Code</option>
+                                        <option value="booking_code">Booking Code</option>
+                                        <option value="payment_link">Payment Link</option>
+                                        <option value="username">Username</option>
+                                        <option value="password">Password</option>
+                                    </select>
+                                    <div class="input-group-append" (click)="addKeyAction($event)">
+                                        <label class="input-group-text"><i class="fa fa-check"></i></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                {% include 'AppBundle:form:input.html.twig' with {
+                                'field': field,
+                                'formField': form[field],
+                                'metadata': fields['metadata'][field]
+                                } %}
+                            </div>
+                        </div></div>
+                </div>
+            {% else %}
+                {% include 'AppBundle:form:field.html.twig' with {
+                'field': field,
+                'metadata': fields['metadata'][field],
+                'form': form
+                } %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endblock %}

@@ -4,8 +4,13 @@ import {LegendProvider} from '../../legend/ts/src/legent-provider';
 // Provider interface
 export interface BoxProvider extends BaseProvider {
     label: string,
+    labelCount?: number,
+    labelIcon?: string,
     controls: {
-        expander: boolean,
+        expander: {
+            isEnabled: boolean,
+            isExpanded: boolean
+        },
         resizable: boolean,
         legend: LegendProvider
     }

@@ -2,7 +2,7 @@
 # http://symfony.com/doc/current/book/security.html
 security:
     encoders:
-        AdminBundle\Entity\User:
+        LoginBundle\Entity\User:
             algorithm: bcrypt
             cost:      13
 
@@ -35,8 +35,8 @@ security:
                 login_path: /login
                 check_path: /login/check
                 csrf_token_generator: security.csrf.token_manager
-                default_target_path: /
-                always_use_default_target_path: true
+                default_target_path: /login/process
+                always_use_default_target_path: false
             provider: database_provider
             logout:
                 path: /logout
@@ -47,7 +47,9 @@ security:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/assets/login, roles: IS_AUTHENTICATED_ANONYMOUSLY } # To access login assets
         - { path: ^/assets/vendor, roles: IS_AUTHENTICATED_ANONYMOUSLY } # To access fonts
-        - { path: ^/sysadmin, roles: ROLE_SYSADMIN }
+        - { path: ^/bck/sysadmin, roles: ROLE_SYSADMIN }
         # - { path: ^/admin, roles: ROLE_ADMIN } # Not used because user can access some admin menus
-        - { path: ^/admin/module, roles: ROLE_ADMIN }
-        - { path: ^/, roles: ROLE_USER }
+        - { path: ^/bck/admin/module, roles: ROLE_ADMIN }
+        - { path: ^/bck, roles: ROLE_USER }
+        # - { path: ^/xxx, roles: ROLE_CUSTOMER }
+        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }

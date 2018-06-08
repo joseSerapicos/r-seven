@@ -1,0 +1,10 @@
+{% extends 'AppBundle:wizard:default.html.twig' %}
+
+{% block steps %}
+    <div class="p-3 my-3 border border-secondary rounded-md ">
+    {# Override this block if you want to define static steps. #}
+    {% for key, value in _containers %}
+            {% include 'AppBundle:wizard:lazy-load-container.html.twig' %}
+    {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Web Travel Tool</title>
+
+    {% stylesheets output="assets/login/default/index/css/all.css"
+    '@LoginBundle/Resources/public/default/index/scss/dist/styles.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+
+    {% image '@AppBundle/Resources/public/images/favicon.ico' output='favicon.ico' %}
+    <link rel="icon" type="image/x-icon" href="{{ asset_url }}" />
+    {% endimage %}
+</head>
+<body class="bg-white">
+<div class="row bg-primary p-2">
+    <div class="col-12 col-sm-6 text-center text-sm-right text-white align-self-center">
+        <h2>web travel tool</h2>
+        <small>Booking management</small>
+        <h2>goes higher</h2>
+    </div>
+    <div class="d-none d-sm-block col-sm-6 text-left">
+        {% image '@AppBundle/Resources/public/img/logo/logo2-100x190.png' output='assets/login/img/logo-100x190.png' %}
+        <img src="{{ asset_url }}" alt="logo" height="100" width="190"/>
+        {% endimage %}
+    </div>
+</div>
+<div class="main-body-and-footer-container">
+    <div class="row">
+        <div class="offset-md-3 col-md-6 bg-light border border-secondary rounded-md py-3 px-4">
+            {% if error %}
+                <div>{{ error.messageKey|trans(error.messageData) }}</div>
+            {% endif %}
+            <form action="{{ path('_login__default__check') }}" method="post" class="m-t" role="form">
+                <div class="form-group">
+                    <input type="text" name="_system" class="form-control" placeholder="System Id/Name" required="" value="{{ form.last_values._system }}">
+                </div>
+                <div class="form-group">
+                    <input type="text" name="_username" class="form-control" placeholder="Username/Email" required="" value="{{ form.last_values._username }}">
+                </div>
+                <div class="form-group">
+                    <input type="password" name="_password" class="form-control" placeholder="Password" required="">
+                </div>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <button type="submit" class="btn btn-primary block full-width m-b">Login</button>
+                <a class="btn btn-md btn-secondary btn-block m-b-md" href="register.html">Get my account</a>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 text-center devices">
+            <i class="fa fa-desktop"></i><i class="fa fa-tablet"></i><i class="fa fa-mobile"></i>
+        </div>
+    </div>
+    <hr class="bg-secondary"/>
+    <div class="row">
+        <div class="col-sm-6">
+            <ul class="links">
+                <li><i class="fa fa-file-o"></i>&nbsp;Landpage</li>
+                <li><i class="fa fa-facebook"></i>&nbsp;Facebook</li>
+                <li><i class="fa fa-youtube"></i>&nbsp;Youtube</li>
+            </ul>
+        </div>
+        <div class="col-sm-6">
+            <ul>
+                <li>Web Travel Tool</li>
+                <li>2018</li>
+            </ul>
+            <div class="d-inline-block align-middle">Optimized to:</div>
+            <div class="d-inline-block">
+                {% image '@AppBundle/Resources/public/img/browser-logos/src/chrome/chrome_16x16.png' output='assets/login/img/chrome_16x16.png' %}
+                <img src="{{ asset_url }}" alt="logo" height="16" width="16"/>
+                {% endimage %}
+                {% image '@AppBundle/Resources/public/img/browser-logos/src/firefox/firefox_16x16.png' output='assets/login/img/firefox_16x16.png' %}
+                <img src="{{ asset_url }}" alt="logo" height="16" width="16"/>
+                {% endimage %}
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

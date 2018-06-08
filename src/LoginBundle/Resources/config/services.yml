@@ -4,4 +4,6 @@ services:
         arguments: ["@doctrine.orm.local_database_entity_manager"]
     login.service.user_provider:
         class: LoginBundle\Service\UserProviderService
-        arguments: ["@session", "@request_stack", "@app.service.database", "@sysadmin.service.repository", "@login.service.repository", "%kernel.root_dir%"]
+        arguments: ["@session", "@request_stack", "@app.service.database", "@bck.sysadmin.service.repository", "@login.service.repository", "%kernel.root_dir%"]
+    login.controller.user:
+        class: LoginBundle\Controller\UserController

@@ -1,0 +1,13 @@
+<div class="table-responsive">
+    {% if (dataBoxDefault_hasForm) %}<form>{% endif %}
+    <table class="data-table table table-hover dataTables-example{{dataBoxDefault_hasHeader ? ' table-bordered' : ''}}">
+        {% if (dataBoxDefault_hasHeader) %}<thead>
+        <tr>
+            <th *ngFor="let searchField of _dataService.getSearch('fields')">{% verbatim %}{{ getLang(_dataService.getFields('metadata')[searchField].label) }}{% endverbatim %}</th>
+            <th>&nbsp;</th>
+        </tr>
+        </thead>{% endif %}
+        <tbody>
+        <ng-template ngFor let-obj [ngForOf]="_dataService.getProviderAttr('objects')" let-objIndex="index">
+        <tr {% if (dataBoxDefault_hasActions) %}(dblclick)="editAction($event, objIndex)"{% endif %}
+            [ngClass]="getLegendClasses(obj, 'tr')">

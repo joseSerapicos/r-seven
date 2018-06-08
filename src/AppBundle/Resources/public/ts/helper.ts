@@ -154,6 +154,23 @@ export class Helper {
     }
 
     /**
+     * Search objectKey value in array of objects
+     * @param value
+     * @param objectKey
+     * @param array
+     */
+    public static arraySearchObj(value: any, objectKey: string, array: any): number
+    {
+        for (let i=0; i < array.length; i++) {
+            if (array[i][objectKey] && (array[i][objectKey] == value)) {
+                return i;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Order objects by key
      * @param objects
      * @param keys
@@ -306,6 +323,8 @@ export class Helper {
             Helper.getBaseProvider(data),
             {
                 label: data.label || '',
+                labelCount: ((data.labelCount === undefined) ? null : data.labelCount), // Can be zero
+                labelIcon: data.labelIcon || null,
                 controls: {
                     expander: (data.controls && data.controls.expander),
                     legend: ((data['controls'] && data['controls']['legend']) ? data['controls']['legend'] : [])
@@ -321,12 +340,7 @@ export class Helper {
      */
     public static getEntityDetailProvider(data: any): EntityDetailProvider
     {
-        return Helper.mergeObjects(
-            Helper.getBaseProvider(data),
-            {
-                popup: null // Create this value in component
-            }
-        );
+        return Helper.getBaseProvider(data);
     }
 
     /**
@@ -355,7 +369,8 @@ export class Helper {
     {
         return {
             localData: ((data.localData && data.localData.template) ? data.localData.template : {}),
-            extraData: ((data.extraData && data.extraData.template) ? data.extraData.template : null)
+            extraData: ((data.extraData && data.extraData.template) ? data.extraData.template : null),
+            language: (data.language ? data.language : {})
         };
     }
 

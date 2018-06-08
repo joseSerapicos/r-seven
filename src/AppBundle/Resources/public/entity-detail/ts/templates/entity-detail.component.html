@@ -1,8 +1,11 @@
 <ng-template [ngIf]="_object && _object['id']">
     <div class="container-fluid py-3"><div class="row">
-        <div class="col col-md-9">
-            <div class="row">
-                <h2 class="col-12 valign-div-container" *ngIf="!_object['_isSessionStorage']"><span [innerHTML]="_object['code'] || _object['id']"></span><span *ngIf="_object['name']">&nbsp;&nbsp;@&nbsp;&nbsp;{{ _object['name'] }}</span><a
+            <div class="col"
+                                      [class.col-md-9]="hasInsertInfo"
+                     [class.col-md-12]="!hasInsertInfo"
+                 >
+            <div class="row" *ngIf="!_object['_isSessionStorage'] && (_object['code'] || _object['name'])">
+                <h2 class="col-12 valign-div-container"><span *ngIf="_object['code']" [innerHTML]="_object['code']"></span><span *ngIf="_object['code'] && _object['name']">&nbsp;&nbsp;@&nbsp;&nbsp;</span><span *ngIf="_object['name']" [innerHTML]="_object['name']"></span><a
                         *ngIf="_actionsService.getActionAttr('edit', 'isEnabled')"
                         [ngClass]="[_actionsService.getActionAttr('edit', 'icon')]"
                         class="action valign-div-component valign-div-component-middle -round fa"
@@ -12,20 +15,20 @@
                 <ng-template ngFor let-field [ngForOf]="_fields['view']">
                     <div class="col col-md-6"
                          *ngIf="!_helperService.inArray(field, ['id', 'code', 'name', 'isEnabled', 'insertTime', 'insertUser']) && _object[field]">
-                        <p *ngIf="_helperService.inArray(_fields['metadata'][field]['type'], ['number', 'percentage', 'monetary', 'icon'])"><strong>{{ _fields['metadata'][field]['label'] }}</strong>:&nbsp;<span [innerHTML]="_object[field]"></span></p>
-                        <p *ngIf="_helperService.inArray(_fields['metadata'][field]['type'], ['boolean', 'status'])"><span [innerHTML]="_object[field]"></span>&nbsp;<strong>{{ _fields['metadata'][field]['label'] }}</strong></p>
+                        <p *ngIf="_helperService.inArray(_fields['metadata'][field]['type'], ['number', 'percentage', 'monetary', 'icon'])"><strong>{{ getLang(_fields['metadata'][field]['label']) }}</strong>:&nbsp;<span [innerHTML]="_object[field]"></span></p>
+                        <p *ngIf="_helperService.inArray(_fields['metadata'][field]['type'], ['boolean', 'status'])"><span [innerHTML]="_object[field]"></span>&nbsp;<strong>{{ getLang(_fields['metadata'][field]['label']) }}</strong></p>
                         <p *ngIf="_helperService.inArray(_fields['metadata'][field]['type'], ['avatar', 'img'])"><span [innerHTML]="_object[field]"></span></p>
-                        <p *ngIf="!_helperService.inArray(_fields['metadata'][field]['type'], ['number', 'percentage', 'monetary', 'status', 'icon', 'boolean', 'avatar', 'img'])"><strong>{{ _fields['metadata'][field]['label'] }}</strong><br/><span [innerHTML]="_object[field]"></span></p>
+                        <p *ngIf="!_helperService.inArray(_fields['metadata'][field]['type'], ['number', 'percentage', 'monetary', 'status', 'icon', 'boolean', 'avatar', 'img'])"><strong>{{ getLang(_fields['metadata'][field]['label']) }}</strong><br/><span [innerHTML]="_object[field]"></span></p>
                     </div>
                 </ng-template>
             </div>
         </div>
-                    <div class="col col-md-3">
+                    <div *ngIf="hasInsertInfo" class="col col-md-3">
                 <div class="card bg-light">
                     <div class="card-body">
-                        <p><span [innerHTML]="_object['isEnabled']"></span>&nbsp;<strong>{{ _fields['metadata']['isEnabled']['label'] }}</strong></p>
-                        <p><strong>{{ _fields['metadata']['insertTime']['label'] }}</strong><br/><span [innerHTML]="_object['insertTime']"></span></p>
-                        <p><strong>{{ _fields['metadata']['insertUser']['label'] }}</strong><br/><span [innerHTML]="_object['insertUser']"></span></p>
+                        <p><span [innerHTML]="_object['isEnabled']"></span>&nbsp;<strong>{{ getLang(_fields['metadata']['isEnabled']['label']) }}</strong></p>
+                        <p><strong>{{ getLang(_fields['metadata']['insertTime']['label']) }}</strong><br/><span [innerHTML]="_object['insertTime']"></span></p>
+                        <p><strong>{{ getLang(_fields['metadata']['insertUser']['label']) }}</strong><br/><span [innerHTML]="_object['insertUser']"></span></p>
                     </div>
                 </div>
             </div>

@@ -1,12 +1,12 @@
 <?php
-namespace AccountingBundle\Entity;
+namespace Bck\AccountingBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 
 /**
- * @ORM\Entity(repositoryClass="AccountingBundle\Entity\ClientDocumentRepository")
+ * @ORM\Entity(repositoryClass="Bck\AccountingBundle\Entity\ClientDocumentRepository")
  * @ORM\Table(name="clientDocument",
  *     uniqueConstraints={
  *         @ORM\UniqueConstraint(name="unq_clientDocument_number", columns={"fk_clientDocumentType", "number"})
@@ -21,7 +21,7 @@ class ClientDocumentssssss extends BaseDocument {
     protected $clientDocumentTypeObj;
 
     /**
-     * @ORM\ManyToOne(targetEntity="\EntitiesBundle\Entity\Client")
+     * @ORM\ManyToOne(targetEntity="Bck\EntitiesBundle\Entity\Client")
      * @ORM\JoinColumn(name="fk_client", referencedColumnName="id", nullable=false, unique=false, onDelete="RESTRICT")
      */
     protected $clientObj;
@@ -39,10 +39,10 @@ class ClientDocumentssssss extends BaseDocument {
 
     /**
      * Set clientDocumentTypeObj
-     * @param \AccountingBundle\Entity\ClientDocumentType $clientDocumentTypeObj
+     * @param \Bck\AccountingBundle\Entity\ClientDocumentType $clientDocumentTypeObj
      * @return $this
      */
-    public function setClientDocumentTypeObj(\AccountingBundle\Entity\ClientDocumentType $clientDocumentTypeObj)
+    public function setClientDocumentTypeObj(\Bck\AccountingBundle\Entity\ClientDocumentType $clientDocumentTypeObj)
     {
         $this->clientDocumentTypeObj = $clientDocumentTypeObj;
         return $this;
@@ -50,7 +50,7 @@ class ClientDocumentssssss extends BaseDocument {
 
     /**
      * Get clientDocumentTypeObj
-     * @return \AccountingBundle\Entity\ClientDocumentType
+     * @return \Bck\AccountingBundle\Entity\ClientDocumentType
      */
     public function getClientDocumentTypeObj()
     {
@@ -60,10 +60,10 @@ class ClientDocumentssssss extends BaseDocument {
     /**
      * Set clientObj
      *
-     * @param \EntitiesBundle\Entity\Client $clientObj
+     * @param \Bck\EntitiesBundle\Entity\Client $clientObj
      * @return $this
      */
-    public function setClientObj(\EntitiesBundle\Entity\Client $clientObj)
+    public function setClientObj(\Bck\EntitiesBundle\Entity\Client $clientObj)
     {
         $this->clientObj = $clientObj;
 
@@ -72,7 +72,7 @@ class ClientDocumentssssss extends BaseDocument {
 
     /**
      * Get clientObj
-     * @return \EntitiesBundle\Entity\Client
+     * @return \Bck\EntitiesBundle\Entity\Client
      */
     public function getClientObj()
     {
@@ -81,21 +81,21 @@ class ClientDocumentssssss extends BaseDocument {
 
     /**
      * Get new storeInfoObj
-     * @return \AccountingBundle\Entity\ClientDocumentStoreInfo
+     * @return \Bck\AccountingBundle\Entity\ClientDocumentStoreInfo
      */
     public function getNewStoreInfoObj()
     {
-        return new \AccountingBundle\Entity\ClientDocumentStoreInfo();
+        return new Bck\AccountingBundle\Entity\ClientDocumentStoreInfo();
     }
 
     /**
      * Add storeInfoObjArr
      *
-     * @param \AccountingBundle\Entity\ClientDocumentStoreInfo $storeInfoObjArr
+     * @param \Bck\AccountingBundle\Entity\ClientDocumentStoreInfo $storeInfoObjArr
      *
      * @return ClientDocument
      */
-    public function addStoreInfoObjArr(\AccountingBundle\Entity\ClientDocumentStoreInfo $storeInfoObjArr)
+    public function addStoreInfoObjArr(Bck\AccountingBundle\Entity\ClientDocumentStoreInfo $storeInfoObjArr)
     {
         $this->storeInfoObjArr[] = $storeInfoObjArr;
 
@@ -105,9 +105,9 @@ class ClientDocumentssssss extends BaseDocument {
     /**
      * Remove storeInfoObjArr
      *
-     * @param \AccountingBundle\Entity\ClientDocumentStoreInfo $storeInfoObjArr
+     * @param \Bck\AccountingBundle\Entity\ClientDocumentStoreInfo $storeInfoObjArr
      */
-    public function removeStoreInfoObjArr(\AccountingBundle\Entity\ClientDocumentStoreInfo $storeInfoObjArr)
+    public function removeStoreInfoObjArr(Bck\AccountingBundle\Entity\ClientDocumentStoreInfo $storeInfoObjArr)
     {
         $this->storeInfoObjArr->removeElement($storeInfoObjArr);
     }

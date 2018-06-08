@@ -1,0 +1,19 @@
+{% extends 'BckAccountingBundle:BaseDocument:form.html.twig' %}
+{% block dueDate %}{% endblock %}
+{% block detail %}<section>
+    <ng-template #js_lazyLoadContainer></ng-template>
+    <ng-template #js_lazyLoadContainer></ng-template>
+</section>{% endblock %}
+{% block total %}<div class="row"><div class="col-md-4 offset-md-8">
+    <table class="table document-total">
+        <tbody>
+        {% block total_container %}<tr>
+            <td><strong>DIFF:</strong></td>
+            <td><input class="form-control js_diffControl"
+                       readonly="readonly"
+                       type="text"
+                       value="0"></td>
+        </tr>{% endblock %}
+        </tbody>
+    </table>
+</div></div>{% endblock %}

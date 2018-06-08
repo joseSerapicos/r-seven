@@ -1,0 +1,7 @@
+{
+  "main": "http://www.handsometravel.dev/app_dev.php/bck/admin/store/detail-tabs",
+  "contacts": "http://www.handsometravel.dev/app_dev.php/bck/admin/store/contacts",
+  "store-phone-edit": "http://www.handsometravel.dev/app_dev.php/bck/admin/store-phone/edit/0",
+  "store-email-edit": "http://www.handsometravel.dev/app_dev.php/bck/admin/store-email/edit/0",
+  "store-link-edit": "http://www.handsometravel.dev/app_dev.php/bck/admin/store-link/edit/0"
+}

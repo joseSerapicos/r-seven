@@ -1,0 +1,25 @@
+{% set inputsClass = 'd-block w-100 rounded bg-light p-2' %}
+{% set object = (object is defined ? object : (_conf['object'] is defined ? _conf['object'] : null)) %}
+
+{% set bottomClass = 'mb-4' %}
+{% extends 'BckAccountingBundle:BaseDocument:pdf/base.html.twig' %}
+
+{% block baseDocument_pdf_dueDate %}{% endblock %}
+
+{% block baseDocument_pdf_total %}
+    <div class="row">
+        <div class="col-print-8">
+            <span class="d-block w-100">&nbsp;</span>
+        </div>
+        <div class="col-print-4">
+            <table class="table document-total">
+                <tbody>
+                <tr>
+                    <td><strong>Total:</strong></td>
+                    <td><span class="{{inputsClass}}">{{ object['total'] }}</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

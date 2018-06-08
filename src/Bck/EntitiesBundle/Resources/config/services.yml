@@ -1,0 +1,10 @@
+services:
+    bck.entities.service.repository:
+        class: Bck\EntitiesBundle\Service\RepositoryService
+        arguments: ["@doctrine.orm.local_database_entity_manager"]
+    bck.entities.controller.client:
+        class: Bck\EntitiesBundle\Controller\ClientController
+    bck.entities.controller.entity_address:
+        class: Bck\EntitiesBundle\Controller\EntityAddressController
+    bck.entities.controller.entity_contacts:
+        class: Bck\EntitiesBundle\Controller\EntityContactsController

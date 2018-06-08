@@ -64,6 +64,19 @@ module.exports = function() {
     };
 
     /**
+     * Get app bundle prefix
+     * @param app
+     * @returns {*}
+     */
+    self.getAppBundlePrefix = function(app) {
+        if ((app in apps) && ('bundlePrefix' in apps[app])) {
+            return apps[app]['bundlePrefix'];
+        }
+
+        return null;
+    };
+
+    /**
      * Get app paths
      * @param app
      * @returns {*}
@@ -80,6 +93,7 @@ module.exports = function() {
         return {
             rootDir: (
                 './src/'
+                + (appObj['bundlePrefix'] ? (self.ucFirst(appObj['bundlePrefix']) + '/') : '')
                 + self.ucFirst(appObj['bundle'])
                 + 'Bundle/Resources/public/'
                 + (appObj['controller'] ? (appObj['controller'] + '/') : '')
@@ -88,6 +102,7 @@ module.exports = function() {
             ),
             projectRootDirFromApp: ( // Project Root Dir From App Root Dir
                 '../../../../../'
+                + (appObj['bundlePrefix'] ? '../' : '')
                 + (appObj['controller'] ? '../' : '')
                 + (appObj['action'] ? '../' : '')
             )

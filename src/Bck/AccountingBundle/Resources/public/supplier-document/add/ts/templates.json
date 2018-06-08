@@ -1,0 +1,8 @@
+{
+  "form-popup": "http://www.handsometravel.dev/app_dev.php/bck/accounting/supplier-document/add-step1",
+  "step3-invoice": "http://www.handsometravel.dev/app_dev.php/bck/accounting/supplier-document/add-step3-invoice",
+  "step3-rectification": "http://www.handsometravel.dev/app_dev.php/bck/accounting/supplier-document/add-step3-invoice",
+  "step3-receipt": "http://www.handsometravel.dev/app_dev.php/bck/accounting/supplier-document/add-step3-receipt",
+  "step3-payment": "http://www.handsometravel.dev/app_dev.php/bck/accounting/supplier-document/add-step3-payment",
+  "step3-settlement": "http://www.handsometravel.dev/app_dev.php/bck/accounting/supplier-document/add-step3-settlement"
+}

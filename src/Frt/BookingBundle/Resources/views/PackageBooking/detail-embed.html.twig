@@ -1,0 +1,37 @@
+{% extends 'FrtCommonBundle::base-embed.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets output="assets/frt/booking/package-booking/detail-embed/css/local.css"
+    '@FrtBookingBundle/Resources/public/package-booking/detail/scss/dist/styles.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block head_javascripts %}
+    {{ parent() }}
+
+    {% set bookingPaxData = render(controller(
+        'BckBookingBundle:PackageBookingPax:dataChild',
+        {'parents': {'booking': _conf['object']['bookingObj']}, 'responseType': 'json'}
+    )) %}
+    <script>
+        _app.dependencies.bookingPax = {{ bookingPaxData|raw }};
+    </script>
+{% endblock %}
+
+{% block body_container %}
+    <div class="js_appBasics"></div>
+    <div class="js_app"></div>
+{% endblock %}
+
+{% block javascripts %}
+    {% javascripts output="assets/frt/booking/package-booking/detail-embed/js/local.js"
+        '@FrtBookingBundle/Resources/public/package-booking/detail/ts/dist/inline.bundle.js'
+        '@FrtBookingBundle/Resources/public/package-booking/detail/ts/dist/polyfills.bundle.js'
+        '@FrtBookingBundle/Resources/public/package-booking/detail/ts/dist/vendor.bundle.js'
+        '@FrtBookingBundle/Resources/public/package-booking/detail/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

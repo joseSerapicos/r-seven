@@ -1,0 +1,5 @@
+{
+  "main": "http://www.handsometravel.dev/app_dev.php/bck/admin/settings/main-menus",
+  "entities-settings": "http://www.handsometravel.dev/app_dev.php/bck/admin/settings/entities-menus",
+  "document-types-settings": "http://www.handsometravel.dev/app_dev.php/bck/admin/settings/document-types-menus"
+}

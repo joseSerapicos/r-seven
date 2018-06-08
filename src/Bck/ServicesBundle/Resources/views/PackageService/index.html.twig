@@ -1,0 +1,20 @@
+{% extends 'BckServicesBundle:BaseService:index.html.twig' %}
+
+{% block stylesheets %}
+    {% stylesheets output="assets/services/package-service/index/css/local.css"
+    '@BckServicesBundle/Resources/public/package-service/index/scss/dist/styles.css'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    {% javascripts output="assets/services/package-service/index/js/local.js"
+        '@BckServicesBundle/Resources/public/package-service/index/ts/dist/inline.bundle.js'
+        '@BckServicesBundle/Resources/public/package-service/index/ts/dist/polyfills.bundle.js'
+        '@BckServicesBundle/Resources/public/package-service/index/ts/dist/vendor.bundle.js'
+        '@BckServicesBundle/Resources/public/package-service/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

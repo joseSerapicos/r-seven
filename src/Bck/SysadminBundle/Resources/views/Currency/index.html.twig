@@ -1,0 +1,12 @@
+{% extends 'AppBundle:data-box:index.html.twig' %}
+
+{% block javascripts %}
+    {% javascripts output="assets/sysadmin/currency/index/js/local.js"
+        '@BckSysadminBundle/Resources/public/currency/index/ts/dist/inline.bundle.js'
+        '@BckSysadminBundle/Resources/public/currency/index/ts/dist/polyfills.bundle.js'
+        '@BckSysadminBundle/Resources/public/currency/index/ts/dist/vendor.bundle.js'
+        '@BckSysadminBundle/Resources/public/currency/index/ts/dist/main.bundle.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

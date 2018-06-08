@@ -1,6 +1,6 @@
 <?php
 
-namespace AccountingBundle\Entity;
+namespace Bck\AccountingBundle\Entity;
 
 use AppBundle\Service\HelperService;
 
@@ -54,15 +54,15 @@ class ClientDocumentRepositorysssss extends BaseDocumentRepository
 
         $localMetadata = self::processMetadata(array(
             'clientDocumentTypeObj' => array('label' => 'Document Type', 'type' => 'object', 'acl' => 'edit', 'typeDetail' => array(
-                'table' => 'clientDocumentType', 'bundle' => 'accounting', 'type' => 'select')),
+                'table' => 'clientDocumentType', 'bundlePrefix' => 'bck', 'bundle' => 'accounting', 'type' => 'select')),
             'clientObj' => array('label' => 'Client', 'type' => 'object', 'acl' => 'edit',
                 'typeDetail' => array(
-                    'table' => 'client', 'fieldInView' => 'client_name', 'bundle' => 'entities', 'type' => 'none'),
+                    'table' => 'client', 'fieldInView' => 'client_name', 'bundlePrefix' => 'bck', 'bundle' => 'entities', 'type' => 'none'),
                 'form' => array('type' => 'auto-complete')
             ),
             'storeInfoObjArr' => array('label' => 'Store Info', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array(
-                    'table' => 'clientDocumentStoreInfo', 'bundle' => 'accounting', 'type' => 'array'),
+                    'table' => 'clientDocumentStoreInfo', 'bundlePrefix' => 'bck', 'bundle' => 'accounting', 'type' => 'array'),
                 'form' => array('type' => 'array')
             )
         ));

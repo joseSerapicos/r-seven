@@ -1,7 +1,8 @@
 <div class="card">
     <div class="card-header"><div class="row align-items-center">
             <h5 class="col mr-auto"
-                (click)="_navManagerService.navToAction({{key}})">{{value.label}}</h5>
+                (click)="_navManagerService.navToAction({{key}})"
+                [innerHTML]="getLang('{{value['label']}}')"></h5>
             {% block accordion_container_actions %}
             <div *ngIf="_navManagerService.getComponentRef({{key}}) && _navManagerService.getComponentRef({{key}}).instance._actionsService"
                  class="col-auto text-right actions no-user-select">

@@ -1,5 +1,5 @@
 import {Component, ElementRef, Renderer, QueryList, ViewContainerRef, ViewChildren} from '@angular/core';
-import {BoxExtensionComponent, BoxProvider} from '../../../../../../AppBundle/Resources/public/ts/box/box.extension-component';
+import {BoxExtensionComponent, BoxProvider} from '../../../../../../../AppBundle/Resources/public/ts/box/box.extension-component';
 import {NavManagerService, INavManager as IAccordion, LazyLoadData} from '../../../ts/nav-manager/nav-manager.service';
 
 // Reexports

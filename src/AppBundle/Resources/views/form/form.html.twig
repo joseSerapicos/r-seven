@@ -1,3 +1,5 @@
+{% block before_form %}{% endblock %}
+
 {% set form = (form is defined ? form : (_form is defined ? _form : null)) %}
 {% set fields = (fields is defined ? fields : (_conf['fields'] is defined ? _conf['fields'] : null)) %}
 
@@ -19,3 +21,5 @@
 {% include 'AppBundle:form:end.html.twig' with {
     'form': form
 } %}
+
+{% block after_form %}{% endblock %}

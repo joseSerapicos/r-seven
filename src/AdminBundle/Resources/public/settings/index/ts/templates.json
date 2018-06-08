@@ -1,5 +1,0 @@
-{
-  "main": "http://weboffice.whs.dev.com/app_dev.php/admin/settings/main-menus",
-  "entities-settings": "http://weboffice.whs.dev.com/app_dev.php/admin/settings/entities-menus",
-  "document-types-settings": "http://weboffice.whs.dev.com/app_dev.php/admin/settings/document-types-menus"
-}

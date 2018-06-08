@@ -64,18 +64,30 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
             foreach ($metadata as $field => $fieldMetadata) {
                 if ($fieldMetadata['type'] == 'object') {
                     // Set automatic attributes
+                    if (!isset($metadata[$field]['typeDetail']['bundlePrefix'])) {
+                        $metadata[$field]['typeDetail']['bundlePrefix'] = '';
+                    }
+                    $metadata[$field]['typeDetail']['BundlePrefix'] =
+                        HelperService::snakeCaseToCamelCase($fieldMetadata['typeDetail']['bundlePrefix']);
                     $metadata[$field]['typeDetail']['Bundle'] =
                         HelperService::snakeCaseToCamelCase($fieldMetadata['typeDetail']['bundle']).'Bundle';
                     $metadata[$field]['typeDetail']['entity'] = ucfirst((substr($fieldMetadata['typeDetail']['table'], 0, 4) == 'app_')
                         ? substr($fieldMetadata['typeDetail']['table'], 4)
                         : $fieldMetadata['typeDetail']['table']
                     );
-                    $metadata[$field]['typeDetail']['entityClass'] = ($metadata[$field]['typeDetail']['Bundle']
+                    $metadata[$field]['typeDetail']['entityClass'] = (
+                        $metadata[$field]['typeDetail']['BundlePrefix']
+                        .'\\'.$metadata[$field]['typeDetail']['Bundle']
                         .'\Entity\\'
                         .$metadata[$field]['typeDetail']['entity']
                     );
                     if (!isset($metadata[$field]['typeDetail']['formClass'])) { // Define only if is not defined yet
-                        $metadata[$field]['typeDetail']['formClass'] = ($metadata[$field]['typeDetail']['Bundle']
+                        $metadata[$field]['typeDetail']['formClass'] = (
+                            (empty($metadata[$field]['typeDetail']['BundlePrefix']) ?
+                                '' :
+                                ($metadata[$field]['typeDetail']['BundlePrefix'] . '\\')
+                            )
+                            . $metadata[$field]['typeDetail']['Bundle']
                             . '\Form\\'
                             . (((isset($metadata[$field]['form']) && isset($metadata[$field]['form']['typeClass']))
                                     ? $metadata[$field]['form']['typeClass']
@@ -186,6 +198,7 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                         : null
                 );
             case 'fieldInView':
+            case 'BundlePrefix': // Object (foreign field) data
             case 'Bundle': // Object (foreign field) data
             case 'entity':
             case 'entityClass':
@@ -276,11 +289,11 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
      */
     public function executeQueryBuilder($queryBuilder, $method = 'getScalarResult') {
         $queryBuilderMethods = array(
-            'getResult',
+            'getResult', // Array of objects
             'getSingleResult',
             'getOneOrNullResult',
             'getArrayResult',
-            'getScalarResult',
+            'getScalarResult', // Array of objects converted in array, according with the selected fields
             'getSingleScalarResult'
         );
 
@@ -323,7 +336,8 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
         // Configuration
         $hasFields = (isset($options['conf']) && isset($options['conf']['hasFields'])
             ? $options['conf']['hasFields']
-            : true
+            // Check if the result is the type object, if true, so fields can't be selected
+            : (in_array($executeMethod, array('getResult')) ? false : true)
         );
         $hasDependencyResolver = (isset($options['conf']) && isset($options['conf']['hasDependencyResolver'])
             ? $options['conf']['hasDependencyResolver']
@@ -341,7 +355,7 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                 if (!empty($field)) {
                     $this->queryBuilderAddSelect($qb, $field, $select, $options['fields'], $hasFields, $hasDependencyResolver);
                 }
-                }
+            }
             if ($hasFields) { $qb->select($select); }
         }
 
@@ -382,13 +396,15 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                     $dependency = $this->getLocalFieldMetadata($field, 'dependency', $metadata);
                     if (!empty($dependency)) {
                         if (!in_array($dependency, $options['fields'])) { // Avoid to repeat fields
+                            // Dependency needs to be selected, otherwise the field is unknown
+                            // "hasFields" is supplied as false, we only need the join, not that the fields will be selected
                             $select = array();
-                            $this->queryBuilderAddSelect($qb, $dependency, $select, $options['fields'], $hasFields, $hasDependencyResolver);
-                            if ($hasFields) {
+                            $this->queryBuilderAddSelect($qb, $dependency, $select, $options['fields'], false, $hasDependencyResolver);
+                            /*if ($hasFields) {
                                 foreach ($select as $fieldSelect) {
                                     $qb->addSelect($fieldSelect);
                                 }
-                            }
+                            }*/
                         }
                     }
                 }
@@ -404,7 +420,7 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                     default:
                         $whereMethod = 'and';
                 }
-                if (isset($table) && empty($table) && in_array($field, $options['fields'])) {
+                if (isset($table) && empty($table) && in_array($field, $options['fields']) && $hasFields) {
                     // Table can be empty when the field is calculated (like SUM, CASE WHEN, CONCAT, etc.), so we use
                     // the HAVING to avoid repeat the calc in the WHERE.
                     // Note: If field is not in fields array, we can't use HAVING
@@ -447,7 +463,6 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                 }
             }
         }
-
         // ORDER BY
         if (is_array($options['orderBy'])) {
             foreach ($options['orderBy'] as $orderBy) {
@@ -461,6 +476,19 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
                     } elseif (!empty($orderBy['field'])) {
                         // No metadata, need to be in the format "table.field"
                         $qb->addOrderBy($orderBy['field'], $orderBy['value']);
+                    }
+
+                    // Add orderBy dependency fields to select
+                    if ($hasDependencyResolver) {
+                        $dependency = $this->getLocalFieldMetadata($orderBy['field'], 'dependency', $metadata);
+                        if (!empty($dependency)) {
+                            if (empty($options['fields']) || !in_array($dependency, $options['fields'])) { // Avoid to repeat fields
+                                // Dependency needs to be selected, otherwise the field is unknown
+                                // "hasFields" is supplied as false, we only need the join, not that the fields will be selected
+                                $select = array();
+                                $this->queryBuilderAddSelect($qb, $dependency, $select, $options['fields'], false, $hasDependencyResolver);
+                            }
+                        }
                     }
                 }
             }
@@ -492,21 +520,34 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
      * @param $select (array of select sentences, needs to be updated due to recursion)
      * @param $addedFields (all added fields, needs to be updated after each "add" to avoid duplication for dependencies)
      * @param $hasFields (determines if fields should be added to select or are used only for join)
-     * @param $hasDependencyResolver (determines if fields dependency should be resolved)
+     * @param $hasDependencyResolver (determines if fields dependency should be resolved,
+     *     can be disabled when you need to make the join manually)
      * @return $this
      */
     protected function queryBuilderAddSelect($queryBuilder, $field, &$select, &$addedFields, $hasFields = true, $hasDependencyResolver = true)
     {
         $metadata = $this->getLocalMetadata();
 
-        // Resolve dependency (recursive)
+        // Resolve dependencies (recursively)
+        $dependencies = array();
         if ($hasDependencyResolver) {
+            // Dependency should be select to get the field
             $dependency = $this->getLocalFieldMetadata($field, 'dependency', $metadata);
             if (!empty($dependency)) {
-                if (!in_array($dependency, $addedFields)) { // Avoid to repeat fields
-                    $addedFields[] = $dependency;
-                    $this->queryBuilderAddSelect($queryBuilder, $dependency, $select, $addedFields, $hasFields);
-                }
+                $dependencies[] = $dependency;
+            }
+        }
+
+        // FieldInView should be added to get the correspondent information field
+        $fieldInView = $this->getLocalFieldMetadata($field, 'fieldInView', $metadata);
+        if (!empty($fieldInView)) {
+            $dependencies[] = $fieldInView;
+        }
+        if (!empty($dependencies)) {
+            foreach ($dependencies as $dependency)
+            if (!in_array($dependency, $addedFields)) { // Avoid to repeat fields
+                $addedFields[] = $dependency;
+                $this->queryBuilderAddSelect($queryBuilder, $dependency, $select, $addedFields, $hasFields, $hasDependencyResolver);
             }
         }
 
@@ -577,6 +618,18 @@ abstract class BaseEntityRepository extends EntityRepository implements IBaseEnt
      */
     public function getChoices($hasExecute = true, $executeMethod = 'getResult', $options = array())
     {
+        if (!isset($options['orderBy'])) {
+            // Add default orderBy, if is not defined
+            $localMetadata = $this->getLocalMetadata();
+            if (isset($localMetadata['priority'])) {
+                $options['orderBy'] = array(array('field' => 'priority', 'value' => 'ASC'));
+            } elseif (isset($localMetadata['name'])) {
+                $options['orderBy'] = array(array('field' => 'name', 'value' => 'ASC'));
+            } else {
+                $options['orderBy'] = array(array('field' => 'id', 'value' => 'DESC'));
+            }
+        }
+
         $criteria = array(
             array(
                 'field' => 'isEnabled',

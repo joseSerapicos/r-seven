@@ -1,0 +1,245 @@
+<?php
+
+namespace Bck\EntitiesBundle\Controller;
+
+use AppBundle\Controller\BaseEntityChildController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Bck\EntitiesBundle\Entity\Entity;
+use Bck\EntitiesBundle\Entity\EntityFile;
+
+class EntityImageController extends BaseEntityChildController
+{
+    /**
+     * Get label/title to display child in parent
+     * @return mixed
+     */
+    static function getLabel() { return 'Gallery'; }
+
+    /**
+     * Overrides parent method
+     * @param Request $request
+     * @param $parents
+     * @return $this
+     */
+    public function init(Request $request, $parents = null)
+    {
+        // Set configuration only once
+        if($this->isInitialized) { return $this; }
+
+        // Parent route
+        $this->parentConf = array(
+            'entity' => array('route' => '_bck__entities__entity__index')
+        );
+
+        // Route
+        $this->templateConf['route'] = array(
+            'get' => array(
+                'name' => '_bck__entities__entity_image__get'
+            ),
+            'edit' => array(
+                'name' => '_bck__entities__entity_image__edit',
+            ),
+            'delete' => array(
+                'name' => '_bck__entities__entity_image__delete',
+            ),
+            'thumbnail' => array(
+                'name' => '_bck__entities__entity__thumbnail',
+                'url' => 'nd'
+            )
+        );
+
+        parent::init($request, $parents);
+
+        // Form (set submit context as default, because this is the most used)
+        $this->localConf['formTypeClass'] = 'Bck\EntitiesBundle\Form\EntityImageSubmitFormType';
+
+        // Set route for thumbnail
+        $this->templateConf['route']['thumbnail']['url'] = $this->generateUrl(
+            $this->templateConf['route']['thumbnail']['name'],
+            array('id' => ($this->parentConf['entity']['obj'] ? $this->parentConf['entity']['obj']->getId() : 0))
+        );
+
+        /* Templates */
+        $this->localConf['templatesPath'] = ($this->localConf['BundleNamespace'].':EntityImage:');
+        /* /Templates */
+
+        // Templates
+        $this->localConf['templates']['edit'] = 'AppBundle:file:form-popup.html.twig';
+
+        // Search
+        $this->templateConf['search']['fields'] = $this->templateConf['fields']['view'];
+
+        // Actions for template/view
+        $this->templateConf['actions'] = array_merge(
+            $this->templateConf['actions'],
+            array(
+                'edit' => false,
+                'avatar' => true
+            )
+        );
+
+        // Legend (disable cancel legend)
+        $this->templateConf['controls']['legend'] = array();
+
+        // Extra data
+        $parent = reset($this->parentConf);
+
+        $parentId = ($parent['obj'] ?
+            $parent['obj']->getId() :
+            0 // Needed when parent is not defined like to get edit template
+        );
+
+        if ($parentId) {
+            $this->templateConf['extraData']['template'] = array(
+                'class' => '-merge-view',
+                'imageCrop' => array(
+                    'label' => 'Set image profile',
+                    'ActionUrl' => $this->generateUrl(
+                        '_bck__entities__entity__thumbnail',
+                        array('id' => $parentId)
+                    )
+                )
+            );
+        }
+
+        return $this;
+    }
+
+    /**
+     * @Route("/bck/entities/entity-image/profile",
+     *     name="_bck__entities__entity_image__profile"
+     * )
+     *
+     * Overrides the parent method.
+     * @param Request $request
+     * @return mixed
+     */
+    public function profileLocalChildAction(Request $request)
+    {
+        return parent::profileChildAction($request, 'entity_id');
+    }
+
+    /**
+     * @Route("/bck/entities/entity-image/get/{entity}/{id}",
+     *     name="_bck__entities__entity_image__get",
+     *     defaults={"id" = null}
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $entity
+     * @param $id
+     * @return mixed
+     */
+    public function getLocalChildAction(Request $request, $entity, $id)
+    {
+        return parent::getChildAction($request, array($entity), $id);
+    }
+
+    /**
+     * @Route("/bck/entities/entity-image/edit/{entity}/{id}",
+     *     name="_bck__entities__entity_image__edit",
+     *     defaults={"id" = null}
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $entity
+     * @param $id
+     * @return mixed
+     */
+    public function editLocalChildAction(Request $request, $entity, $id)
+    {
+        // Set configuration
+        $this->flags['hasForm'] = true;
+        $this->init($request, array($entity));
+
+        // Get object
+        $obj = $this->getObject($id);
+
+        // Build form
+        if(empty($_FILES)) {
+            // Fields is necessary, to submit data, to render in view the plugin makes the work
+            $this->localConf['formTypeClass'] = 'Bck\EntitiesBundle\Form\EntityImageRenderFormType';
+        }
+        $form = $this->createForm($this->localConf['formTypeClass'], $obj);
+
+        // Handle request
+        $form->handleRequest($request);
+
+        // Check if is submitted
+        if($form->isSubmitted()) {
+            $this->saveForm($form, $obj);
+            return $this->getResponse();
+        }
+
+        // Render form
+        return $this->render($this->localConf['templates']['edit'], array(
+            '_conf' => $this->templateConf,
+            '_form' => $form->createView()
+        ));
+    }
+
+    /**
+     * @Route("/bck/entities/entity-image/delete/{entity}/{id}",
+     *     name="_bck__entities__entity_image__delete",
+     *     defaults={"id" = null}
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $entity
+     * @param $id
+     * @return mixed
+     */
+    public function deleteLocalChildAction(Request $request, $entity, $id)
+    {
+        return parent::deleteChildAction($request, array($entity), $id);
+    }
+
+    /**
+     * @Route("/bck/entities/entity-image/data/{entity}",
+     *     name="_bck__entities__entity_image__data"
+     * )
+     *
+     * Overrides parent method
+     * @param Request $request
+     * @param $entity
+     * @param $responseType (not used in route, only for direct symfony calls,
+     *     determines the type of response [http, json, array])
+     * @return mixed
+     */
+    public function dataLocalChildAction(Request $request, $entity, $responseType = 'http')
+    {
+        return parent::dataChildAction($request, array($entity), $responseType);
+    }
+
+    /**
+     * New object
+     * @return object
+     */
+    protected function newObject()
+    {
+        $obj = parent::newObject();
+
+        $parent = reset($this->parentConf);
+
+        $parentId = ($parent['obj'] ?
+            $parent['obj']->getId() :
+            0 // Needed when parent is not defined like to get edit template
+        );
+
+        $obj->setDir(
+            $this->get('session')->get('_app.system')['filesRepository']
+            . 'entities/'
+            . $parentId
+            . '/img/'
+        );
+
+        $obj->setLiipImagineDataManager($this->container->get('liip_imagine.data.manager'));
+        $obj->setLiipImagineFilterManager($this->container->get('liip_imagine.filter.manager'));
+
+        return $obj;
+    }
+}

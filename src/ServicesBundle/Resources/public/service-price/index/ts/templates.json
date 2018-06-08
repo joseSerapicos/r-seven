@@ -1,9 +1,0 @@
-{
-  "service-availability-edit": "http://weboffice.whs.dev.com/app_dev.php/services/service-availability/edit/0",
-  "service-allot-edit": "http://weboffice.whs.dev.com/app_dev.php/services/service-allot/edit/0",
-  "service-price-edit": "http://weboffice.whs.dev.com/app_dev.php/services/service-price/edit/0",
-  "service-fixed-cost-edit": "http://weboffice.whs.dev.com/app_dev.php/services/service-fixed-cost/edit/0",
-  "service-supplement-edit": "http://weboffice.whs.dev.com/app_dev.php/services/service-supplement/edit/0",
-  "service-discount-edit": "http://weboffice.whs.dev.com/app_dev.php/services/service-discount/edit/0",
-  "service-bonus-edit": "http://weboffice.whs.dev.com/app_dev.php/services/service-bonus/edit/0"
-}

@@ -11,70 +11,45 @@ use AppBundle\Entity\LocalModuleMenu;
 class DefaultController extends Controller
 {
     /**
-     * @Route("/{store}",
-     *     name="_app__default__index",
-     *     defaults={"store" = null}
+     * @Route("/",
+     *     name="_app__default__index"
      * )
      *
-     * Starts and loads all necessary resources for app
-     * @param $store
+     * Redirect to the main page
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function indexAction($store)
+    public function indexAction()
     {
-        $userRequest = null;
+        // Check if user has been logged in
+        $userObj = $this->get('security.token_storage')->getToken()->getUser();
+        if(!$userObj || !($userObj instanceof User)) {
+            // Redirect user to login page
+            return $this->redirectToRoute('_login__default__index');
+        }
+
         $session = $this->get('session');
-
-        // Initialization has been done, only set store
-        if ($store && $session->get('_app.user')) {
-            // User request
-            $breadcrumb = $session->get('_app.breadcrumb');
-            if (is_array($breadcrumb) && (count($breadcrumb) > 0)) {
-                $userRequest = end($breadcrumb)['url']; // Redirect user to the same url
-            }
-
-            $this->get('app.service.app')->setStore($store);
-        }
-        // Login initialization
-        else {
-            // User request
-            $userRequest = $session->get('_tmp.user_request');
-
-            $this->get('app.service.app')->init($store);
-
-            // Set flash message
-            $store = $session->get('_app.store');
-            $storeName = ($store ? $session->get('_app.stores')[$store]['name'] : 'No stores available!');
-            $this->get('app.service.app')->addFlashMessage(
-                ($session->get('_app.user')['name']
-                    .'<br/>'.$storeName
-                    .'<br/>'.$session->get('_app.system')['name']
-                ),
-                'Welcome '.$session->get('_app.user')['username']
-            );
-        }
-
-        // Redirect user to original request
-        if(!empty($userRequest)) {
-            return $this->redirect($userRequest);
-        }
+        $isBckContext = $session->get('_app.isBckContext');
 
         // Redirect user to default page
-        return $this->redirectToRoute('_home__default__index');
+        $route = ($isBckContext ? '_bck__home__default__index' : '_home__default__index');
+        return $this->redirectToRoute($route);
     }
 
     /**
-     * @Route("/template/{bundle}/{controller}/{view}",
-     *     name="_app__default__template"
+     * @Route("/template/{bundle}/{controller}/{view}/{bundlePrefix}",
+     *     name="_app__default__template",
+     *     defaults={"bundlePrefix" = null}
      * )
      *
      * Action to render template.
      * @param $bundle
      * @param $controller
      * @param $view (view name or path to view, use '__' instead "/" to separate folders)
+     * @param $bundlePrefix
      * @return mixed
      */
-    public function templateAction($bundle, $controller, $view) {
+    public function templateAction($bundle, $controller, $view, $bundlePrefix = null) {
+        $bundlePrefix = ($bundlePrefix ? ucfirst($bundlePrefix) : '');
         $bundle = (ucfirst($bundle) . 'Bundle');
 
         // If view is out of AppBundle, then the controller name needs to be converted in CamelCase
@@ -82,6 +57,6 @@ class DefaultController extends Controller
 
         $view = ($view ? str_replace('__', '/', $view) : '');
 
-        return $this->render($bundle . ':' . $controller . ':' . $view . '.html.twig');
+        return $this->render($bundlePrefix . $bundle . ':' . $controller . ':' . $view . '.html.twig');
     }
 }

@@ -24,24 +24,26 @@ abstract class BaseEntityChildController extends BaseEntityController
     /**
      * Initialization. Set all basic configuration
      * @param Request $request
-     * @param $parents (Array of parent ids, each id is an entry in array. The order of the entries in array is the
+     * @param $parents (Mandatory parameter, but set as null by default to be compatible with the parent init function.
+     * Array of parent ids, each id is an entry in array. The order of the entries in array is the
      * same that is used when the parent routes are defined (in the child class, init method). If no array is provided,
      * the value of the parameter is used as id (it works for one parent only)
      * @return $this
      * @throws \Exception
      */
-    protected function initChild(Request $request, $parents)
+    public function init(Request $request, $parents = null)
     {
         // Set configuration only once
         if($this->isInitialized) { return $this; }
+
+        if (!$parents || !is_array($parents) || (count($parents) < 1) || (count($this->parentConf) < 1)) {
+            throw new \Exception('Configuration cannot be set, missing arguments (parent)!');
+        }
 
         /* Menu label (title) and ACL (selectedMenu) */
         $label = $this->getLabel();
         if ($label) { $this->templateConf['label'] = $label; }
 
-        if (count($this->parentConf) < 1) {
-            throw new \Exception('Configuration cannot be set, missing arguments (parent)!');
-        }
         if (empty($this->templateConf['selectedMenu']['route'])) {
             $this->templateConf['selectedMenu']['route'] = reset($this->parentConf)['route'];
         }
@@ -69,6 +71,15 @@ abstract class BaseEntityChildController extends BaseEntityController
 
         parent::init($request);
 
+        /* Response */
+        // In case of child entities, if parent storage is defined as "session",
+        // so children should not be marked as "storage" to be handled by template as regular database objects,
+        // then it will be shown as regular children on the parent form (DataBox, etc)
+        if ($this->flags['parentStorage'] == 'session') {
+            $this->responseConf['addObjectSessionStorageFlag'] = false;
+        }
+        /* /Response */
+
         // Search. Local conf search, force the parents criteria at this level,
         // "$templateConf" is not secure enough and this criteria don't should be send to template/view
         foreach ($this->parentConf as $parentKey => $parentConf) {
@@ -77,6 +88,31 @@ abstract class BaseEntityChildController extends BaseEntityController
                 'expr' => 'eq',
                 'value' => $parentConf['obj']
             );
+        }
+
+        return $this;
+    }
+    /** Allow bypass over child init classes override,
+     * so we can access the base init function without call intermediate override methods
+     * @param Request $request
+     * @param $parents
+     * @return BaseEntityController
+     */
+    protected function baseEntityChildInit(Request $request, $parents = null) {
+        return self::init($request, $parents);
+    }
+
+    /**
+     * Set flags.
+     * Set default values for flags. Flags are defined before init the component, so never override its values.
+     * @return $this
+     */
+    protected function setFlags()
+    {
+        parent::setFlags();
+
+        if (!isset($this->flags['parentStorage'])) {
+            $this->flags['parentStorage'] = 'db'; // Default parent storage
         }
 
         return $this;
@@ -102,11 +138,29 @@ abstract class BaseEntityChildController extends BaseEntityController
             if (count($routeSegments) < 2) {
                 throw new \Exception('Configuration cannot be set, missing arguments (parent route)!');
             }
-            $parentConf['bundle'] = $routeSegments[0]; // snake_case
-            $parentConf['Bundle'] = (HelperService::snakeCaseToCamelCase($routeSegments[0]) . 'Bundle'); // CamelCase
-            $parentConf['controller'] = HelperService::snakeCaseToCamelCase($routeSegments[1]); // CamelCase
+
+            $routeSegmentsIndex = 0;
+
+            $parentConf['BundlePrefix'] = '';
+            $parentConf['bundlePrefix'] = '';
+            if (in_array($routeSegments[0], array('bck', 'frt'))) {
+                $parentConf['BundlePrefix'] = HelperService::snakeCaseToCamelCase($routeSegments[$routeSegmentsIndex]);
+                $parentConf['bundlePrefix'] = $routeSegments[$routeSegmentsIndex];
+                $routeSegmentsIndex++;
+            }
+            $parentConf['bundle'] = $routeSegments[$routeSegmentsIndex]; // snake_case
+            $parentConf['Bundle'] = (HelperService::snakeCaseToCamelCase($routeSegments[$routeSegmentsIndex]) . 'Bundle'); // CamelCase
+            // (CamelCase)
+            $parentConf['BundleNamespace'] = ($parentConf['BundlePrefix'].$parentConf['Bundle']);
+            // (CamelCase separated with '\')
+            $parentConf['BundlePath'] = (
+                (empty($parentConf['BundlePrefix']) ? '' : ($parentConf['BundlePrefix'] . '\\'))
+                . $parentConf['Bundle']
+            );
+            $routeSegmentsIndex++;
+            $parentConf['controller'] = HelperService::snakeCaseToCamelCase($routeSegments[$routeSegmentsIndex]); // CamelCase
             $parentConf['entity'] = $parentConf['controller']; // CamelCase
-            $parentConf['entityClass'] = ($parentConf['Bundle'].'\Entity\\'.$parentConf['entity']);
+            $parentConf['entityClass'] = ($parentConf['BundlePath'].'\Entity\\'.$parentConf['entity']);
             $parentConf['entityTable'] = ((($parentConf['bundle'] == 'sysadmin')
                     ? 'app_' : '') . lcfirst($parentConf['entity'])); // lowerCamelCase
             $parentConf['entityDataBase'] = (($parentConf['bundle'] == 'sysadmin')
@@ -136,11 +190,12 @@ abstract class BaseEntityChildController extends BaseEntityController
     public function indexChildAction(Request $request, $parents)
     {
         // Set configuration
-        $this->initChild($request, $parents);
+        $this->init($request, $parents);
 
         // Config response
         $this->responseConf['hasConf'] = true;
         $this->responseConf['hasObjects'] = true;
+        $this->responseConf['type'] = "ARRAY";
         return $this->render($this->localConf['templatesPath'].'index.html.twig', $this->getResponse());
     }
 
@@ -161,14 +216,15 @@ abstract class BaseEntityChildController extends BaseEntityController
         // Set configuration
         $session = $this->get('session');
         $loggedUser_id = $session->get('_app.user')[$identifier];
-        $this->initChild($request, array($loggedUser_id));
-        
+        $this->init($request, array($loggedUser_id));
+
         // Update breadcrumb
         $this->updateBreadcrumb($request);
 
         // Config response
         $this->responseConf['hasConf'] = true;
         $this->responseConf['hasObjects'] = true;
+        $this->responseConf['type'] = "ARRAY";
         return $this->render($this->localConf['templatesPath'].'profile.html.twig', $this->getResponse());
     }
 
@@ -183,7 +239,7 @@ abstract class BaseEntityChildController extends BaseEntityController
     public function newChildAction(Request $request, $parents)
     {
         // Set configuration
-        $this->initChild($request, $parents);
+        $this->init($request, $parents);
         return parent::newAction($request);
     }
 
@@ -199,7 +255,7 @@ abstract class BaseEntityChildController extends BaseEntityController
     public function getChildAction(Request $request, $parents, $id)
     {
         // Set configuration
-        $this->initChild($request, $parents);
+        $this->init($request, $parents);
         return parent::getAction($request, $id);
     }
 
@@ -214,7 +270,7 @@ abstract class BaseEntityChildController extends BaseEntityController
     public function choicesChildAction(Request $request, $parents)
     {
         // Set configuration
-        $this->initChild($request, $parents);
+        $this->init($request, $parents);
         return parent::choicesAction($request);
     }
 
@@ -231,7 +287,7 @@ abstract class BaseEntityChildController extends BaseEntityController
     {
         // Set configuration
         $this->flags['hasForm'] = true;
-        $this->initChild($request, $parents);
+        $this->init($request, $parents);
         return parent::editAction($request, $id);
     }
 
@@ -247,7 +303,7 @@ abstract class BaseEntityChildController extends BaseEntityController
     public function cancelChildAction(Request $request, $parents, $id)
     {
         // Set configuration
-        $this->initChild($request, $parents);
+        $this->init($request, $parents);
 
         return parent::cancelAction($request, $id);
     }
@@ -264,7 +320,7 @@ abstract class BaseEntityChildController extends BaseEntityController
     public function deleteChildAction(Request $request, $parents, $id)
     {
         // Set configuration
-        $this->initChild($request, $parents);
+        $this->init($request, $parents);
 
         return parent::deleteAction($request, $id);
     }
@@ -281,7 +337,7 @@ abstract class BaseEntityChildController extends BaseEntityController
     public function detailChildAction(Request $request, $parents, $id)
     {
         // Set configuration
-        $this->initChild($request, $parents);
+        $this->init($request, $parents);
 
         return parent::detailAction($request, $id);
     }
@@ -299,7 +355,7 @@ abstract class BaseEntityChildController extends BaseEntityController
     public function orderChildAction(Request $request, $parents, $id, $type)
     {
         // Set configuration
-        $this->initChild($request, $parents);
+        $this->init($request, $parents);
         return parent::orderAction($request, $id, $type);
     }
 
@@ -317,7 +373,7 @@ abstract class BaseEntityChildController extends BaseEntityController
     public function dataChildAction(Request $request, $parents, $responseType = 'http')
     {
         // Set configuration
-        $this->initChild($request, $parents);
+        $this->init($request, $parents);
         return parent::dataAction($request, $responseType);
     }
 
@@ -327,14 +383,16 @@ abstract class BaseEntityChildController extends BaseEntityController
      * Action to get configuration
      * @param Request $request
      * @param $parents
+     * @param $id (return the target id object with the conf, it's used to avoid to make another server request
+     *     to get the object when we need the object with the conf, like in flat forms, entity detail, etc.)
      * @return mixed
      * @throws \Exception
      */
-    public function confChildAction(Request $request, $parents)
+    public function confChildAction(Request $request, $parents, $id = null)
     {
         // Set configuration
-        $this->initChild($request, $parents);
-        return parent::confAction($request);
+        $this->init($request, $parents);
+        return parent::confAction($request, $id);
     }
 
     /**
@@ -370,17 +428,10 @@ abstract class BaseEntityChildController extends BaseEntityController
             // Try to get from session storage (alternative)
             if(empty($obj)) {
                 // If parent is not in database, so all objects have to be in session
+                $this->flags['parentStorage'] = 'session';
                 $this->flags['storage'] = 'session';
                 $this->flags['parent'] = $parentId;
                 $obj = $this->getObjectFromSS($parentId);
-
-                //var_dump($parentId);
-                //$this->container->get('app.service.session_storage')->debug();
-
-                // Parent defined storage as session, so objects do not be marked as session storage,
-                // this child objects are like a database objects for parent,
-                // generally this occurs during parent definition like wizard forms
-                $this->responseConf['addObjectSessionStorageFlag'] = false;
             }
         }
 
@@ -396,20 +447,19 @@ abstract class BaseEntityChildController extends BaseEntityController
      * @return null
      */
     protected function getObjectsBySearch() {
-        // Try get from database
-        $objects = parent::getObjectsBySearch();
-
         // Try get from session storage
-        if (empty($objects)) {
+        if ($this->flags['storage'] == 'session') {
             // Get parent id
             $parentConf = $this->getParentConf();
             $parentId = (!empty($parentConf['obj']) ? $parentConf['obj']->getId() : null);
 
             if ($parentId) {
-                $objects = $this->getChildObjectsFromSS($parentId, $this->localConf['entity'], true);
+                return $this->getChildObjectsFromSS($parentId, $this->localConf['entity'], true);
             }
         }
-        return $objects;
+
+        // Try get from database
+        return parent::getObjectsBySearch();
     }
 
     /**
@@ -420,7 +470,7 @@ abstract class BaseEntityChildController extends BaseEntityController
     protected function getParentRepositoryService($parentKey = null)
     {
         $parentConf = $this->getParentConf($parentKey);
-        return $this->getRepositoryService($parentConf['entity'], $parentConf['Bundle']);
+        return $this->getRepositoryService($parentConf['entity'], $parentConf['Bundle'], $parentConf['BundlePrefix']);
     }
 
     /**

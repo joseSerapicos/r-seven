@@ -101,6 +101,10 @@ class ComposerStaticInitdea5e600c850af581d53037a1c45eafa
         array (
             'Composer\\CaBundle\\' => 18,
         ),
+        'B' => 
+        array (
+            'Braintree\\' => 10,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -288,6 +292,10 @@ class ComposerStaticInitdea5e600c850af581d53037a1c45eafa
         array (
             0 => __DIR__ . '/..' . '/composer/ca-bundle/src',
         ),
+        'Braintree\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/braintree/braintree_php/lib/Braintree',
+        ),
     );
 
     public static $fallbackDirsPsr4 = array (
@@ -340,6 +348,13 @@ class ComposerStaticInitdea5e600c850af581d53037a1c45eafa
             'Doctrine\\Common\\Collections\\' => 
             array (
                 0 => __DIR__ . '/..' . '/doctrine/collections/lib',
+            ),
+        ),
+        'B' => 
+        array (
+            'Braintree' => 
+            array (
+                0 => __DIR__ . '/..' . '/braintree/braintree_php/lib',
             ),
         ),
         'A' => 

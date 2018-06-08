@@ -1,6 +1,5 @@
 import {Component, ElementRef, Inject, Optional, Injector, Renderer} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Helper} from '../../ts/helper';
 import {FormService} from './form.service';
 import {FormExtensionComponent, FormProvider} from './form.extension-component';
 import {DataService} from "../../ts/data-service/data.service";
@@ -10,10 +9,9 @@ export {FormProvider};
 
 
 // Component
-var templateUrl = Helper.getGlobalVar('templateUrl');
 @Component({
     selector: '.js_form',
-    templateUrl: templateUrl
+    template: '' // Define template in child component
 })
 export class FormComponent extends FormExtensionComponent
 {
