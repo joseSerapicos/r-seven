@@ -37791,7 +37791,7 @@ var NgClass = (function () {
             this._keyValueDiffer = null;
             this._rawClass = typeof v === 'string' ? v.split(/\s+/) : v;
             if (this._rawClass) {
-                if (Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_29" /* ɵisListLikeIterable */])(this._rawClass)) {
+                if (Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_30" /* ɵisListLikeIterable */])(this._rawClass)) {
                     this._iterableDiffer = this._iterableDiffers.find(this._rawClass).create();
                 }
                 else {
@@ -37867,7 +37867,7 @@ var NgClass = (function () {
                 _this._toggleClass(record.item, true);
             }
             else {
-                throw new Error("NgClass can only toggle CSS classes expressed as strings, got " + Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_44" /* ɵstringify */])(record.item));
+                throw new Error("NgClass can only toggle CSS classes expressed as strings, got " + Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_45" /* ɵstringify */])(record.item));
             }
         });
         changes.forEachRemovedItem(function (record) { return _this._toggleClass(record.item, false); });
@@ -38065,7 +38065,7 @@ var NgComponentOutlet = (function () {
     ];
     /** @nocollapse */
     NgComponentOutlet.ctorParameters = function () { return [
-        { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_5" /* ViewContainerRef */], },
+        { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* ViewContainerRef */], },
     ]; };
     NgComponentOutlet.propDecorators = {
         "ngComponentOutlet": [{ type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Input */] },],
@@ -38218,7 +38218,7 @@ var NgForOf = (function () {
          * @return {?}
          */
         function (fn) {
-            if (Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_12" /* isDevMode */])() && fn != null && typeof fn !== 'function') {
+            if (Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_13" /* isDevMode */])() && fn != null && typeof fn !== 'function') {
                 // TODO(vicb): use a log service once there is a public one available
                 if (/** @type {?} */ (console) && /** @type {?} */ (console.warn)) {
                     console.warn("trackBy must be a function, but received " + JSON.stringify(fn) + ". " +
@@ -38339,7 +38339,7 @@ var NgForOf = (function () {
     ];
     /** @nocollapse */
     NgForOf.ctorParameters = function () { return [
-        { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_5" /* ViewContainerRef */], },
+        { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* ViewContainerRef */], },
         { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_1" /* TemplateRef */], },
         { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["A" /* IterableDiffers */], },
     ]; };
@@ -38546,7 +38546,7 @@ var NgIf = (function () {
     ];
     /** @nocollapse */
     NgIf.ctorParameters = function () { return [
-        { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_5" /* ViewContainerRef */], },
+        { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* ViewContainerRef */], },
         { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_1" /* TemplateRef */], },
     ]; };
     NgIf.propDecorators = {
@@ -38802,7 +38802,7 @@ var NgSwitchCase = (function () {
     ];
     /** @nocollapse */
     NgSwitchCase.ctorParameters = function () { return [
-        { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_5" /* ViewContainerRef */], },
+        { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* ViewContainerRef */], },
         { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_1" /* TemplateRef */], },
         { type: NgSwitch, decorators: [{ type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["u" /* Host */] },] },
     ]; };
@@ -38843,7 +38843,7 @@ var NgSwitchDefault = (function () {
     ];
     /** @nocollapse */
     NgSwitchDefault.ctorParameters = function () { return [
-        { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_5" /* ViewContainerRef */], },
+        { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* ViewContainerRef */], },
         { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_1" /* TemplateRef */], },
         { type: NgSwitch, decorators: [{ type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["u" /* Host */] },] },
     ]; };
@@ -38999,7 +38999,7 @@ var NgPluralCase = (function () {
     NgPluralCase.ctorParameters = function () { return [
         { type: undefined, decorators: [{ type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["g" /* Attribute */], args: ['ngPluralCase',] },] },
         { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_1" /* TemplateRef */], },
-        { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_5" /* ViewContainerRef */], },
+        { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* ViewContainerRef */], },
         { type: NgPlural, decorators: [{ type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["u" /* Host */] },] },
     ]; };
     return NgPluralCase;
@@ -39250,7 +39250,7 @@ var NgTemplateOutlet = (function () {
     ];
     /** @nocollapse */
     NgTemplateOutlet.ctorParameters = function () { return [
-        { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_5" /* ViewContainerRef */], },
+        { type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* ViewContainerRef */], },
     ]; };
     NgTemplateOutlet.propDecorators = {
         "ngTemplateOutletContext": [{ type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Input */] },],
@@ -39945,7 +39945,7 @@ function convertTimezoneToLocal(date, timezone, reverse) {
  * @return {?}
  */
 function invalidPipeArgumentError(type, value) {
-    return Error("InvalidPipeArgument: '" + value + "' for pipe '" + Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_44" /* ɵstringify */])(type) + "'");
+    return Error("InvalidPipeArgument: '" + value + "' for pipe '" + Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_45" /* ɵstringify */])(type) + "'");
 }
 
 /**
@@ -41325,7 +41325,7 @@ var AsyncPipe = (function () {
             return this._latestReturnedValue;
         }
         this._latestReturnedValue = this._latestValue;
-        return __WEBPACK_IMPORTED_MODULE_0__angular_core__["_7" /* WrappedValue */].wrap(this._latestValue);
+        return __WEBPACK_IMPORTED_MODULE_0__angular_core__["_8" /* WrappedValue */].wrap(this._latestValue);
     };
     /**
      * @param {?} obj
@@ -41350,10 +41350,10 @@ var AsyncPipe = (function () {
      * @return {?}
      */
     function (obj) {
-        if (Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_31" /* ɵisPromise */])(obj)) {
+        if (Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_32" /* ɵisPromise */])(obj)) {
             return _promiseStrategy;
         }
-        if (Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_30" /* ɵisObservable */])(obj)) {
+        if (Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_31" /* ɵisObservable */])(obj)) {
             return _observableStrategy;
         }
         throw invalidPipeArgumentError(AsyncPipe, obj);
@@ -76875,9 +76875,9 @@ var Extractor = (function () {
 /* unused harmony export getPlatform */
 /* unused harmony export PlatformRef */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return ApplicationRef; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_9", function() { return enableProdMode; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_12", function() { return isDevMode; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_8", function() { return createPlatformFactory; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_10", function() { return enableProdMode; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_13", function() { return isDevMode; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_9", function() { return createPlatformFactory; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "H", function() { return NgProbeToken; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return APP_ID; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "L", function() { return PACKAGE_ROOT_URL; });
@@ -76889,10 +76889,10 @@ var Extractor = (function () {
 /* unused harmony export DebugElement */
 /* unused harmony export DebugNode */
 /* unused harmony export asNativeElements */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_11", function() { return getDebugNode; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_12", function() { return getDebugNode; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_2", function() { return Testability; });
 /* unused harmony export TestabilityRegistry */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_14", function() { return setTestabilityGetter; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_15", function() { return setTestabilityGetter; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Z", function() { return TRANSLATIONS; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_0", function() { return TRANSLATIONS_FORMAT; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "C", function() { return LOCALE_ID; });
@@ -76913,7 +76913,7 @@ var Extractor = (function () {
 /* unused harmony export ContentChildren */
 /* unused harmony export Query */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_4", function() { return ViewChild; });
-/* unused harmony export ViewChildren */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_5", function() { return ViewChildren; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return Component; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "q", function() { return Directive; });
 /* unused harmony export HostBinding */
@@ -76924,10 +76924,10 @@ var Extractor = (function () {
 /* unused harmony export CUSTOM_ELEMENTS_SCHEMA */
 /* unused harmony export NO_ERRORS_SCHEMA */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "E", function() { return NgModule; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_6", function() { return ViewEncapsulation; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_7", function() { return ViewEncapsulation; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_3", function() { return Version; });
 /* unused harmony export VERSION */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_10", function() { return forwardRef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_11", function() { return forwardRef; });
 /* unused harmony export resolveForwardRef */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "y", function() { return Injector; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Q", function() { return ReflectiveInjector; });
@@ -76963,7 +76963,7 @@ var Extractor = (function () {
 /* unused harmony export SystemJsNgModuleLoader */
 /* unused harmony export SystemJsNgModuleLoaderConfig */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_1", function() { return TemplateRef; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_5", function() { return ViewContainerRef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_6", function() { return ViewContainerRef; });
 /* unused harmony export EmbeddedViewRef */
 /* unused harmony export ViewRef */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return ChangeDetectionStrategy; });
@@ -76972,55 +76972,55 @@ var Extractor = (function () {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "A", function() { return IterableDiffers; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "B", function() { return KeyValueDiffers; });
 /* unused harmony export SimpleChange */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_7", function() { return WrappedValue; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_13", function() { return platformCore; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_8", function() { return WrappedValue; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_14", function() { return platformCore; });
 /* unused harmony export ɵALLOW_MULTIPLE_PLATFORMS */
 /* unused harmony export ɵAPP_ID_RANDOM_PROVIDER */
 /* unused harmony export ɵValueUnwrapper */
 /* unused harmony export ɵdevModeEqual */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_29", function() { return isListLikeIterable; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_30", function() { return isListLikeIterable; });
 /* unused harmony export ɵChangeDetectorStatus */
 /* unused harmony export ɵisDefaultChangeDetectionStrategy */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_16", function() { return Console; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_17", function() { return Console; });
 /* unused harmony export ɵComponentFactory */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_15", function() { return CodegenComponentFactoryResolver; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_19", function() { return ReflectionCapabilities; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_16", function() { return CodegenComponentFactoryResolver; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_20", function() { return ReflectionCapabilities; });
 /* unused harmony export ɵRenderDebugInfo */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_26", function() { return _global; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_32", function() { return looseIdentical; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_44", function() { return stringify; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_27", function() { return _global; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_33", function() { return looseIdentical; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_45", function() { return stringify; });
 /* unused harmony export ɵmakeDecorator */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_30", function() { return isObservable; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_31", function() { return isPromise; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_31", function() { return isObservable; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_32", function() { return isPromise; });
 /* unused harmony export ɵclearProviderOverrides */
 /* unused harmony export ɵoverrideProvider */
 /* unused harmony export ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_43", function() { return registerModuleFactory; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_17", function() { return EMPTY_ARRAY; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_18", function() { return EMPTY_MAP; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_20", function() { return anchorDef; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_21", function() { return createComponentFactory; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_22", function() { return createNgModuleFactory; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_23", function() { return createRendererType2; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_24", function() { return directiveDef; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_25", function() { return elementDef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_44", function() { return registerModuleFactory; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_18", function() { return EMPTY_ARRAY; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_19", function() { return EMPTY_MAP; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_21", function() { return anchorDef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_22", function() { return createComponentFactory; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_23", function() { return createNgModuleFactory; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_24", function() { return createRendererType2; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_25", function() { return directiveDef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_26", function() { return elementDef; });
 /* unused harmony export ɵelementEventFullName */
 /* unused harmony export ɵgetComponentViewDefinitionFactory */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_27", function() { return inlineInterpolate; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_28", function() { return interpolate; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_33", function() { return moduleDef; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_34", function() { return moduleProvideDef; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_35", function() { return ngContentDef; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_36", function() { return nodeValue; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_38", function() { return pipeDef; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_41", function() { return providerDef; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_37", function() { return pureArrayDef; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_39", function() { return pureObjectDef; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_40", function() { return purePipeDef; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_42", function() { return queryDef; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_45", function() { return textDef; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_46", function() { return unwrapValue; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_47", function() { return viewDef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_28", function() { return inlineInterpolate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_29", function() { return interpolate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_34", function() { return moduleDef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_35", function() { return moduleProvideDef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_36", function() { return ngContentDef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_37", function() { return nodeValue; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_39", function() { return pipeDef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_42", function() { return providerDef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_38", function() { return pureArrayDef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_40", function() { return pureObjectDef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_41", function() { return purePipeDef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_43", function() { return queryDef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_46", function() { return textDef; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_47", function() { return unwrapValue; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_48", function() { return viewDef; });
 /* unused harmony export AUTO_STYLE */
 /* unused harmony export trigger */
 /* unused harmony export animate */
@@ -83501,7 +83501,7 @@ var SystemJsNgModuleLoader = (function () {
         if (exportName === undefined) {
             exportName = 'default';
         }
-        return __webpack_require__("../../../../../src/HomeBundle/Resources/public/default/index/ts/$$_lazy_route_resource lazy recursive")(module)
+        return __webpack_require__("../../../../../src/Bck/HomeBundle/Resources/public/default/index/ts/$$_lazy_route_resource lazy recursive")(module)
             .then(function (module) { return module[exportName]; })
             .then(function (type) { return checkNotEmpty(type, module, exportName); })
             .then(function (type) { return _this._compiler.compileModuleAsync(type); });
@@ -83521,7 +83521,7 @@ var SystemJsNgModuleLoader = (function () {
             exportName = 'default';
             factoryClassSuffix = '';
         }
-        return __webpack_require__("../../../../../src/HomeBundle/Resources/public/default/index/ts/$$_lazy_route_resource lazy recursive")(this._config.factoryPathPrefix + module + this._config.factoryPathSuffix)
+        return __webpack_require__("../../../../../src/Bck/HomeBundle/Resources/public/default/index/ts/$$_lazy_route_resource lazy recursive")(this._config.factoryPathPrefix + module + this._config.factoryPathSuffix)
             .then(function (module) { return module[exportName + factoryClassSuffix]; })
             .then(function (factory) { return checkNotEmpty(factory, module, exportName); });
     };
@@ -94352,8 +94352,8 @@ function isPresent(o) {
  * @return {?}
  */
 function toObservable(r) {
-    var /** @type {?} */ obs = Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_31" /* ɵisPromise */])(r) ? Object(__WEBPACK_IMPORTED_MODULE_3_rxjs_observable_fromPromise__["a" /* fromPromise */])(r) : r;
-    if (!(Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_30" /* ɵisObservable */])(obs))) {
+    var /** @type {?} */ obs = Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_32" /* ɵisPromise */])(r) ? Object(__WEBPACK_IMPORTED_MODULE_3_rxjs_observable_fromPromise__["a" /* fromPromise */])(r) : r;
+    if (!(Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_31" /* ɵisObservable */])(obs))) {
         throw new Error("Expected validator to return Promise or Observable.");
     }
     return obs;
@@ -94428,7 +94428,7 @@ var NG_VALUE_ACCESSOR = new __WEBPACK_IMPORTED_MODULE_1__angular_core__["x" /* I
  */
 var CHECKBOX_VALUE_ACCESSOR = {
     provide: NG_VALUE_ACCESSOR,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return CheckboxControlValueAccessor; }),
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return CheckboxControlValueAccessor; }),
     multi: true,
 };
 /**
@@ -94516,7 +94516,7 @@ var CheckboxControlValueAccessor = (function () {
  */
 var DEFAULT_VALUE_ACCESSOR = {
     provide: NG_VALUE_ACCESSOR,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return DefaultValueAccessor; }),
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return DefaultValueAccessor; }),
     multi: true
 };
 /**
@@ -94707,7 +94707,7 @@ function normalizeAsyncValidator(validator) {
  */
 var NUMBER_VALUE_ACCESSOR = {
     provide: NG_VALUE_ACCESSOR,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return NumberValueAccessor; }),
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return NumberValueAccessor; }),
     multi: true
 };
 /**
@@ -94867,7 +94867,7 @@ var NgControl = (function (_super) {
  */
 var RADIO_VALUE_ACCESSOR = {
     provide: NG_VALUE_ACCESSOR,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return RadioControlValueAccessor; }),
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return RadioControlValueAccessor; }),
     multi: true
 };
 /**
@@ -95115,7 +95115,7 @@ var RadioControlValueAccessor = (function () {
  */
 var RANGE_VALUE_ACCESSOR = {
     provide: NG_VALUE_ACCESSOR,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return RangeValueAccessor; }),
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return RangeValueAccessor; }),
     multi: true
 };
 /**
@@ -95208,7 +95208,7 @@ var RangeValueAccessor = (function () {
  */
 var SELECT_VALUE_ACCESSOR = {
     provide: NG_VALUE_ACCESSOR,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return SelectControlValueAccessor; }),
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return SelectControlValueAccessor; }),
     multi: true
 };
 /**
@@ -95307,7 +95307,7 @@ var SelectControlValueAccessor = (function () {
         this._idCounter = 0;
         this.onChange = function (_) { };
         this.onTouched = function () { };
-        this._compareWith = __WEBPACK_IMPORTED_MODULE_1__angular_core__["_32" /* ɵlooseIdentical */];
+        this._compareWith = __WEBPACK_IMPORTED_MODULE_1__angular_core__["_33" /* ɵlooseIdentical */];
     }
     Object.defineProperty(SelectControlValueAccessor.prototype, "compareWith", {
         set: /**
@@ -95536,7 +95536,7 @@ var NgSelectOption = (function () {
  */
 var SELECT_MULTIPLE_VALUE_ACCESSOR = {
     provide: NG_VALUE_ACCESSOR,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return SelectMultipleControlValueAccessor; }),
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return SelectMultipleControlValueAccessor; }),
     multi: true
 };
 /**
@@ -95604,7 +95604,7 @@ var SelectMultipleControlValueAccessor = (function () {
         this._idCounter = 0;
         this.onChange = function (_) { };
         this.onTouched = function () { };
-        this._compareWith = __WEBPACK_IMPORTED_MODULE_1__angular_core__["_32" /* ɵlooseIdentical */];
+        this._compareWith = __WEBPACK_IMPORTED_MODULE_1__angular_core__["_33" /* ɵlooseIdentical */];
     }
     Object.defineProperty(SelectMultipleControlValueAccessor.prototype, "compareWith", {
         set: /**
@@ -96058,7 +96058,7 @@ function isPropertyUpdated(changes, viewModel) {
     var /** @type {?} */ change = changes['model'];
     if (change.isFirstChange())
         return true;
-    return !Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_32" /* ɵlooseIdentical */])(viewModel, change.currentValue);
+    return !Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_33" /* ɵlooseIdentical */])(viewModel, change.currentValue);
 }
 var BUILTIN_ACCESSORS = [
     CheckboxControlValueAccessor,
@@ -99142,7 +99142,7 @@ var FormArray = (function (_super) {
  */
 var formDirectiveProvider = {
     provide: ControlContainer,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return NgForm; })
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return NgForm; })
 };
 var resolvedPromise = Promise.resolve(null);
 /**
@@ -99513,7 +99513,7 @@ var TemplateDrivenErrors = (function () {
  */
 var modelGroupProvider = {
     provide: ControlContainer,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return NgModelGroup; })
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return NgModelGroup; })
 };
 /**
  * \@whatItDoes Creates and binds a {\@link FormGroup} instance to a DOM element.
@@ -99591,7 +99591,7 @@ var NgModelGroup = (function (_super) {
  */
 var formControlBinding = {
     provide: NgControl,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return NgModel; })
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return NgModel; })
 };
 /**
  * `ngModel` forces an additional change detection run when its inputs change:
@@ -99983,7 +99983,7 @@ var ReactiveErrors = (function () {
  */
 var formControlBinding$1 = {
     provide: NgControl,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return FormControlDirective; })
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return FormControlDirective; })
 };
 /**
  * \@whatItDoes Syncs a standalone {\@link FormControl} instance to a form control element.
@@ -100155,7 +100155,7 @@ var FormControlDirective = (function (_super) {
  */
 var formDirectiveProvider$1 = {
     provide: ControlContainer,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return FormGroupDirective; })
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return FormGroupDirective; })
 };
 /**
  * \@whatItDoes Binds an existing {\@link FormGroup} to a DOM element.
@@ -100479,7 +100479,7 @@ var FormGroupDirective = (function (_super) {
  */
 var formGroupNameProvider = {
     provide: ControlContainer,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return FormGroupName; })
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return FormGroupName; })
 };
 /**
  * \@whatItDoes Syncs a nested {\@link FormGroup} to a DOM element.
@@ -100564,7 +100564,7 @@ var FormGroupName = (function (_super) {
 }(AbstractFormGroupDirective));
 var formArrayNameProvider = {
     provide: ControlContainer,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return FormArrayName; })
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return FormArrayName; })
 };
 /**
  * \@whatItDoes Syncs a nested {\@link FormArray} to a DOM element.
@@ -100734,7 +100734,7 @@ function _hasInvalidParent(parent) {
  */
 var controlNameBinding = {
     provide: NgControl,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return FormControlName; })
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return FormControlName; })
 };
 /**
  * \@whatItDoes Syncs a {\@link FormControl} in an existing {\@link FormGroup} to a form control
@@ -100969,12 +100969,12 @@ var FormControlName = (function (_super) {
 
 var REQUIRED_VALIDATOR = {
     provide: NG_VALIDATORS,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return RequiredValidator; }),
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return RequiredValidator; }),
     multi: true
 };
 var CHECKBOX_REQUIRED_VALIDATOR = {
     provide: NG_VALIDATORS,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return CheckboxRequiredValidator; }),
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return CheckboxRequiredValidator; }),
     multi: true
 };
 /**
@@ -101087,7 +101087,7 @@ var CheckboxRequiredValidator = (function (_super) {
  */
 var EMAIL_VALIDATOR = {
     provide: NG_VALIDATORS,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return EmailValidator; }),
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return EmailValidator; }),
     multi: true
 };
 /**
@@ -101172,7 +101172,7 @@ var EmailValidator = (function () {
  */
 var MIN_LENGTH_VALIDATOR = {
     provide: NG_VALIDATORS,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return MinLengthValidator; }),
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return MinLengthValidator; }),
     multi: true
 };
 /**
@@ -101251,7 +101251,7 @@ var MinLengthValidator = (function () {
  */
 var MAX_LENGTH_VALIDATOR = {
     provide: NG_VALIDATORS,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return MaxLengthValidator; }),
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return MaxLengthValidator; }),
     multi: true
 };
 /**
@@ -101324,7 +101324,7 @@ var MaxLengthValidator = (function () {
 }());
 var PATTERN_VALIDATOR = {
     provide: NG_VALIDATORS,
-    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_10" /* forwardRef */])(function () { return PatternValidator; }),
+    useExisting: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* forwardRef */])(function () { return PatternValidator; }),
     multi: true
 };
 /**
@@ -101833,7 +101833,7 @@ var builtinExternalReferences = createBuiltinExternalReferencesMap();
 var JitReflector = (function () {
     function JitReflector() {
         this.builtinExternalReferences = new Map();
-        this.reflectionCapabilities = new __WEBPACK_IMPORTED_MODULE_1__angular_core__["_19" /* ɵReflectionCapabilities */]();
+        this.reflectionCapabilities = new __WEBPACK_IMPORTED_MODULE_1__angular_core__["_20" /* ɵReflectionCapabilities */]();
     }
     /**
      * @param {?} type
@@ -101852,10 +101852,10 @@ var JitReflector = (function () {
             return scheme ? moduleId : "package:" + moduleId + MODULE_SUFFIX;
         }
         else if (moduleId !== null && moduleId !== void 0) {
-            throw Object(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["A" /* syntaxError */])("moduleId should be a string in \"" + Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_44" /* ɵstringify */])(type) + "\". See https://goo.gl/wIDDiL for more information.\n" +
+            throw Object(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["A" /* syntaxError */])("moduleId should be a string in \"" + Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_45" /* ɵstringify */])(type) + "\". See https://goo.gl/wIDDiL for more information.\n" +
                 "If you're using Webpack you should inline the template and the styles, see https://goo.gl/X2J8zc.");
         }
-        return "./" + Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_44" /* ɵstringify */])(type);
+        return "./" + Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_45" /* ɵstringify */])(type);
     };
     /**
      * @param {?} typeOrFunc
@@ -101924,46 +101924,46 @@ function createBuiltinExternalReferencesMap() {
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].ANALYZE_FOR_ENTRY_COMPONENTS, __WEBPACK_IMPORTED_MODULE_1__angular_core__["a" /* ANALYZE_FOR_ENTRY_COMPONENTS */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].ElementRef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["r" /* ElementRef */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].NgModuleRef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["G" /* NgModuleRef */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].ViewContainerRef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_5" /* ViewContainerRef */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].ViewContainerRef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_6" /* ViewContainerRef */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].ChangeDetectorRef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["j" /* ChangeDetectorRef */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].QueryList, __WEBPACK_IMPORTED_MODULE_1__angular_core__["P" /* QueryList */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].TemplateRef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_1" /* TemplateRef */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].CodegenComponentFactoryResolver, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_15" /* ɵCodegenComponentFactoryResolver */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].CodegenComponentFactoryResolver, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_16" /* ɵCodegenComponentFactoryResolver */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].ComponentFactoryResolver, __WEBPACK_IMPORTED_MODULE_1__angular_core__["o" /* ComponentFactoryResolver */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].ComponentFactory, __WEBPACK_IMPORTED_MODULE_1__angular_core__["n" /* ComponentFactory */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].ComponentRef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["p" /* ComponentRef */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].NgModuleFactory, __WEBPACK_IMPORTED_MODULE_1__angular_core__["F" /* NgModuleFactory */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].createModuleFactory, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_22" /* ɵcmf */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].moduleDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_33" /* ɵmod */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].moduleProviderDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_34" /* ɵmpd */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].RegisterModuleFactoryFn, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_43" /* ɵregisterModuleFactory */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].createModuleFactory, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_23" /* ɵcmf */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].moduleDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_34" /* ɵmod */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].moduleProviderDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_35" /* ɵmpd */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].RegisterModuleFactoryFn, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_44" /* ɵregisterModuleFactory */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].Injector, __WEBPACK_IMPORTED_MODULE_1__angular_core__["y" /* Injector */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].ViewEncapsulation, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_6" /* ViewEncapsulation */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].ViewEncapsulation, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_7" /* ViewEncapsulation */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].ChangeDetectionStrategy, __WEBPACK_IMPORTED_MODULE_1__angular_core__["i" /* ChangeDetectionStrategy */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].SecurityContext, __WEBPACK_IMPORTED_MODULE_1__angular_core__["W" /* SecurityContext */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].LOCALE_ID, __WEBPACK_IMPORTED_MODULE_1__angular_core__["C" /* LOCALE_ID */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].TRANSLATIONS_FORMAT, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_0" /* TRANSLATIONS_FORMAT */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].inlineInterpolate, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_27" /* ɵinlineInterpolate */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].interpolate, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_28" /* ɵinterpolate */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].EMPTY_ARRAY, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_17" /* ɵEMPTY_ARRAY */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].EMPTY_MAP, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_18" /* ɵEMPTY_MAP */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].inlineInterpolate, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_28" /* ɵinlineInterpolate */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].interpolate, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_29" /* ɵinterpolate */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].EMPTY_ARRAY, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_18" /* ɵEMPTY_ARRAY */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].EMPTY_MAP, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_19" /* ɵEMPTY_MAP */]);
     map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].Renderer, __WEBPACK_IMPORTED_MODULE_1__angular_core__["R" /* Renderer */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].viewDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_47" /* ɵvid */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].elementDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_25" /* ɵeld */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].anchorDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_20" /* ɵand */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].textDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_45" /* ɵted */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].directiveDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_24" /* ɵdid */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].providerDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_41" /* ɵprd */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].queryDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_42" /* ɵqud */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].pureArrayDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_37" /* ɵpad */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].pureObjectDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_39" /* ɵpod */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].purePipeDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_40" /* ɵppd */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].pipeDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_38" /* ɵpid */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].nodeValue, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_36" /* ɵnov */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].ngContentDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_35" /* ɵncd */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].unwrapValue, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_46" /* ɵunv */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].createRendererType2, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_23" /* ɵcrt */]);
-    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].createComponentFactory, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_21" /* ɵccf */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].viewDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_48" /* ɵvid */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].elementDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_26" /* ɵeld */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].anchorDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_21" /* ɵand */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].textDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_46" /* ɵted */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].directiveDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_25" /* ɵdid */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].providerDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_42" /* ɵprd */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].queryDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_43" /* ɵqud */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].pureArrayDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_38" /* ɵpad */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].pureObjectDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_40" /* ɵpod */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].purePipeDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_41" /* ɵppd */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].pipeDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_39" /* ɵpid */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].nodeValue, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_37" /* ɵnov */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].ngContentDef, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_36" /* ɵncd */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].unwrapValue, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_47" /* ɵunv */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].createRendererType2, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_24" /* ɵcrt */]);
+    map.set(__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["j" /* Identifiers */].createComponentFactory, __WEBPACK_IMPORTED_MODULE_1__angular_core__["_22" /* ɵccf */]);
     return map;
 }
 
@@ -102131,7 +102131,7 @@ var COMPILER_PROVIDERS = /** @type {?} */ ([
     { provide: __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["s" /* ResourceLoader */], useValue: _NO_RESOURCE_LOADER },
     { provide: __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["l" /* JitSummaryResolver */], deps: [] },
     { provide: __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["v" /* SummaryResolver */], useExisting: __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["l" /* JitSummaryResolver */] },
-    { provide: __WEBPACK_IMPORTED_MODULE_1__angular_core__["_16" /* ɵConsole */], deps: [] },
+    { provide: __WEBPACK_IMPORTED_MODULE_1__angular_core__["_17" /* ɵConsole */], deps: [] },
     { provide: __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["m" /* Lexer */], deps: [] },
     { provide: __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["p" /* Parser */], deps: [__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["m" /* Lexer */]] },
     {
@@ -102151,7 +102151,7 @@ var COMPILER_PROVIDERS = /** @type {?} */ ([
             [new __WEBPACK_IMPORTED_MODULE_1__angular_core__["J" /* Optional */](), new __WEBPACK_IMPORTED_MODULE_1__angular_core__["v" /* Inject */](__WEBPACK_IMPORTED_MODULE_1__angular_core__["Z" /* TRANSLATIONS */])],
             [new __WEBPACK_IMPORTED_MODULE_1__angular_core__["J" /* Optional */](), new __WEBPACK_IMPORTED_MODULE_1__angular_core__["v" /* Inject */](__WEBPACK_IMPORTED_MODULE_1__angular_core__["_0" /* TRANSLATIONS_FORMAT */])],
             [__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["c" /* CompilerConfig */]],
-            [__WEBPACK_IMPORTED_MODULE_1__angular_core__["_16" /* ɵConsole */]],
+            [__WEBPACK_IMPORTED_MODULE_1__angular_core__["_17" /* ɵConsole */]],
         ]
     },
     {
@@ -102161,14 +102161,14 @@ var COMPILER_PROVIDERS = /** @type {?} */ ([
     {
         provide: __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["w" /* TemplateParser */], deps: [__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["c" /* CompilerConfig */], __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["b" /* CompileReflector */],
             __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["p" /* Parser */], __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["g" /* ElementSchemaRegistry */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["i" /* I18NHtmlParser */], __WEBPACK_IMPORTED_MODULE_1__angular_core__["_16" /* ɵConsole */]]
+            __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["i" /* I18NHtmlParser */], __WEBPACK_IMPORTED_MODULE_1__angular_core__["_17" /* ɵConsole */]]
     },
     { provide: __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["d" /* DirectiveNormalizer */], deps: [__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["s" /* ResourceLoader */], __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["x" /* UrlResolver */], __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["h" /* HtmlParser */], __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["c" /* CompilerConfig */]] },
     { provide: __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["a" /* CompileMetadataResolver */], deps: [__WEBPACK_IMPORTED_MODULE_0__angular_compiler__["c" /* CompilerConfig */], __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["h" /* HtmlParser */], __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["o" /* NgModuleResolver */],
             __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["e" /* DirectiveResolver */], __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["q" /* PipeResolver */],
             __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["v" /* SummaryResolver */],
             __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["g" /* ElementSchemaRegistry */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["d" /* DirectiveNormalizer */], __WEBPACK_IMPORTED_MODULE_1__angular_core__["_16" /* ɵConsole */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["d" /* DirectiveNormalizer */], __WEBPACK_IMPORTED_MODULE_1__angular_core__["_17" /* ɵConsole */],
             [__WEBPACK_IMPORTED_MODULE_1__angular_core__["J" /* Optional */], __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["t" /* StaticSymbolCache */]],
             __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["b" /* CompileReflector */],
             [__WEBPACK_IMPORTED_MODULE_1__angular_core__["J" /* Optional */], ERROR_COLLECTOR_TOKEN]] },
@@ -102181,7 +102181,7 @@ var COMPILER_PROVIDERS = /** @type {?} */ ([
             __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["w" /* TemplateParser */], __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["u" /* StyleCompiler */],
             __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["y" /* ViewCompiler */], __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["n" /* NgModuleCompiler */],
             __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["v" /* SummaryResolver */], __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["b" /* CompileReflector */], __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["c" /* CompilerConfig */],
-            __WEBPACK_IMPORTED_MODULE_1__angular_core__["_16" /* ɵConsole */]] },
+            __WEBPACK_IMPORTED_MODULE_1__angular_core__["_17" /* ɵConsole */]] },
     { provide: __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["f" /* DomElementSchemaRegistry */], deps: [] },
     { provide: __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["g" /* ElementSchemaRegistry */], useExisting: __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["f" /* DomElementSchemaRegistry */] },
     { provide: __WEBPACK_IMPORTED_MODULE_0__angular_compiler__["x" /* UrlResolver */], deps: [__WEBPACK_IMPORTED_MODULE_1__angular_core__["L" /* PACKAGE_ROOT_URL */]] },
@@ -102193,7 +102193,7 @@ var JitCompilerFactory = (function () {
     function JitCompilerFactory(defaultOptions) {
         var /** @type {?} */ compilerOptions = {
             useJit: true,
-            defaultEncapsulation: __WEBPACK_IMPORTED_MODULE_1__angular_core__["_6" /* ViewEncapsulation */].Emulated,
+            defaultEncapsulation: __WEBPACK_IMPORTED_MODULE_1__angular_core__["_7" /* ViewEncapsulation */].Emulated,
             missingTranslation: __WEBPACK_IMPORTED_MODULE_1__angular_core__["D" /* MissingTranslationStrategy */].Warning,
             enableLegacyTemplate: false,
         };
@@ -102218,7 +102218,7 @@ var JitCompilerFactory = (function () {
                         // let explicit values from the compiler options overwrite options
                         // from the app providers
                         useJit: opts.useJit,
-                        jitDevMode: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_12" /* isDevMode */])(),
+                        jitDevMode: Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_13" /* isDevMode */])(),
                         // let explicit values from the compiler options overwrite options
                         // from the app providers
                         defaultEncapsulation: opts.defaultEncapsulation,
@@ -102288,7 +102288,7 @@ function _mergeArrays(parts) {
  *
  * \@experimental
  */
-var platformCoreDynamic = Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_8" /* createPlatformFactory */])(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_13" /* platformCore */], 'coreDynamic', [
+var platformCoreDynamic = Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_9" /* createPlatformFactory */])(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_14" /* platformCore */], 'coreDynamic', [
     { provide: __WEBPACK_IMPORTED_MODULE_1__angular_core__["h" /* COMPILER_OPTIONS */], useValue: {}, multi: true },
     { provide: __WEBPACK_IMPORTED_MODULE_1__angular_core__["l" /* CompilerFactory */], useClass: JitCompilerFactory, deps: [__WEBPACK_IMPORTED_MODULE_1__angular_core__["h" /* COMPILER_OPTIONS */]] },
 ]);
@@ -102402,7 +102402,7 @@ var CachedResourceLoader = (function (_super) {
     Object(__WEBPACK_IMPORTED_MODULE_4_tslib__["b" /* __extends */])(CachedResourceLoader, _super);
     function CachedResourceLoader() {
         var _this = _super.call(this) || this;
-        _this._cache = (/** @type {?} */ (__WEBPACK_IMPORTED_MODULE_1__angular_core__["_26" /* ɵglobal */])).$templateCache;
+        _this._cache = (/** @type {?} */ (__WEBPACK_IMPORTED_MODULE_1__angular_core__["_27" /* ɵglobal */])).$templateCache;
         if (_this._cache == null) {
             throw new Error('CachedResourceLoader: Template cache was not found in $templateCache.');
         }
@@ -102478,7 +102478,7 @@ var RESOURCE_CACHE_PROVIDER = [{ provide: __WEBPACK_IMPORTED_MODULE_0__angular_c
 /**
  * \@stable
  */
-var platformBrowserDynamic = Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_8" /* createPlatformFactory */])(platformCoreDynamic, 'browserDynamic', INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);
+var platformBrowserDynamic = Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_9" /* createPlatformFactory */])(platformCoreDynamic, 'browserDynamic', INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);
 
 /**
  * @fileoverview added by tsickle
@@ -102815,8 +102815,8 @@ var _chromeNumKeyPadMap = {
     '\x90': 'NumLock'
 };
 var nodeContains;
-if (__WEBPACK_IMPORTED_MODULE_1__angular_core__["_26" /* ɵglobal */]['Node']) {
-    nodeContains = __WEBPACK_IMPORTED_MODULE_1__angular_core__["_26" /* ɵglobal */]['Node'].prototype.contains || function (node) {
+if (__WEBPACK_IMPORTED_MODULE_1__angular_core__["_27" /* ɵglobal */]['Node']) {
+    nodeContains = __WEBPACK_IMPORTED_MODULE_1__angular_core__["_27" /* ɵglobal */]['Node'].prototype.contains || function (node) {
         return !!(this.compareDocumentPosition(node) & 16);
     };
 }
@@ -104622,7 +104622,7 @@ var BrowserGetTestability = (function () {
     BrowserGetTestability.init = /**
      * @return {?}
      */
-    function () { Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_14" /* setTestabilityGetter */])(new BrowserGetTestability()); };
+    function () { Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_15" /* setTestabilityGetter */])(new BrowserGetTestability()); };
     /**
      * @param {?} registry
      * @return {?}
@@ -104632,7 +104632,7 @@ var BrowserGetTestability = (function () {
      * @return {?}
      */
     function (registry) {
-        __WEBPACK_IMPORTED_MODULE_1__angular_core__["_26" /* ɵglobal */]['getAngularTestability'] = function (elem, findInAncestors) {
+        __WEBPACK_IMPORTED_MODULE_1__angular_core__["_27" /* ɵglobal */]['getAngularTestability'] = function (elem, findInAncestors) {
             if (findInAncestors === void 0) { findInAncestors = true; }
             var /** @type {?} */ testability = registry.findTestabilityInTree(elem, findInAncestors);
             if (testability == null) {
@@ -104640,10 +104640,10 @@ var BrowserGetTestability = (function () {
             }
             return testability;
         };
-        __WEBPACK_IMPORTED_MODULE_1__angular_core__["_26" /* ɵglobal */]['getAllAngularTestabilities'] = function () { return registry.getAllTestabilities(); };
-        __WEBPACK_IMPORTED_MODULE_1__angular_core__["_26" /* ɵglobal */]['getAllAngularRootElements'] = function () { return registry.getAllRootElements(); };
+        __WEBPACK_IMPORTED_MODULE_1__angular_core__["_27" /* ɵglobal */]['getAllAngularTestabilities'] = function () { return registry.getAllTestabilities(); };
+        __WEBPACK_IMPORTED_MODULE_1__angular_core__["_27" /* ɵglobal */]['getAllAngularRootElements'] = function () { return registry.getAllRootElements(); };
         var /** @type {?} */ whenAllStable = function (callback /** TODO #9100 */) {
-            var /** @type {?} */ testabilities = __WEBPACK_IMPORTED_MODULE_1__angular_core__["_26" /* ɵglobal */]['getAllAngularTestabilities']();
+            var /** @type {?} */ testabilities = __WEBPACK_IMPORTED_MODULE_1__angular_core__["_27" /* ɵglobal */]['getAllAngularTestabilities']();
             var /** @type {?} */ count = testabilities.length;
             var /** @type {?} */ didWork = false;
             var /** @type {?} */ decrement = function (didWork_ /** TODO #9100 */) {
@@ -104657,10 +104657,10 @@ var BrowserGetTestability = (function () {
                 testability.whenStable(decrement);
             });
         };
-        if (!__WEBPACK_IMPORTED_MODULE_1__angular_core__["_26" /* ɵglobal */]['frameworkStabilizers']) {
-            __WEBPACK_IMPORTED_MODULE_1__angular_core__["_26" /* ɵglobal */]['frameworkStabilizers'] = [];
+        if (!__WEBPACK_IMPORTED_MODULE_1__angular_core__["_27" /* ɵglobal */]['frameworkStabilizers']) {
+            __WEBPACK_IMPORTED_MODULE_1__angular_core__["_27" /* ɵglobal */]['frameworkStabilizers'] = [];
         }
-        __WEBPACK_IMPORTED_MODULE_1__angular_core__["_26" /* ɵglobal */]['frameworkStabilizers'].push(whenAllStable);
+        __WEBPACK_IMPORTED_MODULE_1__angular_core__["_27" /* ɵglobal */]['frameworkStabilizers'].push(whenAllStable);
     };
     /**
      * @param {?} registry
@@ -104790,7 +104790,7 @@ function exportNgVar(name, value) {
         // - closure declares globals itself for minified names, which sometimes clobber our `ng` global
         // - we can't declare a closure extern as the namespace `ng` is already used within Google
         //   for typings for angularJS (via `goog.provide('ng....')`).
-        var /** @type {?} */ ng = __WEBPACK_IMPORTED_MODULE_1__angular_core__["_26" /* ɵglobal */]['ng'] = (/** @type {?} */ (__WEBPACK_IMPORTED_MODULE_1__angular_core__["_26" /* ɵglobal */]['ng'])) || {};
+        var /** @type {?} */ ng = __WEBPACK_IMPORTED_MODULE_1__angular_core__["_27" /* ɵglobal */]['ng'] = (/** @type {?} */ (__WEBPACK_IMPORTED_MODULE_1__angular_core__["_27" /* ɵglobal */]['ng'])) || {};
         ng[name] = value;
     }
 }
@@ -104820,7 +104820,7 @@ var CORE_TOKENS_GLOBAL_NAME = 'coreTokens';
  * @return {?}
  */
 function inspectNativeElement(element) {
-    return Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_11" /* getDebugNode */])(element);
+    return Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_12" /* getDebugNode */])(element);
 }
 /**
  * @param {?} coreTokens
@@ -105211,7 +105211,7 @@ var DomRendererFactory2 = (function () {
             return this.defaultRenderer;
         }
         switch (type.encapsulation) {
-            case __WEBPACK_IMPORTED_MODULE_1__angular_core__["_6" /* ViewEncapsulation */].Emulated: {
+            case __WEBPACK_IMPORTED_MODULE_1__angular_core__["_7" /* ViewEncapsulation */].Emulated: {
                 var /** @type {?} */ renderer = this.rendererByCompId.get(type.id);
                 if (!renderer) {
                     renderer =
@@ -105221,7 +105221,7 @@ var DomRendererFactory2 = (function () {
                 (/** @type {?} */ (renderer)).applyToHost(element);
                 return renderer;
             }
-            case __WEBPACK_IMPORTED_MODULE_1__angular_core__["_6" /* ViewEncapsulation */].Native:
+            case __WEBPACK_IMPORTED_MODULE_1__angular_core__["_7" /* ViewEncapsulation */].Native:
                 return new ShadowDomRenderer(this.eventManager, this.sharedStylesHost, element, type);
             default: {
                 if (!this.rendererByCompId.has(type.id)) {
@@ -106324,7 +106324,7 @@ function sanitizeUrl(url) {
     url = String(url);
     if (url.match(SAFE_URL_PATTERN) || url.match(DATA_URL_PATTERN))
         return url;
-    if (Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_12" /* isDevMode */])()) {
+    if (Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_13" /* isDevMode */])()) {
         getDOM().log("WARNING: sanitizing unsafe URL value " + url + " (see http://g.co/ng/security#xss)");
     }
     return 'unsafe:' + url;
@@ -106654,7 +106654,7 @@ function sanitizeHtml(defaultDoc, unsafeHtmlInput) {
             var child = _a[_i];
             DOM.removeChild(parent_1, child);
         }
-        if (Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_12" /* isDevMode */])() && sanitizer.sanitizedSomething) {
+        if (Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_13" /* isDevMode */])() && sanitizer.sanitizedSomething) {
             DOM.log('WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).');
         }
         return safeHtml;
@@ -106760,7 +106760,7 @@ function sanitizeStyle(value) {
         value.match(SAFE_STYLE_VALUE) && hasBalancedQuotes(value)) {
         return value; // Safe style values.
     }
-    if (Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_12" /* isDevMode */])()) {
+    if (Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_13" /* isDevMode */])()) {
         getDOM().log("WARNING: sanitizing unsafe style value " + value + " (see http://g.co/ng/security#xss).");
     }
     return 'unsafe';
@@ -107104,7 +107104,7 @@ var BROWSER_SANITIZATION_PROVIDERS = [
 /**
  * \@stable
  */
-var platformBrowser = Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_8" /* createPlatformFactory */])(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_13" /* platformCore */], 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
+var platformBrowser = Object(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_9" /* createPlatformFactory */])(__WEBPACK_IMPORTED_MODULE_1__angular_core__["_14" /* platformCore */], 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
 /**
  * @return {?}
  */
@@ -107904,7 +107904,7 @@ var MainExtModule = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ts_actions_actions_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/actions/actions.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__data_box_ts_src_data_box_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -108091,12 +108091,59 @@ var CalendarComponent = (function (_super) {
         __param(3, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('DataService')),
         __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('HelperService')),
         __param(8, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('Popups')),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["_5" /* ViewContainerRef */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["R" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object, __WEBPACK_IMPORTED_MODULE_1__ts_actions_actions_service__["a" /* ActionsService */],
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* ViewContainerRef */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["R" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_4__tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object, __WEBPACK_IMPORTED_MODULE_1__ts_actions_actions_service__["a" /* ActionsService */],
             __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["a" /* ModalService */], Object, __WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Injector */]])
     ], CalendarComponent);
     return CalendarComponent;
 }(__WEBPACK_IMPORTED_MODULE_3__data_box_ts_src_data_box_component__["a" /* DataBoxComponent */]));
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/calendar/ts/src/calendar.ext-module.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CalendarExtModule; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ts_expander_expander_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/expander/expander.module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__calendar_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/calendar/ts/src/calendar.component.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+// This module doesn't use "ReactiveFormsModule", but it needs to import this class
+// to provide "formBuilder" when inject dependencies in child modules (like form)
+
+
+
+var CalendarExtModule = (function () {
+    function CalendarExtModule() {
+    }
+    CalendarExtModule = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* NgModule */])({
+            imports: [
+                __WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */],
+                __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */],
+                __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* ReactiveFormsModule */],
+                __WEBPACK_IMPORTED_MODULE_3__ts_expander_expander_module__["a" /* ExpanderModule */]
+            ],
+            declarations: [
+                __WEBPACK_IMPORTED_MODULE_4__calendar_component__["a" /* CalendarComponent */]
+            ],
+            exports: [__WEBPACK_IMPORTED_MODULE_4__calendar_component__["a" /* CalendarComponent */]]
+        })
+    ], CalendarExtModule);
+    return CalendarExtModule;
+}());
 
 
 
@@ -108108,8 +108155,8 @@ var CalendarComponent = (function (_super) {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FormPopupComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ts_form_form_popup_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form-popup.extension-component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ts_form_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_ts_form_popup_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form-popup.extension-component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__form_ts_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form.service.ts");
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -108158,10 +108205,10 @@ var FormPopupComponent = (function (_super) {
         __param(4, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('DataService')),
         __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["J" /* Optional */])()), __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('TimeSelection')),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["r" /* ElementRef */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["R" /* Renderer */], Object, __WEBPACK_IMPORTED_MODULE_2__ts_form_form_service__["a" /* FormService */], Object, Object])
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["R" /* Renderer */], Object, __WEBPACK_IMPORTED_MODULE_2__form_ts_form_service__["a" /* FormService */], Object, Object])
     ], FormPopupComponent);
     return FormPopupComponent;
-}(__WEBPACK_IMPORTED_MODULE_1__ts_form_form_popup_extension_component__["a" /* FormPopupExtensionComponent */]));
+}(__WEBPACK_IMPORTED_MODULE_1__form_ts_form_popup_extension_component__["a" /* FormPopupExtensionComponent */]));
 
 
 
@@ -108170,7 +108217,7 @@ var FormPopupComponent = (function (_super) {
 /***/ "../../../../../src/AppBundle/Resources/public/calendar/ts/templates/calendar.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "\n<div class=\"ibox\">\n            <div class=\"ibox-title\" *ngIf=\"!getProviderExtraDataAttr('hasMergeHeader')\">\n            <h5>\n                <ng-template [ngIf]=\"getProviderAttr('controls')['expander']\"><js_expander\n                    [isExpanded]=\"_isExpanded || null\"\n                    [label]=\"getProviderAttr('label')\"\n                    (onChange)=\"expanderAction($event)\"></js_expander></ng-template>\n                <ng-template [ngIf]=\"!getProviderAttr('controls')['expander']\">\n                    <span [innerHTML]=\"getProviderAttr('label')\"></span>\n                </ng-template>\n            </h5>\n            <div *ngIf=\"_isExpanded\"\n                 class=\"txt-align-r hide-on-empty\"></div>\n        </div>\n    \n    <div [hidden]=\"!(_isExpanded)\" class=\"ibox-content hide-on-empty\"><div class='js_calendarControl'></div></div>\n    <div [hidden]=\"_isExpanded\" class=\"ibox-footer hide-on-empty\"></div>\n</div>\n\n"
+module.exports = "\n\n<div class=\"ibox\" >\n                        <div class=\"ibox-title\" *ngIf=\"!getProviderExtraDataAttr('hasMergeHeader')\">\n                <h5>\n                    <ng-template [ngIf]=\"getProviderAttr('controls')['expander']['isEnabled']\"><js_expander\n                        [isExpanded]=\"_isExpanded || null\"\n                        [label]=\"getLang(getProviderAttr('label'))\"\n                        [labelCount]=\"getProviderAttr('labelCount')\"\n                        [labelIcon]=\"getProviderAttr('labelIcon')\"\n                        (onChange)=\"expanderAction($event)\"></js_expander></ng-template>\n                    <ng-template [ngIf]=\"!getProviderAttr('controls')['expander']['isEnabled']\">\n                        <span [innerHTML]=\"getProviderAttr('label')\"></span>\n                    </ng-template>\n                </h5>\n                <div *ngIf=\"_isExpanded\"\n                     class=\"txt-align-r hide-on-empty\"></div>\n            </div>\n            \n    <div [hidden]=\"!(_isExpanded)\" class=\"ibox-content hide-on-empty\"><div class='js_calendarControl'></div></div>\n    <div [hidden]=\"_isExpanded\" class=\"ibox-footer hide-on-empty\"></div>\n</div>\n\n"
 
 /***/ }),
 
@@ -108183,7 +108230,7 @@ module.exports = "\n<div class=\"ibox\">\n            <div class=\"ibox-title\" 
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__data_box_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.extension-component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ts_actions_actions_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/actions/actions.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
 /* unused harmony reexport PopupTypes */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -108233,8 +108280,8 @@ var DataBoxComponent = (function (_super) {
         __param(3, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('DataService')),
         __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('HelperService')),
         __param(8, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('Popups')),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["_5" /* ViewContainerRef */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["R" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object, __WEBPACK_IMPORTED_MODULE_3__ts_actions_actions_service__["a" /* ActionsService */],
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* ViewContainerRef */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["R" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_4__tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object, __WEBPACK_IMPORTED_MODULE_3__ts_actions_actions_service__["a" /* ActionsService */],
             __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["a" /* ModalService */], Object, __WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Injector */]])
     ], DataBoxComponent);
     return DataBoxComponent;
@@ -108278,7 +108325,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 // Popup Types
 var PopupTypes = {
     edit: 'edit',
-    add: 'add'
+    add: 'add',
+    email: 'email'
 };
 // Component
 var DataBoxExtensionComponent = (function (_super) {
@@ -108339,35 +108387,43 @@ var DataBoxExtensionComponent = (function (_super) {
             case 'monetary':
             case 'date':
             case 'datetime':
-                return 'txt-align-r';
+                return 'text-right';
             case 'boolean':
             case 'icon':
             case 'img':
             case 'status':
-                return 'txt-align-c';
+                return 'text-center';
             default:
-                return 'txt-align-l';
+                return 'text-left';
         }
     };
     /**
      * Get legend classes
      * @param object
+     * @param target (element target to check the legend)
+     * @param exprField (field on which the expression is checked,
+     *     it's used when the field is not provided in legend, like in actions legend)
      * @returns {string}
      */
-    DataBoxExtensionComponent.prototype.getLegendClasses = function (object) {
-        var legend = this._provider['controls']['legend'], hasClass;
+    DataBoxExtensionComponent.prototype.getLegendClasses = function (object, target, exprField) {
+        if (exprField === void 0) { exprField = null; }
+        var legend = this._provider['controls']['legend'];
         if (!object || !legend) {
             return '';
         }
         for (var _i = 0, legend_1 = legend; _i < legend_1.length; _i++) {
             var legendControl = legend_1[_i];
-            hasClass = false;
-            var field = legendControl['field'], expr = (legendControl['expr'] || 'notNull'), isExprNotNull = (expr == 'notNull'), 
+            var legendExprField = (legendControl['field'] || exprField), legendTarget = (legendControl['target'] || 'tr');
+            // Check target, if is not the same jump the loop
+            if ((legendTarget != target) || (!legendExprField) || (legendExprField == '')) {
+                continue;
+            }
+            var expr = (legendControl['expr'] || 'notNull'), isExprNotNull = (expr == 'notNull'), 
             // Check in original field first if defined
-            fieldValue = ((object['__' + field] !== undefined) ? object['__' + field] : object[field]);
+            fieldValue = ((object['__' + legendExprField] !== undefined) ? object['__' + legendExprField] : object[legendExprField]);
             // Normalize value
-            if (this._dataService.getFields('metadata')[field]) {
-                switch (this._dataService.getFields('metadata')[field].type) {
+            if (this._dataService.getFields('metadata')[legendExprField]) {
+                switch (this._dataService.getFields('metadata')[legendExprField].type) {
                     case 'boolean':
                         fieldValue = this._helperService.castToBoolean(fieldValue);
                         break;
@@ -108380,6 +108436,27 @@ var DataBoxExtensionComponent = (function (_super) {
             }
         }
         return '';
+    };
+    /**
+     * Get actions legend classes
+     * @param object
+     * @param action (action to check the legend)
+     * @returns {string}
+     */
+    DataBoxExtensionComponent.prototype.getActionsLegendClasses = function (object, action) {
+        var field = null, classes = '';
+        switch (action) {
+            case 'pdf':
+                field = 'isAccessed';
+                break;
+            case 'email':
+                field = 'isSent';
+                break;
+        }
+        if (field) {
+            classes = this.getLegendClasses(object, 'actions', field);
+        }
+        return (classes == '') ? classes : (' ' + classes); // Add space to put legend classes after icon class
     };
     /**
      * Trigger action
@@ -108552,6 +108629,57 @@ var DataBoxExtensionComponent = (function (_super) {
         }
     };
     /**
+     * Pdf action.
+     * @param $event
+     * @param data
+     */
+    DataBoxExtensionComponent.prototype.pdfAction = function ($event, data) {
+        if ($event) {
+            $event.preventDefault();
+        }
+        this._dataService.pdf(data);
+    };
+    /**
+     * Email action.
+     * @param $event
+     * @param data
+     */
+    DataBoxExtensionComponent.prototype.emailAction = function ($event, data) {
+        var _this = this;
+        if ($event) {
+            $event.preventDefault();
+        }
+        // Select object index in DataService to update object after sent email
+        if (!this._dataService.setObjectIndex(data)) {
+            return;
+        }
+        var that = this, popup = this._popups['email'], object = this._dataService.getObject(data);
+        if (!popup['injector']) {
+            // It's the firs time that popup is open, so we need to supply the providers
+            var context_1 = popup['localData']['context'], route = (this._helperService.getAppVar('route') + 'bck/common/email/conf');
+            this._dataService.runAction(route).then(function (data) {
+                // Update route of "new" action
+                data['route']['new']['url'] = (data['route']['new']['url'] + '/' + context_1 + '/' + object['id']);
+                popup['providers'] = popup['providers'].concat([
+                    { provide: 'DataServiceProvider', useValue: that._helperService.getDataServiceProvider(data) },
+                    { provide: 'Provider', useValue: that._helperService.getFormProvider(data) },
+                    { provide: 'ParentDataService', useValue: _this._dataService }
+                ]);
+                var resolvedProviders = __WEBPACK_IMPORTED_MODULE_0__angular_core__["Q" /* ReflectiveInjector */].resolve(popup['providers']);
+                popup['injector'] = __WEBPACK_IMPORTED_MODULE_0__angular_core__["Q" /* ReflectiveInjector */].fromResolvedProviders(resolvedProviders, that._injector);
+                var emailDataService = popup['injector'].get('DataService');
+                emailDataService.newObject().then(function (data) { that.openPopup('email'); }, function (errors) { console.log(errors); });
+            }, function (errors) { console.log(errors); });
+        }
+        else {
+            // Update route of "new" action
+            var emailDataService = popup['injector'].get('DataService'), newEmailRoute = emailDataService.getRoute('new');
+            newEmailRoute = (newEmailRoute.substring(0, newEmailRoute.lastIndexOf("/")) + '/' + object['id']);
+            emailDataService.setRoute('new', newEmailRoute);
+            emailDataService.newObject().then(function (data) { that.openPopup('email'); }, function (errors) { console.log(errors); });
+        }
+    };
+    /**
      * Submit choices
      * @param route (route to submit choices)
      * @param allowEmptySubmit (allow submit when data is empty,
@@ -108645,10 +108773,867 @@ var DataBoxExtensionComponent = (function (_super) {
 
 /***/ }),
 
+/***/ "../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.extension-module.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DataBoxExtensionModule; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ts_search_search_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/search/search.module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ts_expander_expander_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/expander/expander.module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ts_search_search_pagination_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/search/search-pagination.module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__legend_ts_src_legend_ext_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/legend/ts/src/legend.ext-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__data_box_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.component.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+// This module doesn't use "ReactiveFormsModule", but it needs to import this class
+// to provide "formBuilder" when inject dependencies in child modules (like form)
+
+
+
+
+
+
+var DataBoxExtensionModule = (function () {
+    function DataBoxExtensionModule() {
+    }
+    DataBoxExtensionModule = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* NgModule */])({
+            imports: [
+                __WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */],
+                __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */],
+                __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* ReactiveFormsModule */],
+                __WEBPACK_IMPORTED_MODULE_3__ts_search_search_module__["a" /* SearchModule */],
+                __WEBPACK_IMPORTED_MODULE_5__ts_search_search_pagination_module__["a" /* SearchPaginationModule */],
+                __WEBPACK_IMPORTED_MODULE_4__ts_expander_expander_module__["a" /* ExpanderModule */],
+                __WEBPACK_IMPORTED_MODULE_6__legend_ts_src_legend_ext_module__["a" /* LegendExtModule */]
+            ],
+            declarations: [
+                __WEBPACK_IMPORTED_MODULE_7__data_box_component__["a" /* DataBoxComponent */]
+            ],
+            exports: [__WEBPACK_IMPORTED_MODULE_7__data_box_component__["a" /* DataBoxComponent */]]
+        })
+    ], DataBoxExtensionModule);
+    return DataBoxExtensionModule;
+}());
+
+
+
+/***/ }),
+
 /***/ "../../../../../src/AppBundle/Resources/public/data-box/ts/templates/data-box.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "\n\n<div class=\"ibox\" >\n                        <div class=\"ibox-title\" *ngIf=\"!getProviderExtraDataAttr('hasMergeHeader')\">\n                <h5>\n                    <ng-template [ngIf]=\"getProviderAttr('controls')['expander']\"><js_expander\n                        [isExpanded]=\"_isExpanded || null\"\n                        [label]=\"getProviderAttr('label')\"\n                        (onChange)=\"expanderAction($event)\"></js_expander></ng-template>\n                    <ng-template [ngIf]=\"!getProviderAttr('controls')['expander']\">\n                        <span [innerHTML]=\"getProviderAttr('label')\"></span>\n                    </ng-template>\n                </h5>\n                <div *ngIf=\"_isExpanded\"\n                     class=\"txt-align-r hide-on-empty\">    <div class=\"actions no-user-select\">\n        <ng-template [ngIf]=\"_actionsService.getActionAttr('search', 'isEnabled')\"><js_search class=\"search\"></js_search></ng-template>\n        <div (click)=\"triggerAction($event)\">\n            <ng-template ngFor let-action [ngForOf]=\"_actionsService.getHeadActions()\">\n                <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                   [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                   class=\"-round fa\"\n                   [attr.data-action]=\"action\"></a>\n            </ng-template>\n        </div>\n    </div>\n</div>\n            </div>\n            \n    <div [hidden]=\"!(_isExpanded)\" class=\"ibox-content hide-on-empty\">    <ng-template [ngIf]=\"(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">\n        <div class=\"table-responsive\">\n        <form>        <table class=\"data-table table table-hover dataTables-example table-bordered\">\n            <thead>\n            <tr>\n                <th *ngFor=\"let searchField of _dataService.getSearch('fields')\">{{ _dataService.getFields('metadata')[searchField].label }}</th>\n                <th>&nbsp;</th>\n            </tr>\n            </thead>            <tbody>\n            <ng-template ngFor let-obj [ngForOf]=\"_dataService.getProviderAttr('objects')\" let-objIndex=\"index\">\n            <tr (dblclick)=\"editAction($event, objIndex)\"                [ngClass]=\"getLegendClasses(obj)\">\n                                    <td *ngFor=\"let searchField of _dataService.getSearch('fields')\"\n                        [ngClass]=\"getColAlign(searchField)\"\n                        [innerHTML]=\"obj[searchField]\"></td>\n                                <td>\n                    <span *ngIf=\"obj['_isNew']\" class=\"badge badge-info\">New</span>\n                    <span *ngIf=\"obj['_isEdited']\" class=\"badge badge-info\">Edited</span>\n                    <input *ngIf=\"_actionsService.getActionAttr('radioChoice', 'isEnabled')\"\n                           class=\"pull-right action\"\n                           type=\"radio\"\n                           name=\"index[]\"\n                           value=\"{{objIndex}}\"/>\n                    <input *ngIf=\"_actionsService.getActionAttr('checkAll', 'isEnabled')\"\n                           class=\"pull-right action js_checkAll\"\n                           type=\"checkbox\"\n                           name=\"index[]\"\n                           value=\"{{objIndex}}\"\n                           [ngModel]=\"checkAll\"/>\n                    <div class=\"pull-right actions no-user-select\" (click)=\"triggerAction($event)\">\n                        <ng-template ngFor let-action [ngForOf]=\"_actionsService.getDetailActions()\">\n                            <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                               [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                               class=\"fa\"\n                               [attr.data-action]=\"action\"\n                               [attr.data-value]=\"objIndex\"></a>\n                        </ng-template>\n                    </div>\n                </td>            </tr>\n            </ng-template>\n            </tbody>\n        </table>\n        </form>    </div>\n    </ng-template><p\n        class=\"text-center\"\n        *ngIf=\"!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">No results.</p>\n</div>\n        <div class=\"ibox-footer\"\n         *ngIf=\"_dataService.countObjects() > 0\"><js_searchPagination></js_searchPagination></div>\n\n</div>\n\n<js_legend></js_legend>"
+module.exports = "\n\n<div class=\"ibox\" >\n                        <div class=\"ibox-title\" *ngIf=\"!getProviderExtraDataAttr('hasMergeHeader')\">\n                <h5>\n                    <ng-template [ngIf]=\"getProviderAttr('controls')['expander']['isEnabled']\"><js_expander\n                        [isExpanded]=\"_isExpanded || null\"\n                        [label]=\"getLang(getProviderAttr('label'))\"\n                        [labelCount]=\"getProviderAttr('labelCount')\"\n                        [labelIcon]=\"getProviderAttr('labelIcon')\"\n                        (onChange)=\"expanderAction($event)\"></js_expander></ng-template>\n                    <ng-template [ngIf]=\"!getProviderAttr('controls')['expander']['isEnabled']\">\n                        <span [innerHTML]=\"getProviderAttr('label')\"></span>\n                    </ng-template>\n                </h5>\n                <div *ngIf=\"_isExpanded\"\n                     class=\"txt-align-r hide-on-empty\">    <div class=\"row align-items-center\">\n        <div class=\"col ml-auto text-right actions no-user-select\">\n            <ng-template [ngIf]=\"_actionsService.getActionAttr('search', 'isEnabled')\"><js_search class=\"search\"></js_search></ng-template>\n            <div (click)=\"triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_actionsService.getHeadActions()\">\n                    <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n</div>\n            </div>\n            \n    <div [hidden]=\"!(_isExpanded)\" class=\"ibox-content hide-on-empty\">    <ng-template [ngIf]=\"(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">\n                \n    <div class=\"table-responsive\">\n    <form>    <table class=\"data-table table table-hover dataTables-example table-bordered\">\n        <thead>\n        <tr>\n            <th *ngFor=\"let searchField of _dataService.getSearch('fields')\">{{ getLang(_dataService.getFields('metadata')[searchField].label) }}</th>\n            <th>&nbsp;</th>\n        </tr>\n        </thead>        <tbody>\n        <ng-template ngFor let-obj [ngForOf]=\"_dataService.getProviderAttr('objects')\" let-objIndex=\"index\">\n        <tr (dblclick)=\"editAction($event, objIndex)\"            [ngClass]=\"getLegendClasses(obj, 'tr')\">                    <td *ngFor=\"let searchField of _dataService.getSearch('fields')\"\n    [ngClass]=\"getColAlign(searchField)\"\n    [innerHTML]=\"obj[searchField]\"></td>                        <td>\n                <span *ngIf=\"obj['_isNew']\" class=\"badge badge-info\">New</span>\n                <span *ngIf=\"obj['_isEdited']\" class=\"badge badge-info\">Edited</span>\n                <input *ngIf=\"_actionsService.getActionAttr('radioChoice', 'isEnabled')\"\n                       class=\"pull-right action\"\n                       type=\"radio\"\n                       name=\"index[]\"\n                       value=\"{{objIndex}}\"/>\n                <input *ngIf=\"_actionsService.getActionAttr('checkAll', 'isEnabled')\"\n                       class=\"pull-right action js_checkAll\"\n                       type=\"checkbox\"\n                       name=\"index[]\"\n                       value=\"{{objIndex}}\"\n                       [ngModel]=\"checkAll\"/>\n                <div class=\"pull-right actions no-user-select text-secondary\" (click)=\"triggerAction($event)\">\n                    <ng-template ngFor let-action [ngForOf]=\"_actionsService.getDetailActions()\">\n                        <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                           [ngClass]=\"[_actionsService.getActionAttr(action, 'icon') + getActionsLegendClasses(obj, action)]\"\n                           class=\"fa\"\n                           [attr.data-action]=\"action\"\n                           [attr.data-value]=\"objIndex\"></a>\n                    </ng-template>\n                </div>\n            </td>        </tr>\n        </ng-template>\n        </tbody>\n    </table>\n    </form></div>    </ng-template><p\n        class=\"text-center\"\n        *ngIf=\"!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">No results.</p>\n</div>\n        <div [hidden]=\"!(_isExpanded)\"\n         class=\"ibox-footer\"\n         *ngIf=\"_dataService.countObjects() > 0\"><js_searchPagination></js_searchPagination></div>\n\n</div>\n\n<js_legend></js_legend>"
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/form/ts/form-popup.extension-component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FormPopupExtensionComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form.extension-component.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+var FormPopupExtensionComponent = (function (_super) {
+    __extends(FormPopupExtensionComponent, _super);
+    function FormPopupExtensionComponent() {
+        var _this = _super.call(this) || this;
+        // Modal parameters
+        _this.onDismissEmitter = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* EventEmitter */]();
+        return _this;
+    }
+    /**
+     * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
+     * @param elementRef
+     * @param renderer
+     * @param provider
+     * @param formService
+     * @param dataService
+     */
+    FormPopupExtensionComponent.prototype.initFormPopupExtensionComponent = function (elementRef, renderer, provider, formService, dataService) {
+        _super.prototype.initFormExtensionComponent.call(this, elementRef, renderer, provider, formService, dataService);
+    };
+    /**
+     * Save and enter to detail action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormPopupExtensionComponent.prototype.saveAndEnterAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        this._formService.saveAndEnterAction($event);
+    };
+    /**
+     * Save and add a new entry.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormPopupExtensionComponent.prototype.saveAndNewAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        this._formService.saveAndNewAction($event);
+    };
+    /**
+     * Save and close popup action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormPopupExtensionComponent.prototype.saveAndCloseAction = function ($event) {
+        var _this = this;
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        this.save().then(function (data) { _this.closeAction(); return; }, function (errors) { return; });
+    };
+    /**
+     * Cancel action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormPopupExtensionComponent.prototype.cancelAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        this.closeAction($event);
+    };
+    /**
+     * Close action.
+     * @param $event
+     */
+    FormPopupExtensionComponent.prototype.closeAction = function ($event) {
+        var _this = this;
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        // Current form object has changes from user?
+        this._formService.reset().then(function (data) {
+            _this.onDismissEmitter.emit(data);
+            return;
+        }, function (errors) { return; });
+    };
+    FormPopupExtensionComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: '.js_formPopup',
+            template: ''
+        }),
+        __metadata("design:paramtypes", [])
+    ], FormPopupExtensionComponent);
+    return FormPopupExtensionComponent;
+}(__WEBPACK_IMPORTED_MODULE_1__form_extension_component__["a" /* FormExtensionComponent */]));
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/form/ts/form.extension-component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FormExtensionComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ts_base_base_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/base/base.extension-component.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+// Component
+var FormExtensionComponent = (function (_super) {
+    __extends(FormExtensionComponent, _super);
+    function FormExtensionComponent() {
+        return _super.call(this) || this;
+    }
+    /**
+     * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
+     * @param elementRef
+     * @param renderer
+     * @param provider
+     * @param formService
+     * @param dataService
+     */
+    FormExtensionComponent.prototype.initFormExtensionComponent = function (elementRef, renderer, provider, formService, dataService) {
+        // Parent init (construct)
+        _super.prototype.initBaseExtensionComponent.call(this, elementRef, renderer, provider);
+        // Constructor vars
+        this._formService = formService;
+        this._dataService = dataService;
+    };
+    /**
+     * Save object. Handle submit form.
+     * This override add a closePopup behavior.
+     * This method should be called from child component.
+     * @returns {Promise}
+     */
+    FormExtensionComponent.prototype.save = function () {
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            that._formService.save().then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
+        });
+    };
+    /**
+     * Save action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormExtensionComponent.prototype.saveAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        this.save().then(function (data) { return; }, function (errors) { return; });
+    };
+    /**
+     * Reset action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormExtensionComponent.prototype.resetAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        this._formService.resetAction($event);
+    };
+    /**
+     * Lifecycle callback
+     */
+    FormExtensionComponent.prototype.ngAfterViewInit = function () {
+        this._formService.init(this);
+    };
+    FormExtensionComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: '.js_form',
+            template: ''
+        }),
+        __metadata("design:paramtypes", [])
+    ], FormExtensionComponent);
+    return FormExtensionComponent;
+}(__WEBPACK_IMPORTED_MODULE_1__ts_base_base_extension_component__["a" /* BaseExtensionComponent */]));
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/form/ts/form.service.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FormService; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ts_helper__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/helper.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+
+
+
+var FormService = (function () {
+    function FormService(_modalService, formBuilder, _dataService, _helperService, _tasksLoaderManagerService, _provider) {
+        var _this = this;
+        this._modalService = _modalService;
+        this._dataService = _dataService;
+        this._helperService = _helperService;
+        this._tasksLoaderManagerService = _tasksLoaderManagerService;
+        this._provider = _provider;
+        this._component = null; // Parent component that uses and implement this service
+        this._originalObject = {}; // Original object to compare changes and reset object in DataService
+        this._originalNormalizedObject = {}; // Original normalized (for form) object to compare changes and reset object in form
+        this._object = {}; // Object used by form
+        this._$form = null; // DOM form
+        this._errors = {}; // Form errors validation
+        // Set default values for provider
+        if (!this._provider) {
+            this._provider = {};
+        }
+        this._uniqueId = this._helperService.getUniqueId();
+        this._onObjectChangeEmitter = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* EventEmitter */]();
+        // Object change event subscription
+        this._onObjectChangeSubscription = this._dataService.getOnObjectChangeEmitter()
+            .subscribe(function (object) { return _this.onObjectChangeSubscription(object); });
+        this._forceSubmit = false;
+        this._preventObjectOverride = true;
+        // Set object, if it has not been setted before open the form
+        if (!this._dataService.getObject()) {
+            // If object is not setted, create a new
+            var that_1 = this;
+            this.newObject().then(function (data) {
+                that_1.setObject(_this._dataService.getObject());
+                that_1.buildForm(formBuilder);
+            }, function (errors) { return; });
+        }
+        else {
+            this.setObject(this._dataService.getObject());
+            this.buildForm(formBuilder);
+        }
+    }
+    /**
+     * Build form
+     * @param formBuilder
+     * @returns {FormService}
+     */
+    FormService.prototype.buildForm = function (formBuilder) {
+        var formControls = {}, fields = (this._provider.fields || this._dataService.getFields('form') || []).concat(this._helperService.objectKeys(this._dataService.getProviderExtraDataAttr('fields')));
+        // Set form controls
+        for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
+            var field = fields_1[_i];
+            formControls[field] = [this._object[field] || null];
+        }
+        this._form = formBuilder.group(formControls);
+        return this;
+    };
+    /**
+     * Initialization of service.
+     * This method should be called in "ngOnInit" method of parent component,
+     * so the template has been rendered.
+     * @param component (parent component)
+     * @returns {FormService}
+     */
+    FormService.prototype.init = function (component) {
+        // Local variables
+        this._component = component;
+        // @TODO: discontinue this provider, and keep only the second verification
+        this._preventObjectOverride = this._component.getProviderAttr('preventObjectOverride');
+        if (this._preventObjectOverride) {
+            this._preventObjectOverride = (!this._provider.hasOwnProperty('hasPreventObjectOverride')
+                || this._provider['hasPreventObjectOverride']);
+        }
+        // Note: _$form needs to be setted each time that the component changes, otherwise if you set the form
+        // only once, form loss your binding consistence from the second time that it is opened and setted a
+        // different object. Ie: "BookingServicePriceEdit", field "isVatIncluded" and "markupValue" loss binding
+        // consistence and the data is not correctly sent to server!!!!
+        this._$form = $(this._component._elementRef.nativeElement).find('form');
+        return this;
+    };
+    ///////////////////////////////////////////////
+    // It's no more necessary, because we only create the form (open popup) after get the
+    // promise successful response (get, new or clone object), so this code is kept here for future consideration.
+    ///////////////////////////////////////////////
+    /**
+     * Is Initialized
+     * Controls if FormService has been initialized the "formBuilder group",
+     * to avoid the component render the template form before and break
+     * @returns {boolean}
+     */
+    /*public isInitialized(): boolean
+    {
+        return (this.getForm() ? true : false);
+    }*/
+    /**
+     * Get form object emitter to tell all subscribers about changes
+     * @returns {EventEmitter<any>}
+     */
+    FormService.prototype.getOnObjectChangeEmitter = function () {
+        return this._onObjectChangeEmitter;
+    };
+    /**
+     * On object change subscription. Handle with object changes in DataService.
+     * @param object
+     */
+    FormService.prototype.onObjectChangeSubscription = function (object) {
+        if ((object != this._originalObject) // Set object only if is different
+            && !this._tasksLoaderManagerService.hasTask('SAVE_' + this._uniqueId)) {
+            // Form does not need to confirm object override
+            if (!this._preventObjectOverride) {
+                this.setObject(object);
+                return;
+            }
+            // Confirm object override by user to prevent data loss
+            this.confirmAndSetObject(object).then(function (data) { return; }, function (errors) { return; });
+        }
+    };
+    /**
+     * Set _preventObjectOverride
+     * @param value
+     * @returns {FormService}
+     */
+    FormService.prototype.setPreventObjectOverride = function (value) {
+        this._preventObjectOverride = value;
+        return this;
+    };
+    /**
+     * Confirm and set object. Check for object changes and confirm with the user to discard them, then set
+     * the object according with the ser response.
+     * @param object
+     * @returns {Promise}
+     */
+    FormService.prototype.confirmAndSetObject = function (object) {
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            // Current form object has changes from user?
+            if (that.hasChanges()) {
+                // Dialog message
+                return that._modalService.dialog().then(function (hasConfirm) {
+                    if (hasConfirm) {
+                        that.setObject(object);
+                        return resolve(true);
+                    }
+                    else {
+                        // Keep the object in DataService
+                        that._dataService.setObject(that._originalObject);
+                        return reject(false);
+                    }
+                }, function (errors) { console.log(errors); return reject(false); });
+            }
+            else {
+                that.setObject(object);
+                return resolve(true);
+            }
+        });
+    };
+    /**
+     * Set object
+     * @param object
+     * @returns {FormService}
+     */
+    FormService.prototype.setObject = function (object) {
+        // Set only if is a different object
+        if (object && (object != this._originalObject)) {
+            // Keep the original object from dataService
+            this._originalObject = object;
+            // Normalize object to form
+            this._originalNormalizedObject = __WEBPACK_IMPORTED_MODULE_4__ts_helper__["a" /* Helper */].cloneObject(this._originalObject, true);
+            this.normalizeObject(this._originalNormalizedObject);
+            // Update form object
+            this._object = __WEBPACK_IMPORTED_MODULE_4__ts_helper__["a" /* Helper */].cloneObject(this._originalNormalizedObject, true);
+            // Reset errors
+            this._errors = {};
+            // This object is saved in session and needs to be confirmed by user before save them in database
+            this._forceSubmit = (object['_isSessionStorage'] ? true : false);
+            this._onObjectChangeEmitter.emit(this._object); // Object as changed to the original, notify subscribers
+        }
+        // Waiting mode for save process ends here, after update the original object.
+        // Prevents the object being updated two times, by the "Form" "save" and the "DataService" object change emitter.
+        this._tasksLoaderManagerService.delTask('SAVE_' + this._uniqueId);
+        return this;
+    };
+    /**
+     * Normalize objects to form
+     * Detect fields that needs to be normalized
+     * @param object
+     * @param fields
+     * @returns {FormService}
+     */
+    FormService.prototype.normalizeObject = function (object, fields) {
+        if (fields === void 0) { fields = null; }
+        fields = (fields || this._dataService.getProviderAttr('fields')['form']);
+        if (object && fields) {
+            var fieldsMetadata = this._dataService.getProviderAttr('fields')['metadata'];
+            for (var _i = 0, fields_2 = fields; _i < fields_2.length; _i++) {
+                var field = fields_2[_i];
+                var fieldMetadata = fieldsMetadata[field];
+                switch (fieldMetadata['type']) {
+                    case 'date':
+                        object[field] = this.normalizeValue(object[field], fieldMetadata['type']);
+                        break;
+                }
+            }
+        }
+        return this;
+    };
+    /**
+     * Normalize value to form
+     * @param value
+     * @param type
+     * @returns any
+     */
+    FormService.prototype.normalizeValue = function (value, type) {
+        switch (type) {
+            case 'date':
+                if (value && (typeof value == 'string')) {
+                    var dateArr = value.split("-");
+                    return {
+                        year: parseInt(dateArr[0]),
+                        month: parseInt(dateArr[1]),
+                        day: parseInt(dateArr[2])
+                    };
+                }
+                return value;
+        }
+    };
+    /**
+     * Get object
+     * @returns any
+     */
+    FormService.prototype.getObject = function () {
+        return this._object;
+    };
+    /**
+     * Get originalObject
+     * @returns any
+     */
+    FormService.prototype.getOriginalObject = function () {
+        return this._originalNormalizedObject;
+    };
+    /**
+     * Check if the object has changes from user
+     * @returns {boolean|Boolean}
+     */
+    FormService.prototype.hasChanges = function () {
+        // Compare the working object "this._object" that it's a clone of "this._originalNormalizedObject" with your
+        // original object of cloning "this._originalNormalizedObject"
+        return (!this._helperService.isEqualObject(this._object, this._originalNormalizedObject));
+    };
+    /**
+     * Get form
+     * @returns any
+     */
+    FormService.prototype.getForm = function () {
+        return this._form;
+    };
+    /**
+     * Set errors
+     * @param errors
+     * @returns {FormService}
+     */
+    FormService.prototype.setErrors = function (errors) {
+        this._errors = (errors || {});
+        return this;
+    };
+    /**
+     * Get errors
+     * @returns any
+     */
+    FormService.prototype.getErrors = function () {
+        return this._errors;
+    };
+    /**
+     * Set form field value
+     * @param field
+     * @param value
+     */
+    FormService.prototype.setFormFieldValue = function (field, value) {
+        if (value === undefined) {
+            return; // Possible wrong element of the click event
+        }
+        // Accept null values to set null some fields, like not mandatory fields
+        value = (value || null);
+        if (field in this._object) {
+            this._object[field] = value;
+        }
+    };
+    /**
+     * Get view object (normalized object in DataService)
+     * @returns {any|{}}
+     */
+    FormService.prototype.getViewObject = function () {
+        return (this._dataService.getNormalizedObject() || {});
+    };
+    /**
+     * Validate form
+     * @returns {boolean}
+     */
+    FormService.prototype.validate = function () {
+        this._errors = {};
+        for (var control in this._form.controls) {
+            if (!this._form.controls[control].valid) {
+                this._errors[control] = ['Required'];
+            }
+        }
+        return !(this._helperService.objectLength(this._errors) > 0);
+    };
+    /**
+     * Save form. Handle submit form.
+     * This method should be called from child component.
+     * @param route (optional route to overrides default route)
+     * @param hasValidation
+     * @returns {Promise}
+     */
+    FormService.prototype.save = function (route, hasValidation) {
+        if (route === void 0) { route = null; }
+        if (hasValidation === void 0) { hasValidation = true; }
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            if (!that._tasksLoaderManagerService.addTask('SAVE_' + that._uniqueId)) {
+                // Form is already in save process
+                return reject(false);
+            }
+            // Current form object has changes from user?
+            // Note: Objects in session storage enables the "_forceSubmit" by default
+            if (that._forceSubmit || !that._object['id'] || that.hasChanges()) {
+                // Validate form
+                if (hasValidation && !that.validate()) {
+                    that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId); // Cancel save, form has errors
+                    return reject(false);
+                }
+                // Set the valid token
+                that._helperService.setFormToken(that._$form);
+                // Get form data
+                var data = that._$form.serialize();
+                var id = that._object['id'] ? that._object['id'] : null;
+                // Save form
+                return that._dataService.save(data, id, route).then(function (object) {
+                    // Force submit is reset, each activation is valid  only once
+                    that._forceSubmit = false;
+                    // Update form with updated object
+                    that.setObject(object);
+                    // Task removed in "setObject" method to prevent multiple updates of it
+                    //that._tasksLoaderManagerService.delTask('SAVE_'+that._uniqueId);
+                    return resolve(true);
+                }, function (errors) {
+                    if (errors) {
+                        that._errors = errors;
+                    }
+                    that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId);
+                    return reject(errors);
+                });
+            }
+            else {
+                that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId);
+                return resolve(true);
+            }
+        });
+    };
+    /**
+     * Save action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormService.prototype.saveAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        this.save().then(function (data) { return; }, function (errors) { return; });
+    };
+    /**
+     * Save and enter to detail action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormService.prototype.saveAndEnterAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        var that = this;
+        this.save().then(function (data) {
+            that.newAction();
+            return;
+        }, function (errors) { return; });
+    };
+    /**
+     * Add a new entry (newObject is used in name because new is a reserved word).
+     * @returns {Promise}
+     */
+    FormService.prototype.newObject = function () {
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            that._dataService.newObject().then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
+        });
+    };
+    /**
+     * Add a new entry action.
+     * This method should be called when the form is initialized.
+     * @param $event
+     */
+    FormService.prototype.newAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        this.newObject().then(function (data) { return; }, function (errors) { return; });
+    };
+    /**
+     * Save and add a new entry.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormService.prototype.saveAndNewAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        var that = this;
+        this.save().then(function (data) { that.newAction(); return; }, function (errors) { return; });
+    };
+    /**
+     * Reset object.
+     * This method should be called from child component.
+     * @param hasConfirm (launch confirm to user if object has unsaved changes)
+     * @returns {Promise}
+     */
+    FormService.prototype.reset = function (hasConfirm) {
+        if (hasConfirm === void 0) { hasConfirm = true; }
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            if (that.hasChanges()) {
+                if (hasConfirm) {
+                    return that.confirmAndSetObject(that._originalNormalizedObject).then(function (data) { return resolve(true); }, function (errors) { return reject(false); });
+                }
+                else {
+                    that.setObject(that._originalNormalizedObject);
+                    return resolve(true);
+                }
+            }
+            else {
+                return resolve(true);
+            }
+        });
+    };
+    /**
+     * Reset action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormService.prototype.resetAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        this.reset().then(function (data) { return; }, function (errors) { return; });
+    };
+    /**
+     * Set forceSubmit
+     * @param forceSubmit
+     * @returns {FormService}
+     */
+    FormService.prototype.setForceSubmit = function (forceSubmit) {
+        if (forceSubmit === void 0) { forceSubmit = true; }
+        this._forceSubmit = forceSubmit;
+        return this;
+    };
+    FormService = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Injectable */])(),
+        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('DataService')),
+        __param(3, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('HelperService')),
+        __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["J" /* Optional */])()), __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('FormServiceProvider')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["a" /* ModalService */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */], Object, Object, __WEBPACK_IMPORTED_MODULE_3__tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object])
+    ], FormService);
+    return FormService;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/legend/ts/src/legend.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LegendComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+// Component
+var LegendComponent = (function () {
+    function LegendComponent(_provider) {
+        this._provider = _provider;
+    }
+    LegendComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'js_legend',
+            template: "\n    <dl *ngIf=\"_provider.length > 0\" class=\"row legend\">\n        <ng-template ngFor let-legend [ngForOf]=\"_provider\" let-i=\"index\">\n          <div class=\"col-auto mr-auto\"><dt [ngClass]=\"legend['class']\"></dt><dd>{{legend['label']}}</dd></div>\n        </ng-template>\n    </dl>\n    "
+        }),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('LegendProvider')),
+        __metadata("design:paramtypes", [Object])
+    ], LegendComponent);
+    return LegendComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/legend/ts/src/legend.ext-module.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return LegendExtModule; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__legend_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/legend/ts/src/legend.component.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+var LegendExtModule = (function () {
+    function LegendExtModule() {
+    }
+    LegendExtModule = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* NgModule */])({
+            imports: [__WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */]],
+            declarations: [
+                __WEBPACK_IMPORTED_MODULE_2__legend_component__["a" /* LegendComponent */]
+            ],
+            exports: [__WEBPACK_IMPORTED_MODULE_2__legend_component__["a" /* LegendComponent */]]
+        })
+    ], LegendExtModule);
+    return LegendExtModule;
+}());
+
+
 
 /***/ }),
 
@@ -108804,7 +109789,7 @@ var ModalDialogComponent = (function (_super) {
     ModalDialogComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: '.js_modalDialog',
-            template: "<div class=\"modal-header\">\n        <h3 class=\"modal-title\">{{title}}</h3>\n    </div>\n    <div class=\"modal-body\">{{body}}</div>\n    <div class=\"modal-footer\">\n        <button *ngIf=\"isDialog\" class=\"btn btn-default\" (click)=\"closeAction($event, false)\">Cancel</button>\n        <button class=\"btn btn-primary\" (click)=\"closeAction($event, true)\">Ok</button>\n    </div>\n    "
+            template: "<div class=\"modal-header\">\n        <h3 class=\"modal-title\">{{title}}</h3>\n    </div>\n    <div class=\"modal-body\">{{body}}</div>\n    <div class=\"modal-footer\">\n        <div class=\"row\">\n            <div class=\"col-auto ml-auto\">\n                <button *ngIf=\"isDialog\" class=\"btn btn-light\" (click)=\"closeAction($event, false)\">Cancel</button>\n                <button class=\"btn btn-primary\" (click)=\"closeAction($event, true)\">Ok</button>\n            </div>\n        </div>\n    </div>\n    "
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["r" /* ElementRef */],
             __WEBPACK_IMPORTED_MODULE_0__angular_core__["R" /* Renderer */]])
@@ -108919,8 +109904,8 @@ var ModalWrapperComponent = (function () {
         return;
     };
     __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_4" /* ViewChild */])('js_modalContainer', { read: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_5" /* ViewContainerRef */] }),
-        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_0__angular_core__["_5" /* ViewContainerRef */])
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_4" /* ViewChild */])('js_modalContainer', { read: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* ViewContainerRef */] }),
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* ViewContainerRef */])
     ], ModalWrapperComponent.prototype, "viewContainerRef", void 0);
     ModalWrapperComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
@@ -109529,7 +110514,18 @@ var BaseExtensionComponent = (function () {
      * @returns {any|null}
      */
     BaseExtensionComponent.prototype.getProviderAttr = function (attribute) {
-        return this._provider[attribute] || null;
+        return ((this._provider[attribute] === undefined) ? null : this._provider[attribute]); // Can be zero
+    };
+    /**
+     * Get lang
+     * @param key
+     * @returns {any}
+     */
+    BaseExtensionComponent.prototype.getLang = function (key) {
+        return ((!this._provider['language'] || (this._provider['language'][key] === undefined))
+            ? key
+            : this._provider['language'][key] // Can be zero
+        );
     };
     /**
      * Get "localData" attribute
@@ -109555,7 +110551,7 @@ var BaseExtensionComponent = (function () {
     BaseExtensionComponent.prototype.ngAfterViewInit = function () {
         // Start loading lazy images
         // @TODO: This method should be called from DataService each time that objects are updated
-        $(this._elementRef.nativeElement).find('.js_lazy').Lazy();
+        //$(this._elementRef.nativeElement).find('.js_lazy').Lazy();
     };
     BaseExtensionComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
@@ -109615,6 +110611,8 @@ var BoxExtensionComponent = (function (_super) {
      */
     BoxExtensionComponent.prototype.initBoxExtensionComponent = function (elementRef, renderer, provider) {
         _super.prototype.initBaseExtensionComponent.call(this, elementRef, renderer, provider);
+        var expanderControl = this.getProviderAttr('controls')['expander'];
+        this._isExpanded = (!expanderControl['isEnabled'] || expanderControl['isExpanded']);
     };
     /**
      * Expander action. Used by expanded directive output.
@@ -109694,6 +110692,10 @@ var DataService = (function () {
         this._onObjectsRefreshEmitter = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* EventEmitter */]();
         this._onObjectsChangeEmitter = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* EventEmitter */]();
         this.setObjects(this._provider.objects || []);
+        // If object is defined, then set the object (used by dynamic entity detail and login flat form)
+        if (this._provider.object) {
+            this.setLocalObject(this._provider.object);
+        }
         // Initialize the search
         this.initSearch();
     }
@@ -109832,7 +110834,7 @@ var DataService = (function () {
                     }
                     // Object
                     that._objectIndex = index; // The index of original object that was selected
-                    that.setLocalObject(data.object);
+                    that.setLocalObject(data.object, false);
                     // Now object has all of fields with the values, is not limited to the search selected field,
                     // so we need normalize the object, because now it can has new values.
                     that.setNormalizedObject();
@@ -109854,9 +110856,7 @@ var DataService = (function () {
     DataService.prototype.setObject = function (object, index) {
         if (index === void 0) { index = null; }
         if (object) {
-            // Normalize object to template
-            this._normalizedObject = this._helperService.cloneObject(object, true);
-            this.normalizeObjectsToTemplate([this._normalizedObject]);
+            this.setLocalObject(object);
             // Objects stored in session does not be considered really objects.
             if (object['id'] && !object['_isSessionStorage']) {
                 var objectsProvider = (this._objectsProvider || this._provider.objects);
@@ -109877,7 +110877,6 @@ var DataService = (function () {
                     this._newObjectsIds.push(object['id']); // New object added
                 }
             }
-            this.setLocalObject(object);
         }
         return this;
     };
@@ -109906,9 +110905,16 @@ var DataService = (function () {
      * Set local object (when the object is changed based in the objects array from _provider,
      * always is an internal order)
      * @param object
+     * @param hasTemplateNormalization
      * @returns {DataService}
      */
-    DataService.prototype.setLocalObject = function (object) {
+    DataService.prototype.setLocalObject = function (object, hasTemplateNormalization) {
+        if (hasTemplateNormalization === void 0) { hasTemplateNormalization = true; }
+        if (hasTemplateNormalization) {
+            // Normalize object to template
+            this._normalizedObject = this._helperService.cloneObject(object, true);
+            this.normalizeObjectsToTemplate([this._normalizedObject]);
+        }
         this._object = object;
         this._onObjectChangeEmitter.emit(this._object);
         return this;
@@ -110004,6 +111010,20 @@ var DataService = (function () {
         this._newObjectsIds = [];
         this._objectIndex = null; // Reset object index
         return this;
+    };
+    /**
+     * Set object index
+     * @param index
+     */
+    DataService.prototype.setObjectIndex = function (index) {
+        var objectsProvider = (this._objectsProvider || this._provider.objects);
+        if (index && objectsProvider[index]) {
+            this._objectIndex = index;
+            // Set the object to emit the object change for any process pendent
+            this.setLocalObject(objectsProvider[index], false);
+            return true;
+        }
+        return false;
     };
     /**
      * Push to objects
@@ -110223,12 +111243,13 @@ var DataService = (function () {
                 }
                 // For "enum" type (key is the label, pattern of Symfony ChoiceType)
                 if (fieldsChoices && fieldsChoices[field] && fieldsChoices[field]['value']) {
-                    var enumObj = fieldsChoices[field]['value'];
+                    var enumChoices = fieldsChoices[field]['value'];
                     for (var _b = 0, objects_3 = objects; _b < objects_3.length; _b++) {
                         var obj = objects_3[_b];
-                        for (var enumKey in enumObj) {
-                            if (enumObj[enumKey] == obj[field]) {
-                                obj[field] = enumKey;
+                        for (var _c = 0, enumChoices_1 = enumChoices; _c < enumChoices_1.length; _c++) {
+                            var enumChoice = enumChoices_1[_c];
+                            if (enumChoice['id'] == obj[field]) {
+                                obj[field] = enumChoice['label'];
                             }
                         }
                     }
@@ -110300,26 +111321,36 @@ var DataService = (function () {
                 case 'monetary':
                     return (value + '€');
                 case 'icon':
-                    return ('<i class="fa ' + value + '"></i>');
+                    var iconText = (fieldMetadata['fieldInView'] && object[fieldMetadata['fieldInView']]
+                        ? ' <span>' + object[fieldMetadata['fieldInView']] + '</span>'
+                        : '');
+                    return ('<i class="fa ' + value + '"></i>' + iconText);
                 case 'link':
-                    return ('<a href="' + value + '" target="_blank">' + value + '</a>');
+                    return ('<a href="' + value + '" target="_blank" class="text-base">' + value + '</a>');
                 case 'img':
                 case 'avatar':
-                    var extraClass = ((fieldMetadata['type'] == 'avatar') ? 'img-circle' : 'thumbnail');
+                    var extraClass = ((fieldMetadata['type'] == 'avatar') ? 'img-circle' : 'thumbnail'), imageLabel = (fieldMetadata['fieldInView'] && object[fieldMetadata['fieldInView']]
+                        ? '<div><small>' + object[fieldMetadata['fieldInView']] + '</small></div>'
+                        : '');
                     // No image is provided
                     if (!value) {
                         return ('<img alt="' + fieldMetadata['label'] + '" class="' + extraClass
-                            + '" src="/assets/img/dummy-48x48.png">');
+                            + '" src="/assets/img/dummy-48x48.png" width="48" height="48">' + imageLabel);
                     }
+                    // @TODO NOTE: Image lazy load is disabled, needs to be checked later
                     // Regular load
-                    if (!this._hasAssetsLazyLoader) {
-                        return ('<img alt="' + fieldMetadata['label'] + '" class="' + extraClass
-                            + '" src="' + (this._helperService.getUploadWebPath(value) || value) + '">');
-                    }
-                    // Use lazy loader
-                    return this._sanitizer.bypassSecurityTrustHtml('<img alt="' + fieldMetadata['label'] + '" class="js_lazy ' + extraClass
-                        + '" src="/assets/img/dummy-48x48.png" data-src="'
-                        + (this._helperService.getUploadWebPath(value) || value) + '">');
+                    //if (!this._hasAssetsLazyLoader) {
+                    return ('<img alt="' + fieldMetadata['label'] + '" class="' + extraClass
+                        + '" src="' + (this._helperService.getUploadWebPath(value) || value)
+                        + '" width="48" height="48">' + imageLabel);
+                //}
+                // Use lazy loader
+                /*return this._sanitizer.bypassSecurityTrustHtml(
+                    '<img alt="' + fieldMetadata['label'] + '" class="js_lazy ' + extraClass
+                    + '" src="/assets/img/dummy-48x48.png" data-src="'
+                    + (this._helperService.getUploadWebPath(value) || value)
+                    + '" width="48" height="48">' + imageLabel
+                );*/
                 case 'status':
                     var statusMap = { 'NO': 'danger', 'PARTIAL': 'warning', 'YES': 'primary' };
                     return ('<span class="status -' + (statusMap[value] || 'danger') + '"></span>');
@@ -110393,9 +111424,6 @@ var DataService = (function () {
      * @returns {DataService}
      */
     DataService.prototype.setNewObject = function (object) {
-        // Normalize object to template
-        this._normalizedObject = this._helperService.cloneObject(object, true);
-        this.normalizeObjectsToTemplate([this._normalizedObject]);
         // Set object
         this._objectIndex = null;
         this.setLocalObject(object);
@@ -110477,14 +111505,16 @@ var DataService = (function () {
     };
     /**
      * Get choices of entity based on search configuration (for select, auto-complete, etc.)
+     * @param route
      * @returns {DataService}
      */
-    DataService.prototype.choices = function () {
+    DataService.prototype.choices = function (route) {
+        if (route === void 0) { route = null; }
         var that = this, noReset = true;
         // Only search if parameters have changed (only criteria is changed)
         if (!this._helperService.isEqualObject(this._provider['search']['criteria'], this._candidateSearch['criteria'])) {
             // Update search
-            this._provider['search']['criteria'] = this._helperService.cloneObject(this._candidateSearch['criteria'], true);
+            this._provider['search']['criteria'] = this._candidateSearch['criteria'].slice(0);
             // Reset pagination for new search
             this.resetPagination();
             // To reset objects
@@ -110492,7 +111522,8 @@ var DataService = (function () {
         }
         // No field is necessary, is returned the choices pattern (minimizes data sent)
         this._provider['search']['fields'] = [];
-        this._postService.post(this._provider.route['choices']['url'], this.getRequestData(null, noReset)).then(function (data) {
+        route = (route || this._provider.route['choices']['url']);
+        this._postService.post(route, this.getRequestData(null, noReset)).then(function (data) {
             data.objects = (data.objects || []);
             that.handleResponse(data, null, noReset);
         }, function (errors) { console.log(errors); });
@@ -110595,6 +111626,22 @@ var DataService = (function () {
         return this;
     };
     /**
+     * Get pdf
+     * @param index
+     * @returns any
+     */
+    DataService.prototype.pdf = function (index) {
+        var objectsProvider = (this._objectsProvider || this._provider.objects), object = (objectsProvider[index] || null);
+        if (object) {
+            // Update "isAccessed" value of object,
+            // in this case does not matter if object is really updated with success in database
+            if (object['__isAccessed'] !== undefined) {
+                object['__isAccessed'] = true;
+            }
+            return this.redirect('pdf', index);
+        }
+    };
+    /**
      * Detail object.
      * @param index
      */
@@ -110609,9 +111656,18 @@ var DataService = (function () {
      */
     DataService.prototype.redirect = function (route, index) {
         if (index === void 0) { index = null; }
+        var objectId = null, idField = (this._provider.route[route]['idField'] || 'id');
+        // Get index from last selected object if not defined
         index = ((index == null) ? this._objectIndex : index);
-        var objectsProvider = (this._objectsProvider || this._provider.objects), idField = (this._provider.route[route]['idField'] || 'id');
-        location.href = (this._provider.route[route]['url'] + '/' + objectsProvider[index][idField]);
+        if (index !== null) {
+            var objectsProvider = (this._objectsProvider || this._provider.objects);
+            objectId = objectsProvider[index][idField];
+        }
+        else if (this._object) {
+            // Id from provider object (defined on constructor)
+            objectId = this._object[idField];
+        }
+        location.href = (this._provider.route[route]['url'] + (objectId ? ('/' + objectId) : ''));
         return;
     };
     /**
@@ -110667,7 +111723,7 @@ var DataService = (function () {
             }
             else {
                 // No indexes to submit
-                return resolve(null);
+                return resolve({});
             }
         });
     };
@@ -110882,6 +111938,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var ExpanderComponent = (function () {
     function ExpanderComponent() {
         this.isExpanded = false;
+        this.labelCount = null;
+        this.labelIcon = null;
         this.hasIcon = true;
         this.customClass = ''; // customClass instead of class because is a reserved word
         this.onChange = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* EventEmitter */]();
@@ -110905,6 +111963,14 @@ var ExpanderComponent = (function () {
     ], ExpanderComponent.prototype, "label", void 0);
     __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Input */])(),
+        __metadata("design:type", Number)
+    ], ExpanderComponent.prototype, "labelCount", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Input */])(),
+        __metadata("design:type", String)
+    ], ExpanderComponent.prototype, "labelIcon", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Input */])(),
         __metadata("design:type", Boolean)
     ], ExpanderComponent.prototype, "hasIcon", void 0);
     __decorate([
@@ -110918,7 +111984,7 @@ var ExpanderComponent = (function () {
     ExpanderComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'js_expander',
-            template: "\n    <a [ngClass]=\"['no-user-select', 'expander', customClass]\"\n       (click)=\"toggleAction($event)\">\n        <i *ngIf=\"hasIcon\" [ngClass]=\"['fa', (isExpanded ? 'fa-angle-down' : 'fa-angle-right')]\"></i>\n        <span [innerHTML]=\"label\"></span></a>\n    "
+            template: "\n    <a [ngClass]=\"['no-user-select', 'expander', customClass]\"\n       (click)=\"toggleAction($event)\">\n        <i *ngIf=\"hasIcon\" [ngClass]=\"['mr-2 fa', (isExpanded ? 'fa-angle-down' : 'fa-angle-right')]\"></i>\n        <i *ngIf=\"labelIcon\" [ngClass]=\"['mr-2 fa', labelIcon]\"></i><span [innerHTML]=\"label\"></span><span *ngIf=\"labelCount !== undefined\" class=\"badge badge-info ml-2\">{{labelCount}}</span></a>\n    "
         })
     ], ExpanderComponent);
     return ExpanderComponent;
@@ -111025,716 +112091,6 @@ var FlashMessageService = (function () {
         __metadata("design:paramtypes", [])
     ], FlashMessageService);
     return FlashMessageService;
-}());
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/AppBundle/Resources/public/ts/form/form-popup.extension-component.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FormPopupExtensionComponent; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.extension-component.ts");
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-
-var FormPopupExtensionComponent = (function (_super) {
-    __extends(FormPopupExtensionComponent, _super);
-    function FormPopupExtensionComponent() {
-        var _this = _super.call(this) || this;
-        // Modal parameters
-        _this.onDismissEmitter = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* EventEmitter */]();
-        return _this;
-    }
-    /**
-     * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
-     * @param elementRef
-     * @param renderer
-     * @param provider
-     * @param formService
-     * @param dataService
-     */
-    FormPopupExtensionComponent.prototype.initFormPopupExtensionComponent = function (elementRef, renderer, provider, formService, dataService) {
-        _super.prototype.initFormExtensionComponent.call(this, elementRef, renderer, provider, formService, dataService);
-    };
-    /**
-     * Save object. Handle submit form.
-     * This override add a closePopup behavior.
-     * This method should be called from child component.
-     * @returns {Promise}
-     */
-    FormPopupExtensionComponent.prototype.save = function () {
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            that._formService.save().then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
-        });
-    };
-    /**
-     * Save action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormPopupExtensionComponent.prototype.saveAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        this.save().then(function (data) { return; }, function (errors) { return; });
-    };
-    /**
-     * Save and enter to detail action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormPopupExtensionComponent.prototype.saveAndEnterAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        this._formService.saveAndEnterAction($event);
-    };
-    /**
-     * Save and add a new entry.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormPopupExtensionComponent.prototype.saveAndNewAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        this._formService.saveAndNewAction($event);
-    };
-    /**
-     * Save and close popup action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormPopupExtensionComponent.prototype.saveAndCloseAction = function ($event) {
-        var _this = this;
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        this.save().then(function (data) { _this.closeAction(); return; }, function (errors) { return; });
-    };
-    /**
-     * Reset action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormPopupExtensionComponent.prototype.resetAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        this._formService.resetAction($event);
-    };
-    /**
-     * Cancel action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormPopupExtensionComponent.prototype.cancelAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        this.closeAction($event);
-    };
-    /**
-     * Close action.
-     * @param $event
-     */
-    FormPopupExtensionComponent.prototype.closeAction = function ($event) {
-        var _this = this;
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        // Current form object has changes from user?
-        this._formService.reset().then(function (data) {
-            _this.onDismissEmitter.emit(data);
-            return;
-        }, function (errors) { return; });
-    };
-    FormPopupExtensionComponent = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: '.js_formPopup',
-            template: ''
-        }),
-        __metadata("design:paramtypes", [])
-    ], FormPopupExtensionComponent);
-    return FormPopupExtensionComponent;
-}(__WEBPACK_IMPORTED_MODULE_1__form_extension_component__["a" /* FormExtensionComponent */]));
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/AppBundle/Resources/public/ts/form/form.extension-component.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FormExtensionComponent; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__base_base_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/base/base.extension-component.ts");
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-
-// Component
-var FormExtensionComponent = (function (_super) {
-    __extends(FormExtensionComponent, _super);
-    function FormExtensionComponent() {
-        return _super.call(this) || this;
-    }
-    /**
-     * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
-     * @param elementRef
-     * @param renderer
-     * @param provider
-     * @param formService
-     * @param dataService
-     */
-    FormExtensionComponent.prototype.initFormExtensionComponent = function (elementRef, renderer, provider, formService, dataService) {
-        // Parent init (construct)
-        _super.prototype.initBaseExtensionComponent.call(this, elementRef, renderer, provider);
-        // Constructor vars
-        this._formService = formService;
-        this._dataService = dataService;
-    };
-    /**
-     * Lifecycle callback
-     */
-    FormExtensionComponent.prototype.ngAfterViewInit = function () {
-        this._formService.init(this);
-    };
-    FormExtensionComponent = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: '.js_form',
-            template: ''
-        }),
-        __metadata("design:paramtypes", [])
-    ], FormExtensionComponent);
-    return FormExtensionComponent;
-}(__WEBPACK_IMPORTED_MODULE_1__base_base_extension_component__["a" /* BaseExtensionComponent */]));
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FormService; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helper__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/helper.ts");
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-
-
-
-
-
-var FormService = (function () {
-    function FormService(_modalService, formBuilder, _dataService, _helperService, _tasksLoaderManagerService, _provider) {
-        var _this = this;
-        this._modalService = _modalService;
-        this._dataService = _dataService;
-        this._helperService = _helperService;
-        this._tasksLoaderManagerService = _tasksLoaderManagerService;
-        this._provider = _provider;
-        this._component = null; // Parent component that uses and implement this service
-        this._originalObject = {}; // Original object to compare changes and reset object in DataService
-        this._originalNormalizedObject = {}; // Original normalized (for form) object to compare changes and reset object in form
-        this._object = {}; // Object used by form
-        this._$form = null; // DOM form
-        this._errors = {}; // Form errors validation
-        // Set default values for provider
-        if (!this._provider) {
-            this._provider = {};
-        }
-        this._uniqueId = this._helperService.getUniqueId();
-        this._onObjectChangeEmitter = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* EventEmitter */]();
-        // Object change event subscription
-        this._onObjectChangeSubscription = this._dataService.getOnObjectChangeEmitter()
-            .subscribe(function (object) { return _this.onObjectChangeSubscription(object); });
-        this._forceSubmit = false;
-        this._preventObjectOverride = true;
-        // Set object, if it has not been setted before open the form
-        if (!this._dataService.getObject()) {
-            // If object is not setted, create a new
-            var that_1 = this;
-            this.newObject().then(function (data) {
-                that_1.setObject(_this._dataService.getObject());
-                that_1.buildForm(formBuilder);
-            }, function (errors) { return; });
-        }
-        else {
-            this.setObject(this._dataService.getObject());
-            this.buildForm(formBuilder);
-        }
-    }
-    /**
-     * Build form
-     * @param formBuilder
-     * @returns {FormService}
-     */
-    FormService.prototype.buildForm = function (formBuilder) {
-        var formControls = {}, fields = (this._provider.fields || this._dataService.getFields('form') || []).concat(this._helperService.objectKeys(this._dataService.getProviderExtraDataAttr('fields')));
-        // Set form controls
-        for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
-            var field = fields_1[_i];
-            formControls[field] = [this._object[field] || null];
-        }
-        this._form = formBuilder.group(formControls);
-        return this;
-    };
-    /**
-     * Initialization of service.
-     * This method should be called in "ngOnInit" method of parent component,
-     * so the template has been rendered.
-     * @param component (parent component)
-     * @returns {FormService}
-     */
-    FormService.prototype.init = function (component) {
-        // Local variables
-        this._component = component;
-        // @TODO: discontinue this provider, and keep only the second verification
-        this._preventObjectOverride = this._component.getProviderAttr('preventObjectOverride');
-        if (this._preventObjectOverride) {
-            this._preventObjectOverride = (!this._provider.hasOwnProperty('hasPreventObjectOverride')
-                || this._provider['hasPreventObjectOverride']);
-        }
-        // Note: _$form needs to be setted each time that the component changes, otherwise if you set the form
-        // only once, form loss your binding consistence from the second time that it is opened and setted a
-        // different object. Ie: "BookingServicePriceEdit", field "isVatIncluded" and "markupValue" loss binding
-        // consistence and the data is not correctly sent to server!!!!
-        this._$form = $(this._component._elementRef.nativeElement).find('form');
-        return this;
-    };
-    ///////////////////////////////////////////////
-    // It's no more necessary, because we only create the form (open popup) after get the
-    // promise successful response (get, new or clone object), so this code is kept here for future consideration.
-    ///////////////////////////////////////////////
-    /**
-     * Is Initialized
-     * Controls if FormService has been initialized the "formBuilder group",
-     * to avoid the component render the template form before and break
-     * @returns {boolean}
-     */
-    /*public isInitialized(): boolean
-    {
-        return (this.getForm() ? true : false);
-    }*/
-    /**
-     * Get form object emitter to tell all subscribers about changes
-     * @returns {EventEmitter<any>}
-     */
-    FormService.prototype.getOnObjectChangeEmitter = function () {
-        return this._onObjectChangeEmitter;
-    };
-    /**
-     * On object change subscription. Handle with object changes in DataService.
-     * @param object
-     */
-    FormService.prototype.onObjectChangeSubscription = function (object) {
-        if ((object != this._originalObject) // Set object only if is different
-            && !this._tasksLoaderManagerService.hasTask('SAVE_' + this._uniqueId)) {
-            // Form does not need to confirm object override
-            if (!this._preventObjectOverride) {
-                this.setObject(object);
-                return;
-            }
-            // Confirm object override by user to prevent data loss
-            this.confirmAndSetObject(object).then(function (data) { return; }, function (errors) { return; });
-        }
-    };
-    /**
-     * Set _preventObjectOverride
-     * @param value
-     * @returns {FormService}
-     */
-    FormService.prototype.setPreventObjectOverride = function (value) {
-        this._preventObjectOverride = value;
-        return this;
-    };
-    /**
-     * Confirm and set object. Check for object changes and confirm with the user to discard them, then set
-     * the object according with the ser response.
-     * @param object
-     * @returns {Promise}
-     */
-    FormService.prototype.confirmAndSetObject = function (object) {
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            // Current form object has changes from user?
-            if (that.hasChanges()) {
-                // Dialog message
-                return that._modalService.dialog().then(function (hasConfirm) {
-                    if (hasConfirm) {
-                        that.setObject(object);
-                        return resolve(true);
-                    }
-                    else {
-                        // Keep the object in DataService
-                        that._dataService.setObject(that._originalObject);
-                        return reject(false);
-                    }
-                }, function (errors) { console.log(errors); return reject(false); });
-            }
-            else {
-                that.setObject(object);
-                return resolve(true);
-            }
-        });
-    };
-    /**
-     * Set object
-     * @param object
-     * @returns {FormService}
-     */
-    FormService.prototype.setObject = function (object) {
-        // Set only if is a different object
-        if (object && (object != this._originalObject)) {
-            // Keep the original object from dataService
-            this._originalObject = object;
-            this._tasksLoaderManagerService.delTask('SAVE_' + this._uniqueId); // Waiting mode for save process ends here, after update the original object.
-            // Normalize object to form
-            this._originalNormalizedObject = __WEBPACK_IMPORTED_MODULE_4__helper__["a" /* Helper */].cloneObject(this._originalObject, true);
-            this.normalizeObject(this._originalNormalizedObject);
-            // Update form object
-            this._object = __WEBPACK_IMPORTED_MODULE_4__helper__["a" /* Helper */].cloneObject(this._originalNormalizedObject, true);
-            // Reset errors
-            this._errors = {};
-            // This object is saved in session and needs to be confirmed by user before save them in database
-            this._forceSubmit = (object['_isSessionStorage'] ? true : false);
-            this._onObjectChangeEmitter.emit(this._object); // Object as changed to the original, notify subscribers
-        }
-        return this;
-    };
-    /**
-     * Normalize objects to form
-     * Detect fields that needs to be normalized
-     * @param object
-     * @param fields
-     * @returns {FormService}
-     */
-    FormService.prototype.normalizeObject = function (object, fields) {
-        if (fields === void 0) { fields = null; }
-        fields = (fields || this._dataService.getProviderAttr('fields')['form']);
-        if (object && fields) {
-            var fieldsMetadata = this._dataService.getProviderAttr('fields')['metadata'];
-            for (var _i = 0, fields_2 = fields; _i < fields_2.length; _i++) {
-                var field = fields_2[_i];
-                var fieldMetadata = fieldsMetadata[field];
-                switch (fieldMetadata['type']) {
-                    case 'date':
-                        object[field] = this.normalizeValue(object[field], fieldMetadata['type']);
-                        break;
-                }
-            }
-        }
-        return this;
-    };
-    /**
-     * Normalize value to form
-     * @param value
-     * @param type
-     * @returns any
-     */
-    FormService.prototype.normalizeValue = function (value, type) {
-        switch (type) {
-            case 'date':
-                if (value && (typeof value == 'string')) {
-                    var dateArr = value.split("-");
-                    return {
-                        year: parseInt(dateArr[0]),
-                        month: parseInt(dateArr[1]),
-                        day: parseInt(dateArr[2])
-                    };
-                }
-                return value;
-        }
-    };
-    /**
-     * Get object
-     * @returns any
-     */
-    FormService.prototype.getObject = function () {
-        return this._object;
-    };
-    /**
-     * Get originalObject
-     * @returns any
-     */
-    FormService.prototype.getOriginalObject = function () {
-        return this._originalNormalizedObject;
-    };
-    /**
-     * Check if the object has changes from user
-     * @returns {boolean|Boolean}
-     */
-    FormService.prototype.hasChanges = function () {
-        return (!this._helperService.isEqualObject(this._object, this._originalNormalizedObject));
-    };
-    /**
-     * Get form
-     * @returns any
-     */
-    FormService.prototype.getForm = function () {
-        return this._form;
-    };
-    /**
-     * Set errors
-     * @param errors
-     * @returns {FormService}
-     */
-    FormService.prototype.setErrors = function (errors) {
-        this._errors = (errors || {});
-        return this;
-    };
-    /**
-     * Get errors
-     * @returns any
-     */
-    FormService.prototype.getErrors = function () {
-        return this._errors;
-    };
-    /**
-     * Set form field value
-     * @param field
-     * @param value
-     */
-    FormService.prototype.setFormFieldValue = function (field, value) {
-        if (value && (field in this._object)) {
-            this._object[field] = value;
-        }
-    };
-    /**
-     * Get view object (normalized object in DataService)
-     * @returns {any|{}}
-     */
-    FormService.prototype.getViewObject = function () {
-        return (this._dataService.getNormalizedObject() || {});
-    };
-    /**
-     * Save form. Handle submit form.
-     * This method should be called from child component.
-     * @param route (optional route to overrides default route)
-     * @param hasValidation
-     * @returns {Promise}
-     */
-    FormService.prototype.save = function (route, hasValidation) {
-        if (route === void 0) { route = null; }
-        if (hasValidation === void 0) { hasValidation = true; }
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            if (!that._tasksLoaderManagerService.addTask('SAVE_' + that._uniqueId)) {
-                // Form is already in save process
-                return reject(false);
-            }
-            // Current form object has changes from user?
-            // Note: Objects in session storage enables the "_forceSubmit" by default
-            if (that._forceSubmit || !that._object['id'] || that.hasChanges()) {
-                // Validate form
-                if (hasValidation) {
-                    that._errors = {};
-                    for (var control in that._form.controls) {
-                        if (!that._form.controls[control].valid) {
-                            that._errors[control] = ['Required'];
-                        }
-                    }
-                    if (that._helperService.objectLength(that._errors) > 0) {
-                        that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId); // Cancel save, form has errors
-                        return reject(false);
-                    }
-                }
-                // Set the valid token
-                that._helperService.setFormToken(that._$form);
-                // Get form data
-                var data = that._$form.serialize();
-                var id = that._object['id'] ? that._object['id'] : null;
-                // Save form
-                return that._dataService.save(data, id, route).then(function (object) {
-                    // Force submit is reset, each activation is valid  only once
-                    that._forceSubmit = false;
-                    // Update form with updated object
-                    that.setObject(object);
-                    return resolve(true);
-                }, function (errors) {
-                    if (errors) {
-                        that._errors = errors;
-                    }
-                    that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId);
-                    return reject(errors);
-                });
-            }
-            else {
-                that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId);
-                return resolve(true);
-            }
-        });
-    };
-    /**
-     * Save action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormService.prototype.saveAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        this.save().then(function (data) { return; }, function (errors) { return; });
-    };
-    /**
-     * Save and enter to detail action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormService.prototype.saveAndEnterAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        var that = this;
-        this.save().then(function (data) {
-            that.newAction();
-            return;
-        }, function (errors) { return; });
-    };
-    /**
-     * Add a new entry (newObject is used in name because new is a reserved word).
-     * @returns {Promise}
-     */
-    FormService.prototype.newObject = function () {
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            that._dataService.newObject().then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
-        });
-    };
-    /**
-     * Add a new entry action.
-     * This method should be called when the form is initialized.
-     * @param $event
-     */
-    FormService.prototype.newAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        this.newObject().then(function (data) { return; }, function (errors) { return; });
-    };
-    /**
-     * Save and add a new entry.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormService.prototype.saveAndNewAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        var that = this;
-        this.save().then(function (data) { that.newAction(); return; }, function (errors) { return; });
-    };
-    /**
-     * Reset object.
-     * This method should be called from child component.
-     * @param hasConfirm (launch confirm to user if object has unsaved changes)
-     * @returns {Promise}
-     */
-    FormService.prototype.reset = function (hasConfirm) {
-        if (hasConfirm === void 0) { hasConfirm = true; }
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            if (that.hasChanges()) {
-                if (hasConfirm) {
-                    return that.confirmAndSetObject(that._originalNormalizedObject).then(function (data) { return resolve(true); }, function (errors) { return reject(false); });
-                }
-                else {
-                    that.setObject(that._originalNormalizedObject);
-                    return resolve(true);
-                }
-            }
-            else {
-                return resolve(true);
-            }
-        });
-    };
-    /**
-     * Reset action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormService.prototype.resetAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        this.reset().then(function (data) { return; }, function (errors) { return; });
-    };
-    /**
-     * Set forceSubmit
-     * @param forceSubmit
-     * @returns {FormService}
-     */
-    FormService.prototype.setForceSubmit = function (forceSubmit) {
-        if (forceSubmit === void 0) { forceSubmit = true; }
-        this._forceSubmit = forceSubmit;
-        return this;
-    };
-    FormService = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["w" /* Injectable */])(),
-        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('DataService')),
-        __param(3, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('HelperService')),
-        __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["J" /* Optional */])()), __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('FormServiceProvider')),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["a" /* ModalService */],
-            __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */], Object, Object, __WEBPACK_IMPORTED_MODULE_3__tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object])
-    ], FormService);
-    return FormService;
 }());
 
 
@@ -111857,6 +112213,20 @@ var Helper = (function () {
     Helper.arraySearch = function (value, array) {
         var index = $.inArray(value, array);
         return ((index >= 0) ? index : null);
+    };
+    /**
+     * Search objectKey value in array of objects
+     * @param value
+     * @param objectKey
+     * @param array
+     */
+    Helper.arraySearchObj = function (value, objectKey, array) {
+        for (var i = 0; i < array.length; i++) {
+            if (array[i][objectKey] && (array[i][objectKey] == value)) {
+                return i;
+            }
+        }
+        return null;
     };
     /**
      * Order objects by key
@@ -111983,6 +112353,8 @@ var Helper = (function () {
     Helper.getBoxProvider = function (data) {
         return Helper.mergeObjects(Helper.getBaseProvider(data), {
             label: data.label || '',
+            labelCount: ((data.labelCount === undefined) ? null : data.labelCount),
+            labelIcon: data.labelIcon || null,
             controls: {
                 expander: (data.controls && data.controls.expander),
                 legend: ((data['controls'] && data['controls']['legend']) ? data['controls']['legend'] : [])
@@ -111995,9 +112367,7 @@ var Helper = (function () {
      * @returns any
      */
     Helper.getEntityDetailProvider = function (data) {
-        return Helper.mergeObjects(Helper.getBaseProvider(data), {
-            popup: null // Create this value in component
-        });
+        return Helper.getBaseProvider(data);
     };
     /**
      * Get Entity Detail Preview Provider
@@ -112019,7 +112389,8 @@ var Helper = (function () {
     Helper.getBaseProvider = function (data) {
         return {
             localData: ((data.localData && data.localData.template) ? data.localData.template : {}),
-            extraData: ((data.extraData && data.extraData.template) ? data.extraData.template : null)
+            extraData: ((data.extraData && data.extraData.template) ? data.extraData.template : null),
+            language: (data.language ? data.language : {})
         };
     };
     /**
@@ -112314,7 +112685,592 @@ var PostService = (function () {
 
 /***/ }),
 
-/***/ "../../../../../src/HomeBundle/Resources/public/default/index/ts/$$_lazy_route_resource lazy recursive":
+/***/ "../../../../../src/AppBundle/Resources/public/ts/search/search-criteria.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export SearchCriteriaMap */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SearchCriteriaComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+/**
+ * Class provider for search criteria expressions and default values
+ */
+var SearchCriteriaMap = (function () {
+    function SearchCriteriaMap() {
+        // Expressions mapping.
+        this._exprMap = [
+            { key: 'lrlike', label: '?' },
+            { key: 'eq', label: '=' },
+            { key: 'neq', label: '<>' },
+            { key: 'gte', label: '>=' },
+            { key: 'lte', label: '<=' }
+        ];
+        // Default value mapping for field type.
+        this._defaultValueMap = {
+            'date': ((new Date()).toISOString().slice(0, 10)),
+            'boolean': 1
+        };
+        // Default expression mapping for field type.
+        this._defaultExprMap = {
+            'text': 'lrlike',
+            'code': 'lrlike',
+            'date': 'gte',
+            'boolean': 'eq'
+        };
+    }
+    /**
+     * Get expressions mapping
+     * @returns {any}
+     */
+    SearchCriteriaMap.prototype.getExprMap = function () {
+        return this._exprMap;
+    };
+    /**
+     * Get default expression
+     * @param type
+     * @returns {any}
+     */
+    SearchCriteriaMap.prototype.getDefaultExpr = function (type) {
+        if (type === void 0) { type = null; }
+        return ((type && this._defaultExprMap[type]) ? this._defaultExprMap[type] : 'eq');
+    };
+    /**
+     * Get default value
+     * @param type
+     * @returns {any}
+     */
+    SearchCriteriaMap.prototype.getDefaultValue = function (type) {
+        if (type === void 0) { type = null; }
+        return ((type && this._defaultValueMap[type]) ? this._defaultValueMap[type] : '');
+    };
+    return SearchCriteriaMap;
+}());
+
+// Component
+var SearchCriteriaComponent = (function () {
+    function SearchCriteriaComponent(_elementRef, _helperService, _dataService) {
+        this._elementRef = _elementRef;
+        this._helperService = _helperService;
+        this._dataService = _dataService;
+        // Injector to get dependencies. Used when injector comes from child component (like accordion)
+        this.injector = null;
+        // Denied types. Doesn't make sense to search for this filed types.
+        this._deniedTypes = ['file', 'icon', 'img', 'password', 'avatar'];
+        this._isExpanded = false;
+        this._searchCriteriaMap = new SearchCriteriaMap();
+    }
+    /**
+     * Set default values
+     * @param criteria
+     * @param field (field to override criteria['field'], because select change event was not update it yet)
+     */
+    SearchCriteriaComponent.prototype.setDefaults = function (criteria, field) {
+        if (field === void 0) { field = null; }
+        field = (field || criteria['field']);
+        if (field in this._fieldsMetadata) {
+            criteria['expr'] = this._searchCriteriaMap.getDefaultExpr(this._fieldsMetadata[field]['type']);
+            criteria['value'] = this._searchCriteriaMap.getDefaultValue(this._fieldsMetadata[field]['type']);
+        }
+    };
+    /**
+     * Add criteria
+     * @param $event
+     */
+    SearchCriteriaComponent.prototype.add = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+        }
+        var criteria = {
+            field: (this._fields[0] ? this._fields[0] : null),
+            expr: null,
+            value: null
+        };
+        this.setDefaults(criteria, null);
+        this._criteriaArr.push(criteria);
+    };
+    /**
+     * Delete criteria
+     * @param $event
+     * @param index
+     */
+    SearchCriteriaComponent.prototype.del = function ($event, index) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        this._criteriaArr.splice(index, 1);
+    };
+    /**
+     * Toggle isExpanded
+     * @param $event (value returned by expander directive)
+     */
+    SearchCriteriaComponent.prototype.toggleIsExpanded = function ($event) {
+        this._isExpanded = !this._isExpanded;
+    };
+    /**
+     * On field change
+     * @param $event
+     * @param criteria
+     */
+    SearchCriteriaComponent.prototype.onFieldChange = function ($event, criteria) {
+        // Field to override criteria['field'], because select change event was not update it yet
+        var field = $event.target.value || null;
+        this.setDefaults(criteria, field);
+    };
+    /**
+     * Host event
+     * @param $event
+     */
+    SearchCriteriaComponent.prototype.onDocumentClick = function ($event) {
+        if (!this._elementRef.nativeElement.contains($event.target)) {
+            this._isExpanded = false;
+        }
+    };
+    /**
+     * Lifecycle callback
+     */
+    SearchCriteriaComponent.prototype.ngOnInit = function () {
+        // If injector is provided, override dependencies
+        if (this.injector) {
+            this._dataService = this.injector.get('DataService');
+        }
+        this._criteriaArr = this._dataService.getCandidateSearchAttr('criteria');
+        this._fields = (this._dataService.getFields('view') || []);
+        this._fieldsMetadata = (this._dataService.getFields('metadata') || {});
+        if (this._criteriaArr.length < 1) {
+            this.add();
+        }
+    };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Input */])(),
+        __metadata("design:type", Object)
+    ], SearchCriteriaComponent.prototype, "injector", void 0);
+    SearchCriteriaComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'js_searchCriteria',
+            template: "\n    <js_expander [label]=\"'Filter'\" [hasIcon]=\"false\" [customClass]=\"'action'\" (onChange)=\"toggleIsExpanded($event, 'fields')\"></js_expander>\n    <div [hidden]=\"!_isExpanded\" class=\"container-fluid py-3 rounded white-dropdown search-criteria\">\n        <div class=\"row\">\n        <ng-template ngFor let-criteria [ngForOf]=\"_criteriaArr\" let-i=\"index\">\n            <div class=\"col col-md-6 controller\">\n                <div class=\"select\">\n                    <select [(ngModel)]=\"criteria['field']\"\n                            (change)=\"onFieldChange($event, criteria)\"\n                            class=\"form-control\">\n                        <ng-template ngFor let-field [ngForOf]=\"_fields\">\n                            <option *ngIf=\"!_helperService.inArray(_fieldsMetadata[field]['type'], _deniedTypes) && !_fieldsMetadata[field]['isObject']\"\n                                    value=\"{{field}}\">{{_fieldsMetadata[field]['label']}}</option>\n                        </ng-template>\n                    </select>\n                    <!-- ng switch should be here -->\n                    <ng-template [ngIf]=\"(_fieldsMetadata[criteria['field']]) && (_fieldsMetadata[criteria['field']]['type'] == 'boolean')\">\n                        <select [(ngModel)]=\"criteria['value']\"\n                                class=\"form-control\">\n                            <option *ngFor=\"let value of [{key: 1, label: 'Yes'}, {key: 0, label: 'No'}]\"\n                                    value=\"{{value['key']}}\">{{value['label']}}</option>\n                        </select>\n                    </ng-template>\n                    <ng-template [ngIf]=\"(!_fieldsMetadata[criteria['field']]) || (_fieldsMetadata[criteria['field']]['type'] != 'boolean')\">\n                        <select [(ngModel)]=\"criteria['expr']\"\n                                class=\"form-control\">\n                            <option *ngFor=\"let expr of _searchCriteriaMap.getExprMap()\"\n                                    value=\"{{expr['key']}}\">{{expr['label']}}</option>\n                        </select>\n                        <input [(ngModel)]=\"criteria['value']\"\n                               class=\"form-control\" type=\"text\">\n                    </ng-template>\n                </div>\n                <div class=\"actions\">\n                    <a class=\"fa fa-trash-o\" (click)=\"del($event, i)\"></a>\n                    <a *ngIf=\"(i+1) == _criteriaArr.length\" class=\"fa fa-plus\" (click)=\"add($event)\"></a>\n                </div>\n            </div>\n        </ng-template>\n        <div class=\"col controller\"\n             *ngIf=\"_criteriaArr.length < 1\">\n            <div class=\"actions\">\n                <a class=\"fa fa-plus\" (click)=\"add($event)\"></a>\n            </div>\n        </div>\n    </div>\n    ",
+            host: {
+                '(document:click)': 'onDocumentClick($event)',
+            }
+        }),
+        __param(1, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('HelperService')),
+        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["J" /* Optional */])()), __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('DataService')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["r" /* ElementRef */], Object, Object])
+    ], SearchCriteriaComponent);
+    return SearchCriteriaComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/ts/search/search-fields.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SearchFieldsComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+// Component
+var SearchFieldsComponent = (function () {
+    function SearchFieldsComponent(_elementRef, _helperService, _dataService) {
+        this._elementRef = _elementRef;
+        this._helperService = _helperService;
+        this._dataService = _dataService;
+        // Injector to get dependencies. Used when injector comes from child component (like accordion)
+        this.injector = null;
+        // Denied types. Doesn't make sense to show this filed types.
+        this._deniedTypes = ['password'];
+        this._isExpanded = false;
+    }
+    /**
+     * Toggle isExpanded
+     * @param $event (value returned by expander directive)
+     */
+    SearchFieldsComponent.prototype.toggleIsExpanded = function ($event) {
+        this._isExpanded = !this._isExpanded;
+    };
+    /**
+     * Host event
+     * @param $event
+     */
+    SearchFieldsComponent.prototype.onDocumentClick = function ($event) {
+        if (!this._elementRef.nativeElement.contains($event.target)) {
+            this._isExpanded = false;
+        }
+    };
+    /**
+     * Lifecycle callback
+     */
+    SearchFieldsComponent.prototype.ngOnInit = function () {
+        // If injector is provided, override dependencies
+        if (this.injector) {
+            this._dataService = this.injector.get('DataService');
+        }
+        this._search = this._dataService.getCandidateSearch();
+        this._fields = (this._dataService.getFields('view') || []);
+        this._fieldsMetadata = (this._dataService.getFields('metadata') || {});
+    };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Input */])(),
+        __metadata("design:type", Object)
+    ], SearchFieldsComponent.prototype, "injector", void 0);
+    SearchFieldsComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'js_searchFields',
+            template: "\n    <js_expander [label]=\"'Fields'\" [hasIcon]=\"false\" [customClass]=\"'action'\" (onChange)=\"toggleIsExpanded($event, 'fields')\"></js_expander>\n    <div [hidden]=\"!_isExpanded\" class=\"container-fluid py-3 rounded white-dropdown search-fields\">\n        <div class=\"row\"><div class=\"col\">\n            <select multiple size=\"6\" [(ngModel)]=\"_search['fields']\" class=\"form-control\">\n                <ng-template ngFor let-field [ngForOf]=\"_fields\">\n                    <option *ngIf=\"!_helperService.inArray(_fieldsMetadata[field]['type'], _deniedTypes)\"\n                            value=\"{{field}}\">{{_fieldsMetadata[field]['label']}}</option>\n                </ng-template>\n            </select>\n        </div></div>\n    </div>\n    ",
+            host: {
+                '(document:click)': 'onDocumentClick($event)',
+            }
+        }),
+        __param(1, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('HelperService')),
+        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["J" /* Optional */])()), __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('DataService')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["r" /* ElementRef */], Object, Object])
+    ], SearchFieldsComponent);
+    return SearchFieldsComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/ts/search/search-order-by.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SearchOrderByComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+// Component
+var SearchOrderByComponent = (function () {
+    function SearchOrderByComponent(_elementRef, _helperService, _dataService) {
+        this._elementRef = _elementRef;
+        this._helperService = _helperService;
+        this._dataService = _dataService;
+        // Injector to get dependencies. Used when injector comes from child component (like accordion)
+        this.injector = null;
+        // Denied types. Doesn't make sense to order by this filed types.
+        this._deniedTypes = ['file', 'icon', 'img', 'password', 'avatar'];
+        this._isExpanded = false;
+    }
+    /**
+     * Add order by
+     * @param $event
+     */
+    SearchOrderByComponent.prototype.add = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+        }
+        this._orderByArray.push({
+            field: (this._fields[0] ? this._fields[0]['key'] : null),
+            value: 'ASC',
+        });
+    };
+    /**
+     * Delete order by
+     * @param $event
+     * @param index
+     */
+    SearchOrderByComponent.prototype.del = function ($event, index) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        this._orderByArray.splice(index, 1);
+    };
+    /**
+     * Toggle isExpanded
+     * @param $event (value returned by expander directive)
+     */
+    SearchOrderByComponent.prototype.toggleIsExpanded = function ($event) {
+        this._isExpanded = !this._isExpanded;
+    };
+    /**
+     * Host event
+     * @param $event
+     */
+    SearchOrderByComponent.prototype.onDocumentClick = function ($event) {
+        if (!this._elementRef.nativeElement.contains($event.target)) {
+            this._isExpanded = false;
+        }
+    };
+    /**
+     * Lifecycle callback
+     */
+    SearchOrderByComponent.prototype.ngOnInit = function () {
+        // If injector is provided, override dependencies
+        if (this.injector) {
+            this._dataService = this.injector.get('DataService');
+        }
+        this._orderByArray = this._dataService.getCandidateSearchAttr('orderBy');
+        this._fields = (this._dataService.getFields('view') || []);
+        this._fieldsMetadata = (this._dataService.getFields('metadata') || {});
+        if (this._orderByArray.length < 1) {
+            this.add();
+        }
+    };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Input */])(),
+        __metadata("design:type", Object)
+    ], SearchOrderByComponent.prototype, "injector", void 0);
+    SearchOrderByComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'js_searchOrderBy',
+            template: "\n    <js_expander [label]=\"'Order'\" [hasIcon]=\"false\" [customClass]=\"'action'\" (onChange)=\"toggleIsExpanded($event, 'fields')\"></js_expander>\n    <div [hidden]=\"!_isExpanded\" class=\"container-fluid py-3 rounded white-dropdown search-order-by\">\n        <div class=\"row\">\n        <ng-template ngFor let-orderBy [ngForOf]=\"_orderByArray\" let-i=\"index\">\n            <div class=\"col col-md-6 controller\">\n                <div class=\"select\">\n                    <select [(ngModel)]=\"orderBy['field']\" class=\"form-control\">\n                        <ng-template ngFor let-field [ngForOf]=\"_fields\">\n                            <option *ngIf=\"!_helperService.inArray(_fieldsMetadata[field]['type'], _deniedTypes) && !_fieldsMetadata[field]['isObject']\"\n                                    value=\"{{field}}\">{{_fieldsMetadata[field]['label']}}</option>\n                        </ng-template>\n                    </select>\n                    <select [(ngModel)]=\"orderBy['value']\" class=\"form-control\">\n                        <option *ngFor=\"let value of [{key: 'ASC', label: 'Asc'}, {key: 'DESC', label: 'Desc'}]\"\n                                value=\"{{value['key']}}\">{{value['label']}}</option>\n                    </select>\n                </div>\n                <div class=\"actions\">\n                    <a *ngIf=\"_orderByArray.length > 1\" class=\"fa fa-trash-o\" (click)=\"del($event, i)\"></a>\n                    <a *ngIf=\"(i+1) == _orderByArray.length\" class=\"fa fa-plus\" (click)=\"add($event)\"></a>\n                </div>\n            </div>\n        </ng-template>\n        </div>\n    </div>\n    ",
+            host: {
+                '(document:click)': 'onDocumentClick($event)',
+            }
+        }),
+        __param(1, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('HelperService')),
+        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["J" /* Optional */])()), __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('DataService')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["r" /* ElementRef */], Object, Object])
+    ], SearchOrderByComponent);
+    return SearchOrderByComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/ts/search/search-pagination.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SearchPaginationComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+// Component
+var SearchPaginationComponent = (function () {
+    function SearchPaginationComponent(_dataService, _helperService) {
+        this._dataService = _dataService;
+        this._helperService = _helperService;
+    }
+    /**
+     * Get more objects (pagination)
+     * @param $event
+     */
+    SearchPaginationComponent.prototype.getMoreObjects = function ($event) {
+        $event.preventDefault();
+        this._dataService.getMoreObjects();
+    };
+    SearchPaginationComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'js_searchPagination',
+            template: "\n    <div *ngIf=\"_dataService.countObjects() > 0\"\n         class=\"search-pagination no-user-select\">\n        <span>{{_dataService.countObjects()}} Results</span>\n        <a class=\"search-has-more -note\"\n           *ngIf=\"_dataService.getProviderAttr('search')['hasMore']\"\n           (click)=\"getMoreObjects($event)\"\n           href=\"#\"\n           title=\"Load more results...\">...</a>\n    </div>\n    "
+        }),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('DataService')),
+        __param(1, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('HelperService')),
+        __metadata("design:paramtypes", [Object, Object])
+    ], SearchPaginationComponent);
+    return SearchPaginationComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/ts/search/search-pagination.module.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SearchPaginationModule; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__search_pagination_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/search/search-pagination.component.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+var SearchPaginationModule = (function () {
+    function SearchPaginationModule() {
+    }
+    SearchPaginationModule = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* NgModule */])({
+            imports: [__WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */]],
+            declarations: [
+                __WEBPACK_IMPORTED_MODULE_2__search_pagination_component__["a" /* SearchPaginationComponent */]
+            ],
+            exports: [__WEBPACK_IMPORTED_MODULE_2__search_pagination_component__["a" /* SearchPaginationComponent */]]
+        })
+    ], SearchPaginationModule);
+    return SearchPaginationModule;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/ts/search/search.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SearchComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__actions_actions_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/actions/actions.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+// Component
+var SearchComponent = (function () {
+    function SearchComponent(_dataService, _actionsService) {
+        this._dataService = _dataService;
+        this._actionsService = _actionsService;
+        // Injector to get dependencies. Used when injector comes from child component (like accordion)
+        this.injector = null;
+    }
+    /**
+     * Search objects.
+     * @param $event
+     */
+    SearchComponent.prototype.searchAction = function ($event) {
+        $event.preventDefault();
+        this._dataService.search();
+    };
+    /**
+     * Lifecycle callback
+     */
+    SearchComponent.prototype.ngOnInit = function () {
+        // If injector is provided, override dependencies
+        if (this.injector) {
+            this._dataService = this.injector.get('DataService');
+            this._actionsService = this.injector.get(__WEBPACK_IMPORTED_MODULE_1__actions_actions_service__["a" /* ActionsService */]);
+        }
+    };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Input */])(),
+        __metadata("design:type", Object)
+    ], SearchComponent.prototype, "injector", void 0);
+    SearchComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'js_search',
+            template: "\n    <js_searchCriteria [injector]=\"injector\"></js_searchCriteria>\n    <js_searchOrderBy [injector]=\"injector\"></js_searchOrderBy>\n    <js_searchFields [injector]=\"injector\"></js_searchFields>\n    <a class=\"action -round fa\"\n       [ngClass]=\"[_actionsService.getActionAttr('search', 'icon')]\"\n       (click)=\"searchAction($event)\"></a>\n    "
+        }),
+        __param(0, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["J" /* Optional */])()), __param(0, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('DataService')),
+        __param(1, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["J" /* Optional */])()),
+        __metadata("design:paramtypes", [Object, __WEBPACK_IMPORTED_MODULE_1__actions_actions_service__["a" /* ActionsService */]])
+    ], SearchComponent);
+    return SearchComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/ts/search/search.module.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SearchModule; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__expander_expander_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/expander/expander.module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__search_fields_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/search/search-fields.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__search_order_by_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/search/search-order-by.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__search_criteria_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/search/search-criteria.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__search_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/search/search.component.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+
+
+
+
+
+var SearchModule = (function () {
+    function SearchModule() {
+    }
+    SearchModule = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* NgModule */])({
+            imports: [__WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */], __WEBPACK_IMPORTED_MODULE_3__expander_expander_module__["a" /* ExpanderModule */]],
+            declarations: [
+                __WEBPACK_IMPORTED_MODULE_7__search_component__["a" /* SearchComponent */],
+                __WEBPACK_IMPORTED_MODULE_6__search_criteria_component__["a" /* SearchCriteriaComponent */],
+                __WEBPACK_IMPORTED_MODULE_5__search_order_by_component__["a" /* SearchOrderByComponent */],
+                __WEBPACK_IMPORTED_MODULE_4__search_fields_component__["a" /* SearchFieldsComponent */]
+            ],
+            exports: [__WEBPACK_IMPORTED_MODULE_7__search_component__["a" /* SearchComponent */]]
+        })
+    ], SearchModule);
+    return SearchModule;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/Bck/HomeBundle/Resources/public/default/index/ts/$$_lazy_route_resource lazy recursive":
 /***/ (function(module, exports) {
 
 function webpackEmptyAsyncContext(req) {
@@ -112327,31 +113283,166 @@ function webpackEmptyAsyncContext(req) {
 webpackEmptyAsyncContext.keys = function() { return []; };
 webpackEmptyAsyncContext.resolve = webpackEmptyAsyncContext;
 module.exports = webpackEmptyAsyncContext;
-webpackEmptyAsyncContext.id = "../../../../../src/HomeBundle/Resources/public/default/index/ts/$$_lazy_route_resource lazy recursive";
+webpackEmptyAsyncContext.id = "../../../../../src/Bck/HomeBundle/Resources/public/default/index/ts/$$_lazy_route_resource lazy recursive";
 
 /***/ }),
 
-/***/ "../../../../../src/HomeBundle/Resources/public/default/index/ts/src/main.component.ts":
+/***/ "../../../../../src/Bck/HomeBundle/Resources/public/default/index/ts/src/main.component.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MainComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_data_service_data_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/data-service/data.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_ts_actions_actions_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/actions/actions.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_form_ts_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_dynamic_component_loader_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/dynamic-component-loader.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__AppBundle_Resources_public_modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_post_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/post.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__AppBundle_Resources_public_calendar_ts_src_calendar_ext_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/calendar/ts/src/calendar.ext-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__UserBundle_Resources_public_user_calendar_index_ts_src_edit_ext_module__ = __webpack_require__("../../../../../src/Bck/UserBundle/Resources/public/user-calendar/index/ts/src/edit.ext-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__AppBundle_Resources_public_data_box_ts_src_data_box_extension_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.extension-module.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 
+
+
+
+
+
+
+/* Import dependencies */
+// Calendar
+
+
+// Booking
+
+/* /Import dependencies */
 var MainComponent = (function () {
-    function MainComponent() {
+    function MainComponent(_elementRef, _injector, _dynamicComponentLoaderService, _postService, _modalService, _helperService, viewContainerRef) {
+        this._elementRef = _elementRef;
+        this._injector = _injector;
+        this._dynamicComponentLoaderService = _dynamicComponentLoaderService;
+        this._postService = _postService;
+        this._modalService = _modalService;
+        this._helperService = _helperService;
+        this.viewContainerRef = viewContainerRef;
+        this._componentsViewContainerRefArr = [];
+        // @TODO: Provide dependencies from provider according with the user acl
+        this._dependencies = [
+            'userCalendar',
+            'userBooking',
+            'client',
+            'clientDocument',
+            'supplierDocument' // To show expired supplier documents
+        ];
+        this._modalService.init(viewContainerRef);
     }
+    /**
+     * Load dependency
+     * @returns {Object}
+     */
+    MainComponent.prototype.loadDependency = function (dependency) {
+        // Load dependency
+        var that = this, dependencyIndex = null, module = null, component = null, componentProviders = null, popupsProvider = null, data = {};
+        switch (dependency) {
+            case 'userCalendar':
+                dependencyIndex = 0;
+                module = __WEBPACK_IMPORTED_MODULE_7__AppBundle_Resources_public_calendar_ts_src_calendar_ext_module__["a" /* CalendarExtModule */];
+                component = 'CalendarComponent';
+                data = _app.dependencies['userCalendar'];
+                // Popups provider (the user can manage the calendar here)
+                popupsProvider = { provide: 'Popups', useValue: {
+                        module: __WEBPACK_IMPORTED_MODULE_8__UserBundle_Resources_public_user_calendar_index_ts_src_edit_ext_module__["a" /* EditExtModule */],
+                        component: 'EditComponent',
+                        providers: [
+                            __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_form_ts_form_service__["a" /* FormService */],
+                            { provide: 'Provider', useValue: this._helperService.getFormProvider(data) }
+                        ]
+                    } };
+                break;
+            case 'userBooking':
+                dependencyIndex = 1;
+                module = __WEBPACK_IMPORTED_MODULE_9__AppBundle_Resources_public_data_box_ts_src_data_box_extension_module__["a" /* DataBoxExtensionModule */];
+                component = 'DataBoxComponent';
+                data = _app.dependencies['userBooking'];
+                break;
+            case 'client':
+                dependencyIndex = 2;
+                module = __WEBPACK_IMPORTED_MODULE_9__AppBundle_Resources_public_data_box_ts_src_data_box_extension_module__["a" /* DataBoxExtensionModule */];
+                component = 'DataBoxComponent';
+                data = _app.dependencies['client'];
+                break;
+            case 'clientDocument':
+                dependencyIndex = 3;
+                module = __WEBPACK_IMPORTED_MODULE_9__AppBundle_Resources_public_data_box_ts_src_data_box_extension_module__["a" /* DataBoxExtensionModule */];
+                component = 'DataBoxComponent';
+                data = _app.dependencies['clientDocument'];
+                break;
+            case 'supplierDocument':
+                dependencyIndex = 4;
+                module = __WEBPACK_IMPORTED_MODULE_9__AppBundle_Resources_public_data_box_ts_src_data_box_extension_module__["a" /* DataBoxExtensionModule */];
+                component = 'DataBoxComponent';
+                data = _app.dependencies['supplierDocument'];
+                break;
+        }
+        var providers = [
+            { provide: 'DataService', useClass: __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_data_service_data_service__["a" /* DataService */] },
+            __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_ts_actions_actions_service__["a" /* ActionsService */],
+            { provide: 'DataServiceProvider', useValue: this._helperService.getDataServiceProvider(data) },
+            { provide: 'Provider', useValue: this._helperService.getDataBoxProvider(data) },
+            { provide: 'ActionsServiceProvider', useValue: this._helperService.getActionsServiceProvider(data) },
+            { provide: 'LegendProvider', useValue: this._helperService.getLegendProvider(data) },
+            // No popups are provided by default, to make this component lighter,
+            // to handle with each component the user should go to the specific component
+            popupsProvider ? popupsProvider : { provide: 'Popups', useValue: null }
+        ];
+        // Specific component providers
+        if (componentProviders) {
+            providers = providers.concat(componentProviders);
+        }
+        // Set injector
+        var injector = __WEBPACK_IMPORTED_MODULE_0__angular_core__["Q" /* ReflectiveInjector */].fromResolvedProviders(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Q" /* ReflectiveInjector */].resolve(providers), that._injector);
+        // Load component
+        that._dynamicComponentLoaderService.load(module, component, this._componentsViewContainerRefArr[dependencyIndex], injector).then(function (componentRef) { return true; }, function (errors) { console.log(errors); return null; });
+        return this;
+    };
+    /**
+     * Lifecycle callback
+     */
+    MainComponent.prototype.ngAfterViewInit = function () {
+        // Get array of ViewContainerRef
+        this._componentsViewContainerRefArr = this.componentsViewContainerRefQL.toArray();
+        for (var _i = 0, _a = this._dependencies; _i < _a.length; _i++) {
+            var dependency = _a[_i];
+            this.loadDependency(dependency);
+        }
+    };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_5" /* ViewChildren */])('js_homeComponent', { read: __WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* ViewContainerRef */] }),
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_0__angular_core__["P" /* QueryList */])
+    ], MainComponent.prototype, "componentsViewContainerRefQL", void 0);
     MainComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: '.js_app',
-            template: "\n    <div class=\"row\">\n        <div class=\"col-sm-8\">\n            <div class='js_calendar'></div>\n        </div>\n    </div>\n    "
-        })
+            template: "\n    <div class=\"row\">\n        <div class=\"col-sm-12\">\n            <ng-template #js_homeComponent></ng-template>\n        </div>\n        <div class=\"col-sm-12\">\n            <ng-template #js_homeComponent></ng-template>\n        </div>\n        <div class=\"col-sm-12\">\n            <ng-template #js_homeComponent></ng-template>\n        </div>\n        <div class=\"col-sm-12\">\n            <ng-template #js_homeComponent></ng-template>\n        </div>\n        <div class=\"col-sm-12\">\n            <ng-template #js_homeComponent></ng-template>\n        </div>\n    </div>\n    "
+        }),
+        __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('HelperService')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["r" /* ElementRef */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Injector */],
+            __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_dynamic_component_loader_service__["a" /* DynamicComponentLoaderService */],
+            __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_post_service__["a" /* PostService */],
+            __WEBPACK_IMPORTED_MODULE_5__AppBundle_Resources_public_modal_ts_modal_service__["a" /* ModalService */], Object, __WEBPACK_IMPORTED_MODULE_0__angular_core__["_6" /* ViewContainerRef */]])
     ], MainComponent);
     return MainComponent;
 }());
@@ -112360,7 +113451,7 @@ var MainComponent = (function () {
 
 /***/ }),
 
-/***/ "../../../../../src/HomeBundle/Resources/public/default/index/ts/src/main.module.ts":
+/***/ "../../../../../src/Bck/HomeBundle/Resources/public/default/index/ts/src/main.module.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -112373,16 +113464,11 @@ var MainComponent = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_post_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/post.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__AppBundle_Resources_public_modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__AppBundle_Resources_public_ts_form_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__AppBundle_Resources_public_ts_flash_message_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/flash-message.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__AppBundle_Resources_public_ts_dynamic_component_loader_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/dynamic-component-loader.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__AppBundle_Resources_public_ts_data_service_data_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/data-service/data.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__AppBundle_Resources_public_ts_actions_actions_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/actions/actions.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__user_calendar_ext_module__ = __webpack_require__("../../../../../src/HomeBundle/Resources/public/default/index/ts/src/user-calendar.ext-module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__UserBundle_Resources_public_user_calendar_index_ts_src_edit_ext_module__ = __webpack_require__("../../../../../src/UserBundle/Resources/public/user-calendar/index/ts/src/edit.ext-module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__AppBundle_Resources_public_app_basics_default_ts_src_main_ext_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/app-basics/default/ts/src/main.ext-module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__AppBundle_Resources_public_app_basics_default_ts_src_main_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/app-basics/default/ts/src/main.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__main_component__ = __webpack_require__("../../../../../src/HomeBundle/Resources/public/default/index/ts/src/main.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__AppBundle_Resources_public_ts_flash_message_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/flash-message.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__AppBundle_Resources_public_ts_dynamic_component_loader_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/dynamic-component-loader.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__AppBundle_Resources_public_app_basics_default_ts_src_main_ext_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/app-basics/default/ts/src/main.ext-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__AppBundle_Resources_public_app_basics_default_ts_src_main_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/app-basics/default/ts/src/main.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__main_component__ = __webpack_require__("../../../../../src/Bck/HomeBundle/Resources/public/default/index/ts/src/main.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -112404,11 +113490,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
-
-
-
-
-
 var MainModule = (function () {
     function MainModule() {
     }
@@ -112418,36 +113499,21 @@ var MainModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["a" /* BrowserModule */],
                 __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */],
                 __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* ReactiveFormsModule */],
-                __WEBPACK_IMPORTED_MODULE_15__AppBundle_Resources_public_app_basics_default_ts_src_main_ext_module__["a" /* MainExtModule */],
-                __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_ts_expander_expander_module__["a" /* ExpanderModule */],
-                __WEBPACK_IMPORTED_MODULE_13__user_calendar_ext_module__["a" /* UserCalendarExtModule */]
+                __WEBPACK_IMPORTED_MODULE_10__AppBundle_Resources_public_app_basics_default_ts_src_main_ext_module__["a" /* MainExtModule */],
+                __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_ts_expander_expander_module__["a" /* ExpanderModule */]
             ],
             declarations: [
-                __WEBPACK_IMPORTED_MODULE_17__main_component__["a" /* MainComponent */]
+                __WEBPACK_IMPORTED_MODULE_12__main_component__["a" /* MainComponent */]
             ],
             providers: [
                 __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_post_service__["a" /* PostService */],
                 __WEBPACK_IMPORTED_MODULE_7__AppBundle_Resources_public_modal_ts_modal_service__["a" /* ModalService */],
-                __WEBPACK_IMPORTED_MODULE_8__AppBundle_Resources_public_ts_form_form_service__["a" /* FormService */],
-                __WEBPACK_IMPORTED_MODULE_9__AppBundle_Resources_public_ts_flash_message_service__["a" /* FlashMessageService */],
-                __WEBPACK_IMPORTED_MODULE_10__AppBundle_Resources_public_ts_dynamic_component_loader_service__["a" /* DynamicComponentLoaderService */],
-                { provide: 'DataService', useClass: __WEBPACK_IMPORTED_MODULE_11__AppBundle_Resources_public_ts_data_service_data_service__["a" /* DataService */] },
-                __WEBPACK_IMPORTED_MODULE_12__AppBundle_Resources_public_ts_actions_actions_service__["a" /* ActionsService */],
+                __WEBPACK_IMPORTED_MODULE_8__AppBundle_Resources_public_ts_flash_message_service__["a" /* FlashMessageService */],
+                __WEBPACK_IMPORTED_MODULE_9__AppBundle_Resources_public_ts_dynamic_component_loader_service__["a" /* DynamicComponentLoaderService */],
                 { provide: 'HelperService', useValue: __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_helper__["a" /* Helper */] },
-                __WEBPACK_IMPORTED_MODULE_5__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */],
-                { provide: 'DataServiceProvider', useValue: __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_helper__["a" /* Helper */].getDataServiceProvider(_app.dependency['userCalendar']) },
-                { provide: 'Provider', useValue: __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_helper__["a" /* Helper */].getImageProvider(_app.dependency['userCalendar'], {}) },
-                { provide: 'ActionsServiceProvider', useValue: __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_helper__["a" /* Helper */].getActionsServiceProvider(_app.dependency['userCalendar']) },
-                { provide: 'Popups', useValue: {
-                        module: __WEBPACK_IMPORTED_MODULE_14__UserBundle_Resources_public_user_calendar_index_ts_src_edit_ext_module__["a" /* EditExtModule */],
-                        component: 'EditComponent',
-                        providers: [
-                            __WEBPACK_IMPORTED_MODULE_8__AppBundle_Resources_public_ts_form_form_service__["a" /* FormService */],
-                            { provide: 'Provider', useValue: __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_helper__["a" /* Helper */].getFormProvider(_app.dependency['userCalendar']) }
-                        ]
-                    } }
+                __WEBPACK_IMPORTED_MODULE_5__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */]
             ],
-            bootstrap: [__WEBPACK_IMPORTED_MODULE_16__AppBundle_Resources_public_app_basics_default_ts_src_main_component__["a" /* MainComponent */], __WEBPACK_IMPORTED_MODULE_17__main_component__["a" /* MainComponent */]]
+            bootstrap: [__WEBPACK_IMPORTED_MODULE_11__AppBundle_Resources_public_app_basics_default_ts_src_main_component__["a" /* MainComponent */], __WEBPACK_IMPORTED_MODULE_12__main_component__["a" /* MainComponent */]]
         })
     ], MainModule);
     return MainModule;
@@ -112457,7 +113523,7 @@ var MainModule = (function () {
 
 /***/ }),
 
-/***/ "../../../../../src/HomeBundle/Resources/public/default/index/ts/src/main.ts":
+/***/ "../../../../../src/Bck/HomeBundle/Resources/public/default/index/ts/src/main.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -112465,14 +113531,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__ = __webpack_require__("../../../platform-browser-dynamic/esm5/platform-browser-dynamic.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_cli_conf_environments_environment__ = __webpack_require__("../../../../../angular_cli_conf/environments/environment.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__main_module__ = __webpack_require__("../../../../../src/HomeBundle/Resources/public/default/index/ts/src/main.module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__main_module__ = __webpack_require__("../../../../../src/Bck/HomeBundle/Resources/public/default/index/ts/src/main.module.ts");
 
  // The browser platform with a compiler
  // Get environment
 
 // Enable production environment
 if (__WEBPACK_IMPORTED_MODULE_2__angular_cli_conf_environments_environment__["a" /* environment */].production) {
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_9" /* enableProdMode */])();
+    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_10" /* enableProdMode */])();
 }
 // Compile and launch the module
 Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* platformBrowserDynamic */])().bootstrapModule(__WEBPACK_IMPORTED_MODULE_3__main_module__["a" /* MainModule */])
@@ -112481,62 +113547,13 @@ Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* pl
 
 /***/ }),
 
-/***/ "../../../../../src/HomeBundle/Resources/public/default/index/ts/src/user-calendar.ext-module.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return UserCalendarExtModule; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_ts_expander_expander_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/expander/expander.module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_calendar_ts_src_calendar_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/calendar/ts/src/calendar.component.ts");
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-
-
-// This module doesn't use "ReactiveFormsModule", but it needs to import this class
-// to provide "formBuilder" when inject dependencies in child modules (like form)
-
-
-
-var UserCalendarExtModule = (function () {
-    function UserCalendarExtModule() {
-    }
-    UserCalendarExtModule = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["E" /* NgModule */])({
-            imports: [
-                __WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */],
-                __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */],
-                __WEBPACK_IMPORTED_MODULE_2__angular_forms__["c" /* ReactiveFormsModule */],
-                __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_ts_expander_expander_module__["a" /* ExpanderModule */]
-            ],
-            declarations: [
-                __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_calendar_ts_src_calendar_component__["a" /* CalendarComponent */]
-            ],
-            exports: [
-                __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_calendar_ts_src_calendar_component__["a" /* CalendarComponent */]
-            ]
-        })
-    ], UserCalendarExtModule);
-    return UserCalendarExtModule;
-}());
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/UserBundle/Resources/public/user-calendar/index/ts/src/edit.component.ts":
+/***/ "../../../../../src/Bck/UserBundle/Resources/public/user-calendar/index/ts/src/edit.component.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EditComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_form_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_form_ts_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_calendar_ts_src_form_popup_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/calendar/ts/src/form-popup.component.ts");
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -112572,13 +113589,13 @@ var EditComponent = (function (_super) {
     EditComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: '#js_edit',
-            template: __webpack_require__("../../../../../src/UserBundle/Resources/public/user-calendar/index/ts/templates/edit.component.html")
+            template: __webpack_require__("../../../../../src/Bck/UserBundle/Resources/public/user-calendar/index/ts/templates/edit.component.html")
         }),
         __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('Provider')),
         __param(4, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('DataService')),
         __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["J" /* Optional */])()), __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* Inject */])('TimeSelection')),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["r" /* ElementRef */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["R" /* Renderer */], Object, __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_form_form_service__["a" /* FormService */], Object, Object])
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["R" /* Renderer */], Object, __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_form_ts_form_service__["a" /* FormService */], Object, Object])
     ], EditComponent);
     return EditComponent;
 }(__WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_calendar_ts_src_form_popup_component__["a" /* FormPopupComponent */]));
@@ -112587,7 +113604,7 @@ var EditComponent = (function (_super) {
 
 /***/ }),
 
-/***/ "../../../../../src/UserBundle/Resources/public/user-calendar/index/ts/src/edit.ext-module.ts":
+/***/ "../../../../../src/Bck/UserBundle/Resources/public/user-calendar/index/ts/src/edit.ext-module.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -112595,7 +113612,7 @@ var EditComponent = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__edit_component__ = __webpack_require__("../../../../../src/UserBundle/Resources/public/user-calendar/index/ts/src/edit.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__edit_component__ = __webpack_require__("../../../../../src/Bck/UserBundle/Resources/public/user-calendar/index/ts/src/edit.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -112625,10 +113642,10 @@ var EditExtModule = (function () {
 
 /***/ }),
 
-/***/ "../../../../../src/UserBundle/Resources/public/user-calendar/index/ts/templates/edit.component.html":
+/***/ "../../../../../src/Bck/UserBundle/Resources/public/user-calendar/index/ts/templates/edit.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">        \n                                        \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                                                    \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_name\">Name</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_name\" name=\"form[name]\" required=\"required\" maxlength=\"64\" [(ngModel)]=\"_formService.getObject().name\" formControlName=\"name\" [class.error]=\"_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                                                    \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_description\">Description</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_description\" name=\"form[description]\" maxlength=\"256\" [(ngModel)]=\"_formService.getObject().description\" formControlName=\"description\" [class.error]=\"_formService.getErrors().description &amp;&amp; _formService.getErrors().description.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().description\">{{error}}</label>\n            </div>\n        </div>\n                                                    \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_startTime\">Start Time</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_startTime\" name=\"form[startTime]\" required=\"required\" [(ngModel)]=\"_formService.getObject().startTime\" formControlName=\"startTime\" [class.error]=\"_formService.getErrors().startTime &amp;&amp; _formService.getErrors().startTime.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().startTime\">{{error}}</label>\n            </div>\n        </div>\n                                                    \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_endTime\">End Time</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_endTime\" name=\"form[endTime]\" required=\"required\" [(ngModel)]=\"_formService.getObject().endTime\" formControlName=\"endTime\" [class.error]=\"_formService.getErrors().endTime &amp;&amp; _formService.getErrors().endTime.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().endTime\">{{error}}</label>\n            </div>\n        </div>\n                                                    \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_color\">Color</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input [(ngModel)]=\"_formService.getObject().color\"\n           formControlName = color\n           class=\"form-control\"\n           [class.error]=\"_formService.getErrors().color && (_formService.getErrors().color.length > 0)\"\n           id=\"form_color\"\n           name=\"form[color]\"\n                      maxlength=\"7\"\n           type=\"color\">\n                    <label class=\"error\" *ngFor=\"let error of _formService.getErrors().color\">{{error}}</label>\n            </div>\n        </div>\n                                                    \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\">Privacy</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n    <div class=\"form-control-box\"\n         [ngClass]=\"{'error': _formService.getErrors().privacy && (_formService.getErrors().privacy.length > 0)}\"\n         (click)=\"_formService.setFormFieldValue('privacy', $event.target.value)\">\n                    <div class=\"radio\">                                                            <label class=\"required\"><input type=\"radio\" id=\"form_privacy_0\" name=\"form[privacy]\" required=\"required\" [checked]=\"&#039;PRIVATE&#039; == _formService.getObject().privacy\" value=\"PRIVATE\" /> Private</label>\n    </div>\n                    <div class=\"radio\">                                                            <label class=\"required\"><input type=\"radio\" id=\"form_privacy_1\" name=\"form[privacy]\" required=\"required\" [checked]=\"&#039;SHARED&#039; == _formService.getObject().privacy\" value=\"SHARED\" /> Shared</label>\n    </div>\n            </div>\n    <input [(ngModel)]=\"_formService.getObject().privacy\"\n           formControlName = privacy\n           required=\"required\"           type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().privacy\">{{error}}</label>\n            </div>\n        </div>\n                                                    <div *ngIf=\"_formService.getObject().privacy == 'SHARED'\"  class=\"form-group\">\n                                <label class=\"col-sm-2 control-label\" for=\"form_shareToType\">Share With</label>\n                        <div class=\"col-sm-10\"><div class=\"row\">\n                        <div class=\"col-sm-6\">\n                                                    \n        <select id=\"form_shareToType\" name=\"form[shareToType]\" [(ngModel)]=\"_formService.getObject().shareToType\" formControlName=\"shareToType\" [class.error]=\"_formService.getErrors().shareToType &amp;&amp; _formService.getErrors().shareToType.length &gt; 0\" class=\"form-control\"><option value=\"\"></option>            <option value=\"ALL\" >All</option>            <option value=\"USER\" >User</option>            <option value=\"USER_GROUP\" >Group</option>            <option value=\"STORE\" >Store</option></select>\n    <input [(ngModel)]=\"_formService.getObject().shareToType\"\n           formControlName = shareToType\n                      type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().shareToType\">{{error}}</label>\n                        </div>\n                        <div *ngIf=\"_formService.getObject().shareToType == 'USER'\" class=\"col-sm-6\">\n                                                    \n        <select id=\"form_shareUserObj\" name=\"form[shareUserObj]\" [(ngModel)]=\"_formService.getObject().shareUserObj\" formControlName=\"shareUserObj\" [class.error]=\"_formService.getErrors().shareUserObj &amp;&amp; _formService.getErrors().shareUserObj.length &gt; 0\" class=\"form-control\"><option value=\"\"></option>            <option value=\"590\" >Britt Sulei (590)</option>            <option value=\"591\" >Kate Gon (591)</option>            <option value=\"592\" >Lara Alvar (592)</option>            <option value=\"593\" >Helen Lin (593)</option></select>\n    <input [(ngModel)]=\"_formService.getObject().shareUserObj\"\n           formControlName = shareUserObj\n                      type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().shareUserObj\">{{error}}</label>\n                        </div>\n                        <div *ngIf=\"_formService.getObject().shareToType == 'USER_GROUP'\"  class=\"col-sm-6\">\n                                                    \n        <select id=\"form_userGroupObj\" name=\"form[userGroupObj]\" [(ngModel)]=\"_formService.getObject().userGroupObj\" formControlName=\"userGroupObj\" [class.error]=\"_formService.getErrors().userGroupObj &amp;&amp; _formService.getErrors().userGroupObj.length &gt; 0\" class=\"form-control\"><option value=\"\"></option>            <option value=\"1\" >Friends (1)</option>            <option value=\"2\" >Antiquances (2)</option>            <option value=\"3\" >Boss (3)</option>            <option value=\"4\" >Family (4)</option></select>\n    <input [(ngModel)]=\"_formService.getObject().userGroupObj\"\n           formControlName = userGroupObj\n                      type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().userGroupObj\">{{error}}</label>\n                        </div>\n                        <div *ngIf=\"_formService.getObject().shareToType == 'STORE'\"  class=\"col-sm-6\">\n                                                    \n        <select id=\"form_storeObj\" name=\"form[storeObj]\" [(ngModel)]=\"_formService.getObject().storeObj\" formControlName=\"storeObj\" [class.error]=\"_formService.getErrors().storeObj &amp;&amp; _formService.getErrors().storeObj.length &gt; 0\" class=\"form-control\"><option value=\"\"></option>            <option value=\"1\" >Lisboa Store (1)</option>            <option value=\"2\" >Rio de Janeiro Store (2)</option>            <option value=\"4\" >Madrid Store (4)</option>            <option value=\"5\" >Luanda Store (5)</option></select>\n    <input [(ngModel)]=\"_formService.getObject().storeObj\"\n           formControlName = storeObj\n                      type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().storeObj\">{{error}}</label>\n                        </div>\n                    </div></div>\n                </div>\n                                                                                                            \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                                                    \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n                            </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"j220WQYbPdus8DRz7qgAv-xVSfLL0l6lbr9UUlRDxBE\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
+module.exports = "    \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n<div class=\"modal-header\">\n    <div class=\"row align-items-center\">\n        <h3 class=\"col-auto mr-auto modal-title\">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>\n        <div class=\"col-auto text-right actions\"><a\n                class=\"-round fa fa-times\"\n                (click)=\"closeAction($event)\"></a></div>\n    </div>\n</div>\n<div class=\"modal-body\">\n    <div class=\"row\">\n        <div class=\"col-12\">        \n                                        \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().id\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_id\">Id</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_id\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().id\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().id\">{{error}}</label>\n            </div>\n        </div>\n                                                    \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_name\">Name</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_name\" name=\"form[name]\" required=\"required\" maxlength=\"64\" [(ngModel)]=\"_formService.getObject().name\" formControlName=\"name\" [class.error]=\"_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                                                    \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_description\">Description</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_description\" name=\"form[description]\" maxlength=\"256\" [(ngModel)]=\"_formService.getObject().description\" formControlName=\"description\" [class.error]=\"_formService.getErrors().description &amp;&amp; _formService.getErrors().description.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().description\">{{error}}</label>\n            </div>\n        </div>\n                                                    \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_startTime\">Start Time</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_startTime\" name=\"form[startTime]\" required=\"required\" [(ngModel)]=\"_formService.getObject().startTime\" formControlName=\"startTime\" [class.error]=\"_formService.getErrors().startTime &amp;&amp; _formService.getErrors().startTime.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().startTime\">{{error}}</label>\n            </div>\n        </div>\n                                                    \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_endTime\">End Time</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_endTime\" name=\"form[endTime]\" required=\"required\" [(ngModel)]=\"_formService.getObject().endTime\" formControlName=\"endTime\" [class.error]=\"_formService.getErrors().endTime &amp;&amp; _formService.getErrors().endTime.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().endTime\">{{error}}</label>\n            </div>\n        </div>\n                                                    \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_color\">Color</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input [(ngModel)]=\"_formService.getObject().color\"\n           formControlName = color\n           class=\"form-control -color\"\n           [class.error]=\"_formService.getErrors().color && (_formService.getErrors().color.length > 0)\"\n           id=\"form_color\"\n           name=\"form[color]\"\n                      maxlength=\"7\"\n           type=\"color\">\n                    <label class=\"error\" *ngFor=\"let error of _formService.getErrors().color\">{{error}}</label>\n            </div>\n        </div>\n                                                    \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\">Privacy</label>\n    \n            <div class=\"col-sm-10\">\n                                                                    \n    <div class=\"form-control-box\"\n         [ngClass]=\"{'error': _formService.getErrors().privacy && (_formService.getErrors().privacy.length > 0)}\"\n         (click)=\"_formService.setFormFieldValue('privacy', $event.target.value)\">\n                    <div class=\"radio\">                                                            <label for=\"form_privacy_0\" class=\"required\"><input type=\"radio\" id=\"form_privacy_0\" name=\"form[privacy]\" required=\"required\" [checked]=\"&#039;PRIVATE&#039; == _formService.getObject().privacy\" value=\"PRIVATE\" /> Private</label>\n    </div>\n                    <div class=\"radio\">                                                            <label for=\"form_privacy_1\" class=\"required\"><input type=\"radio\" id=\"form_privacy_1\" name=\"form[privacy]\" required=\"required\" [checked]=\"&#039;SHARED&#039; == _formService.getObject().privacy\" value=\"SHARED\" /> Shared</label>\n    </div>\n            </div>\n    <input [(ngModel)]=\"_formService.getObject().privacy\"\n           formControlName = privacy\n           required=\"required\"           type=\"hidden\">\n\n                            <label class=\"error\" *ngFor=\"let error of _formService.getErrors().privacy\">{{error}}</label>\n            </div>\n        </div>\n                                                    <div *ngIf=\"_formService.getObject().privacy == 'SHARED'\"  class=\"row form-group\">\n                                <label class=\"col-sm-2 control-label\" for=\"form_shareToType\">Share With</label>\n                        <div class=\"col-sm-10\"><div class=\"row\">\n                        <div class=\"col-sm-6\">\n                                                                                \n        <select id=\"form_shareToType\" name=\"form[shareToType]\" [(ngModel)]=\"_formService.getObject().shareToType\" formControlName=\"shareToType\" [class.error]=\"_formService.getErrors().shareToType &amp;&amp; _formService.getErrors().shareToType.length &gt; 0\" class=\"form-control\"><option value=\"\"></option><option value=\"ALL\">All</option><option value=\"USER\">User</option><option value=\"USER_GROUP\">Group</option><option value=\"STORE\">Store</option></select>\n    <input [(ngModel)]=\"_formService.getObject().shareToType\"\n           formControlName = shareToType\n                      type=\"hidden\">\n\n                            <label class=\"error\" *ngFor=\"let error of _formService.getErrors().shareToType\">{{error}}</label>\n                        </div>\n                        <div *ngIf=\"_formService.getObject().shareToType == 'USER'\" class=\"col-sm-6\">\n                                                                                        <select [(ngModel)]=\"_formService.getObject().shareUserObj\"\n            formControlName = shareUserObj\n            class=\"form-control\"\n            [class.error]=\"_formService.getErrors().shareUserObj && (_formService.getErrors().shareUserObj.length > 0)\"\n            id=\"form_shareUserObj\"\n            name=\"form[shareUserObj]\"\n            >\n        <option value=\"\"></option>\n                    <option *ngFor=\"let choice of _dataService.getFieldChoices('shareUserObj')\"\n                    value=\"{{choice['id']}}\">{{choice['label']}}</option>\n            </select>\n                                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().shareUserObj\">{{error}}</label>\n                        </div>\n                        <div *ngIf=\"_formService.getObject().shareToType == 'USER_GROUP'\"  class=\"col-sm-6\">\n                                                                                        <select [(ngModel)]=\"_formService.getObject().userGroupObj\"\n            formControlName = userGroupObj\n            class=\"form-control\"\n            [class.error]=\"_formService.getErrors().userGroupObj && (_formService.getErrors().userGroupObj.length > 0)\"\n            id=\"form_userGroupObj\"\n            name=\"form[userGroupObj]\"\n            >\n        <option value=\"\"></option>\n                    <option *ngFor=\"let choice of _dataService.getFieldChoices('userGroupObj')\"\n                    value=\"{{choice['id']}}\">{{choice['label']}}</option>\n            </select>\n                                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().userGroupObj\">{{error}}</label>\n                        </div>\n                        <div *ngIf=\"_formService.getObject().shareToType == 'STORE'\"  class=\"col-sm-6\">\n                                                                                        <select [(ngModel)]=\"_formService.getObject().storeObj\"\n            formControlName = storeObj\n            class=\"form-control\"\n            [class.error]=\"_formService.getErrors().storeObj && (_formService.getErrors().storeObj.length > 0)\"\n            id=\"form_storeObj\"\n            name=\"form[storeObj]\"\n            >\n        <option value=\"\"></option>\n                    <option *ngFor=\"let choice of _dataService.getFieldChoices('storeObj')\"\n                    value=\"{{choice['id']}}\">{{choice['label']}}</option>\n            </select>\n                                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().storeObj\">{{error}}</label>\n                        </div>\n                    </div></div>\n                </div>\n                                                                                                            \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" [innerHTML]=\"getLang('Enabled')\"></label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label for=\"form_isEnabled\"><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n                            </div>\n    </div>\n</div>\n<div class=\"modal-footer hide-on-empty\">\n        \n                    <div class=\"row\">\n            <div class=\"col-auto ml-auto\">\n                                            <button                                     class=\"btn btn-light\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn btn-light\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>    \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"_yE5tsEMUvpURfWTW8W85WZk33Z7lJCsksOmBZnQ86Y\" /></form>\n"
 
 /***/ }),
 
@@ -112894,7 +113911,7 @@ webpackContext.id = "../../../../moment/locale recursive ^\\.\\/.*$";
 /***/ 0:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__("../../../../../src/HomeBundle/Resources/public/default/index/ts/src/main.ts");
+module.exports = __webpack_require__("../../../../../src/Bck/HomeBundle/Resources/public/default/index/ts/src/main.ts");
 
 
 /***/ })

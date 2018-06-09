@@ -5,7 +5,6 @@
 
     {% stylesheets output="assets/services/regular-service/index/css/local.css"
     '@BckServicesBundle/Resources/public/regular-service/index/scss/dist/styles.css'
-        '@AppBundle/Resources/public/scss/select-box.scss'
     %}
         <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
@@ -13,10 +12,10 @@
 
 {% block javascripts %}
     {% javascripts output="assets/services/regular-service/index/js/local.js"
-        '@BckServicesBundle/Resources/public/regular-service/index/ts/dist/inline.bundle.js'
-        '@BckServicesBundle/Resources/public/regular-service/index/ts/dist/polyfills.bundle.js'
-        '@BckServicesBundle/Resources/public/regular-service/index/ts/dist/vendor.bundle.js'
-        '@BckServicesBundle/Resources/public/regular-service/index/ts/dist/main.bundle.js'
+    '@BckServicesBundle/Resources/public/regular-service/index/ts/dist/inline.bundle.js'
+    '@BckServicesBundle/Resources/public/regular-service/index/ts/dist/polyfills.bundle.js'
+    '@BckServicesBundle/Resources/public/regular-service/index/ts/dist/vendor.bundle.js'
+    '@BckServicesBundle/Resources/public/regular-service/index/ts/dist/main.bundle.js'
     %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}

@@ -1,12 +1,12 @@
 {% extends 'FrtCommonBundle::base-embed.html.twig' %}
 
-{% block stylesheets %}
+{#block stylesheets %}
     {% stylesheets output="assets/frt/booking/package-booking/detail-embed/css/local.css"
     '@FrtBookingBundle/Resources/public/package-booking/detail/scss/dist/styles.css'
     %}
     <link rel="stylesheet" href="{{ asset_url }}" />
     {% endstylesheets %}
-{% endblock %}
+{% endblock #}
 
 {% block head_javascripts %}
     {{ parent() }}
@@ -25,7 +25,7 @@
     <div class="js_app"></div>
 {% endblock %}
 
-{% block javascripts %}
+{# block javascripts %}
     {% javascripts output="assets/frt/booking/package-booking/detail-embed/js/local.js"
         '@FrtBookingBundle/Resources/public/package-booking/detail/ts/dist/inline.bundle.js'
         '@FrtBookingBundle/Resources/public/package-booking/detail/ts/dist/polyfills.bundle.js'
@@ -34,4 +34,4 @@
     %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
-{% endblock %}
+{% endblock #}

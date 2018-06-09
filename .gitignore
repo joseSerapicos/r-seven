@@ -1,6 +1,6 @@
 # Configuration files
-app/config/parameters.yml
-app/config/config.yml
+/app/config/parameters.yml
+/app/config/config.yml
 
 # Cache
 /var
@@ -11,5 +11,5 @@ app/config/config.yml
 # Uploads
 /web/upload/
 
-# dependencies
+# Dependencies
 /node_modules

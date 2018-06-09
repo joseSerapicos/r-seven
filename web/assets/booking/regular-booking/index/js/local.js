@@ -75218,7 +75218,7 @@ var SystemJsNgModuleLoader = (function () {
         if (exportName === undefined) {
             exportName = 'default';
         }
-        return __webpack_require__("../../../../../src/BookingBundle/Resources/public/regular-booking/index/ts/$$_lazy_route_resource lazy recursive")(module)
+        return __webpack_require__("../../../../../src/Bck/BookingBundle/Resources/public/regular-booking/index/ts/$$_lazy_route_resource lazy recursive")(module)
             .then(function (module) { return module[exportName]; })
             .then(function (type) { return checkNotEmpty(type, module, exportName); })
             .then(function (type) { return _this._compiler.compileModuleAsync(type); });
@@ -75238,7 +75238,7 @@ var SystemJsNgModuleLoader = (function () {
             exportName = 'default';
             factoryClassSuffix = '';
         }
-        return __webpack_require__("../../../../../src/BookingBundle/Resources/public/regular-booking/index/ts/$$_lazy_route_resource lazy recursive")(this._config.factoryPathPrefix + module + this._config.factoryPathSuffix)
+        return __webpack_require__("../../../../../src/Bck/BookingBundle/Resources/public/regular-booking/index/ts/$$_lazy_route_resource lazy recursive")(this._config.factoryPathPrefix + module + this._config.factoryPathSuffix)
             .then(function (module) { return module[exportName + factoryClassSuffix]; })
             .then(function (factory) { return checkNotEmpty(factory, module, exportName); });
     };
@@ -99522,7 +99522,7 @@ var environment = {
 
 /***/ }),
 
-/***/ "../../../../../src/AppBundle/Resources/public/app-basics/ts/src/main.component.ts":
+/***/ "../../../../../src/AppBundle/Resources/public/app-basics/default/ts/src/main.component.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -99578,14 +99578,14 @@ var MainComponent = (function () {
 
 /***/ }),
 
-/***/ "../../../../../src/AppBundle/Resources/public/app-basics/ts/src/main.ext-module.ts":
+/***/ "../../../../../src/AppBundle/Resources/public/app-basics/default/ts/src/main.ext-module.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MainExtModule; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__main_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/app-basics/ts/src/main.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__main_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/app-basics/default/ts/src/main.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -99621,7 +99621,7 @@ var MainExtModule = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__data_box_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.extension-component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ts_actions_actions_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/actions/actions.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__data_box_extension_component__["b"]; });
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -99672,7 +99672,7 @@ var DataBoxComponent = (function (_super) {
         __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('HelperService')),
         __param(8, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('Popups')),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["_8" /* ViewContainerRef */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object, __WEBPACK_IMPORTED_MODULE_3__ts_actions_actions_service__["a" /* ActionsService */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* Renderer */], Object, Object, __WEBPACK_IMPORTED_MODULE_4__tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object, __WEBPACK_IMPORTED_MODULE_3__ts_actions_actions_service__["a" /* ActionsService */],
             __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["a" /* ModalService */], Object, __WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injector */]])
     ], DataBoxComponent);
     return DataBoxComponent;
@@ -99716,7 +99716,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 // Popup Types
 var PopupTypes = {
     edit: 'edit',
-    add: 'add'
+    add: 'add',
+    email: 'email'
 };
 // Component
 var DataBoxExtensionComponent = (function (_super) {
@@ -99777,35 +99778,43 @@ var DataBoxExtensionComponent = (function (_super) {
             case 'monetary':
             case 'date':
             case 'datetime':
-                return 'txt-align-r';
+                return 'text-right';
             case 'boolean':
             case 'icon':
             case 'img':
             case 'status':
-                return 'txt-align-c';
+                return 'text-center';
             default:
-                return 'txt-align-l';
+                return 'text-left';
         }
     };
     /**
      * Get legend classes
      * @param object
+     * @param target (element target to check the legend)
+     * @param exprField (field on which the expression is checked,
+     *     it's used when the field is not provided in legend, like in actions legend)
      * @returns {string}
      */
-    DataBoxExtensionComponent.prototype.getLegendClasses = function (object) {
-        var legend = this._provider['controls']['legend'], hasClass;
+    DataBoxExtensionComponent.prototype.getLegendClasses = function (object, target, exprField) {
+        if (exprField === void 0) { exprField = null; }
+        var legend = this._provider['controls']['legend'];
         if (!object || !legend) {
             return '';
         }
         for (var _i = 0, legend_1 = legend; _i < legend_1.length; _i++) {
             var legendControl = legend_1[_i];
-            hasClass = false;
-            var field = legendControl['field'], expr = (legendControl['expr'] || 'notNull'), isExprNotNull = (expr == 'notNull'), 
+            var legendExprField = (legendControl['field'] || exprField), legendTarget = (legendControl['target'] || 'tr');
+            // Check target, if is not the same jump the loop
+            if ((legendTarget != target) || (!legendExprField) || (legendExprField == '')) {
+                continue;
+            }
+            var expr = (legendControl['expr'] || 'notNull'), isExprNotNull = (expr == 'notNull'), 
             // Check in original field first if defined
-            fieldValue = ((object['__' + field] !== undefined) ? object['__' + field] : object[field]);
+            fieldValue = ((object['__' + legendExprField] !== undefined) ? object['__' + legendExprField] : object[legendExprField]);
             // Normalize value
-            if (this._dataService.getFields('metadata')[field]) {
-                switch (this._dataService.getFields('metadata')[field].type) {
+            if (this._dataService.getFields('metadata')[legendExprField]) {
+                switch (this._dataService.getFields('metadata')[legendExprField].type) {
                     case 'boolean':
                         fieldValue = this._helperService.castToBoolean(fieldValue);
                         break;
@@ -99818,6 +99827,27 @@ var DataBoxExtensionComponent = (function (_super) {
             }
         }
         return '';
+    };
+    /**
+     * Get actions legend classes
+     * @param object
+     * @param action (action to check the legend)
+     * @returns {string}
+     */
+    DataBoxExtensionComponent.prototype.getActionsLegendClasses = function (object, action) {
+        var field = null, classes = '';
+        switch (action) {
+            case 'pdf':
+                field = 'isAccessed';
+                break;
+            case 'email':
+                field = 'isSent';
+                break;
+        }
+        if (field) {
+            classes = this.getLegendClasses(object, 'actions', field);
+        }
+        return (classes == '') ? classes : (' ' + classes); // Add space to put legend classes after icon class
     };
     /**
      * Trigger action
@@ -99990,6 +100020,57 @@ var DataBoxExtensionComponent = (function (_super) {
         }
     };
     /**
+     * Pdf action.
+     * @param $event
+     * @param data
+     */
+    DataBoxExtensionComponent.prototype.pdfAction = function ($event, data) {
+        if ($event) {
+            $event.preventDefault();
+        }
+        this._dataService.pdf(data);
+    };
+    /**
+     * Email action.
+     * @param $event
+     * @param data
+     */
+    DataBoxExtensionComponent.prototype.emailAction = function ($event, data) {
+        var _this = this;
+        if ($event) {
+            $event.preventDefault();
+        }
+        // Select object index in DataService to update object after sent email
+        if (!this._dataService.setObjectIndex(data)) {
+            return;
+        }
+        var that = this, popup = this._popups['email'], object = this._dataService.getObject(data);
+        if (!popup['injector']) {
+            // It's the firs time that popup is open, so we need to supply the providers
+            var context_1 = popup['localData']['context'], route = (this._helperService.getAppVar('route') + 'bck/common/email/conf');
+            this._dataService.runAction(route).then(function (data) {
+                // Update route of "new" action
+                data['route']['new']['url'] = (data['route']['new']['url'] + '/' + context_1 + '/' + object['id']);
+                popup['providers'] = popup['providers'].concat([
+                    { provide: 'DataServiceProvider', useValue: that._helperService.getDataServiceProvider(data) },
+                    { provide: 'Provider', useValue: that._helperService.getFormProvider(data) },
+                    { provide: 'ParentDataService', useValue: _this._dataService }
+                ]);
+                var resolvedProviders = __WEBPACK_IMPORTED_MODULE_0__angular_core__["T" /* ReflectiveInjector */].resolve(popup['providers']);
+                popup['injector'] = __WEBPACK_IMPORTED_MODULE_0__angular_core__["T" /* ReflectiveInjector */].fromResolvedProviders(resolvedProviders, that._injector);
+                var emailDataService = popup['injector'].get('DataService');
+                emailDataService.newObject().then(function (data) { that.openPopup('email'); }, function (errors) { console.log(errors); });
+            }, function (errors) { console.log(errors); });
+        }
+        else {
+            // Update route of "new" action
+            var emailDataService = popup['injector'].get('DataService'), newEmailRoute = emailDataService.getRoute('new');
+            newEmailRoute = (newEmailRoute.substring(0, newEmailRoute.lastIndexOf("/")) + '/' + object['id']);
+            emailDataService.setRoute('new', newEmailRoute);
+            emailDataService.newObject().then(function (data) { that.openPopup('email'); }, function (errors) { console.log(errors); });
+        }
+    };
+    /**
      * Submit choices
      * @param route (route to submit choices)
      * @param allowEmptySubmit (allow submit when data is empty,
@@ -100142,7 +100223,1677 @@ var DataBoxExtensionModule = (function () {
 /***/ "../../../../../src/AppBundle/Resources/public/data-box/ts/templates/data-box.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "\n\n<div class=\"ibox\" >\n                        <div class=\"ibox-title\" *ngIf=\"!getProviderExtraDataAttr('hasMergeHeader')\">\n                <h5>\n                    <ng-template [ngIf]=\"getProviderAttr('controls')['expander']\"><js_expander\n                        [isExpanded]=\"_isExpanded || null\"\n                        [label]=\"getProviderAttr('label')\"\n                        (onChange)=\"expanderAction($event)\"></js_expander></ng-template>\n                    <ng-template [ngIf]=\"!getProviderAttr('controls')['expander']\">\n                        <span [innerHTML]=\"getProviderAttr('label')\"></span>\n                    </ng-template>\n                </h5>\n                <div *ngIf=\"_isExpanded\"\n                     class=\"txt-align-r hide-on-empty\">    <div class=\"actions no-user-select\">\n        <ng-template [ngIf]=\"_actionsService.getActionAttr('search', 'isEnabled')\"><js_search class=\"search\"></js_search></ng-template>\n        <div (click)=\"triggerAction($event)\">\n            <ng-template ngFor let-action [ngForOf]=\"_actionsService.getHeadActions()\">\n                <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                   [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                   class=\"-round fa\"\n                   [attr.data-action]=\"action\"></a>\n            </ng-template>\n        </div>\n    </div>\n</div>\n            </div>\n            \n    <div [hidden]=\"!(_isExpanded)\" class=\"ibox-content hide-on-empty\">    <ng-template [ngIf]=\"(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">\n        <div class=\"table-responsive\">\n        <form>        <table class=\"data-table table table-striped table-hover dataTables-example table-bordered\">\n            <thead>\n            <tr>\n                <th *ngFor=\"let searchField of _dataService.getSearch('fields')\">{{ _dataService.getFields('metadata')[searchField].label }}</th>\n                <th>&nbsp;</th>\n            </tr>\n            </thead>            <tbody>\n            <ng-template ngFor let-obj [ngForOf]=\"_dataService.getProviderAttr('objects')\" let-objIndex=\"index\">\n            <tr (dblclick)=\"editAction($event, objIndex)\"                [ngClass]=\"getLegendClasses(obj)\">\n                                    <td *ngFor=\"let searchField of _dataService.getSearch('fields')\"\n                        [ngClass]=\"getColAlign(searchField)\"\n                        [innerHTML]=\"obj[searchField]\"></td>\n                                <td>\n                    <span *ngIf=\"obj['_isNew']\" class=\"badge badge-info\">New</span>\n                    <span *ngIf=\"obj['_isEdited']\" class=\"badge badge-info\">Edited</span>\n                    <input *ngIf=\"_actionsService.getActionAttr('radioChoice', 'isEnabled')\"\n                           class=\"pull-right action\"\n                           type=\"radio\"\n                           name=\"index[]\"\n                           value=\"{{objIndex}}\"/>\n                    <input *ngIf=\"_actionsService.getActionAttr('checkAll', 'isEnabled')\"\n                           class=\"pull-right action js_checkAll\"\n                           type=\"checkbox\"\n                           name=\"index[]\"\n                           value=\"{{objIndex}}\"\n                           [ngModel]=\"checkAll\"/>\n                    <div class=\"pull-right actions no-user-select\" (click)=\"triggerAction($event)\">\n                        <ng-template ngFor let-action [ngForOf]=\"_actionsService.getDetailActions()\">\n                            <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                               [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                               class=\"fa\"\n                               [attr.data-action]=\"action\"\n                               [attr.data-value]=\"objIndex\"></a>\n                        </ng-template>\n                    </div>\n                </td>            </tr>\n            </ng-template>\n            </tbody>\n        </table>\n        </form>    </div>\n    </ng-template><p\n        class=\"text-center\"\n        *ngIf=\"!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">No results.</p>\n</div>\n        <div class=\"ibox-footer\"\n         *ngIf=\"_dataService.countObjects() > 0\"><js_searchPagination></js_searchPagination></div>\n\n</div>\n\n<js_legend></js_legend>"
+module.exports = "\n\n<div class=\"ibox\" >\n                        <div class=\"ibox-title\" *ngIf=\"!getProviderExtraDataAttr('hasMergeHeader')\">\n                <h5>\n                    <ng-template [ngIf]=\"getProviderAttr('controls')['expander']['isEnabled']\"><js_expander\n                        [isExpanded]=\"_isExpanded || null\"\n                        [label]=\"getLang(getProviderAttr('label'))\"\n                        [labelCount]=\"getProviderAttr('labelCount')\"\n                        [labelIcon]=\"getProviderAttr('labelIcon')\"\n                        (onChange)=\"expanderAction($event)\"></js_expander></ng-template>\n                    <ng-template [ngIf]=\"!getProviderAttr('controls')['expander']['isEnabled']\">\n                        <span [innerHTML]=\"getProviderAttr('label')\"></span>\n                    </ng-template>\n                </h5>\n                <div *ngIf=\"_isExpanded\"\n                     class=\"txt-align-r hide-on-empty\">    <div class=\"row align-items-center\">\n        <div class=\"col ml-auto text-right actions no-user-select\">\n            <ng-template [ngIf]=\"_actionsService.getActionAttr('search', 'isEnabled')\"><js_search class=\"search\"></js_search></ng-template>\n            <div (click)=\"triggerAction($event)\">\n                <ng-template ngFor let-action [ngForOf]=\"_actionsService.getHeadActions()\">\n                    <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                       [ngClass]=\"[_actionsService.getActionAttr(action, 'icon')]\"\n                       class=\"-round fa\"\n                       [attr.data-action]=\"action\"></a>\n                </ng-template>\n            </div>\n        </div>\n    </div>\n</div>\n            </div>\n            \n    <div [hidden]=\"!(_isExpanded)\" class=\"ibox-content hide-on-empty\">    <ng-template [ngIf]=\"(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">\n                \n    <div class=\"table-responsive\">\n    <form>    <table class=\"data-table table table-hover dataTables-example table-bordered\">\n        <thead>\n        <tr>\n            <th *ngFor=\"let searchField of _dataService.getSearch('fields')\">{{ getLang(_dataService.getFields('metadata')[searchField].label) }}</th>\n            <th>&nbsp;</th>\n        </tr>\n        </thead>        <tbody>\n        <ng-template ngFor let-obj [ngForOf]=\"_dataService.getProviderAttr('objects')\" let-objIndex=\"index\">\n        <tr (dblclick)=\"editAction($event, objIndex)\"            [ngClass]=\"getLegendClasses(obj, 'tr')\">                    <td *ngFor=\"let searchField of _dataService.getSearch('fields')\"\n    [ngClass]=\"getColAlign(searchField)\"\n    [innerHTML]=\"obj[searchField]\"></td>                        <td>\n                <span *ngIf=\"obj['_isNew']\" class=\"badge badge-info\">New</span>\n                <span *ngIf=\"obj['_isEdited']\" class=\"badge badge-info\">Edited</span>\n                <input *ngIf=\"_actionsService.getActionAttr('radioChoice', 'isEnabled')\"\n                       class=\"pull-right action\"\n                       type=\"radio\"\n                       name=\"index[]\"\n                       value=\"{{objIndex}}\"/>\n                <input *ngIf=\"_actionsService.getActionAttr('checkAll', 'isEnabled')\"\n                       class=\"pull-right action js_checkAll\"\n                       type=\"checkbox\"\n                       name=\"index[]\"\n                       value=\"{{objIndex}}\"\n                       [ngModel]=\"checkAll\"/>\n                <div class=\"pull-right actions no-user-select text-secondary\" (click)=\"triggerAction($event)\">\n                    <ng-template ngFor let-action [ngForOf]=\"_actionsService.getDetailActions()\">\n                        <a *ngIf=\"_actionsService.getActionAttr(action, 'isEnabled')\"\n                           [ngClass]=\"[_actionsService.getActionAttr(action, 'icon') + getActionsLegendClasses(obj, action)]\"\n                           class=\"fa\"\n                           [attr.data-action]=\"action\"\n                           [attr.data-value]=\"objIndex\"></a>\n                    </ng-template>\n                </div>\n            </td>        </tr>\n        </ng-template>\n        </tbody>\n    </table>\n    </form></div>    </ng-template><p\n        class=\"text-center\"\n        *ngIf=\"!(_dataService.getProviderAttr('objects') && _dataService.getProviderAttr('objects')[0])\">No results.</p>\n</div>\n        <div [hidden]=\"!(_isExpanded)\"\n         class=\"ibox-footer\"\n         *ngIf=\"_dataService.countObjects() > 0\"><js_searchPagination></js_searchPagination></div>\n\n</div>\n\n<js_legend></js_legend>"
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/form/ts/field-types/field-type-auto-complete.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FieldTypeAutoCompleteComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ts_data_service_data_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/data-service/data.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ts_post_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/post.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__data_box_ts_src_data_box_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+
+
+
+
+
+var FieldTypeAutoCompleteComponent = (function () {
+    function FieldTypeAutoCompleteComponent(_postService, _modalService, _dataService, _tasksLoaderManagerService, _formService, _injector, _autoCompleteProviders, _helperService, _elementRef) {
+        var _this = this;
+        this._postService = _postService;
+        this._modalService = _modalService;
+        this._dataService = _dataService;
+        this._tasksLoaderManagerService = _tasksLoaderManagerService;
+        this._formService = _formService;
+        this._injector = _injector;
+        this._autoCompleteProviders = _autoCompleteProviders;
+        this._helperService = _helperService;
+        this._elementRef = _elementRef;
+        this.placeholder = ''; // Set empty as default, because value can be undefined
+        this.onChange = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* EventEmitter */](); // When choice change or the data of current choice is edited
+        this._isInitialized = false; // Controls if the component was already initialized.
+        this._isHidden = true;
+        this._lastSelectedChoice = { id: null, label: '' };
+        this._choices = [];
+        this._search = { term: '', lastTerm: null };
+        this._searchField = 'name';
+        this._childCandidateSearch = null;
+        // Object change event subscription
+        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
+            .subscribe(function (object) { return _this.reset(); });
+    }
+    /**
+     * Reset object
+     * @returns {FieldTypeAutoCompleteComponent}
+     */
+    FieldTypeAutoCompleteComponent.prototype.reset = function () {
+        // Clear choices (can be from old object)
+        if (this._childDataServiceChoices) {
+            this._childDataServiceChoices.setObjects([]);
+            this.resetChoices();
+        }
+        this._object = this._formService.getObject();
+        var value = this._object[this.field], normalizedValue = '';
+        if (value) {
+            normalizedValue = ((this._fieldInView
+                && this._dataService.getNormalizedObject()
+                && this._dataService.getNormalizedObject()[this._fieldInView])
+                ? this._dataService.getNormalizedObject()[this._fieldInView]
+                : value);
+        }
+        this._lastSelectedChoice = { id: value, label: normalizedValue };
+        this.setLabel();
+        this.setControlMode();
+        return this;
+    };
+    /**
+     * Reset choices
+     * @returns {FieldTypeAutoCompleteComponent}
+     */
+    FieldTypeAutoCompleteComponent.prototype.resetChoices = function () {
+        if (this._childDataServiceChoices) {
+            this._choices = (this._childDataServiceChoices.getProviderAttr('objects') || []);
+        }
+        else {
+            this._choices = [];
+        }
+        this._isHidden = !this.hasChoices();
+        return this;
+    };
+    /**
+     * Host event
+     * @param $event
+     */
+    FieldTypeAutoCompleteComponent.prototype.onDocumentClick = function ($event) {
+        if (!this._elementRef.nativeElement.contains($event.target)) {
+            this._isHidden = true;
+        }
+    };
+    /**
+     * onInputClick event (when enter in input).
+     * @param $event
+     */
+    FieldTypeAutoCompleteComponent.prototype.onInputClick = function ($event) {
+        $event.preventDefault();
+        this._object[this.field] = null;
+        this._isHidden = !this.hasChoices();
+        this.setLabel();
+        this.setControlMode();
+    };
+    /**
+     * On enter key (pagination)
+     * @param $event
+     */
+    FieldTypeAutoCompleteComponent.prototype.onEnterKey = function ($event) {
+        var that = this;
+        // Init component
+        this.init().then(function (data) {
+            that._search.term = $event.target.value;
+            if ((that._search.term != that._search.lastTerm)
+                && (that._search.term.length % 3 === 0) // Only submit with multiples of three
+            ) {
+                that._childCandidateSearch['criteria'] = [{
+                        'field': that._searchField,
+                        'expr': 'lrlike',
+                        'value': that._search.term
+                    }];
+                var route = that.getChoicesRoute();
+                that._childDataServiceChoices.choices(route);
+                that._search.lastTerm = that._search.term;
+            }
+        }, function (errors) { return; });
+    };
+    /**
+     * onControlClick (arrow of select control)
+     * @param $event
+     */
+    FieldTypeAutoCompleteComponent.prototype.onControlClick = function ($event) {
+        $event.preventDefault();
+        var that = this;
+        if (this.hasChoices()) {
+            this._isHidden = !this._isHidden;
+        }
+        else {
+            // Init component
+            this.init().then(function (data) {
+                var route = that.getChoicesRoute();
+                that._childDataServiceChoices.choices(route);
+            }, function (errors) { return; });
+        }
+    };
+    /**
+     * onChoiceClick event
+     * @param $event
+     */
+    FieldTypeAutoCompleteComponent.prototype.onChoiceClick = function ($event) {
+        $event.preventDefault();
+        var $target = $($event.target), choiceIndex = $target.data('index');
+        if (typeof choiceIndex != 'undefined') {
+            var choice = this._choices[choiceIndex];
+            if (choice && (this._object[this.field] != choice['id'])) {
+                this._object[this.field] = choice['id'];
+                this._lastSelectedChoice = { id: choice.id, label: $target.text() }; // $target.text() to work with html choices
+                this.setLabel();
+                this.setControlMode();
+                this.onChange.emit(choice['id']);
+            }
+        }
+        // After select, hide choices box
+        this._isHidden = true;
+    };
+    /**
+     * Get more objects (pagination)
+     * @param $event
+     */
+    FieldTypeAutoCompleteComponent.prototype.getMoreObjects = function ($event) {
+        $event.preventDefault();
+        $event.stopPropagation(); // Here the stop propagation can be used, because we click inside of choices box
+        var route = this.getChoicesRoute();
+        this._childDataServiceChoices.choices(route);
+    };
+    /**
+     * Trigger action
+     * @param $event
+     */
+    FieldTypeAutoCompleteComponent.prototype.triggerAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        switch (this._controlMode) {
+            case 'save':
+                this._formService.saveAndNewAction(); // Save and add a new object
+                break;
+            case 'edit':
+            case 'add':
+                var that_1 = this;
+                // Init component
+                this.init().then(function (data) {
+                    that_1.openPopup(that_1._controlMode);
+                }, function (errors) { return; });
+                break;
+        }
+    };
+    /**
+     * Open popup
+     * @param popupType
+     * @returns {FieldTypeAutoCompleteComponent}
+     */
+    FieldTypeAutoCompleteComponent.prototype.openPopup = function (popupType) {
+        var _this = this;
+        if (popupType === void 0) { popupType = __WEBPACK_IMPORTED_MODULE_5__data_box_ts_src_data_box_component__["b" /* PopupTypes */].edit; }
+        var that = this, fieldValue = this._object[this.field];
+        // Inject object to edit in child DataService
+        if (fieldValue) {
+            // Simulate object
+            var object = { id: fieldValue };
+            // Set object to null to avoid emit the event "_onChildObjectChangeSubscription"
+            this._childDataServicePopup.setObject({}, null);
+            this._childDataServicePopup.setObjects([object]);
+            this._childDataServicePopup.selectObject(0).then(function (data) {
+                that.loadPopup(popupType);
+                return _this;
+            }, function (errors) { console.log(errors); return _this; });
+        }
+        else {
+            // Create a new object in child DataService
+            this._childDataServicePopup.newObject().then(function (data) { that.loadPopup(popupType); return _this; }, function (errors) { console.log(errors); return _this; });
+        }
+        return this;
+    };
+    /**
+     * Load popup
+     * @param popupType
+     * @returns {FieldTypeAutoCompleteComponent}
+     */
+    FieldTypeAutoCompleteComponent.prototype.loadPopup = function (popupType) {
+        if (popupType === void 0) { popupType = __WEBPACK_IMPORTED_MODULE_5__data_box_ts_src_data_box_component__["b" /* PopupTypes */].edit; }
+        popupType = (__WEBPACK_IMPORTED_MODULE_5__data_box_ts_src_data_box_component__["b" /* PopupTypes */][popupType] || __WEBPACK_IMPORTED_MODULE_5__data_box_ts_src_data_box_component__["b" /* PopupTypes */].edit);
+        var popup = (this._provider.popups[popupType] || this._provider.popups);
+        this._modalService.popup(popup, this._childInjector).then(function (data) { return; }, function (errors) { console.log(errors); return; });
+        return this;
+    };
+    /**
+     * Set control mode
+     * @returns {FieldTypeAutoCompleteComponent}
+     */
+    FieldTypeAutoCompleteComponent.prototype.setControlMode = function () {
+        switch (this._provider.control) {
+            case 'edit':
+                if (this._object[this.field]) {
+                    this._controlMode = 'edit';
+                }
+                else {
+                    this._controlMode = 'add';
+                }
+                break;
+            case 'save':
+                this._controlMode = this._provider.control;
+                break;
+            default:
+                this._controlMode = null;
+        }
+        return this;
+    };
+    /**
+     * Set input label
+     * @returns {FieldTypeAutoCompleteComponent}
+     */
+    FieldTypeAutoCompleteComponent.prototype.setLabel = function () {
+        if (this._object[this.field] == this._lastSelectedChoice['id']) {
+            this._label = this._lastSelectedChoice['label'];
+        }
+        else {
+            this._label = this._search.term;
+        }
+        return this;
+    };
+    /**
+     * check if has choices
+     * @returns {any|boolean}
+     */
+    FieldTypeAutoCompleteComponent.prototype.hasChoices = function () {
+        return (this._choices && (this._choices.length > 0));
+    };
+    /**
+     * Get choices route
+     * Choices routes need to be set each time that route is called, because params can change dinamically
+     * (like occurs on "ClientPaymentRequest > Edit" )
+     * @returns string
+     */
+    FieldTypeAutoCompleteComponent.prototype.getChoicesRoute = function () {
+        var route = this._childDataServiceChoices.getRoute('choices');
+        // Add parameter to action route
+        if (this._provider.urlChoicesParams) {
+            route += ('/' + this._provider.urlChoicesParams);
+        }
+        return route;
+    };
+    /**
+     * Initialize variables and dependencies.
+     * @returns {Promise<boolean>}
+     */
+    FieldTypeAutoCompleteComponent.prototype.init = function () {
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            // Set configuration only once. Avoid to set configuration unnecessarily.
+            if (that._isInitialized) {
+                return resolve(true);
+            }
+            // Only init, if init is not yet running (avoid task duplication)
+            if (!that._tasksLoaderManagerService.addTask('INIT_AUTO_COMPLETE')) {
+                return reject(false);
+            }
+            // Dependency conf previously saved in provider
+            if (that._provider.childInjector) {
+                that._childInjector = that._provider.childInjector;
+                that.initVariables();
+                that._isInitialized = true;
+                that._tasksLoaderManagerService.delTask('INIT_AUTO_COMPLETE');
+                return resolve(true);
+            }
+            // Dependency conf for first time
+            return that._postService.post(that._provider.urlConf, null).then(function (data) {
+                // Notice that both DataService share the same DataServiceProvider! It needs to be fixed.
+                var dataServiceProvider = that._helperService.getDataServiceProvider(data);
+                dataServiceProvider['pin'] = true;
+                // Set child injector
+                var resolvedProviders = __WEBPACK_IMPORTED_MODULE_0__angular_core__["T" /* ReflectiveInjector */].resolve([
+                    { provide: 'DataServiceChoices', useClass: __WEBPACK_IMPORTED_MODULE_1__ts_data_service_data_service__["a" /* DataService */] },
+                    { provide: 'DataService', useClass: __WEBPACK_IMPORTED_MODULE_1__ts_data_service_data_service__["a" /* DataService */] },
+                    { provide: 'DataServiceProvider', useValue: dataServiceProvider },
+                    { provide: 'Provider', useValue: that._helperService.getDataBoxProvider(data) }
+                ]);
+                that._childInjector = __WEBPACK_IMPORTED_MODULE_0__angular_core__["T" /* ReflectiveInjector */].fromResolvedProviders(resolvedProviders, that._injector);
+                // Save childInjector (check out the context in the provider definition)
+                that._provider.childInjector = that._childInjector;
+                that.initVariables();
+                that._isInitialized = true;
+                that._tasksLoaderManagerService.delTask('INIT_AUTO_COMPLETE');
+                return resolve(true);
+            }, function (errors) {
+                console.log(errors);
+                that._tasksLoaderManagerService.delTask('INIT_AUTO_COMPLETE');
+                return reject(false);
+            });
+        });
+    };
+    /**
+     * Initialize variables.
+     * @returns {FieldTypeAutoCompleteComponent}
+     */
+    FieldTypeAutoCompleteComponent.prototype.initVariables = function () {
+        var _this = this;
+        var that = this;
+        this._childDataServicePopup = this._childInjector.get('DataService');
+        this._onChildObjectChangeSubscription = this._childDataServicePopup.getOnObjectsChangeEmitter()
+            .subscribe(function (data) {
+            // Only emit event if there are a valid object
+            if (that._childDataServicePopup.getObject() && that._childDataServicePopup.getObject()['id']) {
+                that.onChange.emit(that._object[that.field]);
+            }
+        });
+        this._childDataServiceChoices = this._childInjector.get('DataServiceChoices');
+        this._onChildObjectsChangeSubscription = this._childDataServiceChoices.getOnObjectsRefreshEmitter()
+            .subscribe(function (object) { return _this.resetChoices(); });
+        this._childCandidateSearch = this._childDataServiceChoices.getCandidateSearch(); // To filter objects
+        // Reset criteria to avoid filter by default criteria (defined in php controller)
+        this._childCandidateSearch['criteria'] = [];
+        return this;
+    };
+    /**
+     * Lifecycle callback
+     */
+    FieldTypeAutoCompleteComponent.prototype.ngOnInit = function () {
+        // Initialize values
+        this._provider = (this._autoCompleteProviders[this.field] || null);
+        if (this._provider.field) {
+            this._searchField = this._provider.field;
+        }
+        this._fieldInView = (this._dataService.getProviderAttr('fields')['metadata'][this.field]['fieldInView'] || null);
+        this.reset();
+    };
+    /**
+     * Lifecycle callback
+     */
+    FieldTypeAutoCompleteComponent.prototype.ngOnDestroy = function () {
+        // Sometimes the component can be already destroyed, so test if exists first
+        if (this._onObjectChangeSubscription) {
+            this._onObjectChangeSubscription.unsubscribe();
+        }
+        if (this._onChildObjectChangeSubscription) {
+            this._onChildObjectChangeSubscription.unsubscribe();
+        }
+        if (this._onChildObjectsChangeSubscription) {
+            this._onChildObjectsChangeSubscription.unsubscribe();
+        }
+    };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])(),
+        __metadata("design:type", String)
+    ], FieldTypeAutoCompleteComponent.prototype, "field", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])(),
+        __metadata("design:type", Boolean)
+    ], FieldTypeAutoCompleteComponent.prototype, "hasSelfReference", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])(),
+        __metadata("design:type", String)
+    ], FieldTypeAutoCompleteComponent.prototype, "placeholder", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["N" /* Output */])(),
+        __metadata("design:type", Object)
+    ], FieldTypeAutoCompleteComponent.prototype, "onChange", void 0);
+    FieldTypeAutoCompleteComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'js_autoComplete',
+            template: "\n    <div class=\"auto-complete\">\n        <div class=\"input-group\">\n            <input type=\"text\"\n                   class=\"form-control\"\n                   [placeholder]=\"placeholder\"\n                   (click)=\"onInputClick($event)\"\n                   (input)=\"onEnterKey($event)\"\n                   [ngModel]=\"_label\"\n                   [class.error]=\"_formService.getErrors()[field] && (_formService.getErrors()[field].length > 0)\">\n            <div class=\"input-group-append\"\n                 *ngIf=\"_controlMode\">\n                <button class=\"btn btn-primary\"\n                        type=\"button\"\n                        (click)=\"triggerAction($event)\"><i class=\"fa\"\n                                 [class.fa-check]=\"_controlMode == 'save'\"\n                                 [class.fa-plus]=\"_controlMode == 'add'\"\n                                 [class.fa-pencil]=\"_controlMode == 'edit'\"></i></button>\n            </div>\n            <a (click)=\"onControlClick($event)\"><i class=\"fa fa-angle-down\"></i></a>\n        </div>\n        <div class=\"choices\">\n            <ul [hidden]=\"_isHidden\"\n                (click)=\"onChoiceClick($event)\">\n                <ng-template [ngIf]=\"hasSelfReference\"><ng-template ngFor let-choice [ngForOf]=\"_choices\" let-choiceIndex=\"index\">\n                    <li *ngIf=\"choice['id'] != _object['id']\"\n                        [attr.data-index]=\"choiceIndex\"\n                        [innerHtml]=\"choice['label']\"></li>\n                </ng-template></ng-template>\n                <ng-template [ngIf]=\"!hasSelfReference\">\n                    <li *ngFor=\"let choice of _choices; let choiceIndex = index\"\n                        [attr.data-index]=\"choiceIndex\"\n                        [innerHtml]=\"choice['label']\"></li>\n                </ng-template>\n                <li *ngIf=\"_childCandidateSearch && _childCandidateSearch.hasMore\"\n                    (click)=\"getMoreObjects($event)\"\n                    class=\"-pagination\"\n                    title=\"Load more results...\"><span>...</span></li>\n            </ul>\n        </div>\n    </div>\n    ",
+            host: {
+                '(document:click)': 'onDocumentClick($event)',
+            }
+        }),
+        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('DataService')),
+        __param(6, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('AutoCompleteProviders')),
+        __param(7, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('HelperService')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_3__ts_post_service__["a" /* PostService */],
+            __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["a" /* ModalService */], Object, __WEBPACK_IMPORTED_MODULE_6__tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */],
+            __WEBPACK_IMPORTED_MODULE_4__form_service__["a" /* FormService */],
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injector */], Object, Object, __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */]])
+    ], FieldTypeAutoCompleteComponent);
+    return FieldTypeAutoCompleteComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/form/ts/field-types/field-type-date-picker.directive.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FieldTypeDatePickerDirective; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+var FieldTypeDatePickerDirective = (function () {
+    function FieldTypeDatePickerDirective(_elementRef, _formService, _dataService) {
+        var _this = this;
+        this._elementRef = _elementRef;
+        this._formService = _formService;
+        this._dataService = _dataService;
+        // Determines if the skip rules control value is inverted (using negation "!")
+        this._skipRulesControlInverseValue = false;
+        // Object change event subscription
+        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
+            .subscribe(function (object) { return _this.reset(); });
+    }
+    /**
+     * Reset
+     */
+    FieldTypeDatePickerDirective.prototype.reset = function () {
+        this.setControlConf();
+    };
+    /**
+     * Host event
+     * @param $event
+     */
+    FieldTypeDatePickerDirective.prototype.onDocumentClick = function ($event) {
+        // It can't be used, because prevent all events (checkbox, etc.)
+        //$event.preventDefault();
+        // The click is inside of this data picker
+        if (this._elementRef.nativeElement.contains($event.target)) {
+            var isDropDown = ($($event.target).parents('.dropdown-menu').length > 0);
+            // Let run the default behavior
+            if (isDropDown) {
+                return;
+            }
+            this.setControlConf(); // Set/Refresh conf (data picker will be opened or closed)
+            this.control.toggle(); // Toggle data picker drop-down
+        }
+        else {
+            // The click is outside of this data picker (close it)
+            this.control.close();
+        }
+    };
+    /**
+     * Set/Refresh control configuration
+     */
+    FieldTypeDatePickerDirective.prototype.setControlConf = function () {
+        // Apply rules
+        if (this._fieldMetadata['typeDetail'] && this._fieldMetadata['typeDetail']['rules']) {
+            var skipRules = ((this._skipRulesControl
+                && (this._skipRulesControl in (this._formService.getObject() || {})))
+                ? (this._skipRulesControlInverseValue
+                    ? !this._formService.getObject()[this._skipRulesControl]
+                    : this._formService.getObject()[this._skipRulesControl])
+                : false);
+            var _loop_1 = function (rule) {
+                switch (rule['expr']) {
+                    case 'range':
+                        if (skipRules && rule['allowSkip']) {
+                            // Skip rule
+                            this_1.control['markDisabled'] = null;
+                            break;
+                        }
+                        // Limit available dates to ranges
+                        var dateRanges_1 = (this_1._dataService.getLocalDataAttr(rule['value']) || []);
+                        // Function to check if date is valid (is in range)
+                        this_1.control['markDisabled'] = function (date) {
+                            var dateToCheck = new Date(date.year, date.month - 1, date.day);
+                            for (var _i = 0, dateRanges_2 = dateRanges_1; _i < dateRanges_2.length; _i++) {
+                                var dateRange = dateRanges_2[_i];
+                                // ' 00:00:00' is necessary to get the expected behavior
+                                var dateFrom = new Date(dateRange['startDate'] + ' 00:00:00'), dateTo = new Date(dateRange['endDate'] + ' 00:00:00');
+                                if ((dateToCheck.getTime() >= dateFrom.getTime())
+                                    && (dateToCheck.getTime() <= dateTo.getTime())) {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        };
+                        break;
+                    case 'min':
+                    case 'max':
+                        if (skipRules && rule['allowSkip']) {
+                            // Skip rule
+                            this_1.control[rule['expr'] + 'Date'] = null;
+                            break;
+                        }
+                        this_1.control[rule['expr'] + 'Date'] = this_1._formService.getObject()[rule['value']];
+                        break;
+                }
+            };
+            var this_1 = this;
+            for (var _i = 0, _a = this._fieldMetadata['typeDetail']['rules']; _i < _a.length; _i++) {
+                var rule = _a[_i];
+                _loop_1(rule);
+            }
+        }
+    };
+    /**
+     * Lifecycle callback
+     */
+    FieldTypeDatePickerDirective.prototype.ngOnInit = function () {
+        this._fieldMetadata = this._dataService.getProviderAttr('fields')['metadata'][this.field];
+        this._skipRulesControl = ((this._fieldMetadata['typeDetail']
+            && this._fieldMetadata['typeDetail']['skipRulesControl'])
+            ? this._fieldMetadata['typeDetail']['skipRulesControl']
+            : null);
+        // Check how skip rules value should be used
+        if (this._skipRulesControl && (this._skipRulesControl.substring(0, 1) == '!')) {
+            // Value should be inverse, using negation (!)
+            this._skipRulesControlInverseValue = true;
+            this._skipRulesControl = this._skipRulesControl.substring(1); // Remove operator from control name
+        }
+        this.reset();
+    };
+    /**
+     * Lifecycle callback
+     */
+    FieldTypeDatePickerDirective.prototype.ngOnDestroy = function () {
+        this._onObjectChangeSubscription.unsubscribe();
+    };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])('datePicker'),
+        __metadata("design:type", String)
+    ], FieldTypeDatePickerDirective.prototype, "field", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])('control'),
+        __metadata("design:type", Object)
+    ], FieldTypeDatePickerDirective.prototype, "control", void 0);
+    FieldTypeDatePickerDirective = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["s" /* Directive */])({
+            selector: '[datePicker]',
+            host: {
+                '(document:click)': 'onDocumentClick($event)',
+            }
+        }),
+        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('DataService')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */],
+            __WEBPACK_IMPORTED_MODULE_1__form_service__["a" /* FormService */], Object])
+    ], FieldTypeDatePickerDirective);
+    return FieldTypeDatePickerDirective;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/form/ts/field-types/field-type-html-select.directive.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FieldTypeHtmlSelectDirective; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+/**
+ * Handles with html select box
+ */
+var FieldTypeHtmlSelectDirective = (function () {
+    function FieldTypeHtmlSelectDirective(_elementRef, _formService, _dataService) {
+        var _this = this;
+        this._elementRef = _elementRef;
+        this._formService = _formService;
+        this._dataService = _dataService;
+        this.onChange = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* EventEmitter */]();
+        // Object change event subscription
+        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
+            .subscribe(function (object) { return _this.reset(); });
+    }
+    FieldTypeHtmlSelectDirective.prototype.onMouseClick = function ($event) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        this._$choices.toggle();
+        var $target = $($event.target), value = $target.data('value');
+        if (value) {
+            this._formService.getObject()[this.field] = value;
+            this._$label.html($target.html());
+            this.onChange.emit(value);
+        }
+    };
+    /**
+     * Reset
+     * @returns {FieldTypeHtmlSelectDirective}
+     */
+    FieldTypeHtmlSelectDirective.prototype.reset = function () {
+        var value = (this._formService.getObject()[this.field]), normalizedValue = '';
+        if (value) {
+            normalizedValue = ((this._fieldInView
+                && this._dataService.getNormalizedObject()
+                && this._dataService.getNormalizedObject()[this._fieldInView])
+                ? this._dataService.getNormalizedObject()[this._fieldInView]
+                : value);
+        }
+        this._$label.html(normalizedValue);
+        return this;
+    };
+    /**
+     * Host event
+     * @param $event
+     */
+    FieldTypeHtmlSelectDirective.prototype.onDocumentClick = function ($event) {
+        this._$choices.hide();
+    };
+    /**
+     * Lifecycle callback
+     */
+    FieldTypeHtmlSelectDirective.prototype.ngOnInit = function () {
+        this._$choices = $(this._elementRef.nativeElement).find('.js_choices');
+        this._$label = $(this._elementRef.nativeElement).find('.js_label');
+        this._$choices.hide();
+        this._fieldInView = (this._dataService.getProviderAttr('fields')['metadata'][this.field]['fieldInView'] || null);
+        this.reset();
+    };
+    /**
+     * Lifecycle callback
+     */
+    FieldTypeHtmlSelectDirective.prototype.ngOnDestroy = function () {
+        this._onObjectChangeSubscription.unsubscribe();
+    };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])('htmlSelect'),
+        __metadata("design:type", String)
+    ], FieldTypeHtmlSelectDirective.prototype, "field", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["N" /* Output */])(),
+        __metadata("design:type", Object)
+    ], FieldTypeHtmlSelectDirective.prototype, "onChange", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["x" /* HostListener */])('click', ['$event']),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", void 0)
+    ], FieldTypeHtmlSelectDirective.prototype, "onMouseClick", null);
+    FieldTypeHtmlSelectDirective = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["s" /* Directive */])({
+            selector: '[htmlSelect]',
+            host: {
+                '(document:click)': 'onDocumentClick($event)',
+            }
+        }),
+        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('DataService')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */],
+            __WEBPACK_IMPORTED_MODULE_1__form_service__["a" /* FormService */], Object])
+    ], FieldTypeHtmlSelectDirective);
+    return FieldTypeHtmlSelectDirective;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/form/ts/field-types/field-type-multi-checkbox.directive.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FieldTypeMultiCheckboxDirective; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+/**
+ * Handles with multiple checkbox select control
+ */
+var FieldTypeMultiCheckboxDirective = (function () {
+    function FieldTypeMultiCheckboxDirective(_elementRef, _formService) {
+        var _this = this;
+        this._elementRef = _elementRef;
+        this._formService = _formService;
+        // Object change event subscription
+        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
+            .subscribe(function (object) { return _this.reset(object); });
+    }
+    FieldTypeMultiCheckboxDirective.prototype.onMouseClick = function ($event) {
+        var value = $event.target.value;
+        if (value) {
+            if (value) {
+                if (value in this._controlObj) {
+                    delete this._controlObj[value]; // Remove
+                }
+                else {
+                    this._controlObj[value] = value; // Add
+                }
+            }
+        }
+    };
+    /**
+     * Reset object
+     * @param object
+     * @returns {FieldTypeMultiCheckboxDirective}
+     */
+    FieldTypeMultiCheckboxDirective.prototype.reset = function (object) {
+        if (object === void 0) { object = null; }
+        this._controlObj = this._formService.getObject()[this.field];
+        // Init the controlObj (when creates a new object)
+        if (!this._controlObj) {
+            this._controlObj = {};
+        }
+        // Set "selected" property
+        var $elements = $(this._elementRef.nativeElement).find('input');
+        if ($elements.length > 0) {
+            for (var _i = 0, $elements_1 = $elements; _i < $elements_1.length; _i++) {
+                var el = $elements_1[_i];
+                var $el = $(el);
+                $el.prop('checked', ($el.val() in this._controlObj));
+            }
+        }
+        return this;
+    };
+    /**
+     * Lifecycle callback
+     */
+    FieldTypeMultiCheckboxDirective.prototype.ngOnInit = function () {
+        this.reset();
+    };
+    /**
+     * Lifecycle callback
+     */
+    FieldTypeMultiCheckboxDirective.prototype.ngOnDestroy = function () {
+        this._onObjectChangeSubscription.unsubscribe();
+    };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])('multiCheckbox'),
+        __metadata("design:type", String)
+    ], FieldTypeMultiCheckboxDirective.prototype, "field", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["x" /* HostListener */])('click', ['$event']),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", void 0)
+    ], FieldTypeMultiCheckboxDirective.prototype, "onMouseClick", null);
+    FieldTypeMultiCheckboxDirective = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["s" /* Directive */])({
+            selector: '[multiCheckbox]'
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */],
+            __WEBPACK_IMPORTED_MODULE_1__form_service__["a" /* FormService */]])
+    ], FieldTypeMultiCheckboxDirective);
+    return FieldTypeMultiCheckboxDirective;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/form/ts/field-types/field-types.extension-module.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FieldTypesExtensionModule; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__field_type_auto_complete_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/field-types/field-type-auto-complete.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__password_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/field-types/password.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__field_type_multi_checkbox_directive__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/field-types/field-type-multi-checkbox.directive.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__field_type_html_select_directive__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/field-types/field-type-html-select.directive.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__field_type_date_picker_directive__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/field-types/field-type-date-picker.directive.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+
+
+
+
+
+
+
+
+var FieldTypesExtensionModule = (function () {
+    function FieldTypesExtensionModule() {
+    }
+    FieldTypesExtensionModule = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["H" /* NgModule */])({
+            imports: [__WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */]],
+            declarations: [
+                __WEBPACK_IMPORTED_MODULE_3__field_type_auto_complete_component__["a" /* FieldTypeAutoCompleteComponent */],
+                __WEBPACK_IMPORTED_MODULE_4__password_component__["a" /* FieldTypePasswordComponent */],
+                __WEBPACK_IMPORTED_MODULE_5__field_type_multi_checkbox_directive__["a" /* FieldTypeMultiCheckboxDirective */],
+                __WEBPACK_IMPORTED_MODULE_6__field_type_html_select_directive__["a" /* FieldTypeHtmlSelectDirective */],
+                __WEBPACK_IMPORTED_MODULE_7__field_type_date_picker_directive__["a" /* FieldTypeDatePickerDirective */]
+            ],
+            exports: [
+                __WEBPACK_IMPORTED_MODULE_3__field_type_auto_complete_component__["a" /* FieldTypeAutoCompleteComponent */],
+                __WEBPACK_IMPORTED_MODULE_4__password_component__["a" /* FieldTypePasswordComponent */],
+                __WEBPACK_IMPORTED_MODULE_5__field_type_multi_checkbox_directive__["a" /* FieldTypeMultiCheckboxDirective */],
+                __WEBPACK_IMPORTED_MODULE_6__field_type_html_select_directive__["a" /* FieldTypeHtmlSelectDirective */],
+                __WEBPACK_IMPORTED_MODULE_7__field_type_date_picker_directive__["a" /* FieldTypeDatePickerDirective */]
+            ]
+        })
+    ], FieldTypesExtensionModule);
+    return FieldTypesExtensionModule;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/form/ts/field-types/password.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FieldTypePasswordComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form.service.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+// Component
+var FieldTypePasswordComponent = (function () {
+    function FieldTypePasswordComponent(_formService) {
+        this._formService = _formService;
+        this._fields = { password: null, confirm: null };
+    }
+    /**
+     * Validate fields
+     * @param $event
+     */
+    FieldTypePasswordComponent.prototype.validateAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        var isValid = (this._fields.password == this._fields.confirm);
+        this._formService.getObject()[this.field] = (isValid ? this._fields.password : null);
+        this._formService.getErrors()[this.field] = (isValid ? null : ["Password confirmation does not match"]);
+    };
+    /**
+     * Reset
+     * @param $event
+     */
+    FieldTypePasswordComponent.prototype.resetAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if (this._fields.password != this._fields.confirm) {
+            this._fields.confirm = null;
+            this.validateAction(null);
+        }
+    };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])(),
+        __metadata("design:type", String)
+    ], FieldTypePasswordComponent.prototype, "field", void 0);
+    FieldTypePasswordComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: 'js_password',
+            template: "\n    <input (blur)=\"resetAction($event)\"\n           class=\"form-control\"\n           [class.error]=\"_formService.getErrors()[field] && (_formService.getErrors()[field].length > 0)\"\n           type=\"password\"\n           placeholder=\"Password\"\n           [(ngModel)]=\"_fields.password\">\n    <input (keyup)=\"validateAction($event)\"\n           class=\"form-control m-t\"\n           [class.error]=\"_formService.getErrors()[field] && (_formService.getErrors()[field].length > 0)\"\n           type=\"password\"\n           placeholder=\"Confirm password\"\n           [(ngModel)]=\"_fields.confirm\">\n    "
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__form_service__["a" /* FormService */]])
+    ], FieldTypePasswordComponent);
+    return FieldTypePasswordComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/form/ts/form-popup.extension-component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FormPopupExtensionComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form.extension-component.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+var FormPopupExtensionComponent = (function (_super) {
+    __extends(FormPopupExtensionComponent, _super);
+    function FormPopupExtensionComponent() {
+        var _this = _super.call(this) || this;
+        // Modal parameters
+        _this.onDismissEmitter = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* EventEmitter */]();
+        return _this;
+    }
+    /**
+     * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
+     * @param elementRef
+     * @param renderer
+     * @param provider
+     * @param formService
+     * @param dataService
+     */
+    FormPopupExtensionComponent.prototype.initFormPopupExtensionComponent = function (elementRef, renderer, provider, formService, dataService) {
+        _super.prototype.initFormExtensionComponent.call(this, elementRef, renderer, provider, formService, dataService);
+    };
+    /**
+     * Save and enter to detail action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormPopupExtensionComponent.prototype.saveAndEnterAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        this._formService.saveAndEnterAction($event);
+    };
+    /**
+     * Save and add a new entry.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormPopupExtensionComponent.prototype.saveAndNewAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        this._formService.saveAndNewAction($event);
+    };
+    /**
+     * Save and close popup action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormPopupExtensionComponent.prototype.saveAndCloseAction = function ($event) {
+        var _this = this;
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        this.save().then(function (data) { _this.closeAction(); return; }, function (errors) { return; });
+    };
+    /**
+     * Cancel action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormPopupExtensionComponent.prototype.cancelAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        this.closeAction($event);
+    };
+    /**
+     * Close action.
+     * @param $event
+     */
+    FormPopupExtensionComponent.prototype.closeAction = function ($event) {
+        var _this = this;
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        // Current form object has changes from user?
+        this._formService.reset().then(function (data) {
+            _this.onDismissEmitter.emit(data);
+            return;
+        }, function (errors) { return; });
+    };
+    FormPopupExtensionComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: '.js_formPopup',
+            template: ''
+        }),
+        __metadata("design:paramtypes", [])
+    ], FormPopupExtensionComponent);
+    return FormPopupExtensionComponent;
+}(__WEBPACK_IMPORTED_MODULE_1__form_extension_component__["a" /* FormExtensionComponent */]));
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/form/ts/form.extension-component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FormExtensionComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ts_base_base_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/base/base.extension-component.ts");
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+// Component
+var FormExtensionComponent = (function (_super) {
+    __extends(FormExtensionComponent, _super);
+    function FormExtensionComponent() {
+        return _super.call(this) || this;
+    }
+    /**
+     * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
+     * @param elementRef
+     * @param renderer
+     * @param provider
+     * @param formService
+     * @param dataService
+     */
+    FormExtensionComponent.prototype.initFormExtensionComponent = function (elementRef, renderer, provider, formService, dataService) {
+        // Parent init (construct)
+        _super.prototype.initBaseExtensionComponent.call(this, elementRef, renderer, provider);
+        // Constructor vars
+        this._formService = formService;
+        this._dataService = dataService;
+    };
+    /**
+     * Save object. Handle submit form.
+     * This override add a closePopup behavior.
+     * This method should be called from child component.
+     * @returns {Promise}
+     */
+    FormExtensionComponent.prototype.save = function () {
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            that._formService.save().then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
+        });
+    };
+    /**
+     * Save action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormExtensionComponent.prototype.saveAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        this.save().then(function (data) { return; }, function (errors) { return; });
+    };
+    /**
+     * Reset action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormExtensionComponent.prototype.resetAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        this._formService.resetAction($event);
+    };
+    /**
+     * Lifecycle callback
+     */
+    FormExtensionComponent.prototype.ngAfterViewInit = function () {
+        this._formService.init(this);
+    };
+    FormExtensionComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
+            selector: '.js_form',
+            template: ''
+        }),
+        __metadata("design:paramtypes", [])
+    ], FormExtensionComponent);
+    return FormExtensionComponent;
+}(__WEBPACK_IMPORTED_MODULE_1__ts_base_base_extension_component__["a" /* BaseExtensionComponent */]));
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/AppBundle/Resources/public/form/ts/form.service.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FormService; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ts_helper__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/helper.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+
+
+
+
+
+var FormService = (function () {
+    function FormService(_modalService, formBuilder, _dataService, _helperService, _tasksLoaderManagerService, _provider) {
+        var _this = this;
+        this._modalService = _modalService;
+        this._dataService = _dataService;
+        this._helperService = _helperService;
+        this._tasksLoaderManagerService = _tasksLoaderManagerService;
+        this._provider = _provider;
+        this._component = null; // Parent component that uses and implement this service
+        this._originalObject = {}; // Original object to compare changes and reset object in DataService
+        this._originalNormalizedObject = {}; // Original normalized (for form) object to compare changes and reset object in form
+        this._object = {}; // Object used by form
+        this._$form = null; // DOM form
+        this._errors = {}; // Form errors validation
+        // Set default values for provider
+        if (!this._provider) {
+            this._provider = {};
+        }
+        this._uniqueId = this._helperService.getUniqueId();
+        this._onObjectChangeEmitter = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* EventEmitter */]();
+        // Object change event subscription
+        this._onObjectChangeSubscription = this._dataService.getOnObjectChangeEmitter()
+            .subscribe(function (object) { return _this.onObjectChangeSubscription(object); });
+        this._forceSubmit = false;
+        this._preventObjectOverride = true;
+        // Set object, if it has not been setted before open the form
+        if (!this._dataService.getObject()) {
+            // If object is not setted, create a new
+            var that_1 = this;
+            this.newObject().then(function (data) {
+                that_1.setObject(_this._dataService.getObject());
+                that_1.buildForm(formBuilder);
+            }, function (errors) { return; });
+        }
+        else {
+            this.setObject(this._dataService.getObject());
+            this.buildForm(formBuilder);
+        }
+    }
+    /**
+     * Build form
+     * @param formBuilder
+     * @returns {FormService}
+     */
+    FormService.prototype.buildForm = function (formBuilder) {
+        var formControls = {}, fields = (this._provider.fields || this._dataService.getFields('form') || []).concat(this._helperService.objectKeys(this._dataService.getProviderExtraDataAttr('fields')));
+        // Set form controls
+        for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
+            var field = fields_1[_i];
+            formControls[field] = [this._object[field] || null];
+        }
+        this._form = formBuilder.group(formControls);
+        return this;
+    };
+    /**
+     * Initialization of service.
+     * This method should be called in "ngOnInit" method of parent component,
+     * so the template has been rendered.
+     * @param component (parent component)
+     * @returns {FormService}
+     */
+    FormService.prototype.init = function (component) {
+        // Local variables
+        this._component = component;
+        // @TODO: discontinue this provider, and keep only the second verification
+        this._preventObjectOverride = this._component.getProviderAttr('preventObjectOverride');
+        if (this._preventObjectOverride) {
+            this._preventObjectOverride = (!this._provider.hasOwnProperty('hasPreventObjectOverride')
+                || this._provider['hasPreventObjectOverride']);
+        }
+        // Note: _$form needs to be setted each time that the component changes, otherwise if you set the form
+        // only once, form loss your binding consistence from the second time that it is opened and setted a
+        // different object. Ie: "BookingServicePriceEdit", field "isVatIncluded" and "markupValue" loss binding
+        // consistence and the data is not correctly sent to server!!!!
+        this._$form = $(this._component._elementRef.nativeElement).find('form');
+        return this;
+    };
+    ///////////////////////////////////////////////
+    // It's no more necessary, because we only create the form (open popup) after get the
+    // promise successful response (get, new or clone object), so this code is kept here for future consideration.
+    ///////////////////////////////////////////////
+    /**
+     * Is Initialized
+     * Controls if FormService has been initialized the "formBuilder group",
+     * to avoid the component render the template form before and break
+     * @returns {boolean}
+     */
+    /*public isInitialized(): boolean
+    {
+        return (this.getForm() ? true : false);
+    }*/
+    /**
+     * Get form object emitter to tell all subscribers about changes
+     * @returns {EventEmitter<any>}
+     */
+    FormService.prototype.getOnObjectChangeEmitter = function () {
+        return this._onObjectChangeEmitter;
+    };
+    /**
+     * On object change subscription. Handle with object changes in DataService.
+     * @param object
+     */
+    FormService.prototype.onObjectChangeSubscription = function (object) {
+        if ((object != this._originalObject) // Set object only if is different
+            && !this._tasksLoaderManagerService.hasTask('SAVE_' + this._uniqueId)) {
+            // Form does not need to confirm object override
+            if (!this._preventObjectOverride) {
+                this.setObject(object);
+                return;
+            }
+            // Confirm object override by user to prevent data loss
+            this.confirmAndSetObject(object).then(function (data) { return; }, function (errors) { return; });
+        }
+    };
+    /**
+     * Set _preventObjectOverride
+     * @param value
+     * @returns {FormService}
+     */
+    FormService.prototype.setPreventObjectOverride = function (value) {
+        this._preventObjectOverride = value;
+        return this;
+    };
+    /**
+     * Confirm and set object. Check for object changes and confirm with the user to discard them, then set
+     * the object according with the ser response.
+     * @param object
+     * @returns {Promise}
+     */
+    FormService.prototype.confirmAndSetObject = function (object) {
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            // Current form object has changes from user?
+            if (that.hasChanges()) {
+                // Dialog message
+                return that._modalService.dialog().then(function (hasConfirm) {
+                    if (hasConfirm) {
+                        that.setObject(object);
+                        return resolve(true);
+                    }
+                    else {
+                        // Keep the object in DataService
+                        that._dataService.setObject(that._originalObject);
+                        return reject(false);
+                    }
+                }, function (errors) { console.log(errors); return reject(false); });
+            }
+            else {
+                that.setObject(object);
+                return resolve(true);
+            }
+        });
+    };
+    /**
+     * Set object
+     * @param object
+     * @returns {FormService}
+     */
+    FormService.prototype.setObject = function (object) {
+        // Set only if is a different object
+        if (object && (object != this._originalObject)) {
+            // Keep the original object from dataService
+            this._originalObject = object;
+            // Normalize object to form
+            this._originalNormalizedObject = __WEBPACK_IMPORTED_MODULE_4__ts_helper__["a" /* Helper */].cloneObject(this._originalObject, true);
+            this.normalizeObject(this._originalNormalizedObject);
+            // Update form object
+            this._object = __WEBPACK_IMPORTED_MODULE_4__ts_helper__["a" /* Helper */].cloneObject(this._originalNormalizedObject, true);
+            // Reset errors
+            this._errors = {};
+            // This object is saved in session and needs to be confirmed by user before save them in database
+            this._forceSubmit = (object['_isSessionStorage'] ? true : false);
+            this._onObjectChangeEmitter.emit(this._object); // Object as changed to the original, notify subscribers
+        }
+        // Waiting mode for save process ends here, after update the original object.
+        // Prevents the object being updated two times, by the "Form" "save" and the "DataService" object change emitter.
+        this._tasksLoaderManagerService.delTask('SAVE_' + this._uniqueId);
+        return this;
+    };
+    /**
+     * Normalize objects to form
+     * Detect fields that needs to be normalized
+     * @param object
+     * @param fields
+     * @returns {FormService}
+     */
+    FormService.prototype.normalizeObject = function (object, fields) {
+        if (fields === void 0) { fields = null; }
+        fields = (fields || this._dataService.getProviderAttr('fields')['form']);
+        if (object && fields) {
+            var fieldsMetadata = this._dataService.getProviderAttr('fields')['metadata'];
+            for (var _i = 0, fields_2 = fields; _i < fields_2.length; _i++) {
+                var field = fields_2[_i];
+                var fieldMetadata = fieldsMetadata[field];
+                switch (fieldMetadata['type']) {
+                    case 'date':
+                        object[field] = this.normalizeValue(object[field], fieldMetadata['type']);
+                        break;
+                }
+            }
+        }
+        return this;
+    };
+    /**
+     * Normalize value to form
+     * @param value
+     * @param type
+     * @returns any
+     */
+    FormService.prototype.normalizeValue = function (value, type) {
+        switch (type) {
+            case 'date':
+                if (value && (typeof value == 'string')) {
+                    var dateArr = value.split("-");
+                    return {
+                        year: parseInt(dateArr[0]),
+                        month: parseInt(dateArr[1]),
+                        day: parseInt(dateArr[2])
+                    };
+                }
+                return value;
+        }
+    };
+    /**
+     * Get object
+     * @returns any
+     */
+    FormService.prototype.getObject = function () {
+        return this._object;
+    };
+    /**
+     * Get originalObject
+     * @returns any
+     */
+    FormService.prototype.getOriginalObject = function () {
+        return this._originalNormalizedObject;
+    };
+    /**
+     * Check if the object has changes from user
+     * @returns {boolean|Boolean}
+     */
+    FormService.prototype.hasChanges = function () {
+        // Compare the working object "this._object" that it's a clone of "this._originalNormalizedObject" with your
+        // original object of cloning "this._originalNormalizedObject"
+        return (!this._helperService.isEqualObject(this._object, this._originalNormalizedObject));
+    };
+    /**
+     * Get form
+     * @returns any
+     */
+    FormService.prototype.getForm = function () {
+        return this._form;
+    };
+    /**
+     * Set errors
+     * @param errors
+     * @returns {FormService}
+     */
+    FormService.prototype.setErrors = function (errors) {
+        this._errors = (errors || {});
+        return this;
+    };
+    /**
+     * Get errors
+     * @returns any
+     */
+    FormService.prototype.getErrors = function () {
+        return this._errors;
+    };
+    /**
+     * Set form field value
+     * @param field
+     * @param value
+     */
+    FormService.prototype.setFormFieldValue = function (field, value) {
+        if (value === undefined) {
+            return; // Possible wrong element of the click event
+        }
+        // Accept null values to set null some fields, like not mandatory fields
+        value = (value || null);
+        if (field in this._object) {
+            this._object[field] = value;
+        }
+    };
+    /**
+     * Get view object (normalized object in DataService)
+     * @returns {any|{}}
+     */
+    FormService.prototype.getViewObject = function () {
+        return (this._dataService.getNormalizedObject() || {});
+    };
+    /**
+     * Validate form
+     * @returns {boolean}
+     */
+    FormService.prototype.validate = function () {
+        this._errors = {};
+        for (var control in this._form.controls) {
+            if (!this._form.controls[control].valid) {
+                this._errors[control] = ['Required'];
+            }
+        }
+        return !(this._helperService.objectLength(this._errors) > 0);
+    };
+    /**
+     * Save form. Handle submit form.
+     * This method should be called from child component.
+     * @param route (optional route to overrides default route)
+     * @param hasValidation
+     * @returns {Promise}
+     */
+    FormService.prototype.save = function (route, hasValidation) {
+        if (route === void 0) { route = null; }
+        if (hasValidation === void 0) { hasValidation = true; }
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            if (!that._tasksLoaderManagerService.addTask('SAVE_' + that._uniqueId)) {
+                // Form is already in save process
+                return reject(false);
+            }
+            // Current form object has changes from user?
+            // Note: Objects in session storage enables the "_forceSubmit" by default
+            if (that._forceSubmit || !that._object['id'] || that.hasChanges()) {
+                // Validate form
+                if (hasValidation && !that.validate()) {
+                    that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId); // Cancel save, form has errors
+                    return reject(false);
+                }
+                // Set the valid token
+                that._helperService.setFormToken(that._$form);
+                // Get form data
+                var data = that._$form.serialize();
+                var id = that._object['id'] ? that._object['id'] : null;
+                // Save form
+                return that._dataService.save(data, id, route).then(function (object) {
+                    // Force submit is reset, each activation is valid  only once
+                    that._forceSubmit = false;
+                    // Update form with updated object
+                    that.setObject(object);
+                    // Task removed in "setObject" method to prevent multiple updates of it
+                    //that._tasksLoaderManagerService.delTask('SAVE_'+that._uniqueId);
+                    return resolve(true);
+                }, function (errors) {
+                    if (errors) {
+                        that._errors = errors;
+                    }
+                    that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId);
+                    return reject(errors);
+                });
+            }
+            else {
+                that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId);
+                return resolve(true);
+            }
+        });
+    };
+    /**
+     * Save action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormService.prototype.saveAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        this.save().then(function (data) { return; }, function (errors) { return; });
+    };
+    /**
+     * Save and enter to detail action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormService.prototype.saveAndEnterAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        var that = this;
+        this.save().then(function (data) {
+            that.newAction();
+            return;
+        }, function (errors) { return; });
+    };
+    /**
+     * Add a new entry (newObject is used in name because new is a reserved word).
+     * @returns {Promise}
+     */
+    FormService.prototype.newObject = function () {
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            that._dataService.newObject().then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
+        });
+    };
+    /**
+     * Add a new entry action.
+     * This method should be called when the form is initialized.
+     * @param $event
+     */
+    FormService.prototype.newAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        this.newObject().then(function (data) { return; }, function (errors) { return; });
+    };
+    /**
+     * Save and add a new entry.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormService.prototype.saveAndNewAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        var that = this;
+        this.save().then(function (data) { that.newAction(); return; }, function (errors) { return; });
+    };
+    /**
+     * Reset object.
+     * This method should be called from child component.
+     * @param hasConfirm (launch confirm to user if object has unsaved changes)
+     * @returns {Promise}
+     */
+    FormService.prototype.reset = function (hasConfirm) {
+        if (hasConfirm === void 0) { hasConfirm = true; }
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            if (that.hasChanges()) {
+                if (hasConfirm) {
+                    return that.confirmAndSetObject(that._originalNormalizedObject).then(function (data) { return resolve(true); }, function (errors) { return reject(false); });
+                }
+                else {
+                    that.setObject(that._originalNormalizedObject);
+                    return resolve(true);
+                }
+            }
+            else {
+                return resolve(true);
+            }
+        });
+    };
+    /**
+     * Reset action.
+     * This method should be called from view/template.
+     * @param $event
+     */
+    FormService.prototype.resetAction = function ($event) {
+        if ($event === void 0) { $event = null; }
+        if ($event) {
+            $event.preventDefault();
+        }
+        this.reset().then(function (data) { return; }, function (errors) { return; });
+    };
+    /**
+     * Set forceSubmit
+     * @param forceSubmit
+     * @returns {FormService}
+     */
+    FormService.prototype.setForceSubmit = function (forceSubmit) {
+        if (forceSubmit === void 0) { forceSubmit = true; }
+        this._forceSubmit = forceSubmit;
+        return this;
+    };
+    FormService = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injectable */])(),
+        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('DataService')),
+        __param(3, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('HelperService')),
+        __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["M" /* Optional */])()), __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('FormServiceProvider')),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["a" /* ModalService */],
+            __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */], Object, Object, __WEBPACK_IMPORTED_MODULE_3__tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object])
+    ], FormService);
+    return FormService;
+}());
+
+
 
 /***/ }),
 
@@ -100173,7 +101924,7 @@ var LegendComponent = (function () {
     LegendComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'js_legend',
-            template: "\n    <dl *ngIf=\"_provider.length > 0\" class=\"legend\">\n        <ng-template ngFor let-legend [ngForOf]=\"_provider\" let-i=\"index\">\n          <div class=\"dsp-inline-block nowrap\"><dt [ngClass]=\"legend['class']\"></dt><dd>{{legend['label']}}</dd></div>\n        </ng-template>\n    </dl>\n    "
+            template: "\n    <dl *ngIf=\"_provider.length > 0\" class=\"row legend\">\n        <ng-template ngFor let-legend [ngForOf]=\"_provider\" let-i=\"index\">\n          <div class=\"col-auto mr-auto\"><dt [ngClass]=\"legend['class']\"></dt><dd>{{legend['label']}}</dd></div>\n        </ng-template>\n    </dl>\n    "
         }),
         __param(0, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('LegendProvider')),
         __metadata("design:paramtypes", [Object])
@@ -100373,7 +102124,7 @@ var ModalDialogComponent = (function (_super) {
     ModalDialogComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: '.js_modalDialog',
-            template: "<div class=\"modal-header\">\n        <h3 class=\"modal-title\">{{title}}</h3>\n    </div>\n    <div class=\"modal-body\">{{body}}</div>\n    <div class=\"modal-footer\">\n        <button *ngIf=\"isDialog\" class=\"btn btn-default\" (click)=\"closeAction($event, false)\">Cancel</button>\n        <button class=\"btn btn-primary\" (click)=\"closeAction($event, true)\">Ok</button>\n    </div>\n    "
+            template: "<div class=\"modal-header\">\n        <h3 class=\"modal-title\">{{title}}</h3>\n    </div>\n    <div class=\"modal-body\">{{body}}</div>\n    <div class=\"modal-footer\">\n        <div class=\"row\">\n            <div class=\"col-auto ml-auto\">\n                <button *ngIf=\"isDialog\" class=\"btn btn-light\" (click)=\"closeAction($event, false)\">Cancel</button>\n                <button class=\"btn btn-primary\" (click)=\"closeAction($event, true)\">Ok</button>\n            </div>\n        </div>\n    </div>\n    "
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */],
             __WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* Renderer */]])
@@ -101098,7 +102849,18 @@ var BaseExtensionComponent = (function () {
      * @returns {any|null}
      */
     BaseExtensionComponent.prototype.getProviderAttr = function (attribute) {
-        return this._provider[attribute] || null;
+        return ((this._provider[attribute] === undefined) ? null : this._provider[attribute]); // Can be zero
+    };
+    /**
+     * Get lang
+     * @param key
+     * @returns {any}
+     */
+    BaseExtensionComponent.prototype.getLang = function (key) {
+        return ((!this._provider['language'] || (this._provider['language'][key] === undefined))
+            ? key
+            : this._provider['language'][key] // Can be zero
+        );
     };
     /**
      * Get "localData" attribute
@@ -101124,7 +102886,7 @@ var BaseExtensionComponent = (function () {
     BaseExtensionComponent.prototype.ngAfterViewInit = function () {
         // Start loading lazy images
         // @TODO: This method should be called from DataService each time that objects are updated
-        $(this._elementRef.nativeElement).find('.js_lazy').Lazy();
+        //$(this._elementRef.nativeElement).find('.js_lazy').Lazy();
     };
     BaseExtensionComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
@@ -101184,6 +102946,8 @@ var BoxExtensionComponent = (function (_super) {
      */
     BoxExtensionComponent.prototype.initBoxExtensionComponent = function (elementRef, renderer, provider) {
         _super.prototype.initBaseExtensionComponent.call(this, elementRef, renderer, provider);
+        var expanderControl = this.getProviderAttr('controls')['expander'];
+        this._isExpanded = (!expanderControl['isEnabled'] || expanderControl['isExpanded']);
     };
     /**
      * Expander action. Used by expanded directive output.
@@ -101263,6 +103027,10 @@ var DataService = (function () {
         this._onObjectsRefreshEmitter = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* EventEmitter */]();
         this._onObjectsChangeEmitter = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* EventEmitter */]();
         this.setObjects(this._provider.objects || []);
+        // If object is defined, then set the object (used by dynamic entity detail and login flat form)
+        if (this._provider.object) {
+            this.setLocalObject(this._provider.object);
+        }
         // Initialize the search
         this.initSearch();
     }
@@ -101401,7 +103169,7 @@ var DataService = (function () {
                     }
                     // Object
                     that._objectIndex = index; // The index of original object that was selected
-                    that.setLocalObject(data.object);
+                    that.setLocalObject(data.object, false);
                     // Now object has all of fields with the values, is not limited to the search selected field,
                     // so we need normalize the object, because now it can has new values.
                     that.setNormalizedObject();
@@ -101423,9 +103191,7 @@ var DataService = (function () {
     DataService.prototype.setObject = function (object, index) {
         if (index === void 0) { index = null; }
         if (object) {
-            // Normalize object to template
-            this._normalizedObject = this._helperService.cloneObject(object, true);
-            this.normalizeObjectsToTemplate([this._normalizedObject]);
+            this.setLocalObject(object);
             // Objects stored in session does not be considered really objects.
             if (object['id'] && !object['_isSessionStorage']) {
                 var objectsProvider = (this._objectsProvider || this._provider.objects);
@@ -101446,7 +103212,6 @@ var DataService = (function () {
                     this._newObjectsIds.push(object['id']); // New object added
                 }
             }
-            this.setLocalObject(object);
         }
         return this;
     };
@@ -101475,9 +103240,16 @@ var DataService = (function () {
      * Set local object (when the object is changed based in the objects array from _provider,
      * always is an internal order)
      * @param object
+     * @param hasTemplateNormalization
      * @returns {DataService}
      */
-    DataService.prototype.setLocalObject = function (object) {
+    DataService.prototype.setLocalObject = function (object, hasTemplateNormalization) {
+        if (hasTemplateNormalization === void 0) { hasTemplateNormalization = true; }
+        if (hasTemplateNormalization) {
+            // Normalize object to template
+            this._normalizedObject = this._helperService.cloneObject(object, true);
+            this.normalizeObjectsToTemplate([this._normalizedObject]);
+        }
         this._object = object;
         this._onObjectChangeEmitter.emit(this._object);
         return this;
@@ -101575,6 +103347,20 @@ var DataService = (function () {
         return this;
     };
     /**
+     * Set object index
+     * @param index
+     */
+    DataService.prototype.setObjectIndex = function (index) {
+        var objectsProvider = (this._objectsProvider || this._provider.objects);
+        if (index && objectsProvider[index]) {
+            this._objectIndex = index;
+            // Set the object to emit the object change for any process pendent
+            this.setLocalObject(objectsProvider[index], false);
+            return true;
+        }
+        return false;
+    };
+    /**
      * Push to objects
      * @param objects
      * @param isFirst (determines if objects should be at first)
@@ -101628,8 +103414,8 @@ var DataService = (function () {
     DataService.prototype.getFieldChoice = function (field, key) {
         if (key === void 0) { key = null; }
         // Return a specific field choice by key
-        if (key in this._provider.fieldsChoices[field]['value']) {
-            return this._provider.fieldsChoices[field]['value'][key];
+        if (key in this._provider.fields.choices[field]['value']) {
+            return this._provider.fields.choices[field]['value'][key];
         }
         return null;
     };
@@ -101641,8 +103427,8 @@ var DataService = (function () {
      */
     DataService.prototype.getFieldChoicesAttr = function (field, attribute) {
         // Return a specific attribute of field choices
-        if (this._provider.fieldsChoices[field] && (attribute in this._provider.fieldsChoices[field])) {
-            return this._provider.fieldsChoices[field][attribute];
+        if (this._provider.fields.choices[field] && (attribute in this._provider.fields.choices[field])) {
+            return this._provider.fields.choices[field][attribute];
         }
         return null;
     };
@@ -101652,7 +103438,7 @@ var DataService = (function () {
      * @returns {*|null}
      */
     DataService.prototype.getFieldChoices = function (field) {
-        return this._provider.fieldsChoices[field]['value'] || null;
+        return this._provider.fields.choices[field]['value'] || null;
     };
     /**
      * Set fields choices.
@@ -101660,7 +103446,8 @@ var DataService = (function () {
      * @returns {DataService}
      */
     DataService.prototype.setFieldsChoices = function (fieldsChoices) {
-        this._provider.fieldsChoices = fieldsChoices;
+        // Merge only defined fields (generally foreign key object with sef reference)
+        this._provider['fields']['choices'] = this._helperService.mergeObjects(this._provider['fields']['choices'], fieldsChoices || {});
         return this;
     };
     /**
@@ -101759,7 +103546,7 @@ var DataService = (function () {
         objects = (objects || this._provider.objects);
         fields = (fields || this._provider.fields['view']);
         fieldsMetadata = (fieldsMetadata || this._provider.fields['metadata'] || {});
-        fieldsChoices = (fieldsChoices || this._provider.fieldsChoices || null);
+        fieldsChoices = (fieldsChoices || this._provider.fields.choices || null);
         if (objects && fields) {
             for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
                 var field = fields_1[_i];
@@ -101791,12 +103578,13 @@ var DataService = (function () {
                 }
                 // For "enum" type (key is the label, pattern of Symfony ChoiceType)
                 if (fieldsChoices && fieldsChoices[field] && fieldsChoices[field]['value']) {
-                    var enumObj = fieldsChoices[field]['value'];
+                    var enumChoices = fieldsChoices[field]['value'];
                     for (var _b = 0, objects_3 = objects; _b < objects_3.length; _b++) {
                         var obj = objects_3[_b];
-                        for (var enumKey in enumObj) {
-                            if (enumObj[enumKey] == obj[field]) {
-                                obj[field] = enumKey;
+                        for (var _c = 0, enumChoices_1 = enumChoices; _c < enumChoices_1.length; _c++) {
+                            var enumChoice = enumChoices_1[_c];
+                            if (enumChoice['id'] == obj[field]) {
+                                obj[field] = enumChoice['label'];
                             }
                         }
                     }
@@ -101868,26 +103656,36 @@ var DataService = (function () {
                 case 'monetary':
                     return (value + '€');
                 case 'icon':
-                    return ('<i class="fa ' + value + '"></i>');
+                    var iconText = (fieldMetadata['fieldInView'] && object[fieldMetadata['fieldInView']]
+                        ? ' <span>' + object[fieldMetadata['fieldInView']] + '</span>'
+                        : '');
+                    return ('<i class="fa ' + value + '"></i>' + iconText);
                 case 'link':
-                    return ('<a href="' + value + '" target="_blank">' + value + '</a>');
+                    return ('<a href="' + value + '" target="_blank" class="text-base">' + value + '</a>');
                 case 'img':
                 case 'avatar':
-                    var extraClass = ((fieldMetadata['type'] == 'avatar') ? 'img-circle' : 'thumbnail');
+                    var extraClass = ((fieldMetadata['type'] == 'avatar') ? 'img-circle' : 'thumbnail'), imageLabel = (fieldMetadata['fieldInView'] && object[fieldMetadata['fieldInView']]
+                        ? '<div><small>' + object[fieldMetadata['fieldInView']] + '</small></div>'
+                        : '');
                     // No image is provided
                     if (!value) {
                         return ('<img alt="' + fieldMetadata['label'] + '" class="' + extraClass
-                            + '" src="/assets/img/dummy-48x48.png">');
+                            + '" src="/assets/img/dummy-48x48.png" width="48" height="48">' + imageLabel);
                     }
+                    // @TODO NOTE: Image lazy load is disabled, needs to be checked later
                     // Regular load
-                    if (!this._hasAssetsLazyLoader) {
-                        return ('<img alt="' + fieldMetadata['label'] + '" class="' + extraClass
-                            + '" src="' + (this._helperService.getUploadWebPath(value) || value) + '">');
-                    }
-                    // Use lazy loader
-                    return this._sanitizer.bypassSecurityTrustHtml('<img alt="' + fieldMetadata['label'] + '" class="js_lazy ' + extraClass
-                        + '" src="/assets/img/dummy-48x48.png" data-src="'
-                        + (this._helperService.getUploadWebPath(value) || value) + '">');
+                    //if (!this._hasAssetsLazyLoader) {
+                    return ('<img alt="' + fieldMetadata['label'] + '" class="' + extraClass
+                        + '" src="' + (this._helperService.getUploadWebPath(value) || value)
+                        + '" width="48" height="48">' + imageLabel);
+                //}
+                // Use lazy loader
+                /*return this._sanitizer.bypassSecurityTrustHtml(
+                    '<img alt="' + fieldMetadata['label'] + '" class="js_lazy ' + extraClass
+                    + '" src="/assets/img/dummy-48x48.png" data-src="'
+                    + (this._helperService.getUploadWebPath(value) || value)
+                    + '" width="48" height="48">' + imageLabel
+                );*/
                 case 'status':
                     var statusMap = { 'NO': 'danger', 'PARTIAL': 'warning', 'YES': 'primary' };
                     return ('<span class="status -' + (statusMap[value] || 'danger') + '"></span>');
@@ -101961,9 +103759,6 @@ var DataService = (function () {
      * @returns {DataService}
      */
     DataService.prototype.setNewObject = function (object) {
-        // Normalize object to template
-        this._normalizedObject = this._helperService.cloneObject(object, true);
-        this.normalizeObjectsToTemplate([this._normalizedObject]);
         // Set object
         this._objectIndex = null;
         this.setLocalObject(object);
@@ -102045,14 +103840,16 @@ var DataService = (function () {
     };
     /**
      * Get choices of entity based on search configuration (for select, auto-complete, etc.)
+     * @param route
      * @returns {DataService}
      */
-    DataService.prototype.choices = function () {
+    DataService.prototype.choices = function (route) {
+        if (route === void 0) { route = null; }
         var that = this, noReset = true;
         // Only search if parameters have changed (only criteria is changed)
         if (!this._helperService.isEqualObject(this._provider['search']['criteria'], this._candidateSearch['criteria'])) {
             // Update search
-            this._provider['search']['criteria'] = this._helperService.cloneObject(this._candidateSearch['criteria'], true);
+            this._provider['search']['criteria'] = this._candidateSearch['criteria'].slice(0);
             // Reset pagination for new search
             this.resetPagination();
             // To reset objects
@@ -102060,7 +103857,8 @@ var DataService = (function () {
         }
         // No field is necessary, is returned the choices pattern (minimizes data sent)
         this._provider['search']['fields'] = [];
-        this._postService.post(this._provider.route['choices']['url'], this.getRequestData(null, noReset)).then(function (data) {
+        route = (route || this._provider.route['choices']['url']);
+        this._postService.post(route, this.getRequestData(null, noReset)).then(function (data) {
             data.objects = (data.objects || []);
             that.handleResponse(data, null, noReset);
         }, function (errors) { console.log(errors); });
@@ -102163,6 +103961,22 @@ var DataService = (function () {
         return this;
     };
     /**
+     * Get pdf
+     * @param index
+     * @returns any
+     */
+    DataService.prototype.pdf = function (index) {
+        var objectsProvider = (this._objectsProvider || this._provider.objects), object = (objectsProvider[index] || null);
+        if (object) {
+            // Update "isAccessed" value of object,
+            // in this case does not matter if object is really updated with success in database
+            if (object['__isAccessed'] !== undefined) {
+                object['__isAccessed'] = true;
+            }
+            return this.redirect('pdf', index);
+        }
+    };
+    /**
      * Detail object.
      * @param index
      */
@@ -102177,9 +103991,18 @@ var DataService = (function () {
      */
     DataService.prototype.redirect = function (route, index) {
         if (index === void 0) { index = null; }
+        var objectId = null, idField = (this._provider.route[route]['idField'] || 'id');
+        // Get index from last selected object if not defined
         index = ((index == null) ? this._objectIndex : index);
-        var objectsProvider = (this._objectsProvider || this._provider.objects), idField = (this._provider.route[route]['idField'] || 'id');
-        location.href = (this._provider.route[route]['url'] + '/' + objectsProvider[index][idField]);
+        if (index !== null) {
+            var objectsProvider = (this._objectsProvider || this._provider.objects);
+            objectId = objectsProvider[index][idField];
+        }
+        else if (this._object) {
+            // Id from provider object (defined on constructor)
+            objectId = this._object[idField];
+        }
+        location.href = (this._provider.route[route]['url'] + (objectId ? ('/' + objectId) : ''));
         return;
     };
     /**
@@ -102235,7 +104058,7 @@ var DataService = (function () {
             }
             else {
                 // No indexes to submit
-                return resolve(null);
+                return resolve({});
             }
         });
     };
@@ -102322,8 +104145,8 @@ var DataService = (function () {
             this.setLocalData(response['localData']);
         }
         // Refresh fields choices
-        if (response['fieldsChoices']) {
-            this.setFieldsChoices(response['fieldsChoices']);
+        if (response['fields'] && response['fields']['choices']) {
+            this.setFieldsChoices(response['fields']['choices']);
         }
         // Update search pagination
         if (response['search'] && (typeof response['search']['hasMore'] != 'undefined')) {
@@ -102450,6 +104273,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var ExpanderComponent = (function () {
     function ExpanderComponent() {
         this.isExpanded = false;
+        this.labelCount = null;
+        this.labelIcon = null;
         this.hasIcon = true;
         this.customClass = ''; // customClass instead of class because is a reserved word
         this.onChange = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* EventEmitter */]();
@@ -102473,6 +104298,14 @@ var ExpanderComponent = (function () {
     ], ExpanderComponent.prototype, "label", void 0);
     __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])(),
+        __metadata("design:type", Number)
+    ], ExpanderComponent.prototype, "labelCount", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])(),
+        __metadata("design:type", String)
+    ], ExpanderComponent.prototype, "labelIcon", void 0);
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])(),
         __metadata("design:type", Boolean)
     ], ExpanderComponent.prototype, "hasIcon", void 0);
     __decorate([
@@ -102486,7 +104319,7 @@ var ExpanderComponent = (function () {
     ExpanderComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'js_expander',
-            template: "\n    <a [ngClass]=\"['no-user-select', 'expander', customClass]\"\n       (click)=\"toggleAction($event)\">\n        <i *ngIf=\"hasIcon\" [ngClass]=\"['fa', (isExpanded ? 'fa-angle-down' : 'fa-angle-right')]\"></i>\n        <span [innerHTML]=\"label\"></span></a>\n    "
+            template: "\n    <a [ngClass]=\"['no-user-select', 'expander', customClass]\"\n       (click)=\"toggleAction($event)\">\n        <i *ngIf=\"hasIcon\" [ngClass]=\"['mr-2 fa', (isExpanded ? 'fa-angle-down' : 'fa-angle-right')]\"></i>\n        <i *ngIf=\"labelIcon\" [ngClass]=\"['mr-2 fa', labelIcon]\"></i><span [innerHTML]=\"label\"></span><span *ngIf=\"labelCount !== undefined\" class=\"badge badge-info ml-2\">{{labelCount}}</span></a>\n    "
         })
     ], ExpanderComponent);
     return ExpanderComponent;
@@ -102593,1606 +104426,6 @@ var FlashMessageService = (function () {
         __metadata("design:paramtypes", [])
     ], FlashMessageService);
     return FlashMessageService;
-}());
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/AppBundle/Resources/public/ts/form/field-types/field-type-auto-complete.component.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FieldTypeAutoCompleteComponent; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__data_service_data_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/data-service/data.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__post_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/post.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_form_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__data_box_ts_src_data_box_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-
-
-
-
-
-
-
-var FieldTypeAutoCompleteComponent = (function () {
-    function FieldTypeAutoCompleteComponent(_postService, _modalService, _dataService, _tasksLoaderManagerService, _formService, _injector, _autoCompleteProviders, _helperService) {
-        var _this = this;
-        this._postService = _postService;
-        this._modalService = _modalService;
-        this._dataService = _dataService;
-        this._tasksLoaderManagerService = _tasksLoaderManagerService;
-        this._formService = _formService;
-        this._injector = _injector;
-        this._autoCompleteProviders = _autoCompleteProviders;
-        this._helperService = _helperService;
-        this.placeholder = ''; // Set empty as default, because value can be undefined
-        this.onChange = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* EventEmitter */](); // When choice change or the data of current choice is edited
-        this._isHidden = true;
-        this._lastSelectedChoice = { id: null, label: '' };
-        this._choices = [];
-        this._search = { term: '', lastTerm: null };
-        this._searchField = 'name';
-        this._childCandidateSearch = null;
-        // Object change event subscription
-        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
-            .subscribe(function (object) { return _this.reset(); });
-    }
-    /**
-     * Reset object
-     * @returns {FieldTypeAutoCompleteComponent}
-     */
-    FieldTypeAutoCompleteComponent.prototype.reset = function () {
-        // Clear choices (can be from old object)
-        if (this._childDataServiceChoices) {
-            this._childDataServiceChoices.setObjects([]);
-            this.resetChoices();
-        }
-        this._object = this._formService.getObject();
-        var value = this._object[this.field], normalizedValue = '';
-        if (value) {
-            normalizedValue = ((this._fieldInView
-                && this._dataService.getNormalizedObject()
-                && this._dataService.getNormalizedObject()[this._fieldInView])
-                ? this._dataService.getNormalizedObject()[this._fieldInView]
-                : value);
-        }
-        this._lastSelectedChoice = { id: value, label: normalizedValue };
-        this.setLabel();
-        this.setControlMode();
-        return this;
-    };
-    /**
-     * Reset choices
-     * @returns {FieldTypeAutoCompleteComponent}
-     */
-    FieldTypeAutoCompleteComponent.prototype.resetChoices = function () {
-        this._choices = (this._childDataServiceChoices.getProviderAttr('objects') || []);
-        this._isHidden = !this.hasChoices();
-        return this;
-    };
-    /**
-     * Host event
-     * @param $event
-     */
-    FieldTypeAutoCompleteComponent.prototype.onDocumentClick = function ($event) {
-        this._isHidden = true;
-    };
-    /**
-     * onInputClick event (when enter in input).
-     * @param $event
-     */
-    FieldTypeAutoCompleteComponent.prototype.onInputClick = function ($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        this._object[this.field] = null;
-        this._isHidden = !this.hasChoices();
-        this.setLabel();
-        this.setControlMode();
-    };
-    /**
-     * On enter key (pagination)
-     * @param $event
-     */
-    FieldTypeAutoCompleteComponent.prototype.onEnterKey = function ($event) {
-        this._search.term = $event.target.value;
-        if ((this._search.term != this._search.lastTerm)
-            && (this._search.term.length % 3 === 0) // Only submit with multiples of three
-        ) {
-            this._childCandidateSearch['criteria'] = [{
-                    'field': this._searchField,
-                    'expr': 'lrlike',
-                    'value': this._search.term
-                }];
-            this._childDataServiceChoices.choices();
-            this._search.lastTerm = this._search.term;
-        }
-    };
-    /**
-     * onControlClick (arrow of select control)
-     * @param $event
-     */
-    FieldTypeAutoCompleteComponent.prototype.onControlClick = function ($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        if (this.hasChoices()) {
-            this._isHidden = !this._isHidden;
-        }
-        else {
-            this._childDataServiceChoices.choices();
-        }
-    };
-    /**
-     * onChoiceClick event
-     * @param $event
-     */
-    FieldTypeAutoCompleteComponent.prototype.onChoiceClick = function ($event) {
-        $event.preventDefault();
-        var $target = $($event.target), choiceIndex = $target.data('index');
-        if (typeof choiceIndex != 'undefined') {
-            var choice = this._choices[choiceIndex];
-            if (choice && (this._object[this.field] != choice['id'])) {
-                this._object[this.field] = choice['id'];
-                this._lastSelectedChoice = { id: choice.id, label: choice.label };
-                this.setLabel();
-                this.setControlMode();
-                this.onChange.emit(choice['id']);
-            }
-        }
-    };
-    /**
-     * Get more objects (pagination)
-     * @param $event
-     */
-    FieldTypeAutoCompleteComponent.prototype.getMoreObjects = function ($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        this._childDataServiceChoices.choices();
-    };
-    /**
-     * Trigger action
-     * @param $event
-     */
-    FieldTypeAutoCompleteComponent.prototype.triggerAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        switch (this._controlMode) {
-            case 'save':
-                this._formService.saveAndNewAction(); // Save and add a new object
-                break;
-            case 'edit':
-            case 'add':
-                this.openPopup(this._controlMode);
-                break;
-        }
-    };
-    /**
-     * Open popup
-     * @param popupType
-     * @returns {FieldTypeAutoCompleteComponent}
-     */
-    FieldTypeAutoCompleteComponent.prototype.openPopup = function (popupType) {
-        var _this = this;
-        if (popupType === void 0) { popupType = __WEBPACK_IMPORTED_MODULE_5__data_box_ts_src_data_box_component__["b" /* PopupTypes */].edit; }
-        var that = this;
-        // Inject object to edit in child DataService
-        if (this._object[this.field]) {
-            // Simulate object
-            var object = { id: this._object[this.field] };
-            // Set object to null to avoid emit the event "_onChildObjectChangeSubscription"
-            this._childDataServicePopup.setObject({}, null);
-            this._childDataServicePopup.setObjects([object]);
-            this._childDataServicePopup.selectObject(0).then(function (data) {
-                that.loadPopup(popupType);
-                return _this;
-            }, function (errors) { console.log(errors); return _this; });
-        }
-        else {
-            // Create a new object in child DataService
-            this._childDataServicePopup.newObject().then(function (data) { that.loadPopup(popupType); return _this; }, function (errors) { console.log(errors); return _this; });
-        }
-        return this;
-    };
-    /**
-     * Load popup
-     * @param popupType
-     * @returns {FieldTypeAutoCompleteComponent}
-     */
-    FieldTypeAutoCompleteComponent.prototype.loadPopup = function (popupType) {
-        if (popupType === void 0) { popupType = __WEBPACK_IMPORTED_MODULE_5__data_box_ts_src_data_box_component__["b" /* PopupTypes */].edit; }
-        popupType = (__WEBPACK_IMPORTED_MODULE_5__data_box_ts_src_data_box_component__["b" /* PopupTypes */][popupType] || __WEBPACK_IMPORTED_MODULE_5__data_box_ts_src_data_box_component__["b" /* PopupTypes */].edit);
-        var popup = (this._provider.popups[popupType] || this._provider.popups);
-        this._modalService.popup(popup, this._childInjector).then(function (data) { return; }, function (errors) { console.log(errors); return; });
-        return this;
-    };
-    /**
-     * Set control mode
-     * @returns {FieldTypeAutoCompleteComponent}
-     */
-    FieldTypeAutoCompleteComponent.prototype.setControlMode = function () {
-        switch (this._provider.control) {
-            case 'edit':
-                if (this._object[this.field]) {
-                    this._controlMode = 'edit';
-                }
-                else {
-                    this._controlMode = 'add';
-                }
-                break;
-            case 'save':
-                this._controlMode = this._provider.control;
-                break;
-            default:
-                this._controlMode = null;
-        }
-        return this;
-    };
-    /**
-     * Set input label
-     * @returns {FieldTypeAutoCompleteComponent}
-     */
-    FieldTypeAutoCompleteComponent.prototype.setLabel = function () {
-        if (this._object[this.field] == this._lastSelectedChoice['id']) {
-            this._label = this._lastSelectedChoice['label'];
-        }
-        else {
-            this._label = this._search.term;
-        }
-        return this;
-    };
-    /**
-     * check if has choices
-     * @returns {any|boolean}
-     */
-    FieldTypeAutoCompleteComponent.prototype.hasChoices = function () {
-        return (this._choices && (this._choices.length > 0));
-    };
-    /**
-     * Lifecycle callback
-     */
-    FieldTypeAutoCompleteComponent.prototype.ngOnInit = function () {
-        // Enable load while component initializes, to avoid use the component before init has finished causing errors
-        this._tasksLoaderManagerService.addTask('INIT_AUTO_COMPLETE');
-        // Initialize values
-        this._provider = (this._autoCompleteProviders[this.field] || null);
-        if (this._provider.field) {
-            this._searchField = this._provider.field;
-        }
-        this._fieldInView = (this._dataService.getProviderAttr('fields')['metadata'][this.field]['fieldInView'] || null);
-        this.reset();
-        // Dependency conf previously saved in provider
-        if (this._provider.childInjector) {
-            this._childInjector = this._provider.childInjector;
-            this.init();
-            this._tasksLoaderManagerService.delTask('INIT_AUTO_COMPLETE');
-            return;
-        }
-        // Dependency conf for first time
-        var that = this;
-        that._postService.post(this._provider.urlConf, null).then(function (data) {
-            // Notice that both DataService share the same DataServiceProvider! It needs to be fixed.
-            var dataServiceProvider = that._helperService.getDataServiceProvider(data);
-            dataServiceProvider['pin'] = true;
-            // Set child injector
-            var resolvedProviders = __WEBPACK_IMPORTED_MODULE_0__angular_core__["T" /* ReflectiveInjector */].resolve([
-                { provide: 'DataServiceChoices', useClass: __WEBPACK_IMPORTED_MODULE_1__data_service_data_service__["a" /* DataService */] },
-                { provide: 'DataService', useClass: __WEBPACK_IMPORTED_MODULE_1__data_service_data_service__["a" /* DataService */] },
-                { provide: 'DataServiceProvider', useValue: dataServiceProvider },
-                { provide: 'Provider', useValue: that._helperService.getDataBoxProvider(data) }
-            ]);
-            that._childInjector = __WEBPACK_IMPORTED_MODULE_0__angular_core__["T" /* ReflectiveInjector */].fromResolvedProviders(resolvedProviders, that._injector);
-            // Save childInjector (check out the context in the provider definition)
-            that._provider.childInjector = that._childInjector;
-            that.init();
-            // Add parameter to action route
-            if (that._provider.urlChoicesParams) {
-                that._childDataServiceChoices.setRoute('choices', (that._childDataServiceChoices.getRoute('choices') + '/' + that._provider.urlChoicesParams));
-            }
-            that._tasksLoaderManagerService.delTask('INIT_AUTO_COMPLETE');
-        }, function (errors) { console.log(errors); return; });
-    };
-    /**
-     * Initialize variables and dependencies.
-     * @returns {FieldTypeAutoCompleteComponent}
-     */
-    FieldTypeAutoCompleteComponent.prototype.init = function () {
-        var _this = this;
-        var that = this;
-        this._childDataServicePopup = this._childInjector.get('DataService');
-        this._onChildObjectChangeSubscription = this._childDataServicePopup.getOnObjectsChangeEmitter()
-            .subscribe(function (data) {
-            // Only emit event if there are a valid object
-            if (that._childDataServicePopup.getObject() && that._childDataServicePopup.getObject()['id']) {
-                that.onChange.emit(that._object[that.field]);
-            }
-        });
-        this._childDataServiceChoices = this._childInjector.get('DataServiceChoices');
-        this._onChildObjectsChangeSubscription = this._childDataServiceChoices.getOnObjectsRefreshEmitter()
-            .subscribe(function (object) { return _this.resetChoices(); });
-        this._childCandidateSearch = this._childDataServiceChoices.getCandidateSearch(); // To filter objects
-        // Reset criteria to avoid inject default criteria sent from controller to template
-        this._childCandidateSearch['criteria'] = [];
-        // @TODO simplify fields to avoid inject default fields sent from controller to template, use only needed fields
-        return this;
-    };
-    /**
-     * Lifecycle callback
-     */
-    FieldTypeAutoCompleteComponent.prototype.ngOnDestroy = function () {
-        // Sometimes the component can be already destroyed, so test if exists first
-        if (this._onObjectChangeSubscription) {
-            this._onObjectChangeSubscription.unsubscribe();
-        }
-        if (this._onChildObjectChangeSubscription) {
-            this._onChildObjectChangeSubscription.unsubscribe();
-        }
-        if (this._onChildObjectsChangeSubscription) {
-            this._onChildObjectsChangeSubscription.unsubscribe();
-        }
-    };
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])(),
-        __metadata("design:type", String)
-    ], FieldTypeAutoCompleteComponent.prototype, "field", void 0);
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])(),
-        __metadata("design:type", Boolean)
-    ], FieldTypeAutoCompleteComponent.prototype, "selfReference", void 0);
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])(),
-        __metadata("design:type", String)
-    ], FieldTypeAutoCompleteComponent.prototype, "placeholder", void 0);
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["N" /* Output */])(),
-        __metadata("design:type", Object)
-    ], FieldTypeAutoCompleteComponent.prototype, "onChange", void 0);
-    FieldTypeAutoCompleteComponent = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'js_autoComplete',
-            template: "\n    <div class=\"auto-complete\">\n        <div class=\"input-group\">\n            <span class=\"control\">\n                <input class=\"form-control\"\n                       (click)=\"onInputClick($event)\"\n                       (input)=\"onEnterKey($event)\"\n                       [ngModel]=\"_label\"\n                       [class.error]=\"_formService.getErrors()[field] && (_formService.getErrors()[field].length > 0)\"\n                       type=\"text\"\n                       [placeholder]=\"placeholder\">\n                <a (click)=\"onControlClick($event)\"><i class=\"fa fa-angle-down\"></i></a>\n            </span>\n            <span class=\"input-group-btn\" *ngIf=\"_controlMode\">\n                <button (click)=\"triggerAction($event)\"\n                        class=\"btn btn-primary\"\n                        type=\"button\"><i class=\"fa\"\n                                         [class.fa-check]=\"_controlMode == 'save'\"\n                                         [class.fa-plus]=\"_controlMode == 'add'\"\n                                         [class.fa-pencil]=\"_controlMode == 'edit'\"></i></button>\n            </span>\n        </div>\n        <div class=\"choices\">\n            <ul [hidden]=\"_isHidden\"\n                (click)=\"onChoiceClick($event)\">\n                <ng-template [ngIf]=\"selfReference\"><ng-template ngFor let-choice [ngForOf]=\"_choices\" let-choiceIndex=\"index\">\n                    <li *ngIf=\"choice['id'] != _object['id']\"\n                        [attr.data-index]=\"choiceIndex\">{{choice['label']}}</li>\n                </ng-template></ng-template>\n                <ng-template [ngIf]=\"!selfReference\">\n                    <li *ngFor=\"let choice of _choices; let choiceIndex = index\"\n                        [attr.data-index]=\"choiceIndex\">{{choice['label']}}</li>\n                </ng-template>\n                <li *ngIf=\"_childCandidateSearch && _childCandidateSearch.hasMore\"\n                    (click)=\"getMoreObjects($event)\"\n                    class=\"-pagination\"\n                    title=\"Load more results...\"><span>...</span></li>\n            </ul>\n        </div>\n    </div>\n    ",
-            host: {
-                '(document:click)': 'onDocumentClick($event)',
-            }
-        }),
-        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('DataService')),
-        __param(6, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('AutoCompleteProviders')),
-        __param(7, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('HelperService')),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_3__post_service__["a" /* PostService */],
-            __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["a" /* ModalService */], Object, __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */],
-            __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_form_form_service__["a" /* FormService */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injector */], Object, Object])
-    ], FieldTypeAutoCompleteComponent);
-    return FieldTypeAutoCompleteComponent;
-}());
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/AppBundle/Resources/public/ts/form/field-types/field-type-date-picker.directive.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FieldTypeDatePickerDirective; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_form_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts");
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-
-
-var FieldTypeDatePickerDirective = (function () {
-    function FieldTypeDatePickerDirective(_elementRef, _formService, _dataService) {
-        var _this = this;
-        this._elementRef = _elementRef;
-        this._formService = _formService;
-        this._dataService = _dataService;
-        // Determines if the skip rules control value is inverted (using negation "!")
-        this._skipRulesControlInverseValue = false;
-        // Object change event subscription
-        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
-            .subscribe(function (object) { return _this.reset(); });
-    }
-    /**
-     * Reset
-     */
-    FieldTypeDatePickerDirective.prototype.reset = function () {
-        this.setControlConf();
-    };
-    /**
-     * Host event
-     * @param $event
-     */
-    FieldTypeDatePickerDirective.prototype.onDocumentClick = function ($event) {
-        // It can't be used, because prevent all events (checkbox, etc.)
-        //$event.preventDefault();
-        // The click is inside of this data picker
-        if (this._elementRef.nativeElement.contains($event.target)) {
-            var isDropDown = ($($event.target).parents('.dropdown-menu').length > 0);
-            // Let run the default behavior
-            if (isDropDown) {
-                return;
-            }
-            this.setControlConf(); // Set/Refresh conf (data picker will be opened or closed)
-            this.control.toggle(); // Toggle data picker drop-down
-        }
-        else {
-            // The click is outside of this data picker (close it)
-            this.control.close();
-        }
-    };
-    /**
-     * Set/Refresh control configuration
-     */
-    FieldTypeDatePickerDirective.prototype.setControlConf = function () {
-        // Apply rules
-        if (this._fieldMetadata['typeDetail'] && this._fieldMetadata['typeDetail']['rules']) {
-            var skipRules = ((this._skipRulesControl
-                && (this._skipRulesControl in (this._formService.getObject() || {})))
-                ? (this._skipRulesControlInverseValue
-                    ? !this._formService.getObject()[this._skipRulesControl]
-                    : this._formService.getObject()[this._skipRulesControl])
-                : false);
-            var _loop_1 = function (rule) {
-                switch (rule['expr']) {
-                    case 'range':
-                        if (skipRules && rule['allowSkip']) {
-                            // Skip rule
-                            this_1.control['markDisabled'] = null;
-                            break;
-                        }
-                        // Limit available dates to ranges
-                        var dateRanges_1 = (this_1._dataService.getLocalDataAttr(rule['value']) || []);
-                        // Function to check if date is valid (is in range)
-                        this_1.control['markDisabled'] = function (date) {
-                            var dateToCheck = new Date(date.year, date.month - 1, date.day);
-                            for (var _i = 0, dateRanges_2 = dateRanges_1; _i < dateRanges_2.length; _i++) {
-                                var dateRange = dateRanges_2[_i];
-                                // ' 00:00:00' is necessary to get the expected behavior
-                                var dateFrom = new Date(dateRange['startDate'] + ' 00:00:00'), dateTo = new Date(dateRange['endDate'] + ' 00:00:00');
-                                if ((dateToCheck.getTime() >= dateFrom.getTime())
-                                    && (dateToCheck.getTime() <= dateTo.getTime())) {
-                                    return false;
-                                }
-                            }
-                            return true;
-                        };
-                        break;
-                    case 'min':
-                    case 'max':
-                        if (skipRules && rule['allowSkip']) {
-                            // Skip rule
-                            this_1.control[rule['expr'] + 'Date'] = null;
-                            break;
-                        }
-                        this_1.control[rule['expr'] + 'Date'] = this_1._formService.getObject()[rule['value']];
-                        break;
-                }
-            };
-            var this_1 = this;
-            for (var _i = 0, _a = this._fieldMetadata['typeDetail']['rules']; _i < _a.length; _i++) {
-                var rule = _a[_i];
-                _loop_1(rule);
-            }
-        }
-    };
-    /**
-     * Lifecycle callback
-     */
-    FieldTypeDatePickerDirective.prototype.ngOnInit = function () {
-        this._fieldMetadata = this._dataService.getProviderAttr('fields')['metadata'][this.field];
-        this._skipRulesControl = ((this._fieldMetadata['typeDetail']
-            && this._fieldMetadata['typeDetail']['skipRulesControl'])
-            ? this._fieldMetadata['typeDetail']['skipRulesControl']
-            : null);
-        // Check how skip rules value should be used
-        if (this._skipRulesControl && (this._skipRulesControl.substring(0, 1) == '!')) {
-            // Value should be inverse, using negation (!)
-            this._skipRulesControlInverseValue = true;
-            this._skipRulesControl = this._skipRulesControl.substring(1); // Remove operator from control name
-        }
-        this.reset();
-    };
-    /**
-     * Lifecycle callback
-     */
-    FieldTypeDatePickerDirective.prototype.ngOnDestroy = function () {
-        this._onObjectChangeSubscription.unsubscribe();
-    };
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])('datePicker'),
-        __metadata("design:type", String)
-    ], FieldTypeDatePickerDirective.prototype, "field", void 0);
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])('control'),
-        __metadata("design:type", Object)
-    ], FieldTypeDatePickerDirective.prototype, "control", void 0);
-    FieldTypeDatePickerDirective = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["s" /* Directive */])({
-            selector: '[datePicker]',
-            host: {
-                '(document:click)': 'onDocumentClick($event)',
-            }
-        }),
-        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('DataService')),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */],
-            __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_form_form_service__["a" /* FormService */], Object])
-    ], FieldTypeDatePickerDirective);
-    return FieldTypeDatePickerDirective;
-}());
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/AppBundle/Resources/public/ts/form/field-types/field-type-html-select.directive.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FieldTypeHtmlSelectDirective; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts");
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-
-
-/**
- * Handles with html select box
- */
-var FieldTypeHtmlSelectDirective = (function () {
-    function FieldTypeHtmlSelectDirective(_elementRef, _formService, _dataService) {
-        var _this = this;
-        this._elementRef = _elementRef;
-        this._formService = _formService;
-        this._dataService = _dataService;
-        this.onChange = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* EventEmitter */]();
-        // Object change event subscription
-        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
-            .subscribe(function (object) { return _this.reset(); });
-    }
-    FieldTypeHtmlSelectDirective.prototype.onMouseClick = function ($event) {
-        $event.preventDefault();
-        $event.stopPropagation();
-        this._$choices.toggle();
-        var $target = $($event.target), value = $target.data('value');
-        if (value) {
-            this._formService.getObject()[this.field] = value;
-            this._$label.html($target.html());
-            this.onChange.emit(value);
-        }
-    };
-    /**
-     * Reset
-     * @returns {FieldTypeHtmlSelectDirective}
-     */
-    FieldTypeHtmlSelectDirective.prototype.reset = function () {
-        var value = (this._formService.getObject()[this.field]), normalizedValue = '';
-        if (value) {
-            normalizedValue = ((this._fieldInView
-                && this._dataService.getNormalizedObject()
-                && this._dataService.getNormalizedObject()[this._fieldInView])
-                ? this._dataService.getNormalizedObject()[this._fieldInView]
-                : value);
-        }
-        this._$label.html(normalizedValue);
-        return this;
-    };
-    /**
-     * Host event
-     * @param $event
-     */
-    FieldTypeHtmlSelectDirective.prototype.onDocumentClick = function ($event) {
-        this._$choices.hide();
-    };
-    /**
-     * Lifecycle callback
-     */
-    FieldTypeHtmlSelectDirective.prototype.ngOnInit = function () {
-        this._$choices = $(this._elementRef.nativeElement).find('.js_choices');
-        this._$label = $(this._elementRef.nativeElement).find('.js_label');
-        this._$choices.hide();
-        this._fieldInView = (this._dataService.getProviderAttr('fields')['metadata'][this.field]['fieldInView'] || null);
-        this.reset();
-    };
-    /**
-     * Lifecycle callback
-     */
-    FieldTypeHtmlSelectDirective.prototype.ngOnDestroy = function () {
-        this._onObjectChangeSubscription.unsubscribe();
-    };
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])('htmlSelect'),
-        __metadata("design:type", String)
-    ], FieldTypeHtmlSelectDirective.prototype, "field", void 0);
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["N" /* Output */])(),
-        __metadata("design:type", Object)
-    ], FieldTypeHtmlSelectDirective.prototype, "onChange", void 0);
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["x" /* HostListener */])('click', ['$event']),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", void 0)
-    ], FieldTypeHtmlSelectDirective.prototype, "onMouseClick", null);
-    FieldTypeHtmlSelectDirective = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["s" /* Directive */])({
-            selector: '[htmlSelect]',
-            host: {
-                '(document:click)': 'onDocumentClick($event)',
-            }
-        }),
-        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('DataService')),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */],
-            __WEBPACK_IMPORTED_MODULE_1__form_service__["a" /* FormService */], Object])
-    ], FieldTypeHtmlSelectDirective);
-    return FieldTypeHtmlSelectDirective;
-}());
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/AppBundle/Resources/public/ts/form/field-types/field-type-multi-checkbox.directive.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FieldTypeMultiCheckboxDirective; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts");
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-
-/**
- * Handles with multiple checkbox select control
- */
-var FieldTypeMultiCheckboxDirective = (function () {
-    function FieldTypeMultiCheckboxDirective(_elementRef, _formService) {
-        var _this = this;
-        this._elementRef = _elementRef;
-        this._formService = _formService;
-        // Object change event subscription
-        this._onObjectChangeSubscription = this._formService.getOnObjectChangeEmitter()
-            .subscribe(function (object) { return _this.reset(object); });
-    }
-    FieldTypeMultiCheckboxDirective.prototype.onMouseClick = function ($event) {
-        var value = $event.target.value;
-        if (value) {
-            if (value) {
-                if (value in this._controlObj) {
-                    delete this._controlObj[value]; // Remove
-                }
-                else {
-                    this._controlObj[value] = value; // Add
-                }
-            }
-        }
-    };
-    /**
-     * Reset object
-     * @param object
-     * @returns {FieldTypeMultiCheckboxDirective}
-     */
-    FieldTypeMultiCheckboxDirective.prototype.reset = function (object) {
-        if (object === void 0) { object = null; }
-        this._controlObj = this._formService.getObject()[this.field];
-        // Init the controlObj (when creates a new object)
-        if (!this._controlObj) {
-            this._controlObj = {};
-        }
-        // Set "selected" property
-        var $elements = $(this._elementRef.nativeElement).find('input');
-        if ($elements.length > 0) {
-            for (var _i = 0, $elements_1 = $elements; _i < $elements_1.length; _i++) {
-                var el = $elements_1[_i];
-                var $el = $(el);
-                $el.prop('checked', ($el.val() in this._controlObj));
-            }
-        }
-        return this;
-    };
-    /**
-     * Lifecycle callback
-     */
-    FieldTypeMultiCheckboxDirective.prototype.ngOnInit = function () {
-        this.reset();
-    };
-    /**
-     * Lifecycle callback
-     */
-    FieldTypeMultiCheckboxDirective.prototype.ngOnDestroy = function () {
-        this._onObjectChangeSubscription.unsubscribe();
-    };
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])('multiCheckbox'),
-        __metadata("design:type", String)
-    ], FieldTypeMultiCheckboxDirective.prototype, "field", void 0);
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["x" /* HostListener */])('click', ['$event']),
-        __metadata("design:type", Function),
-        __metadata("design:paramtypes", [Object]),
-        __metadata("design:returntype", void 0)
-    ], FieldTypeMultiCheckboxDirective.prototype, "onMouseClick", null);
-    FieldTypeMultiCheckboxDirective = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["s" /* Directive */])({
-            selector: '[multiCheckbox]'
-        }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */],
-            __WEBPACK_IMPORTED_MODULE_1__form_service__["a" /* FormService */]])
-    ], FieldTypeMultiCheckboxDirective);
-    return FieldTypeMultiCheckboxDirective;
-}());
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/AppBundle/Resources/public/ts/form/field-types/field-types.extension-module.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FieldTypesExtensionModule; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__field_type_auto_complete_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/field-types/field-type-auto-complete.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__password_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/field-types/password.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__field_type_multi_checkbox_directive__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/field-types/field-type-multi-checkbox.directive.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__field_type_html_select_directive__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/field-types/field-type-html-select.directive.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__field_type_date_picker_directive__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/field-types/field-type-date-picker.directive.ts");
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-
-
-
-
-
-
-
-
-var FieldTypesExtensionModule = (function () {
-    function FieldTypesExtensionModule() {
-    }
-    FieldTypesExtensionModule = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["H" /* NgModule */])({
-            imports: [__WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */]],
-            declarations: [
-                __WEBPACK_IMPORTED_MODULE_3__field_type_auto_complete_component__["a" /* FieldTypeAutoCompleteComponent */],
-                __WEBPACK_IMPORTED_MODULE_4__password_component__["a" /* FieldTypePasswordComponent */],
-                __WEBPACK_IMPORTED_MODULE_5__field_type_multi_checkbox_directive__["a" /* FieldTypeMultiCheckboxDirective */],
-                __WEBPACK_IMPORTED_MODULE_6__field_type_html_select_directive__["a" /* FieldTypeHtmlSelectDirective */],
-                __WEBPACK_IMPORTED_MODULE_7__field_type_date_picker_directive__["a" /* FieldTypeDatePickerDirective */]
-            ],
-            exports: [
-                __WEBPACK_IMPORTED_MODULE_3__field_type_auto_complete_component__["a" /* FieldTypeAutoCompleteComponent */],
-                __WEBPACK_IMPORTED_MODULE_4__password_component__["a" /* FieldTypePasswordComponent */],
-                __WEBPACK_IMPORTED_MODULE_5__field_type_multi_checkbox_directive__["a" /* FieldTypeMultiCheckboxDirective */],
-                __WEBPACK_IMPORTED_MODULE_6__field_type_html_select_directive__["a" /* FieldTypeHtmlSelectDirective */],
-                __WEBPACK_IMPORTED_MODULE_7__field_type_date_picker_directive__["a" /* FieldTypeDatePickerDirective */]
-            ]
-        })
-    ], FieldTypesExtensionModule);
-    return FieldTypesExtensionModule;
-}());
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/AppBundle/Resources/public/ts/form/field-types/password.component.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FieldTypePasswordComponent; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_form_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts");
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-
-// Component
-var FieldTypePasswordComponent = (function () {
-    function FieldTypePasswordComponent(_formService) {
-        this._formService = _formService;
-        this._fields = { password: null, confirm: null };
-    }
-    /**
-     * Validate fields
-     * @param $event
-     */
-    FieldTypePasswordComponent.prototype.validateAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        var isValid = (this._fields.password == this._fields.confirm);
-        this._formService.getObject()[this.field] = (isValid ? this._fields.password : null);
-        this._formService.getErrors()[this.field] = (isValid ? null : ["Password confirmation does not match"]);
-    };
-    /**
-     * Reset
-     * @param $event
-     */
-    FieldTypePasswordComponent.prototype.resetAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        if (this._fields.password != this._fields.confirm) {
-            this._fields.confirm = null;
-            this.validateAction(null);
-        }
-    };
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["C" /* Input */])(),
-        __metadata("design:type", String)
-    ], FieldTypePasswordComponent.prototype, "field", void 0);
-    FieldTypePasswordComponent = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'js_password',
-            template: "\n    <input (blur)=\"resetAction($event)\"\n           class=\"form-control\"\n           [class.error]=\"_formService.getErrors()[field] && (_formService.getErrors()[field].length > 0)\"\n           type=\"password\"\n           placeholder=\"Password\"\n           [(ngModel)]=\"_fields.password\">\n    <input (keyup)=\"validateAction($event)\"\n           class=\"form-control m-t\"\n           [class.error]=\"_formService.getErrors()[field] && (_formService.getErrors()[field].length > 0)\"\n           type=\"password\"\n           placeholder=\"Confirm password\"\n           [(ngModel)]=\"_fields.confirm\">\n    "
-        }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_form_form_service__["a" /* FormService */]])
-    ], FieldTypePasswordComponent);
-    return FieldTypePasswordComponent;
-}());
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/AppBundle/Resources/public/ts/form/form-popup.extension-component.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FormPopupExtensionComponent; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.extension-component.ts");
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-
-var FormPopupExtensionComponent = (function (_super) {
-    __extends(FormPopupExtensionComponent, _super);
-    function FormPopupExtensionComponent() {
-        var _this = _super.call(this) || this;
-        // Modal parameters
-        _this.onDismissEmitter = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* EventEmitter */]();
-        return _this;
-    }
-    /**
-     * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
-     * @param elementRef
-     * @param renderer
-     * @param provider
-     * @param formService
-     * @param dataService
-     */
-    FormPopupExtensionComponent.prototype.initFormPopupExtensionComponent = function (elementRef, renderer, provider, formService, dataService) {
-        _super.prototype.initFormExtensionComponent.call(this, elementRef, renderer, provider, formService, dataService);
-    };
-    /**
-     * Save object. Handle submit form.
-     * This override add a closePopup behavior.
-     * This method should be called from child component.
-     * @returns {Promise}
-     */
-    FormPopupExtensionComponent.prototype.save = function () {
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            that._formService.save().then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
-        });
-    };
-    /**
-     * Save action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormPopupExtensionComponent.prototype.saveAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        this.save().then(function (data) { return; }, function (errors) { return; });
-    };
-    /**
-     * Save and enter to detail action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormPopupExtensionComponent.prototype.saveAndEnterAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        this._formService.saveAndEnterAction($event);
-    };
-    /**
-     * Save and add a new entry.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormPopupExtensionComponent.prototype.saveAndNewAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        this._formService.saveAndNewAction($event);
-    };
-    /**
-     * Save and close popup action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormPopupExtensionComponent.prototype.saveAndCloseAction = function ($event) {
-        var _this = this;
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        this.save().then(function (data) { _this.closeAction(); return; }, function (errors) { return; });
-    };
-    /**
-     * Reset action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormPopupExtensionComponent.prototype.resetAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        this._formService.resetAction($event);
-    };
-    /**
-     * Cancel action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormPopupExtensionComponent.prototype.cancelAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        this.closeAction($event);
-    };
-    /**
-     * Close action.
-     * @param $event
-     */
-    FormPopupExtensionComponent.prototype.closeAction = function ($event) {
-        var _this = this;
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        // Current form object has changes from user?
-        this._formService.reset().then(function (data) {
-            _this.onDismissEmitter.emit(data);
-            return;
-        }, function (errors) { return; });
-    };
-    FormPopupExtensionComponent = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: '.js_formPopup',
-            template: ''
-        }),
-        __metadata("design:paramtypes", [])
-    ], FormPopupExtensionComponent);
-    return FormPopupExtensionComponent;
-}(__WEBPACK_IMPORTED_MODULE_1__form_extension_component__["a" /* FormExtensionComponent */]));
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/AppBundle/Resources/public/ts/form/form.extension-component.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FormExtensionComponent; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__base_base_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/base/base.extension-component.ts");
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-
-
-// Component
-var FormExtensionComponent = (function (_super) {
-    __extends(FormExtensionComponent, _super);
-    function FormExtensionComponent() {
-        return _super.call(this) || this;
-    }
-    /**
-     * Initialization of component (replace the original constructor to avoid angular injection inheritance bug)
-     * @param elementRef
-     * @param renderer
-     * @param provider
-     * @param formService
-     * @param dataService
-     */
-    FormExtensionComponent.prototype.initFormExtensionComponent = function (elementRef, renderer, provider, formService, dataService) {
-        // Parent init (construct)
-        _super.prototype.initBaseExtensionComponent.call(this, elementRef, renderer, provider);
-        // Constructor vars
-        this._formService = formService;
-        this._dataService = dataService;
-    };
-    /**
-     * Lifecycle callback
-     */
-    FormExtensionComponent.prototype.ngAfterViewInit = function () {
-        this._formService.init(this);
-    };
-    FormExtensionComponent = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: '.js_form',
-            template: ''
-        }),
-        __metadata("design:paramtypes", [])
-    ], FormExtensionComponent);
-    return FormExtensionComponent;
-}(__WEBPACK_IMPORTED_MODULE_1__base_base_extension_component__["a" /* BaseExtensionComponent */]));
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FormService; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/modal/ts/modal.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__tasks_loader_manager_ts_tasks_loader_manager_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/tasks-loader-manager/ts/tasks-loader-manager.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__helper__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/helper.ts");
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-
-
-
-
-
-var FormService = (function () {
-    function FormService(_modalService, formBuilder, _dataService, _helperService, _tasksLoaderManagerService, _provider) {
-        var _this = this;
-        this._modalService = _modalService;
-        this._dataService = _dataService;
-        this._helperService = _helperService;
-        this._tasksLoaderManagerService = _tasksLoaderManagerService;
-        this._provider = _provider;
-        this._component = null; // Parent component that uses and implement this service
-        this._originalObject = {}; // Original object to compare changes and reset object in DataService
-        this._originalNormalizedObject = {}; // Original normalized (for form) object to compare changes and reset object in form
-        this._object = {}; // Object used by form
-        this._$form = null; // DOM form
-        this._errors = {}; // Form errors validation
-        // Set default values for provider
-        if (!this._provider) {
-            this._provider = {};
-        }
-        this._uniqueId = this._helperService.getUniqueId();
-        this._onObjectChangeEmitter = new __WEBPACK_IMPORTED_MODULE_0__angular_core__["v" /* EventEmitter */]();
-        // Object change event subscription
-        this._onObjectChangeSubscription = this._dataService.getOnObjectChangeEmitter()
-            .subscribe(function (object) { return _this.onObjectChangeSubscription(object); });
-        this._forceSubmit = false;
-        this._preventObjectOverride = true;
-        // Set object, if it has not been setted before open the form
-        if (!this._dataService.getObject()) {
-            // If object is not setted, create a new
-            var that_1 = this;
-            this.newObject().then(function (data) {
-                that_1.setObject(_this._dataService.getObject());
-                that_1.buildForm(formBuilder);
-            }, function (errors) { return; });
-        }
-        else {
-            this.setObject(this._dataService.getObject());
-            this.buildForm(formBuilder);
-        }
-    }
-    /**
-     * Build form
-     * @param formBuilder
-     * @returns {FormService}
-     */
-    FormService.prototype.buildForm = function (formBuilder) {
-        var formControls = {}, fields = (this._provider.fields || this._dataService.getFields('form') || []).concat(this._helperService.objectKeys(this._dataService.getProviderExtraDataAttr('fields')));
-        // Set form controls
-        for (var _i = 0, fields_1 = fields; _i < fields_1.length; _i++) {
-            var field = fields_1[_i];
-            formControls[field] = [this._object[field] || null];
-        }
-        this._form = formBuilder.group(formControls);
-        return this;
-    };
-    /**
-     * Initialization of service.
-     * This method should be called in "ngOnInit" method of parent component,
-     * so the template has been rendered.
-     * @param component (parent component)
-     * @returns {FormService}
-     */
-    FormService.prototype.init = function (component) {
-        // Local variables
-        this._component = component;
-        // @TODO: discontinue this provider, and keep only the second verification
-        this._preventObjectOverride = this._component.getProviderAttr('preventObjectOverride');
-        if (this._preventObjectOverride) {
-            this._preventObjectOverride = (!this._provider.hasOwnProperty('hasPreventObjectOverride')
-                || this._provider['hasPreventObjectOverride']);
-        }
-        // Note: _$form needs to be setted each time that the component changes, otherwise if you set the form
-        // only once, form loss your binding consistence from the second time that it is opened and setted a
-        // different object. Ie: "BookingServicePriceEdit", field "isVatIncluded" and "markupValue" loss binding
-        // consistence and the data is not correctly sent to server!!!!
-        this._$form = $(this._component._elementRef.nativeElement).find('form');
-        return this;
-    };
-    ///////////////////////////////////////////////
-    // It's no more necessary, because we only create the form (open popup) after get the
-    // promise successful response (get, new or clone object), so this code is kept here for future consideration.
-    ///////////////////////////////////////////////
-    /**
-     * Is Initialized
-     * Controls if FormService has been initialized the "formBuilder group",
-     * to avoid the component render the template form before and break
-     * @returns {boolean}
-     */
-    /*public isInitialized(): boolean
-    {
-        return (this.getForm() ? true : false);
-    }*/
-    /**
-     * Get form object emitter to tell all subscribers about changes
-     * @returns {EventEmitter<any>}
-     */
-    FormService.prototype.getOnObjectChangeEmitter = function () {
-        return this._onObjectChangeEmitter;
-    };
-    /**
-     * On object change subscription. Handle with object changes in DataService.
-     * @param object
-     */
-    FormService.prototype.onObjectChangeSubscription = function (object) {
-        if ((object != this._originalObject) // Set object only if is different
-            && !this._tasksLoaderManagerService.hasTask('SAVE_' + this._uniqueId)) {
-            // Form does not need to confirm object override
-            if (!this._preventObjectOverride) {
-                this.setObject(object);
-                return;
-            }
-            // Confirm object override by user to prevent data loss
-            this.confirmAndSetObject(object).then(function (data) { return; }, function (errors) { return; });
-        }
-    };
-    /**
-     * Set _preventObjectOverride
-     * @param value
-     * @returns {FormService}
-     */
-    FormService.prototype.setPreventObjectOverride = function (value) {
-        this._preventObjectOverride = value;
-        return this;
-    };
-    /**
-     * Confirm and set object. Check for object changes and confirm with the user to discard them, then set
-     * the object according with the ser response.
-     * @param object
-     * @returns {Promise}
-     */
-    FormService.prototype.confirmAndSetObject = function (object) {
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            // Current form object has changes from user?
-            if (that.hasChanges()) {
-                // Dialog message
-                return that._modalService.dialog().then(function (hasConfirm) {
-                    if (hasConfirm) {
-                        that.setObject(object);
-                        return resolve(true);
-                    }
-                    else {
-                        // Keep the object in DataService
-                        that._dataService.setObject(that._originalObject);
-                        return reject(false);
-                    }
-                }, function (errors) { console.log(errors); return reject(false); });
-            }
-            else {
-                that.setObject(object);
-                return resolve(true);
-            }
-        });
-    };
-    /**
-     * Set object
-     * @param object
-     * @returns {FormService}
-     */
-    FormService.prototype.setObject = function (object) {
-        // Set only if is a different object
-        if (object != this._originalObject) {
-            // Keep the original object from dataService
-            this._originalObject = object;
-            this._tasksLoaderManagerService.delTask('SAVE_' + this._uniqueId); // Waiting mode for save process ends here, after update the original object.
-            // Normalize object to form
-            this._originalNormalizedObject = __WEBPACK_IMPORTED_MODULE_4__helper__["a" /* Helper */].cloneObject(this._originalObject, true);
-            this.normalizeObject(this._originalNormalizedObject);
-            // Update form object
-            this._object = __WEBPACK_IMPORTED_MODULE_4__helper__["a" /* Helper */].cloneObject(this._originalNormalizedObject, true);
-            // Reset errors
-            this._errors = {};
-            // This object is saved in session and needs to be confirmed by user before save them in database
-            this._forceSubmit = (object['_isSessionStorage'] ? true : false);
-            this._onObjectChangeEmitter.emit(this._object); // Object as changed to the original, notify subscribers
-        }
-        return this;
-    };
-    /**
-     * Normalize objects to form
-     * Detect fields that needs to be normalized
-     * @param object
-     * @param fields
-     * @returns {FormService}
-     */
-    FormService.prototype.normalizeObject = function (object, fields) {
-        if (fields === void 0) { fields = null; }
-        fields = (fields || this._dataService.getProviderAttr('fields')['form']);
-        if (object && fields) {
-            var fieldsMetadata = this._dataService.getProviderAttr('fields')['metadata'];
-            for (var _i = 0, fields_2 = fields; _i < fields_2.length; _i++) {
-                var field = fields_2[_i];
-                var fieldMetadata = fieldsMetadata[field];
-                switch (fieldMetadata['type']) {
-                    case 'date':
-                        object[field] = this.normalizeValue(object[field], fieldMetadata['type']);
-                        break;
-                }
-            }
-        }
-        return this;
-    };
-    /**
-     * Normalize value to form
-     * @param value
-     * @param type
-     * @returns any
-     */
-    FormService.prototype.normalizeValue = function (value, type) {
-        switch (type) {
-            case 'date':
-                if (value && (typeof value == 'string')) {
-                    var dateArr = value.split("-");
-                    return {
-                        year: parseInt(dateArr[0]),
-                        month: parseInt(dateArr[1]),
-                        day: parseInt(dateArr[2])
-                    };
-                }
-                return value;
-        }
-    };
-    /**
-     * Get object
-     * @returns any
-     */
-    FormService.prototype.getObject = function () {
-        return this._object;
-    };
-    /**
-     * Get originalObject
-     * @returns any
-     */
-    FormService.prototype.getOriginalObject = function () {
-        return this._originalNormalizedObject;
-    };
-    /**
-     * Check if the object has changes from user
-     * @returns {boolean|Boolean}
-     */
-    FormService.prototype.hasChanges = function () {
-        return (!this._helperService.isEqualObject(this._object, this._originalNormalizedObject));
-    };
-    /**
-     * Get form
-     * @returns any
-     */
-    FormService.prototype.getForm = function () {
-        return this._form;
-    };
-    /**
-     * Set errors
-     * @param errors
-     * @returns {FormService}
-     */
-    FormService.prototype.setErrors = function (errors) {
-        this._errors = (errors || {});
-        return this;
-    };
-    /**
-     * Get errors
-     * @returns any
-     */
-    FormService.prototype.getErrors = function () {
-        return this._errors;
-    };
-    /**
-     * Set form field value
-     * @param field
-     * @param value
-     */
-    FormService.prototype.setFormFieldValue = function (field, value) {
-        if (value && (field in this._object)) {
-            this._object[field] = value;
-        }
-    };
-    /**
-     * Get view object (normalized object in DataService)
-     * @returns {any|{}}
-     */
-    FormService.prototype.getViewObject = function () {
-        return (this._dataService.getNormalizedObject() || {});
-    };
-    /**
-     * Save form. Handle submit form.
-     * This method should be called from child component.
-     * @param route (optional route to overrides default route)
-     * @param hasValidation
-     * @returns {Promise}
-     */
-    FormService.prototype.save = function (route, hasValidation) {
-        if (route === void 0) { route = null; }
-        if (hasValidation === void 0) { hasValidation = true; }
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            if (!that._tasksLoaderManagerService.addTask('SAVE_' + that._uniqueId)) {
-                // Form is already in save process
-                return reject(false);
-            }
-            // Current form object has changes from user?
-            // Note: Objects in session storage enables the "_forceSubmit" by default
-            if (that._forceSubmit || !that._object['id'] || that.hasChanges()) {
-                // Validate form
-                if (hasValidation) {
-                    that._errors = {};
-                    for (var control in that._form.controls) {
-                        if (!that._form.controls[control].valid) {
-                            that._errors[control] = ['Required'];
-                        }
-                    }
-                    if (that._helperService.objectLength(that._errors) > 0) {
-                        that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId); // Cancel save, form has errors
-                        return reject(false);
-                    }
-                }
-                // Set the valid token
-                that._helperService.setFormToken(that._$form);
-                // Get form data
-                var data = that._$form.serialize();
-                var id = that._object['id'] ? that._object['id'] : null;
-                // Save form
-                return that._dataService.save(data, id, route).then(function (object) {
-                    // Force submit is reset, each activation is valid  only once
-                    that._forceSubmit = false;
-                    // Update form with updated object
-                    that.setObject(object);
-                    return resolve(true);
-                }, function (errors) {
-                    if (errors) {
-                        that._errors = errors;
-                    }
-                    that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId);
-                    return reject(errors);
-                });
-            }
-            else {
-                that._tasksLoaderManagerService.delTask('SAVE_' + that._uniqueId);
-                return resolve(true);
-            }
-        });
-    };
-    /**
-     * Save action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormService.prototype.saveAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        this.save().then(function (data) { return; }, function (errors) { return; });
-    };
-    /**
-     * Save and enter to detail action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormService.prototype.saveAndEnterAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        var that = this;
-        this.save().then(function (data) {
-            that.newAction();
-            return;
-        }, function (errors) { return; });
-    };
-    /**
-     * Add a new entry (newObject is used in name because new is a reserved word).
-     * @returns {Promise}
-     */
-    FormService.prototype.newObject = function () {
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            that._dataService.newObject().then(function (data) { return resolve(data); }, function (errors) { return reject(errors); });
-        });
-    };
-    /**
-     * Add a new entry action.
-     * This method should be called when the form is initialized.
-     * @param $event
-     */
-    FormService.prototype.newAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        this.newObject().then(function (data) { return; }, function (errors) { return; });
-    };
-    /**
-     * Save and add a new entry.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormService.prototype.saveAndNewAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        var that = this;
-        this.save().then(function (data) { that.newAction(); return; }, function (errors) { return; });
-    };
-    /**
-     * Reset object.
-     * This method should be called from child component.
-     * @param hasConfirm (launch confirm to user if object has unsaved changes)
-     * @returns {Promise}
-     */
-    FormService.prototype.reset = function (hasConfirm) {
-        if (hasConfirm === void 0) { hasConfirm = true; }
-        var that = this;
-        return new Promise(function (resolve, reject) {
-            if (that.hasChanges()) {
-                if (hasConfirm) {
-                    return that.confirmAndSetObject(that._originalNormalizedObject).then(function (data) { return resolve(true); }, function (errors) { return reject(false); });
-                }
-                else {
-                    that.setObject(that._originalNormalizedObject);
-                    return resolve(true);
-                }
-            }
-            else {
-                return resolve(true);
-            }
-        });
-    };
-    /**
-     * Reset action.
-     * This method should be called from view/template.
-     * @param $event
-     */
-    FormService.prototype.resetAction = function ($event) {
-        if ($event === void 0) { $event = null; }
-        if ($event) {
-            $event.preventDefault();
-        }
-        this.reset().then(function (data) { return; }, function (errors) { return; });
-    };
-    /**
-     * Set forceSubmit
-     * @param forceSubmit
-     * @returns {FormService}
-     */
-    FormService.prototype.setForceSubmit = function (forceSubmit) {
-        if (forceSubmit === void 0) { forceSubmit = true; }
-        this._forceSubmit = forceSubmit;
-        return this;
-    };
-    FormService = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Injectable */])(),
-        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('DataService')),
-        __param(3, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('HelperService')),
-        __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["M" /* Optional */])()), __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('FormServiceProvider')),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__modal_ts_modal_service__["a" /* ModalService */],
-            __WEBPACK_IMPORTED_MODULE_1__angular_forms__["a" /* FormBuilder */], Object, Object, __WEBPACK_IMPORTED_MODULE_3__tasks_loader_manager_ts_tasks_loader_manager_service__["a" /* TasksLoaderManagerService */], Object])
-    ], FormService);
-    return FormService;
 }());
 
 
@@ -104317,6 +104550,20 @@ var Helper = (function () {
         return ((index >= 0) ? index : null);
     };
     /**
+     * Search objectKey value in array of objects
+     * @param value
+     * @param objectKey
+     * @param array
+     */
+    Helper.arraySearchObj = function (value, objectKey, array) {
+        for (var i = 0; i < array.length; i++) {
+            if (array[i][objectKey] && (array[i][objectKey] == value)) {
+                return i;
+            }
+        }
+        return null;
+    };
+    /**
      * Order objects by key
      * @param objects
      * @param keys
@@ -104379,7 +104626,6 @@ var Helper = (function () {
     Helper.getDataServiceProvider = function (data) {
         return {
             fields: data.fields || null,
-            fieldsChoices: data.fieldsChoices || null,
             search: data.search || null,
             object: data.object || null,
             objects: data.objects || null,
@@ -104442,6 +104688,8 @@ var Helper = (function () {
     Helper.getBoxProvider = function (data) {
         return Helper.mergeObjects(Helper.getBaseProvider(data), {
             label: data.label || '',
+            labelCount: ((data.labelCount === undefined) ? null : data.labelCount),
+            labelIcon: data.labelIcon || null,
             controls: {
                 expander: (data.controls && data.controls.expander),
                 legend: ((data['controls'] && data['controls']['legend']) ? data['controls']['legend'] : [])
@@ -104454,9 +104702,7 @@ var Helper = (function () {
      * @returns any
      */
     Helper.getEntityDetailProvider = function (data) {
-        return Helper.mergeObjects(Helper.getBaseProvider(data), {
-            popup: null // Create this value in component
-        });
+        return Helper.getBaseProvider(data);
     };
     /**
      * Get Entity Detail Preview Provider
@@ -104467,7 +104713,6 @@ var Helper = (function () {
         return Helper.mergeObjects(Helper.getBaseProvider(data), {
             object: data['object'] || null,
             fields: data['fields'] || null,
-            fieldsChoices: data['fieldsChoices'] || null,
             dependencies: data['dependencies'] || null
         });
     };
@@ -104479,7 +104724,8 @@ var Helper = (function () {
     Helper.getBaseProvider = function (data) {
         return {
             localData: ((data.localData && data.localData.template) ? data.localData.template : {}),
-            extraData: ((data.extraData && data.extraData.template) ? data.extraData.template : null)
+            extraData: ((data.extraData && data.extraData.template) ? data.extraData.template : null),
+            language: (data.language ? data.language : {})
         };
     };
     /**
@@ -104950,7 +105196,7 @@ var SearchCriteriaComponent = (function () {
     SearchCriteriaComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'js_searchCriteria',
-            template: "\n    <js_expander [label]=\"'Filter'\" [hasIcon]=\"false\" [customClass]=\"'action'\" (onChange)=\"toggleIsExpanded($event, 'fields')\"></js_expander>\n    <div [hidden]=\"!_isExpanded\" class=\"col-xs-12 col-sm-12 white-dropdown search-criteria\">\n        <ng-template ngFor let-criteria [ngForOf]=\"_criteriaArr\" let-i=\"index\">\n            <div class=\"col-sm-6 controller\">\n                <div class=\"select\">\n                    <select [(ngModel)]=\"criteria['field']\"\n                            (change)=\"onFieldChange($event, criteria)\"\n                            class=\"form-control\">\n                        <ng-template ngFor let-field [ngForOf]=\"_fields\">\n                            <option *ngIf=\"!_helperService.inArray(_fieldsMetadata[field]['type'], _deniedTypes) && !_fieldsMetadata[field]['isObject']\"\n                                    value=\"{{field}}\">{{_fieldsMetadata[field]['label']}}</option>\n                        </ng-template>\n                    </select>\n                    <!-- ng switch should be here -->\n                    <ng-template [ngIf]=\"(_fieldsMetadata[criteria['field']]) && (_fieldsMetadata[criteria['field']]['type'] == 'boolean')\">\n                        <select [(ngModel)]=\"criteria['value']\"\n                                class=\"form-control\">\n                            <option *ngFor=\"let value of [{key: 1, label: 'Yes'}, {key: 0, label: 'No'}]\"\n                                    value=\"{{value['key']}}\">{{value['label']}}</option>\n                        </select>\n                    </ng-template>\n                    <ng-template [ngIf]=\"(!_fieldsMetadata[criteria['field']]) || (_fieldsMetadata[criteria['field']]['type'] != 'boolean')\">\n                        <select [(ngModel)]=\"criteria['expr']\"\n                                class=\"form-control\">\n                            <option *ngFor=\"let expr of _searchCriteriaMap.getExprMap()\"\n                                    value=\"{{expr['key']}}\">{{expr['label']}}</option>\n                        </select>\n                        <input [(ngModel)]=\"criteria['value']\"\n                               class=\"form-control\" type=\"text\">\n                    </ng-template>\n                </div>\n                <div class=\"actions\">\n                    <a *ngIf=\"_criteriaArr.length > 1\" class=\"fa fa-trash-o\" (click)=\"del($event, i)\"></a>\n                    <a *ngIf=\"(i+1) == _criteriaArr.length\" class=\"fa fa-plus\" (click)=\"add($event)\"></a>\n                </div>\n            </div>\n        </ng-template>\n    </div>\n    ",
+            template: "\n    <js_expander [label]=\"'Filter'\" [hasIcon]=\"false\" [customClass]=\"'action'\" (onChange)=\"toggleIsExpanded($event, 'fields')\"></js_expander>\n    <div [hidden]=\"!_isExpanded\" class=\"container-fluid py-3 rounded white-dropdown search-criteria\">\n        <div class=\"row\">\n        <ng-template ngFor let-criteria [ngForOf]=\"_criteriaArr\" let-i=\"index\">\n            <div class=\"col col-md-6 controller\">\n                <div class=\"select\">\n                    <select [(ngModel)]=\"criteria['field']\"\n                            (change)=\"onFieldChange($event, criteria)\"\n                            class=\"form-control\">\n                        <ng-template ngFor let-field [ngForOf]=\"_fields\">\n                            <option *ngIf=\"!_helperService.inArray(_fieldsMetadata[field]['type'], _deniedTypes) && !_fieldsMetadata[field]['isObject']\"\n                                    value=\"{{field}}\">{{_fieldsMetadata[field]['label']}}</option>\n                        </ng-template>\n                    </select>\n                    <!-- ng switch should be here -->\n                    <ng-template [ngIf]=\"(_fieldsMetadata[criteria['field']]) && (_fieldsMetadata[criteria['field']]['type'] == 'boolean')\">\n                        <select [(ngModel)]=\"criteria['value']\"\n                                class=\"form-control\">\n                            <option *ngFor=\"let value of [{key: 1, label: 'Yes'}, {key: 0, label: 'No'}]\"\n                                    value=\"{{value['key']}}\">{{value['label']}}</option>\n                        </select>\n                    </ng-template>\n                    <ng-template [ngIf]=\"(!_fieldsMetadata[criteria['field']]) || (_fieldsMetadata[criteria['field']]['type'] != 'boolean')\">\n                        <select [(ngModel)]=\"criteria['expr']\"\n                                class=\"form-control\">\n                            <option *ngFor=\"let expr of _searchCriteriaMap.getExprMap()\"\n                                    value=\"{{expr['key']}}\">{{expr['label']}}</option>\n                        </select>\n                        <input [(ngModel)]=\"criteria['value']\"\n                               class=\"form-control\" type=\"text\">\n                    </ng-template>\n                </div>\n                <div class=\"actions\">\n                    <a class=\"fa fa-trash-o\" (click)=\"del($event, i)\"></a>\n                    <a *ngIf=\"(i+1) == _criteriaArr.length\" class=\"fa fa-plus\" (click)=\"add($event)\"></a>\n                </div>\n            </div>\n        </ng-template>\n        <div class=\"col controller\"\n             *ngIf=\"_criteriaArr.length < 1\">\n            <div class=\"actions\">\n                <a class=\"fa fa-plus\" (click)=\"add($event)\"></a>\n            </div>\n        </div>\n    </div>\n    ",
             host: {
                 '(document:click)': 'onDocumentClick($event)',
             }
@@ -105032,7 +105278,7 @@ var SearchFieldsComponent = (function () {
     SearchFieldsComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'js_searchFields',
-            template: "\n    <js_expander [label]=\"'Fields'\" [hasIcon]=\"false\" [customClass]=\"'action'\" (onChange)=\"toggleIsExpanded($event, 'fields')\"></js_expander>\n    <div [hidden]=\"!_isExpanded\" class=\"col-xs-12 col-sm-12 white-dropdown search-fields\">\n        <select multiple size=\"6\" [(ngModel)]=\"_search['fields']\" class=\"form-control\">\n            <ng-template ngFor let-field [ngForOf]=\"_fields\">\n                <option *ngIf=\"!_helperService.inArray(_fieldsMetadata[field]['type'], _deniedTypes)\"\n                        value=\"{{field}}\">{{_fieldsMetadata[field]['label']}}</option>\n            </ng-template>\n        </select>\n    </div>\n    ",
+            template: "\n    <js_expander [label]=\"'Fields'\" [hasIcon]=\"false\" [customClass]=\"'action'\" (onChange)=\"toggleIsExpanded($event, 'fields')\"></js_expander>\n    <div [hidden]=\"!_isExpanded\" class=\"container-fluid py-3 rounded white-dropdown search-fields\">\n        <div class=\"row\"><div class=\"col\">\n            <select multiple size=\"6\" [(ngModel)]=\"_search['fields']\" class=\"form-control\">\n                <ng-template ngFor let-field [ngForOf]=\"_fields\">\n                    <option *ngIf=\"!_helperService.inArray(_fieldsMetadata[field]['type'], _deniedTypes)\"\n                            value=\"{{field}}\">{{_fieldsMetadata[field]['label']}}</option>\n                </ng-template>\n            </select>\n        </div></div>\n    </div>\n    ",
             host: {
                 '(document:click)': 'onDocumentClick($event)',
             }
@@ -105142,7 +105388,7 @@ var SearchOrderByComponent = (function () {
     SearchOrderByComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: 'js_searchOrderBy',
-            template: "\n    <js_expander [label]=\"'Order'\" [hasIcon]=\"false\" [customClass]=\"'action'\" (onChange)=\"toggleIsExpanded($event, 'fields')\"></js_expander>\n    <div [hidden]=\"!_isExpanded\" class=\"col-xs-12 col-sm-12 white-dropdown search-order-by\">\n        <ng-template ngFor let-orderBy [ngForOf]=\"_orderByArray\" let-i=\"index\">\n            <div class=\"col-sm-6 controller\">\n                <div class=\"select\">\n                    <select [(ngModel)]=\"orderBy['field']\" class=\"form-control\">\n                        <ng-template ngFor let-field [ngForOf]=\"_fields\">\n                            <option *ngIf=\"!_helperService.inArray(_fieldsMetadata[field]['type'], _deniedTypes) && !_fieldsMetadata[field]['isObject']\"\n                                    value=\"{{field}}\">{{_fieldsMetadata[field]['label']}}</option>\n                        </ng-template>\n                    </select>\n                    <select [(ngModel)]=\"orderBy['value']\" class=\"form-control\">\n                        <option *ngFor=\"let value of [{key: 'ASC', label: 'Asc'}, {key: 'DESC', label: 'Desc'}]\"\n                                value=\"{{value['key']}}\">{{value['label']}}</option>\n                    </select>\n                </div>\n                <div class=\"actions\">\n                    <a *ngIf=\"_orderByArray.length > 1\" class=\"fa fa-trash-o\" (click)=\"del($event, i)\"></a>\n                    <a *ngIf=\"(i+1) == _orderByArray.length\" class=\"fa fa-plus\" (click)=\"add($event)\"></a>\n                </div>\n            </div>\n        </ng-template>\n    </div>\n    ",
+            template: "\n    <js_expander [label]=\"'Order'\" [hasIcon]=\"false\" [customClass]=\"'action'\" (onChange)=\"toggleIsExpanded($event, 'fields')\"></js_expander>\n    <div [hidden]=\"!_isExpanded\" class=\"container-fluid py-3 rounded white-dropdown search-order-by\">\n        <div class=\"row\">\n        <ng-template ngFor let-orderBy [ngForOf]=\"_orderByArray\" let-i=\"index\">\n            <div class=\"col col-md-6 controller\">\n                <div class=\"select\">\n                    <select [(ngModel)]=\"orderBy['field']\" class=\"form-control\">\n                        <ng-template ngFor let-field [ngForOf]=\"_fields\">\n                            <option *ngIf=\"!_helperService.inArray(_fieldsMetadata[field]['type'], _deniedTypes) && !_fieldsMetadata[field]['isObject']\"\n                                    value=\"{{field}}\">{{_fieldsMetadata[field]['label']}}</option>\n                        </ng-template>\n                    </select>\n                    <select [(ngModel)]=\"orderBy['value']\" class=\"form-control\">\n                        <option *ngFor=\"let value of [{key: 'ASC', label: 'Asc'}, {key: 'DESC', label: 'Desc'}]\"\n                                value=\"{{value['key']}}\">{{value['label']}}</option>\n                    </select>\n                </div>\n                <div class=\"actions\">\n                    <a *ngIf=\"_orderByArray.length > 1\" class=\"fa fa-trash-o\" (click)=\"del($event, i)\"></a>\n                    <a *ngIf=\"(i+1) == _orderByArray.length\" class=\"fa fa-plus\" (click)=\"add($event)\"></a>\n                </div>\n            </div>\n        </ng-template>\n        </div>\n    </div>\n    ",
             host: {
                 '(document:click)': 'onDocumentClick($event)',
             }
@@ -105359,7 +105605,7 @@ var SearchModule = (function () {
 
 /***/ }),
 
-/***/ "../../../../../src/BookingBundle/Resources/public/regular-booking/index/ts/$$_lazy_route_resource lazy recursive":
+/***/ "../../../../../src/Bck/BookingBundle/Resources/public/regular-booking/index/ts/$$_lazy_route_resource lazy recursive":
 /***/ (function(module, exports) {
 
 function webpackEmptyAsyncContext(req) {
@@ -105372,18 +105618,18 @@ function webpackEmptyAsyncContext(req) {
 webpackEmptyAsyncContext.keys = function() { return []; };
 webpackEmptyAsyncContext.resolve = webpackEmptyAsyncContext;
 module.exports = webpackEmptyAsyncContext;
-webpackEmptyAsyncContext.id = "../../../../../src/BookingBundle/Resources/public/regular-booking/index/ts/$$_lazy_route_resource lazy recursive";
+webpackEmptyAsyncContext.id = "../../../../../src/Bck/BookingBundle/Resources/public/regular-booking/index/ts/$$_lazy_route_resource lazy recursive";
 
 /***/ }),
 
-/***/ "../../../../../src/BookingBundle/Resources/public/regular-booking/index/ts/src/edit.component.ts":
+/***/ "../../../../../src/Bck/BookingBundle/Resources/public/regular-booking/index/ts/src/edit.component.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EditComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_form_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_ts_form_form_popup_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form-popup.extension-component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_form_ts_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_form_ts_form_popup_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form-popup.extension-component.ts");
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -105419,21 +105665,21 @@ var EditComponent = (function (_super) {
     EditComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: '#js_edit',
-            template: __webpack_require__("../../../../../src/BookingBundle/Resources/public/regular-booking/index/ts/templates/edit.component.html")
+            template: __webpack_require__("../../../../../src/Bck/BookingBundle/Resources/public/regular-booking/index/ts/templates/edit.component.html")
         }),
         __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('Provider')),
         __param(4, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('DataService')),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* Renderer */], Object, __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_form_form_service__["a" /* FormService */], Object])
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* Renderer */], Object, __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_form_ts_form_service__["a" /* FormService */], Object])
     ], EditComponent);
     return EditComponent;
-}(__WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_ts_form_form_popup_extension_component__["a" /* FormPopupExtensionComponent */]));
+}(__WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_form_ts_form_popup_extension_component__["a" /* FormPopupExtensionComponent */]));
 
 
 
 /***/ }),
 
-/***/ "../../../../../src/BookingBundle/Resources/public/regular-booking/index/ts/src/edit.ext-module.ts":
+/***/ "../../../../../src/Bck/BookingBundle/Resources/public/regular-booking/index/ts/src/edit.ext-module.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -105441,8 +105687,8 @@ var EditComponent = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_ts_form_field_types_field_types_extension_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/field-types/field-types.extension-module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__edit_component__ = __webpack_require__("../../../../../src/BookingBundle/Resources/public/regular-booking/index/ts/src/edit.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_form_ts_field_types_field_types_extension_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/field-types/field-types.extension-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__edit_component__ = __webpack_require__("../../../../../src/Bck/BookingBundle/Resources/public/regular-booking/index/ts/src/edit.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -105459,7 +105705,7 @@ var EditExtModule = (function () {
     }
     EditExtModule = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["H" /* NgModule */])({
-            imports: [__WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["e" /* ReactiveFormsModule */], __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_ts_form_field_types_field_types_extension_module__["a" /* FieldTypesExtensionModule */]],
+            imports: [__WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["e" /* ReactiveFormsModule */], __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_form_ts_field_types_field_types_extension_module__["a" /* FieldTypesExtensionModule */]],
             declarations: [
                 __WEBPACK_IMPORTED_MODULE_4__edit_component__["a" /* EditComponent */]
             ],
@@ -105473,7 +105719,7 @@ var EditExtModule = (function () {
 
 /***/ }),
 
-/***/ "../../../../../src/BookingBundle/Resources/public/regular-booking/index/ts/src/main.module.ts":
+/***/ "../../../../../src/Bck/BookingBundle/Resources/public/regular-booking/index/ts/src/main.module.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -105493,14 +105739,13 @@ var EditExtModule = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__AppBundle_Resources_public_ts_data_service_data_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/data-service/data.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__AppBundle_Resources_public_ts_actions_actions_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/actions/actions.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__AppBundle_Resources_public_ts_search_search_pagination_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/search/search-pagination.module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__AppBundle_Resources_public_ts_form_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__AppBundle_Resources_public_form_ts_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__AppBundle_Resources_public_data_box_ts_src_data_box_extension_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.extension-module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__AppBundle_Resources_public_app_basics_ts_src_main_ext_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/app-basics/ts/src/main.ext-module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__AppBundle_Resources_public_app_basics_ts_src_main_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/app-basics/ts/src/main.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__AppBundle_Resources_public_app_basics_default_ts_src_main_ext_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/app-basics/default/ts/src/main.ext-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__AppBundle_Resources_public_app_basics_default_ts_src_main_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/app-basics/default/ts/src/main.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__AppBundle_Resources_public_data_box_ts_src_data_box_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/data-box/ts/src/data-box.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__edit_ext_module__ = __webpack_require__("../../../../../src/BookingBundle/Resources/public/regular-booking/index/ts/src/edit.ext-module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__EntitiesBundle_Resources_public_entity_index_ts_src_edit_ext_module__ = __webpack_require__("../../../../../src/EntitiesBundle/Resources/public/entity/index/ts/src/edit.ext-module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__EntitiesBundle_Resources_public_client_index_ts_src_edit_ext_module__ = __webpack_require__("../../../../../src/EntitiesBundle/Resources/public/client/index/ts/src/edit.ext-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__edit_ext_module__ = __webpack_require__("../../../../../src/Bck/BookingBundle/Resources/public/regular-booking/index/ts/src/edit.ext-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__EntitiesBundle_Resources_public_client_index_ts_src_edit_ext_module__ = __webpack_require__("../../../../../src/Bck/EntitiesBundle/Resources/public/client/index/ts/src/edit.ext-module.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -105532,31 +105777,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 // Auto-complete
 
-
 var autoCompleteProviders = {
-    entityObj: {
-        urlConf: (__WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_helper__["a" /* Helper */].getAppVar('route') + 'entities/entity/conf'),
-        control: 'edit',
-        popups: {
-            module: __WEBPACK_IMPORTED_MODULE_21__EntitiesBundle_Resources_public_entity_index_ts_src_edit_ext_module__["a" /* EditExtModule */],
-            component: 'EditComponent',
-            providers: [
-                { provide: 'Provider', useValue: __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_helper__["a" /* Helper */].getFormProvider({ label: 'Entity' }) },
-                __WEBPACK_IMPORTED_MODULE_15__AppBundle_Resources_public_ts_form_form_service__["a" /* FormService */],
-                // Reset FormServiceProvider to use DataServiceProvider as default values
-                { provide: 'FormServiceProvider', useValue: {} }
-            ]
-        }
+    selectEntityObj: {
+        urlConf: (__WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_helper__["a" /* Helper */].getAppVar('route') + 'bck/entities/entity/conf'),
+        control: 'none'
     },
     clientObj: {
-        urlConf: (__WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_helper__["a" /* Helper */].getAppVar('route') + 'entities/client/conf'),
+        urlConf: (__WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_helper__["a" /* Helper */].getAppVar('route') + 'bck/entities/client/conf'),
         control: 'edit',
         popups: {
-            module: __WEBPACK_IMPORTED_MODULE_22__EntitiesBundle_Resources_public_client_index_ts_src_edit_ext_module__["a" /* EditExtModule */],
+            module: __WEBPACK_IMPORTED_MODULE_21__EntitiesBundle_Resources_public_client_index_ts_src_edit_ext_module__["a" /* EditExtModule */],
             component: 'EditComponent',
             providers: [
                 { provide: 'Provider', useValue: __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_helper__["a" /* Helper */].getFormProvider({ label: 'Client' }) },
-                __WEBPACK_IMPORTED_MODULE_15__AppBundle_Resources_public_ts_form_form_service__["a" /* FormService */],
+                __WEBPACK_IMPORTED_MODULE_15__AppBundle_Resources_public_form_ts_form_service__["a" /* FormService */],
                 // Reset FormServiceProvider to use DataServiceProvider as default values
                 { provide: 'FormServiceProvider', useValue: {} }
             ]
@@ -105573,7 +105807,7 @@ var MainModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */],
                 __WEBPACK_IMPORTED_MODULE_2__angular_forms__["e" /* ReactiveFormsModule */],
                 __WEBPACK_IMPORTED_MODULE_3__ng_bootstrap_ng_bootstrap__["a" /* NgbModule */].forRoot(),
-                __WEBPACK_IMPORTED_MODULE_17__AppBundle_Resources_public_app_basics_ts_src_main_ext_module__["a" /* MainExtModule */],
+                __WEBPACK_IMPORTED_MODULE_17__AppBundle_Resources_public_app_basics_default_ts_src_main_ext_module__["a" /* MainExtModule */],
                 __WEBPACK_IMPORTED_MODULE_16__AppBundle_Resources_public_data_box_ts_src_data_box_extension_module__["a" /* DataBoxExtensionModule */],
                 __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_search_search_module__["a" /* SearchModule */],
                 __WEBPACK_IMPORTED_MODULE_14__AppBundle_Resources_public_ts_search_search_pagination_module__["a" /* SearchPaginationModule */],
@@ -105598,11 +105832,11 @@ var MainModule = (function () {
                         providers: [
                             { provide: 'Provider', useValue: __WEBPACK_IMPORTED_MODULE_6__AppBundle_Resources_public_ts_helper__["a" /* Helper */].getFormProvider(_app.conf) },
                             { provide: 'AutoCompleteProviders', useValue: autoCompleteProviders },
-                            __WEBPACK_IMPORTED_MODULE_15__AppBundle_Resources_public_ts_form_form_service__["a" /* FormService */]
+                            __WEBPACK_IMPORTED_MODULE_15__AppBundle_Resources_public_form_ts_form_service__["a" /* FormService */]
                         ]
                     } }
             ],
-            bootstrap: [__WEBPACK_IMPORTED_MODULE_18__AppBundle_Resources_public_app_basics_ts_src_main_component__["a" /* MainComponent */], __WEBPACK_IMPORTED_MODULE_19__AppBundle_Resources_public_data_box_ts_src_data_box_component__["a" /* DataBoxComponent */]]
+            bootstrap: [__WEBPACK_IMPORTED_MODULE_18__AppBundle_Resources_public_app_basics_default_ts_src_main_component__["a" /* MainComponent */], __WEBPACK_IMPORTED_MODULE_19__AppBundle_Resources_public_data_box_ts_src_data_box_component__["a" /* DataBoxComponent */]]
         })
     ], MainModule);
     return MainModule;
@@ -105612,7 +105846,7 @@ var MainModule = (function () {
 
 /***/ }),
 
-/***/ "../../../../../src/BookingBundle/Resources/public/regular-booking/index/ts/src/main.ts":
+/***/ "../../../../../src/Bck/BookingBundle/Resources/public/regular-booking/index/ts/src/main.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -105620,7 +105854,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__ = __webpack_require__("../../../platform-browser-dynamic/esm5/platform-browser-dynamic.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_cli_conf_environments_environment__ = __webpack_require__("../../../../../angular_cli_conf/environments/environment.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__main_module__ = __webpack_require__("../../../../../src/BookingBundle/Resources/public/regular-booking/index/ts/src/main.module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__main_module__ = __webpack_require__("../../../../../src/Bck/BookingBundle/Resources/public/regular-booking/index/ts/src/main.module.ts");
 
  // The browser platform with a compiler
  // Get environment
@@ -105636,21 +105870,21 @@ Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* pl
 
 /***/ }),
 
-/***/ "../../../../../src/BookingBundle/Resources/public/regular-booking/index/ts/templates/edit.component.html":
+/***/ "../../../../../src/Bck/BookingBundle/Resources/public/regular-booking/index/ts/templates/edit.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">        \n            \n            \n                            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().code\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_bookingObj_code\">Code</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_code\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().code\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().code\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_bookingObj_userObj\">User/Operator</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n        <select id=\"form_bookingObj_userObj\" name=\"form[bookingObj][userObj]\" [(ngModel)]=\"_formService.getObject().userObj\" formControlName=\"userObj\" [class.error]=\"_formService.getErrors().userObj &amp;&amp; _formService.getErrors().userObj.length &gt; 0\" class=\"form-control\"><option value=\"\"></option>            <option value=\"590\" >Britt Sulei (590)</option>            <option value=\"591\" >Kate Gon (591)</option>            <option value=\"592\" >Lara Alvar (592)</option>            <option value=\"593\" >Helen Lin (593)</option></select>\n    <input [(ngModel)]=\"_formService.getObject().userObj\"\n           formControlName = userObj\n                      type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().userObj\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n            \n                \n                <div class=\"form-group\">\n                                <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_clientObj\">Client</label>\n                        <div class=\"col-sm-10\"><div class=\"row\">\n                        <div class=\"col-sm-8\">\n                                                        <input [(ngModel)]=\"_formService.getObject().clientObj\"\n           formControlName = clientObj\n           name=\"form[bookingObj][clientObj]\"\n           required=\"required\"           type=\"hidden\">\n    <js_autoComplete [field]=\"'clientObj'\"\n                     [selfReference]=\"_dataService.getFieldChoicesAttr('clientObj', 'selfReference')\"\n                                                                       ></js_autoComplete>\n                    <label class=\"error\" *ngFor=\"let error of _formService.getErrors().clientObj\">{{error}}</label>\n                        </div>\n                        <div class=\"col-sm-4\">\n                                                        <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_bookingObj_clientIsPax\" name=\"form[bookingObj][clientIsPax]\" [(ngModel)]=\"_formService.getObject().clientIsPax\" formControlName=\"clientIsPax\" [class.error]=\"_formService.getErrors().clientIsPax &amp;&amp; _formService.getErrors().clientIsPax.length &gt; 0\" value=\"1\" /> Client is pax</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().clientIsPax\">{{error}}</label>\n                        </div>\n                    </div></div>\n                </div>\n                    \n            \n                            \n\n                                            <label class=\"error\" *ngFor=\"let error of _formService.getErrors().bookingPaxObj\">{{error}}</label>\n                        \n            \n                    \n            \n                            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().startDate\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_startDate\">Start Date</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_startDate\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().startDate\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().startDate\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().endDate\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_endDate\">End Date</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_endDate\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().endDate\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().endDate\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().invoiceStatus\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_invoiceStatus\">Invoice</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_invoiceStatus\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().invoiceStatus\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().invoiceStatus\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().confirmationStatus\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_confirmationStatus\">Confirmation</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_confirmationStatus\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().confirmationStatus\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().confirmationStatus\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().totalCost\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_bookingObj_totalCost\">Total Cost</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_totalCost\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().totalCost\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().totalCost\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().totalSell\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_bookingObj_totalSell\">Total Sell</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_totalSell\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().totalSell\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().totalSell\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().totalMargin\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_totalMargin\">Margin (net)</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_totalMargin\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().totalMargin\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().totalMargin\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().totalMarkup\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_totalMarkup\">Markup (net)</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_totalMarkup\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().totalMarkup\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().totalMarkup\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().totalProfit\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_totalProfit\">Profit (net)</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_totalProfit\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().totalProfit\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().totalProfit\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Enabled</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n                            </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"y_X653isBIPUjhTqIFoEMS38F6y1pjJHhEkNvonaMMU\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
+module.exports = "    \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n<div class=\"modal-header\">\n    <div class=\"row align-items-center\">\n        <h3 class=\"col-auto mr-auto modal-title\">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>\n        <div class=\"col-auto text-right actions\"><a\n                class=\"-round fa fa-times\"\n                (click)=\"closeAction($event)\"></a></div>\n    </div>\n</div>\n<div class=\"modal-body\">\n    <div class=\"row\">\n        <div class=\"col-12\">        \n            \n            \n                            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().code\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_bookingObj_code\">Code</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_code\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().code\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().code\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_bookingObj_userObj\">User/Operator</label>\n    \n            <div class=\"col-sm-10\">\n                                                                            <select [(ngModel)]=\"_formService.getObject().userObj\"\n            formControlName = userObj\n            class=\"form-control\"\n            [class.error]=\"_formService.getErrors().userObj && (_formService.getErrors().userObj.length > 0)\"\n            id=\"form_bookingObj_userObj\"\n            name=\"form[bookingObj][userObj]\"\n            >\n        <option value=\"\"></option>\n                    <option *ngFor=\"let choice of _dataService.getFieldChoices('userObj')\"\n                    value=\"{{choice['id']}}\">{{choice['label']}}</option>\n            </select>\n                                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().userObj\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n            \n                \n                <div class=\"row form-group\">\n                                <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_clientObj\">Client</label>\n                        <div class=\"col-sm-10\"><div class=\"row\">\n                        <div class=\"col-sm-8\">\n                                                        <input [(ngModel)]=\"_formService.getObject().clientObj\"\n           formControlName = clientObj\n           name=\"form[bookingObj][clientObj]\"\n           required=\"required\"           type=\"hidden\">\n    <js_autoComplete [field]=\"'clientObj'\"\n                     [hasSelfReference]=\"_dataService.getFieldChoicesAttr('clientObj', 'hasSelfReference')\"\n                                                                       ></js_autoComplete>\n                    <label class=\"error\" *ngFor=\"let error of _formService.getErrors().clientObj\">{{error}}</label>\n                        </div>\n                        <div class=\"col-sm-4\">\n                                                        <div class=\"checkbox\">                                        <label for=\"form_bookingObj_clientIsPax\"><input type=\"checkbox\" id=\"form_bookingObj_clientIsPax\" name=\"form[bookingObj][clientIsPax]\" [(ngModel)]=\"_formService.getObject().clientIsPax\" formControlName=\"clientIsPax\" [class.error]=\"_formService.getErrors().clientIsPax &amp;&amp; _formService.getErrors().clientIsPax.length &gt; 0\" value=\"1\" /> Client is pax</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().clientIsPax\">{{error}}</label>\n                        </div>\n                    </div></div>\n                </div>\n                    \n            \n                            \n\n                                            <label class=\"error\" *ngFor=\"let error of _formService.getErrors().bookingPaxObj\">{{error}}</label>\n                        \n            \n                    \n            \n                            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().startDate\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_startDate\">Start Date</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_startDate\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().startDate\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().startDate\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().endDate\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_endDate\">End Date</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_endDate\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().endDate\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().endDate\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().totalCost\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_bookingObj_totalCost\">Total Cost</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_totalCost\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().totalCost\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().totalCost\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().totalSell\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_bookingObj_totalSell\">Total Sell</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_totalSell\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().totalSell\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().totalSell\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().totalMargin\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_totalMargin\">Margin (net)</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_totalMargin\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().totalMargin\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().totalMargin\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().totalMarkup\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_totalMarkup\">Markup (net)</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_totalMarkup\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().totalMarkup\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().totalMarkup\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().totalProfit\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_totalProfit\">Profit (net)</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_totalProfit\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().totalProfit\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().totalProfit\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().invoiceStatus\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_invoiceStatus\">Invoiced</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_invoiceStatus\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().invoiceStatus\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().invoiceStatus\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().confirmationStatus\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_bookingObj_confirmationStatus\">Confirmed</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_bookingObj_confirmationStatus\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().confirmationStatus\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().confirmationStatus\">{{error}}</label>\n            </div>\n        </div>\n                        \n            \n                            \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" [innerHTML]=\"getLang('Enabled')\"></label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label for=\"form_isEnabled\"><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n                            </div>\n    </div>\n</div>\n<div class=\"modal-footer hide-on-empty\">\n        \n                    <div class=\"row\">\n            <div class=\"col-auto ml-auto\">\n                                            <button                                     class=\"btn btn-light\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn btn-light\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>    \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"_yE5tsEMUvpURfWTW8W85WZk33Z7lJCsksOmBZnQ86Y\" /></form>\n"
 
 /***/ }),
 
-/***/ "../../../../../src/EntitiesBundle/Resources/public/client/index/ts/src/edit.component.ts":
+/***/ "../../../../../src/Bck/EntitiesBundle/Resources/public/client/index/ts/src/edit.component.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EditComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_form_form_popup_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form-popup.extension-component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_ts_form_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_form_ts_form_popup_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form-popup.extension-component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_form_ts_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/form.service.ts");
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -105678,143 +105912,46 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 
 var EditComponent = (function (_super) {
     __extends(EditComponent, _super);
-    function EditComponent(elementRef, renderer, provider, formService, dataService) {
+    function EditComponent(elementRef, renderer, provider, formService, dataService, _helperService) {
         var _this = _super.call(this) || this;
+        _this._helperService = _helperService;
         _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
         return _this;
     }
     /**
      * onEntityChange
-     * @param data
+     * @param value
      */
-    EditComponent.prototype.onEntityChange = function (data) {
-        // Refresh object if has been edited in auto-complete popup (with the same id, to update associated data)
-        if (this._formService.getOriginalObject()['entityObj'] == data) {
-            this._dataService.refreshObject();
-        }
+    EditComponent.prototype.onEntityChange = function (value) {
+        var that = this;
+        this._dataService.runAction((this._helperService.getAppVar('route')
+            + 'bck/entities/client/change-entity/'
+            + value
+            + (this._formService.getObject()['id'] ? ('/' + this._formService.getObject()['id']) : ''))).then(function (data) {
+            if (data['object']) {
+                that._dataService.setObject(data['object']);
+            }
+        }, function (errors) { console.log(errors); return; });
     };
     EditComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
             selector: '.js_edit',
-            template: __webpack_require__("../../../../../src/EntitiesBundle/Resources/public/client/index/ts/templates/edit.component.html")
+            template: __webpack_require__("../../../../../src/Bck/EntitiesBundle/Resources/public/client/index/ts/templates/edit.component.html")
         }),
         __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('Provider')),
         __param(4, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('DataService')),
+        __param(5, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('HelperService')),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* Renderer */], Object, __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_ts_form_form_service__["a" /* FormService */], Object])
+            __WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* Renderer */], Object, __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_form_ts_form_service__["a" /* FormService */], Object, Object])
     ], EditComponent);
     return EditComponent;
-}(__WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_form_form_popup_extension_component__["a" /* FormPopupExtensionComponent */]));
+}(__WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_form_ts_form_popup_extension_component__["a" /* FormPopupExtensionComponent */]));
 
 
 
 /***/ }),
 
-/***/ "../../../../../src/EntitiesBundle/Resources/public/client/index/ts/src/edit.ext-module.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EditExtModule; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_ts_form_field_types_field_types_extension_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/field-types/field-types.extension-module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__edit_component__ = __webpack_require__("../../../../../src/EntitiesBundle/Resources/public/client/index/ts/src/edit.component.ts");
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-
-
-
-
-
-var EditExtModule = (function () {
-    function EditExtModule() {
-    }
-    EditExtModule = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["H" /* NgModule */])({
-            imports: [__WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["e" /* ReactiveFormsModule */], __WEBPACK_IMPORTED_MODULE_3__AppBundle_Resources_public_ts_form_field_types_field_types_extension_module__["a" /* FieldTypesExtensionModule */]],
-            declarations: [
-                __WEBPACK_IMPORTED_MODULE_4__edit_component__["a" /* EditComponent */]
-            ],
-            exports: [__WEBPACK_IMPORTED_MODULE_4__edit_component__["a" /* EditComponent */]]
-        })
-    ], EditExtModule);
-    return EditExtModule;
-}());
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/EntitiesBundle/Resources/public/client/index/ts/templates/edit.component.html":
-/***/ (function(module, exports) {
-
-module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">    \n            \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().code\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_code\">Code</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_code\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().code\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().code\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().avatar\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_avatar\">Avatar</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_avatar\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().avatar\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().avatar\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().title\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_title\">Title</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_title\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().title\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().title\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().name\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_name\">Name</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_name\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().name\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().surname\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_surname\">Surname</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_surname\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().surname\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().surname\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().legalName\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_legalName\">Legal Name</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_legalName\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().legalName\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().legalName\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().birthDate\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_birthDate\">Birth Date</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_birthDate\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().birthDate\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().birthDate\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().taxNumber\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_taxNumber\">Tax Number</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_taxNumber\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().taxNumber\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().taxNumber\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_entityObj\">Entity</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input [(ngModel)]=\"_formService.getObject().entityObj\"\n           formControlName = entityObj\n           name=\"form[entityObj]\"\n           required=\"required\"           type=\"hidden\">\n    <js_autoComplete [field]=\"'entityObj'\"\n                     [selfReference]=\"_dataService.getFieldChoicesAttr('entityObj', 'selfReference')\"\n                                              (onChange)=\"onEntityChange($event)\"[placeholder]=\"&#039;Entity&#039;\"                         ></js_autoComplete>\n                    <label class=\"error\" *ngFor=\"let error of _formService.getErrors().entityObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Enabled</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
-
-/***/ }),
-
-/***/ "../../../../../src/EntitiesBundle/Resources/public/entity/index/ts/src/edit.component.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EditComponent; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_form_form_service__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_ts_form_form_popup_extension_component__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/form-popup.extension-component.ts");
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-
-
-
-var EditComponent = (function (_super) {
-    __extends(EditComponent, _super);
-    function EditComponent(elementRef, renderer, provider, formService, dataService) {
-        var _this = _super.call(this) || this;
-        _super.prototype.initFormPopupExtensionComponent.call(_this, elementRef, renderer, provider, formService, dataService);
-        return _this;
-    }
-    EditComponent = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: '#js_edit',
-            template: __webpack_require__("../../../../../src/EntitiesBundle/Resources/public/entity/index/ts/templates/edit.component.html")
-        }),
-        __param(2, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('Provider')),
-        __param(4, Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["y" /* Inject */])('DataService')),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */],
-            __WEBPACK_IMPORTED_MODULE_0__angular_core__["U" /* Renderer */], Object, __WEBPACK_IMPORTED_MODULE_1__AppBundle_Resources_public_ts_form_form_service__["a" /* FormService */], Object])
-    ], EditComponent);
-    return EditComponent;
-}(__WEBPACK_IMPORTED_MODULE_2__AppBundle_Resources_public_ts_form_form_popup_extension_component__["a" /* FormPopupExtensionComponent */]));
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/EntitiesBundle/Resources/public/entity/index/ts/src/edit.ext-module.ts":
+/***/ "../../../../../src/Bck/EntitiesBundle/Resources/public/client/index/ts/src/edit.ext-module.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -105823,8 +105960,8 @@ var EditComponent = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common__ = __webpack_require__("../../../common/esm5/common.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ng_bootstrap_ng_bootstrap__ = __webpack_require__("../../../../@ng-bootstrap/ng-bootstrap/index.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_form_field_types_field_types_extension_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/ts/form/field-types/field-types.extension-module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__edit_component__ = __webpack_require__("../../../../../src/EntitiesBundle/Resources/public/entity/index/ts/src/edit.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_form_ts_field_types_field_types_extension_module__ = __webpack_require__("../../../../../src/AppBundle/Resources/public/form/ts/field-types/field-types.extension-module.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__edit_component__ = __webpack_require__("../../../../../src/Bck/EntitiesBundle/Resources/public/client/index/ts/src/edit.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -105842,7 +105979,7 @@ var EditExtModule = (function () {
     }
     EditExtModule = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["H" /* NgModule */])({
-            imports: [__WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["e" /* ReactiveFormsModule */], __WEBPACK_IMPORTED_MODULE_3__ng_bootstrap_ng_bootstrap__["a" /* NgbModule */], __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_ts_form_field_types_field_types_extension_module__["a" /* FieldTypesExtensionModule */]],
+            imports: [__WEBPACK_IMPORTED_MODULE_1__angular_common__["a" /* CommonModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["b" /* FormsModule */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["e" /* ReactiveFormsModule */], __WEBPACK_IMPORTED_MODULE_3__ng_bootstrap_ng_bootstrap__["a" /* NgbModule */], __WEBPACK_IMPORTED_MODULE_4__AppBundle_Resources_public_form_ts_field_types_field_types_extension_module__["a" /* FieldTypesExtensionModule */]],
             declarations: [
                 __WEBPACK_IMPORTED_MODULE_5__edit_component__["a" /* EditComponent */]
             ],
@@ -105856,17 +105993,17 @@ var EditExtModule = (function () {
 
 /***/ }),
 
-/***/ "../../../../../src/EntitiesBundle/Resources/public/entity/index/ts/templates/edit.component.html":
+/***/ "../../../../../src/Bck/EntitiesBundle/Resources/public/client/index/ts/templates/edit.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"modal-body\">\n    <div class=\"form-wrapper gray-bg\">\n        <div class=\"row\">\n            <div class=\"col-lg-12\">\n                <div class=\"ibox float-e-margins\">\n                    <div class=\"ibox-title\">\n                        <h5>Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h5>\n                        <div class=\"txt-align-r actions\">\n                            <a class=\"-round fa fa-times\"\n                               (click)=\"closeAction($event)\"></a>\n                        </div>\n                    </div>\n                        \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n                    <div class=\"ibox-content\">    \n            \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().code\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_code\">Code</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_code\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().code\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().code\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().avatar\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_avatar\">Avatar</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_avatar\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().avatar\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().avatar\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_title\">Title</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n        <select id=\"form_title\" name=\"form[title]\" [(ngModel)]=\"_formService.getObject().title\" formControlName=\"title\" [class.error]=\"_formService.getErrors().title &amp;&amp; _formService.getErrors().title.length &gt; 0\" class=\"form-control\">            <option value=\"Mr.\" >Mr.</option>            <option value=\"Ms.\" >Ms.</option></select>\n    <input [(ngModel)]=\"_formService.getObject().title\"\n           formControlName = title\n           required=\"required\"           type=\"hidden\">\n\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().title\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_name\">Name</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_name\" name=\"form[name]\" required=\"required\" maxlength=\"64\" [(ngModel)]=\"_formService.getObject().name\" formControlName=\"name\" [class.error]=\"_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_surname\">Surname</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_surname\" name=\"form[surname]\" required=\"required\" maxlength=\"64\" [(ngModel)]=\"_formService.getObject().surname\" formControlName=\"surname\" [class.error]=\"_formService.getErrors().surname &amp;&amp; _formService.getErrors().surname.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().surname\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_legalName\">Legal Name</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_legalName\" name=\"form[legalName]\" maxlength=\"128\" [(ngModel)]=\"_formService.getObject().legalName\" formControlName=\"legalName\" [class.error]=\"_formService.getErrors().legalName &amp;&amp; _formService.getErrors().legalName.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().legalName\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_birthDate\">Birth Date</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n    <div class=\"input-group js_dataPicker\"\n         [datePicker]=\"'birthDate'\"\n         #dpk_birthDate=\"\" [control]=\"dpk_birthDate\">\n        <input [(ngModel)]=\"_formService.getObject().birthDate\"\n               formControlName = birthDate\n               name=\"form[birthDate]\"\n                              class=\"form-control\"\n               [class.error]=\"_formService.getErrors()['birthDate'] && (_formService.getErrors()['birthDate'].length > 0)\"\n               placeholder=\"yyyy-mm-dd\"\n               ngbDatepicker #dpk_birthDate=\"ngbDatepicker\">\n        <a class=\"input-group-addon action dsp-table-cell fa fa-calendar\"></a>\n    </div>\n    \n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().birthDate\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_taxNumber\">Tax Number</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_taxNumber\" name=\"form[taxNumber]\" maxlength=\"16\" [(ngModel)]=\"_formService.getObject().taxNumber\" formControlName=\"taxNumber\" [class.error]=\"_formService.getErrors().taxNumber &amp;&amp; _formService.getErrors().taxNumber.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().taxNumber\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertTime\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertTime\">Insert Time</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertTime\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertTime\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertTime\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" *ngIf=\"_formService.getObject().insertUser\">\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_insertUser\">Insert User</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_insertUser\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().insertUser\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().insertUser\">{{error}}</label>\n            </div>\n        </div>\n                \n\n            <div class=\"form-group\" >\n\n                        <label class=\"col-sm-2 control-label\">Enabled</label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n                    <div class=\"ibox-footer hide-on-empty\">    \n                    <div class=\"form-group\">\n            <div class=\"col-sm-10 col-sm-offset-2\">\n                                            <button                                     class=\"btn\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>                        \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"M8-tON1Vm7zaCf91I5KVuSjoLzkFt9Gsl7a9uNrScso\" /></form>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
+module.exports = "    \n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" [formGroup]=\"_formService.getForm()\" class=\"form-horizontal\">\n<div class=\"modal-header\">\n    <div class=\"row align-items-center\">\n        <h3 class=\"col-auto mr-auto modal-title\">Form&nbsp;{{getProviderAttr('label')}}<small>&nbsp;({{(_formService && _formService.getObject() && _formService.getObject().id) ? 'edit' : 'add'}})</small></h3>\n        <div class=\"col-auto text-right actions\"><a\n                class=\"-round fa fa-times\"\n                (click)=\"closeAction($event)\"></a></div>\n    </div>\n</div>\n<div class=\"modal-body\">\n    <div class=\"row\">\n        <div class=\"col-12\">    \n            \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().code\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_code\">Code</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_code\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().code\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().code\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_selectEntityObj\">Entity</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input [(ngModel)]=\"_formService.getObject().selectEntityObj\"\n           formControlName = selectEntityObj\n           name=\"form[selectEntityObj]\"\n                      type=\"hidden\">\n    <js_autoComplete [field]=\"'selectEntityObj'\"\n                     [hasSelfReference]=\"_dataService.getFieldChoicesAttr('selectEntityObj', 'hasSelfReference')\"\n                                              (onChange)=\"'onEntityChange($event)'\"[placeholder]=\"'Entity'\"                         ></js_autoComplete>\n                    <label class=\"error\" *ngFor=\"let error of _formService.getErrors().selectEntityObj\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" *ngIf=\"_formService.getObject().avatar\">\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_entityObj_avatar\">Avatar</label>\n    \n            <div class=\"col-sm-10\">\n                                        <p id=\"form_entityObj_avatar\"\n               class=\"form-control-static\"\n               [innerHTML]=\"_formService.getViewObject().avatar\"></p>\n                        <label class=\"error\" *ngFor=\"let error of _formService.getErrors().avatar\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_entityObj_title\">Title</label>\n    \n            <div class=\"col-sm-10\">\n                                                                    \n        <select id=\"form_entityObj_title\" name=\"form[entityObj][title]\" [(ngModel)]=\"_formService.getObject().title\" formControlName=\"title\" [class.error]=\"_formService.getErrors().title &amp;&amp; _formService.getErrors().title.length &gt; 0\" class=\"form-control\"><option value=\"Mr.\">Mr.</option><option value=\"Ms.\">Ms.</option></select>\n    <input [(ngModel)]=\"_formService.getObject().title\"\n           formControlName = title\n           required=\"required\"           type=\"hidden\">\n\n                            <label class=\"error\" *ngFor=\"let error of _formService.getErrors().title\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_entityObj_name\">Name</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_entityObj_name\" name=\"form[entityObj][name]\" required=\"required\" maxlength=\"64\" [(ngModel)]=\"_formService.getObject().name\" formControlName=\"name\" [class.error]=\"_formService.getErrors().name &amp;&amp; _formService.getErrors().name.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().name\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_entityObj_surname\">Surname</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_entityObj_surname\" name=\"form[entityObj][surname]\" required=\"required\" maxlength=\"64\" [(ngModel)]=\"_formService.getObject().surname\" formControlName=\"surname\" [class.error]=\"_formService.getErrors().surname &amp;&amp; _formService.getErrors().surname.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().surname\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_entityObj_legalName\">Legal Name</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_entityObj_legalName\" name=\"form[entityObj][legalName]\" maxlength=\"128\" [(ngModel)]=\"_formService.getObject().legalName\" formControlName=\"legalName\" [class.error]=\"_formService.getErrors().legalName &amp;&amp; _formService.getErrors().legalName.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().legalName\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_entityObj_birthDate\">Birth Date</label>\n    \n            <div class=\"col-sm-10\">\n                                        \n    <div class=\"input-group js_dataPicker\"\n         [datePicker]=\"'birthDate'\"\n         #dpk_birthDate=\"\" [control]=\"dpk_birthDate\">\n        <input type=\"text\"\n               class=\"form-control\"\n               placeholder=\"yyyy-mm-dd\"\n               [(ngModel)]=\"_formService.getObject().birthDate\"\n               formControlName = birthDate\n               name=\"form[entityObj][birthDate]\"\n                              [class.error]=\"_formService.getErrors()['birthDate'] && (_formService.getErrors()['birthDate'].length > 0)\"\n               ngbDatepicker #dpk_birthDate=\"ngbDatepicker\">\n        <div class=\"input-group-append\">\n            <button class=\"btn\" type=\"button\"><a class=\"fa fa-calendar\"></a></button>\n        </div>\n    </div>\n    \n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().birthDate\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label required\" for=\"form_entityObj_identification\">Identification / Passport</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_entityObj_identification\" name=\"form[entityObj][identification]\" required=\"required\" maxlength=\"16\" [(ngModel)]=\"_formService.getObject().identification\" formControlName=\"identification\" [class.error]=\"_formService.getErrors().identification &amp;&amp; _formService.getErrors().identification.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().identification\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" for=\"form_entityObj_taxNumber\">Tax Number</label>\n    \n            <div class=\"col-sm-10\">\n                                            <input type=\"text\" id=\"form_entityObj_taxNumber\" name=\"form[entityObj][taxNumber]\" maxlength=\"16\" [(ngModel)]=\"_formService.getObject().taxNumber\" formControlName=\"taxNumber\" [class.error]=\"_formService.getErrors().taxNumber &amp;&amp; _formService.getErrors().taxNumber.length &gt; 0\" class=\"form-control\" />\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().taxNumber\">{{error}}</label>\n            </div>\n        </div>\n                \n\n                <div class=\"row form-group\" >\n\n                        <label class=\"col-sm-2 control-label\" [innerHTML]=\"getLang('Enabled')\"></label>\n    \n            <div class=\"col-sm-10\">\n                                            <div class=\"checkbox\">                                        <label for=\"form_isEnabled\"><input type=\"checkbox\" id=\"form_isEnabled\" name=\"form[isEnabled]\" [(ngModel)]=\"_formService.getObject().isEnabled\" formControlName=\"isEnabled\" [class.error]=\"_formService.getErrors().isEnabled &amp;&amp; _formService.getErrors().isEnabled.length &gt; 0\" value=\"1\" checked=\"checked\" /> Is enabled</label>\n    </div>\n                <label class=\"error\" *ngFor=\"let error of _formService.getErrors().isEnabled\">{{error}}</label>\n            </div>\n        </div>\n        </div>\n    </div>\n</div>\n<div class=\"modal-footer hide-on-empty\">\n        \n                    <div class=\"row\">\n            <div class=\"col-auto ml-auto\">\n                                            <button                                     class=\"btn btn-light\"\n                                    (click)=\"cancelAction($event)\"\n                                        id=\"form_cancel\"\n            name=\"form[cancel]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Cancel</button>\n                                                <button                                     class=\"btn btn-light\"\n                                    (click)=\"resetAction($event)\"\n                                        id=\"form_reset\"\n            name=\"form[reset]\"\n            type=\"button\"><i class=\"fa fa-ban\"></i>&nbsp;Reset</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAction($event)\"\n                                        id=\"form_save\"\n            name=\"form[save]\"\n            type=\"button\"><i class=\"fa fa-check\"></i>&nbsp;Save</button>\n                                                <button                                     class=\"btn btn-primary\"\n                                    (click)=\"saveAndCloseAction($event)\"\n                                        id=\"form_saveAndClose\"\n            name=\"form[saveAndClose]\"\n            type=\"button\"><i class=\"fa fa-times\"></i>&nbsp;Save and Close</button>\n                                </div>\n        </div>\n    </div>    \n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"_yE5tsEMUvpURfWTW8W85WZk33Z7lJCsksOmBZnQ86Y\" /></form>\n"
 
 /***/ }),
 
 /***/ 0:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__("../../../../../src/BookingBundle/Resources/public/regular-booking/index/ts/src/main.ts");
+module.exports = __webpack_require__("../../../../../src/Bck/BookingBundle/Resources/public/regular-booking/index/ts/src/main.ts");
 
 
 /***/ })
