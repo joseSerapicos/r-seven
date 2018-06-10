@@ -11,5 +11,8 @@
 # Uploads
 /web/upload/
 
+# Assets
+/web/assets/
+
 # Dependencies
 /node_modules

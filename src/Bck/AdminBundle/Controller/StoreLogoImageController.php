@@ -53,7 +53,7 @@ class StoreLogoImageController extends BaseEntityChildController
         parent::init($request, $parents);
 
         // Form (set submit context as default, because this is the most used)
-        $this->localConf['formTypeClass'] = ('BckAdminBundle\Form\StoreLogoImageSubmitFormType');
+        $this->localConf['formTypeClass'] = ('Bck\AdminBundle\Form\StoreLogoImageSubmitFormType');
 
         /* Templates */
         $this->localConf['templatesPath'] = ($this->localConf['BundleNamespace'].':StoreLogoImage');
