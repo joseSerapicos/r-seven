@@ -244,7 +244,7 @@ class UserController extends BaseEntityController
                 unset($this->templateConf['fields']['form'][$key]);
             }
             $this->localConf['form']['buttons'] = 'wizard';
-            $this->localConf['formTypeClass'] = str_replace('User', 'UserAdd', $this->localConf['formTypeClass']);
+            $this->localConf['formTypeClass'] = 'Bck\AdminBundle\Form\UserAddType';
         }
 
         // Get object
