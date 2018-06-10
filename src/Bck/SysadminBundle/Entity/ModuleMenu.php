@@ -10,7 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass="Bck\SysadminBundle\Entity\ModuleMenuRepository")
- * @ORM\Table(name="wo_app.app_moduleMenu",
+ * @ORM\Table(name="tt_app.app_moduleMenu",
  *     uniqueConstraints={@ORM\UniqueConstraint(name="unq_moduleMenu_name", columns={"name", "fkApp_module"})})
  */
 class ModuleMenu extends BaseEntity {

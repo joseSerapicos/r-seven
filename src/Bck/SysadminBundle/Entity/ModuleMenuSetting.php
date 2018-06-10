@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="Bck\SysadminBundle\Entity\ModuleMenuSettingRepository")
- * @ORM\Table(name="wo_app.app_moduleMenuSetting",
+ * @ORM\Table(name="tt_app.app_moduleMenuSetting",
  *     uniqueConstraints={@ORM\UniqueConstraint(name="unq_moduleMenuSetting_name", columns={"name", "fkApp_moduleMenu"})})
  */
 class ModuleMenuSetting extends BaseEntity {

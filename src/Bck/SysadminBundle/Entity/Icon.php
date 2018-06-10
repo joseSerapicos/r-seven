@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="Bck\SysadminBundle\Entity\IconRepository")
- * @ORM\Table(name="wo_app.app_icon")
+ * @ORM\Table(name="tt_app.app_icon")
  */
 class Icon extends BaseEntity {
     /**

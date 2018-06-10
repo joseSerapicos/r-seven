@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="Bck\SysadminBundle\Entity\ModuleRepository")
- * @ORM\Table(name="wo_app.app_module")
+ * @ORM\Table(name="tt_app.app_module")
  */
 class Module extends BaseEntity {
     /**

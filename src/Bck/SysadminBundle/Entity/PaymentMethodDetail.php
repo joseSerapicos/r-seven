@@ -10,7 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass="Bck\SysadminBundle\Entity\PaymentMethodDetailRepository")
- * @ORM\Table(name="wo_app.app_paymentMethodDetail",
+ * @ORM\Table(name="tt_app.app_paymentMethodDetail",
  *     uniqueConstraints={@ORM\UniqueConstraint(name="unq_paymentMethodDetail_name", columns={"field", "fkApp_paymentMethod"})})
  */
 class PaymentMethodDetail extends BaseEntity {

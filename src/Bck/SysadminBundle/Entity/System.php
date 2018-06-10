@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="Bck\SysadminBundle\Entity\SystemRepository")
- * @ORM\Table(name="wo_app.app_system",
+ * @ORM\Table(name="tt_app.app_system",
  *     indexes={@ORM\Index(name="idx_system_name", columns={"name"})})
  */
 class System extends BaseEntity {

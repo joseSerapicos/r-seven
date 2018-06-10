@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="Bck\SysadminBundle\Entity\LanguageRepository")
- * @ORM\Table(name="wo_app.app_language",
+ * @ORM\Table(name="tt_app.app_language",
  *     uniqueConstraints={@ORM\UniqueConstraint(name="unq_language_country", columns={"languageCode", "fkApp_country"})}
  * )
  *

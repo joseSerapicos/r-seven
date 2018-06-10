@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="Bck\SysadminBundle\Entity\PaymentMethodRepository")
- * @ORM\Table(name="wo_app.app_paymentMethod")
+ * @ORM\Table(name="tt_app.app_paymentMethod")
  */
 class PaymentMethod extends BaseEntity {
 

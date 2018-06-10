@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="Bck\SysadminBundle\Entity\DbErrorRepository")
- * @ORM\Table(name="wo_app.app_dbError")
+ * @ORM\Table(name="tt_app.app_dbError")
  */
 class DbError extends BaseEntity {
     /**

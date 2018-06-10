@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="Bck\SysadminBundle\Entity\ProvinceRepository")
- * @ORM\Table(name="wo_app.app_province")
+ * @ORM\Table(name="tt_app.app_province")
  */
 class Province extends BaseEntity
 {
