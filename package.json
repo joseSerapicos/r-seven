@@ -6,13 +6,6 @@
   "description": "weboffice rp",
   "main": "index.js",
   "scripts": {
-    "postinstall": "typings install",
-    "ng": "ng",
-    "build": "ng build",
-    "start": "ng serve",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
   },
   "private": true,
   "dependencies": {
