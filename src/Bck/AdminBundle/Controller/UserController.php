@@ -21,6 +21,9 @@ class UserController extends BaseEntityController
         // Set configuration only once
         if($this->isInitialized) { return $this; }
 
+        // Set the selected menu manually to avoid to use the login bundle
+        $this->templateConf['selectedMenu']['route'] = '_bck__admin__user__index';
+
         // Route
         $this->templateConf['route'] = array(
             'get' => array(
@@ -55,7 +58,12 @@ class UserController extends BaseEntityController
         $this->localConf['Bundle'] = 'LoginBundle';
 
         parent::init($request);
+
+        /* Templates: Default view/template for action */
         $this->localConf['templatesPath'] = ('BckAdminBundle:'.$this->localConf['entity'].':');
+        $this->localConf['templates']['index'] = ($this->localConf['templatesPath'] . 'index.html.twig');
+        $this->localConf['templates']['detail'] = ($this->localConf['templatesPath'] . 'detail.html.twig');
+        /* /Templates */
 
         // Local Search
         // Remove Sysadmin and customers from results

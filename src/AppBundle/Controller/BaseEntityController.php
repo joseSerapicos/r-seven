@@ -108,7 +108,7 @@ abstract class BaseEntityController extends BaseController
         /* /Functions */
 
         /* Templates: Default view/template for action */
-        $this->localConf['templatesPath'] = ($this->localConf['BundleNamespace'].':'.$this->localConf['entity'].':');
+        $this->localConf['templatesPath'] = ($this->localConf['BundleNamespace'] . ':' . $this->localConf['entity'] . ':');
         $this->localConf['templates'] = array(
             'index' => ($this->localConf['templatesPath'] . 'index.html.twig'),
             'detail' => ($this->localConf['templatesPath'] . 'detail.html.twig'),
