@@ -244,7 +244,7 @@ export class Helper {
             objects: data.objects || null,
             route: data.route || null,
             extraData: ((data.extraData && data.extraData.service) ? data.extraData.service : null),
-            localData: (data.localData || null),
+            localData: (data.localData || {data: {}, template: {}}),
         };
     }
 

@@ -8,7 +8,7 @@
     <js_autoComplete [field]="'{{field}}'"
                      [hasSelfReference]="_dataService.getFieldChoicesAttr('{{ field }}', 'hasSelfReference')"
                      {% if (formField.vars.attr is defined) %}
-                         {% for attr, value in formField.vars.attr %}{{attr}}="'{{value}}'"{% endfor %}
+                         {% for attr, value in formField.vars.attr %}{{attr}}="{{value}}"{% endfor %}
                      {% endif %}
     ></js_autoComplete>
     {% do formField.setRendered %}

@@ -53,7 +53,7 @@ class EntityContactsRepository extends BaseEntityRepository
             'entityAddressObj' => array('label' => 'Address', 'type' => 'object', 'acl' => 'edit',
                 'attr' => array(
                     '(onChange)' => 'onEntityAddressChange($event)',
-                    '[placeholder]' => 'Address'
+                    '[placeholder]' => "'Address'"
                 ),
                 'typeDetail' => array(
                     'table' => 'entityAddress', 'bundlePrefix' => 'bck', 'bundle' => 'entities', 'type' => 'none',
@@ -66,7 +66,7 @@ class EntityContactsRepository extends BaseEntityRepository
             'entityPhoneObj' => array('label' => 'Phone', 'type' => 'object', 'acl' => 'edit',
                 'attr' => array(
                     '(onChange)' => 'onEntityPhoneChange($event)',
-                    '[placeholder]' => 'Phone'
+                    '[placeholder]' => "'Phone'"
                 ),
                 'typeDetail' => array(
                     'table' => 'entityPhone', 'bundlePrefix' => 'bck', 'bundle' => 'entities', 'type' => 'none',
@@ -79,7 +79,7 @@ class EntityContactsRepository extends BaseEntityRepository
             'entityEmailObj' => array('label' => 'Email', 'type' => 'object', 'acl' => 'edit',
                 'attr' => array(
                     '(onChange)' => 'onEntityEmailChange($event)',
-                    '[placeholder]' => 'Email'
+                    '[placeholder]' => "'Email'"
                 ),
                 'typeDetail' => array(
                     'table' => 'entityEmail', 'bundlePrefix' => 'bck', 'bundle' => 'entities', 'type' => 'none',

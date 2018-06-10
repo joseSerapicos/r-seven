@@ -65,7 +65,7 @@ class SupplierRepository extends BaseEntityRepository
                 ),
                 'attr' => array(
                     '(onChange)' => 'onEntityChange($event)',
-                    '[placeholder]' => "Entity"
+                    '[placeholder]' => "'Entity'"
                 ),
                 'form' => array('type' => 'auto-complete'), 'isRequired' => false
             ),

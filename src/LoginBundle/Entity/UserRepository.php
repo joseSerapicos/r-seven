@@ -52,7 +52,7 @@ class UserRepository extends BaseEntityRepository {
             'id' => array('label' => 'Id', 'type' => 'number', 'acl' => 'read'),
             'entityObj' => array('label' => 'Entity', 'type' => 'object', 'acl' => 'read',
                 'typeDetail' => array(
-                    'table' => 'entity', 'field' => 'id', 'bundlePrefix' => 'bck', 'bundle' => 'entities', 'type' => 'none',
+                    'table' => 'entity', 'bundlePrefix' => 'bck', 'bundle' => 'entities', 'type' => 'none',
                     'metadata' => array('method' => 'merge', 'persist' => true, 'pushAfterField' => 'id')
                 ),
                 'form' => array('type' => 'embed', 'typeClass' => 'EntityNoCode')

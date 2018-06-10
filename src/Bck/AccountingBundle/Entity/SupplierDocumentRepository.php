@@ -87,7 +87,7 @@ class SupplierDocumentRepository extends BaseDocumentRepository
             'entityAddressObj' => array('label' => 'Address', 'type' => 'object', 'acl' => 'edit',
                 'attr' => array(
                     '(onChange)' => 'onEntityAddressChange($event)',
-                    '[placeholder]' => "Address"
+                    '[placeholder]' => "'Address'"
                 ),
                 'typeDetail' => array(
                     'table' => 'entityAddress', 'bundlePrefix' => 'bck', 'bundle' => 'entities', 'type' => 'none'),

@@ -260,10 +260,6 @@ class UserController extends BaseEntityController
         // Check if is submitted
         if($form->isSubmitted()) {
             if($form->isValid()) {
-                // Save entity in database
-                $entityObj = $obj->getEntityObj();
-                parent::setObjectDefaultValues($entityObj);
-
                 // Check user and role, the user can't change your own role
                 $session = $this->get('session');
                 $loggedUser_id = $session->get('_app.user')['id'];
@@ -366,10 +362,11 @@ class UserController extends BaseEntityController
             $obj->setRole('ROLE_USER');
         }
 
+        $obj->setIsSent(false);
         $entityObj = $obj->getEntityObj();
-        // Set an code (is not used, but can't be null...)
+        // Set a code (is not used, but can't be null...)
         $entityObj->setCodePrefix('user-');
-        $entityObj->setCodeNumber(uniqid());
+        $entityObj->setCodeNumber(time()); // Needs to be a bigint data type
 
         return $obj;
     }

@@ -42,7 +42,7 @@
            required="required"           type="hidden">
     <js_autoComplete [field]="'clientObj'"
                      [hasSelfReference]="_dataService.getFieldChoicesAttr('clientObj', 'hasSelfReference')"
-                                              (onChange)="'onEntityChange($event)'"                         ></js_autoComplete>
+                                              (onChange)="onEntityChange($event)"                         ></js_autoComplete>
                     <label class="error" *ngFor="let error of _formService.getErrors().clientObj">{{error}}</label>
             </div>
         </div>
@@ -50,7 +50,7 @@
 
     
 
-    <input type="hidden" id="form__token" name="form[_token]" value="_yE5tsEMUvpURfWTW8W85WZk33Z7lJCsksOmBZnQ86Y" /></form>
+    <input type="hidden" id="form__token" name="form[_token]" value="cEuu0f4SXmjfjYDFXIJO4B5Hkp8dRrRxqs-vEEkwqNE" /></form>
 
                 </section>                                            <section [hidden]="_wizardManagerService.getIndex() != 1"
          class="js_lazyLoadContainer_1">

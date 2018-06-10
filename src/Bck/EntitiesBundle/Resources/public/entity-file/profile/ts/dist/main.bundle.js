@@ -4107,7 +4107,7 @@ var Helper = (function () {
             objects: data.objects || null,
             route: data.route || null,
             extraData: ((data.extraData && data.extraData.service) ? data.extraData.service : null),
-            localData: (data.localData || null),
+            localData: (data.localData || { data: {}, template: {} }),
         };
     };
     /**
@@ -5176,7 +5176,7 @@ var EditExtModule = (function () {
 /***/ "../../../../../src/Bck/EntitiesBundle/Resources/public/entity-file/index/ts/templates/edit.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"modal-header\">\n    <div class=\"row align-items-center\">\n        <h3 class=\"col-auto mr-auto modal-title\">{{getProviderAttr('label')}}</h3>\n        <div class=\"col-auto text-right actions\"><a\n                class=\"-round fa fa-times\"\n                (click)=\"closeAction($event)\"></a></div>\n    </div>\n</div>\n<div class=\"modal-body\">\n    <div class=\"row\">\n        <div class=\"col-12\">    \n\n\n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" class=\"dropzone form-horizontal\" ngNoForm=\"\">\n\n    \n\n\n    \n\n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"_yE5tsEMUvpURfWTW8W85WZk33Z7lJCsksOmBZnQ86Y\" /></form>\n\n</div>\n    </div>\n</div>\n<div class=\"modal-footer hide-on-empty\">\n    <div class=\"row\">\n    <div class=\"col-auto ml-auto\">\n        <button type=\"button\" class=\"btn-primary btn\" (click)=\"closeAction($event)\">Finish</button>\n    </div>\n</div>\n</div>"
+module.exports = "<div class=\"modal-header\">\n    <div class=\"row align-items-center\">\n        <h3 class=\"col-auto mr-auto modal-title\">{{getProviderAttr('label')}}</h3>\n        <div class=\"col-auto text-right actions\"><a\n                class=\"-round fa fa-times\"\n                (click)=\"closeAction($event)\"></a></div>\n    </div>\n</div>\n<div class=\"modal-body\">\n    <div class=\"row\">\n        <div class=\"col-12\">    \n\n\n    <form name=\"form\" method=\"post\" (ngSubmit)=\"saveAction($event)\" class=\"dropzone form-horizontal\" ngNoForm=\"\">\n\n    \n\n\n    \n\n    <input type=\"hidden\" id=\"form__token\" name=\"form[_token]\" value=\"cEuu0f4SXmjfjYDFXIJO4B5Hkp8dRrRxqs-vEEkwqNE\" /></form>\n\n</div>\n    </div>\n</div>\n<div class=\"modal-footer hide-on-empty\">\n    <div class=\"row\">\n    <div class=\"col-auto ml-auto\">\n        <button type=\"button\" class=\"btn-primary btn\" (click)=\"closeAction($event)\">Finish</button>\n    </div>\n</div>\n</div>"
 
 /***/ }),
 
